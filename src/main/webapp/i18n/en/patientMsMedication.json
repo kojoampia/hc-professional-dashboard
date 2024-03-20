@@ -1,0 +1,31 @@
+{
+  "professionalDashboardApp": {
+    "professionalMsMedication": {
+      "home": {
+        "title": "Medications",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Medication",
+        "createOrEditLabel": "Create or edit a Medication",
+        "search": "Search for Medication",
+        "notFound": "No Medications found"
+      },
+      "created": "A new Medication is created with identifier {{ param }}",
+      "updated": "A Medication is updated with identifier {{ param }}",
+      "deleted": "A Medication is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Medication {{ id }}?"
+      },
+      "detail": {
+        "title": "Medication"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "prescription": "Prescription",
+      "createdDate": "Created Date",
+      "modifiedDate": "Modified Date",
+      "createdBy": "Created By",
+      "modifiedBy": "Modified By"
+    }
+  }
+}

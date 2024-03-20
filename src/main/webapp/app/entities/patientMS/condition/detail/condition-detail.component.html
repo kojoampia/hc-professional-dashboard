@@ -1,0 +1,54 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (condition) {
+      <div>
+        <h2 data-cy="conditionDetailsHeading"><span hpdTranslate="professionalDashboardApp.professionalMsCondition.detail.title">Condition</span></h2>
+
+        <hr />
+
+        <hpd-alert-error></hpd-alert-error>
+
+        <hpd-alert></hpd-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span hpdTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ condition.id }}</span>
+          </dd>
+          <dt><span hpdTranslate="professionalDashboardApp.professionalMsCondition.name">Name</span></dt>
+          <dd>
+            <span>{{ condition.name }}</span>
+          </dd>
+          <dt><span hpdTranslate="professionalDashboardApp.professionalMsCondition.description">Description</span></dt>
+          <dd>
+            <span>{{ condition.description }}</span>
+          </dd>
+          <dt><span hpdTranslate="professionalDashboardApp.professionalMsCondition.createdDate">Created Date</span></dt>
+          <dd>
+            <span>{{ condition.createdDate | formatMediumDate }}</span>
+          </dd>
+          <dt><span hpdTranslate="professionalDashboardApp.professionalMsCondition.modifiedDate">Modified Date</span></dt>
+          <dd>
+            <span>{{ condition.modifiedDate | formatMediumDate }}</span>
+          </dd>
+          <dt><span hpdTranslate="professionalDashboardApp.professionalMsCondition.createdBy">Created By</span></dt>
+          <dd>
+            <span>{{ condition.createdBy }}</span>
+          </dd>
+          <dt><span hpdTranslate="professionalDashboardApp.professionalMsCondition.modifiedBy">Modified By</span></dt>
+          <dd>
+            <span>{{ condition.modifiedBy }}</span>
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span hpdTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/condition', condition.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span hpdTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

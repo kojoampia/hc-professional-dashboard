@@ -1,0 +1,43 @@
+<div class="card jh-card">
+    <div class="card-header text-center bg-white text-primary border-primary">
+        <h6>
+            <img [src]="entity.url" alt="entity.businessName" class="logo float-left" *ngIf="entity.url">
+            <span>{{entity.businessName}}</span>
+            <span class="float-right text-white" style="cursor: pointer;">
+                <a (click)="close()">&times;</a>
+            </span>
+        </h6>
+    </div>
+    <div class="card-body bg-white">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="text-left" style="font-size: medium;">
+                    <h5><span>{{entity.businessName}}</span></h5>
+                    <h6>
+                        <span>{{ entity.firstName }}</span>
+                        <span *ngIf="entity.middleName">&nbsp;{{ entity.middleName }}</span>
+                        <span>&nbsp;{{ entity.lastName }}</span>
+                    </h6>
+                    <h6>
+                        <span>{{ entity.mobileTelephone }}</span>
+                        <span>&nbsp;{{ entity.fixedTelephone }}</span>
+                    </h6>
+                    <h6>
+                        <span>{{ entity.email }}</span>
+                    </h6>
+                    <h6>
+                        <span *ngIf="entity.physicalAddress">{{ entity.physicalAddress }},</span>
+                        <span *ngIf="entity.digitalAddress">&nbsp;{{ entity.digitalAddress }}</span>
+                    </h6>
+                    <h6>
+                        <span>{{ entity.postalAddress }}</span>
+                    </h6>
+                    <h6>
+                        <span>{{ entity.city }}</span>
+                        <span>&nbsp;{{ entity.country }}</span>
+                    </h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

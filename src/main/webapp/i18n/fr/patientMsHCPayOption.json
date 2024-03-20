@@ -1,0 +1,27 @@
+{
+  "professionalDashboardApp": {
+    "professionalMsHCPayOption": {
+      "home": {
+        "title": "HCPayOptions",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau HC Pay Option",
+        "createOrEditLabel": "Créer ou éditer un HC Pay Option",
+        "search": "Recherche pour HC Pay Option",
+        "notFound": "Aucun HC Pay Option trouvé"
+      },
+      "created": "Un nouveau HC Pay Option a été créé avec l'identifiant {{ param }}",
+      "updated": "Le HC Pay Option avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le HC Pay Option avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le HC Pay Option {{ id }} ?"
+      },
+      "detail": {
+        "title": "HC Pay Option"
+      },
+      "id": "ID",
+      "type": "Type",
+      "userID": "User ID",
+      "metadata": "Metadata"
+    }
+  }
+}

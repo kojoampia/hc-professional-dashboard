@@ -1,0 +1,33 @@
+{
+  "professionalDashboardApp": {
+    "professionalMsTask": {
+      "home": {
+        "title": "Tasks",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Task",
+        "createOrEditLabel": "Créer ou éditer un Task",
+        "search": "Recherche pour Task",
+        "notFound": "Aucun Task trouvé"
+      },
+      "created": "Un nouveau Task a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Task avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Task avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Task {{ id }} ?"
+      },
+      "detail": {
+        "title": "Task"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "schedule": "Schedule",
+      "duration": "Duration",
+      "attendant": "Attendant",
+      "createdDate": "Created Date",
+      "modifiedDate": "Modified Date",
+      "createdBy": "Created By",
+      "modifiedBy": "Modified By"
+    }
+  }
+}

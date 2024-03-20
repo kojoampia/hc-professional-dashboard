@@ -1,0 +1,31 @@
+.card {
+  position: relative;
+  top: 100px;
+  min-height: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.card-body {
+  min-height: 600px;
+  text-align: left;
+  padding: 20px !important;
+}
+
+.pdv {
+  ::ng-deep a {
+    color: #80cccc !important;
+  }
+  ::ng-deep a:link {
+    color: #80cccc !important;
+  }
+  ::ng-deep a:visited {
+    color: #80cccc !important;
+  }
+  ::ng-deep a:hover {
+    color: #ffff00 !important;
+  }
+  ::ng-deep a:active {
+    color: #ff0000 !important;
+  }
+}

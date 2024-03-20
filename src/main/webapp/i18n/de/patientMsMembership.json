@@ -1,0 +1,31 @@
+{
+  "professionalDashboardApp": {
+    "professionalMsMembership": {
+      "home": {
+        "title": "Memberships",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Membership erstellen",
+        "createOrEditLabel": "Membership erstellen oder bearbeiten",
+        "search": "Suche nach Membership",
+        "notFound": "Keine Memberships gefunden"
+      },
+      "created": "Membership erstellt mit ID {{ param }}",
+      "updated": "Membership aktualisiert mit ID {{ param }}",
+      "deleted": "Membership gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Membership {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Membership"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "status": "Status",
+      "createdDate": "Created Date",
+      "modifiedDate": "Modified Date",
+      "createdBy": "Created By",
+      "modifiedBy": "Modified By"
+    }
+  }
+}

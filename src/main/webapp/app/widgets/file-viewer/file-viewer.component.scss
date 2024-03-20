@@ -1,0 +1,40 @@
+iframe {
+  min-height: 800px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+
+  margin-top: 0;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: auto;
+}
+
+a {
+  color: white;
+}
+
+a:active,
+a:hover {
+  color: white;
+  border: 0 !important;
+  text-decoration: none !important;
+}
+
+*:focus {
+  outline: none;
+}
+
+.card {
+  padding-top: 1.5%;
+  padding-bottom: 1.5%;
+  margin-top: 0;
+  margin-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  min-width: 800px;
+  border-radius: 10px;
+  background-color: teal;
+  border: 5px solid teal;
+}

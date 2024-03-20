@@ -1,0 +1,39 @@
+{
+  "generator-jhipster": {
+    "baseName": "professionalDashboard",
+    "clientFramework": "angular",
+    "clientTestFrameworks": ["cypress"],
+    "clientTheme": "none",
+    "creationTimestamp": 1707426466782,
+    "cypressAudit": false,
+    "cypressCoverage": false,
+    "databaseType": "mongodb",
+    "devDatabaseType": "mongodb",
+    "devServerPort": 4200,
+    "enableTranslation": true,
+    "entities": [
+      "Address",
+      "Condition",
+      "Medication",
+      "Stat",
+      "Team",
+      "Task",
+      "Membership",
+      "Report",
+      "Metadata",
+      "Profile",
+      "HCCredential",
+      "HCPayOption"
+    ],
+    "jhiPrefix": "hpd",
+    "jhipsterVersion": "8.1.0",
+    "languages": ["en", "fr", "de"],
+    "microfrontend": null,
+    "microfrontends": [],
+    "nativeLanguage": "en",
+    "prodDatabaseType": "mongodb",
+    "skipServer": true,
+    "testFrameworks": ["cypress"],
+    "withAdminUi": true
+  }
+}

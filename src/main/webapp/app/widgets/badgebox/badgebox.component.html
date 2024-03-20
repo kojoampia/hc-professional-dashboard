@@ -1,0 +1,49 @@
+<div class="card mt-1 border-0" *ngIf="badges && badges.length > 0">
+    <div class="card-header text-left" *ngIf="title">
+        <div class="float-right">
+            <button type="button" class="close" aria-label="Close" (click)="closeBadge()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <h2>{{title}}</h2>
+    </div>
+    <div class="card-body justify-content-start">
+        <div class="flex-card align-self-stretch" *ngIf="small">
+            <div class="card text-white bg-secondary m-1" *ngFor="let badge of badges; let i = index;">
+                <div class="card-header text-white">
+                    <h3>{{badge.name}}</h3>
+                </div>
+                <div class="card-body text-center">
+                    <button class="btn btn-small btn-dark text-center p-3" (click)="toggleSelected(badge)"
+                        [ngClass]="{'selected': badge.selected && showSelected}">
+                        <h6>&euro;{{badge.value}}</h6>
+                    </button>
+                    <p class="card-text" *ngIf="badge.description">
+                        {{badge.description}}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="card-group" *ngIf="medium || large">
+            <div class="card bg-secondary" *ngFor="let badge of badges; let i = index;">
+                <div class="card-header">
+                    <h2 *ngIf="medium">{{badge.name}}</h2>
+                    <h1 *ngIf="large">{{badge.name}}</h1>
+                </div>
+                <div class="card-body text-center">
+                    <button class="btn btn-medium btn-dark text-center" (click)="toggleSelected(badge)"
+                        *ngIf="medium" [ngClass]="{'selected': badge.selected && showSelected}">
+                        <h5>&euro;{{badge.value}}</h5>
+                    </button>
+                    <button class="btn btn-large btn-dark text-center" (click)="toggleSelected(badge)" *ngIf="large"
+                        [ngClass]="{'selected': badge.selected && showSelected}">
+                        <h3>&euro;{{badge.value}}</h3>
+                    </button>
+                    <p class="card-text" *ngIf="badge.description">
+                        {{badge.description}}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

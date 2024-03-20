@@ -1,0 +1,35 @@
+<div class="w-100">
+    <div class="w-100" *ngIf="!selectedCategory">
+        <p class="text-right p-0 m-0">
+            <span class="header">I have a question on...</span>
+        </p>
+        <div class="category-list">
+            <div class="pill" *ngFor="let category of faqCategoryList" (click)="selectCategory(category)">
+                {{category.label}} 
+                <div class="badge">{{getFaqCount(category)}}</div>
+            </div>
+        </div>
+    </div>
+    <div class="faq-list" *ngIf="selectedCategory">
+        <jhi-chat-accordion [faq]="faq" *ngFor="let faq of getSelectedCategoryFaqs()"></jhi-chat-accordion>
+        <!--
+        <ngb-accordion #acc="ngbAccordion" [closeOthers]="true" *ngIf="getSelectedCategoryFaqs().length > 0">
+            <ngb-panel *ngFor="let faq of getSelectedCategoryFaqs()">
+                <ng-template ngbPanelTitle class="faq-header">
+                    {{faq.question}}
+                </ng-template>
+                <ng-template ngbPanelContent class="faq-body">
+                    {{faq.answer}}
+                </ng-template>
+            </ngb-panel>
+        </ngb-accordion>
+        <div class="text-center" *ngIf="getSelectedCategoryFaqs().length == 0">
+            No faqs for this category
+        </div>
+        -->
+   
+        <div class="text-center pt-1">
+            <button class="btn btn-primary" (click)="onBack()">Back</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,15 @@
+<div class="container container-lg">
+    <div class="card">
+        <div class="card-header border-0 bg-transparent">
+            <h4 class="text-white text-left">
+                {{title}}
+                <span class="float-right text-white" style="cursor: pointer;">
+                    <a (click)="close()">&times;</a>
+                </span>
+            </h4>
+        </div>
+        <div class="card-body">
+            <iframe [src]="safeUrl" frameborder="0"></iframe>
+        </div>
+    </div>
+</div>

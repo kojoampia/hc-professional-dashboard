@@ -1,0 +1,14 @@
+<div class="container container-lg">
+    <div class="row justify-content-center mt-5 mb-5">
+        <div class="col-md-12 col-xs-12 pt-5 pb-5">
+            <div class="card bg-transparent border-0">
+                <div class="card-header bg-transparent border-0 text-primary text-center">
+                    <h1>{{title}}</h1>
+                </div>
+                <div class="card-body pdv text-info" *ngIf="safeContent">
+                    <div [innerHTML]="safeContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

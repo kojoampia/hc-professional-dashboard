@@ -1,0 +1,62 @@
+@if (account) {
+<div class="row d-flex justify-content-center">
+  <div class="col-md-10 text-primary">
+    <jhi-dashboard [account]="account"></jhi-dashboard>
+  </div>
+</div>
+} @else {
+<div class="row">
+  <div class="col-md-3 col-sm-12 d-none d-sm-block">
+    <span class="healthconnect img-fluid rounded"></span>
+  </div>
+  <div class="col-md-6 col-sm-12 text-primary">
+    <h1 class="display-4 mb-2"><span jhiTranslate="home.title">Welcome!</span></h1>
+
+    <p class="lead" jhiTranslate="home.subtitle">This is your homepage</p>
+
+    <div class="alert alert-primary mt-5">
+      <span jhiTranslate="global.messages.info.authenticated.prefix">If you want to </span>
+      <a class="alert-link" (click)="login()" jhiTranslate="global.messages.info.authenticated.link">sign
+        in</a>.
+    </div>
+
+    <div class="alert alert-warning mt-5 mb-5">
+      <span jhiTranslate="global.messages.info.register.noaccount">You don&apos;t have an account yet?</span>&nbsp;
+      <a class="alert-link" href="/account/register" jhiTranslate="global.messages.info.register.link">
+        Register a new account
+      </a>
+    </div>
+
+    <p jhiTranslate="home.question">If you have any question on JHipster:</p>
+
+    <ul>
+      <li>
+        <a href="https://health-connect.jojoaddison.net/" target="_blank" rel="noopener noreferrer"
+          jhiTranslate="home.link.homepage">Health Connect homepage</a>
+      </li>
+      <li>
+        <a href="https://stackoverflow.com/tags/jojoaddison/healthconnect" target="_blank" rel="noopener noreferrer"
+          jhiTranslate="home.link.stackoverflow">Health Connect on Stack Overflow</a>
+      </li>
+      <li>
+        <a href="https://github.com/jojoaddison/health-connect/issues?state=open" target="_blank"
+          rel="noopener noreferrer" jhiTranslate="home.link.bugtracker">Health Connect bug tracker</a>
+      </li>
+      <li>
+        <a href="https://gitter.im/jojoaddison/health-connect" target="_blank" rel="noopener noreferrer"
+          jhiTranslate="home.link.chat">Health Connect public chat room</a>
+      </li>
+      <li>
+        <a href="https://x.com/jojoaddison-health-connect" target="_blank" rel="noopener noreferrer"
+          jhiTranslate="home.link.follow">follow &#64;health connect on Twitter</a>
+      </li>
+    </ul>
+
+    <p>
+      <span jhiTranslate="home.like">If you like Health Connect, don&apos;t forget to give us a like on</span>
+      <a href="https://facebook.com/jojoaddison" target="_blank" rel="noopener noreferrer"
+        jhiTranslate="home.facebook">GitHub</a>!
+    </p>
+  </div>
+</div>
+}

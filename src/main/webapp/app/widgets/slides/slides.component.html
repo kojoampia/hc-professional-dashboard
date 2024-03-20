@@ -1,0 +1,19 @@
+<ngb-carousel [animation]="true" *ngIf="slides && slides.length > 0" class="w-100 text-center text-primary">
+  <ng-template ngbSlide *ngFor="let slide of slides; trackBy: trackId">
+    <div [style]="containerStyle">
+      <img [src]="slide.url" [alt]="" (click)="onClick(slide)" class="rounded rounded-lg" [style.width.px]="imageWidth"
+        [style.height.px]="imageHeight" />
+      <div class="carousel-caption bg-primary" *ngIf="showCaption">
+        <h6 *ngIf="slide.title">
+          <span class="text-center text-white">{{ slide.title }}</span>
+        </h6>
+        <p *ngIf="slide.description">{{ slide.description }}</p>
+        <h6>
+          <button class="btn btn-md btn-info text-yellow" (click)="onClick(slide)">
+            <span jhiTranslate="global.slide.learn">Learn more...</span>
+          </button>
+        </h6>
+      </div>
+    </div>
+  </ng-template>
+</ngb-carousel>

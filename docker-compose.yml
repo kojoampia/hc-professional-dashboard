@@ -1,0 +1,25 @@
+version: '3.5'
+services:
+  hc-professional-dashboard:
+    image: hc-professional-dashboard:0.0.1
+    container_name: hc-professional-dashboard
+    hostname: hc-professional-dashboard
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      tags:
+        - 'hc-professional-dashboard:0.0.1'
+        - 'hc-professional-dashboard:latest'
+    environment:
+      - SERVER_API_URL=http://localhost:8080/
+    volumes:
+      - './hc-professional-dashboard:/usr/src/app'
+    ports:
+      - 127.0.0.1:5701:80
+    networks:
+      - devnet
+
+networks:
+  devnet:
+    external: true
+    name: devnet

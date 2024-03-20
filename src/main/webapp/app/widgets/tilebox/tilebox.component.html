@@ -1,0 +1,30 @@
+<h2 *ngIf="title">{{title}}</h2>
+<ngu-carousel [inputs]="config" [dataSource]="tiles" *ngIf="tiles && tiles.length > 0">
+    <ngu-tile NguCarouselItem *nguCarouselDef="let tile; let i = index">
+        <div class="card bg-white text-primary" *ngIf="tile">
+            <div class="text-center">
+                <img [src]="tile.url" style="width: 100%; height: auto;" alt="insurance image" class="card-img-top" />
+            </div>
+            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                <div style="height: 100px;">
+                    <span class="card-title text-center">{{tile.title}}</span>
+                </div>
+                <h6 class="card-title text-white p-2 text-left bg-primary">
+                    <em>
+                        <span jhiTranslate="{{ 'adminDashboardApp.InsuranceCategory.' + tile.category }}">{{
+                            tile.category }}
+                        </span>
+                    </em>
+                </h6>
+                <hr />
+                <div class="text-right">
+                    <a class="card-link" (click)="toggleSelected(tile)">
+                        <span>See details...</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </ngu-tile>
+    <button NguCarouselPrev class="left-arrow btn-primary border-0">&lt;</button>
+    <button NguCarouselNext class="right-arrow btn-primary border-0">&gt;</button>
+</ngu-carousel>

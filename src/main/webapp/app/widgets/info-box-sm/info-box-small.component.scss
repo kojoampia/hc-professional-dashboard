@@ -1,0 +1,32 @@
+.card {
+  padding-top: 0;
+  padding-bottom: 1.5%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+  height: 400px;
+}
+
+.card-body {
+  position: absolute;
+  top: 100px;
+  background-color: white;
+  opacity: 0.9;
+  width: 100%;
+  margin: 0;
+}
+
+.card-footer {
+  position: absolute;
+  bottom: 5px;
+  width: 100%;
+  height: 50px;
+  padding: 0.25rem 0.25rem;
+}
+
+.card-link {
+  padding: 0 !important;
+  margin: 0 !important;
+}

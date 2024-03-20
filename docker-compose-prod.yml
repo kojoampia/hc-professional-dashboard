@@ -1,0 +1,24 @@
+version: '3.5'
+services:
+  hc-professional-dashboard:
+    image: hc-professional-dashboard:0.0.1
+    container_name: hc-professional-dashboard
+    hostname: hc-professional-dashboard
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      tags:
+        - 'hc-professional-dashboard:0.0.1'
+        - 'docker-registry.jojoaddison.net/hc-professional-dashboard:0.0.1'
+        - 'docker-registry.jojoaddison.net/hc-professional-dashboard:latest'
+    volumes:
+      - './hc-professional-dashboard:/usr/src/app'
+    ports:
+      - 127.0.0.1:5701:80
+    networks:
+      - hcnet
+
+networks:
+  devnet:
+    external: true
+    name: hcnet

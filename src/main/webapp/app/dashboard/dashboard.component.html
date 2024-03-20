@@ -1,0 +1,100 @@
+@if (account && isUserRole===true) {
+<!--METRIC-PROFILE-->
+<div class="row">
+    <div class="col-md-2 round-border bg-black">
+        <div class="dashboard-component-center bg-black mt-1">
+            @if (account.imageUrl) {
+            <img [src]="account.imageUrl" alt="profile image">
+            } @else {
+            <span class="profile-placeholder img-fluid rounded p-1">
+            </span>
+            <br />
+            }
+        </div>
+        <div class="p-1 dashboard-component-right bg-black">
+            <button class="btn btn-primary btn-small">
+                <fa-icon icon="camera"></fa-icon>
+            </button>
+        </div>
+    </div>
+    <div class="col-md-8 round-border dashboard-component-center">
+        <!--TEMP, PRESSURE, HEART RATE, SUGAR LEVEL--><!-- Metrics Panel -->
+        <jhi-metric-panel [metricItems]="topCards" (selectedItem)="metricSelected($event)"></jhi-metric-panel>
+        <!--EMERGENCIES, ALERGIES, DIET PLAN, SERVICE PLAN-->
+        <jhi-metric-panel [metricItems]="lowCards" (selectedItem)="metricSelected($event)"></jhi-metric-panel>
+
+    </div>
+    <div class="col-md-2 round-border p-3 dashboard-component-right">
+        <div class="row d-flex justify-content-end">
+            <div class="col-md-*">
+                <span>{{account.firstName}} {{account.lastName}}</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-*">
+                <span>{{phoneNumber}}</span>
+                <span *ngIf="!phoneNumber">Phone number unavailable</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-*">
+                <span>{{account.email}}</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-*">
+                <span>{{membership}}</span>
+                <span *ngIf="!membership">Membership info unavailable</span>
+            </div>
+        </div>
+    </div>
+</div>
+<!--NAVBAR-->
+<div class="row d-flex justify-content-end mt-1">
+    <div class="col-md-12 border border-primary round-border dashboard-component-center">
+        <nav class="navbar navbar-expand-md navbar-primary">
+            <div class="container-fluid">
+                <button class="navbar-toggler d-lg-none mb-2 text-white border-white" type="button"
+                    data-toggle="collapse" data-target="#dashboardNavbarResponsive"
+                    aria-controls="dashboardNavbarResponsive" aria-expanded="false" aria-label="Toggle navigation"
+                    (click)="toggleNavbar()">
+                    <fa-icon icon="bars"></fa-icon>
+                </button>
+                <div class="navbar-collapse collapse" id="dashboardNavbarResponsive" [ngbCollapse]="isNavbarCollapsed">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" [ngClass]="page === 'status'? 'highlight' : ''"
+                                (click)="openPage('status')" aria-current="page" href="#">Status</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" [ngClass]="page === 'about'? 'highlight' : ''"
+                                (click)="openPage('about')" aria-current="page" href="#">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" [ngClass]="page === 'address'? 'highlight' : ''"
+                                (click)="openPage('address')" aria-current="page" href="#">Address</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" [ngClass]="page === 'membership'? 'highlight' : ''"
+                                (click)="openPage('membership')" aria-current="page" href="#">Membership</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" [ngClass]="page === 'report'? 'highlight' : ''"
+                                (click)="openPage('report')" aria-current="page" href="#">Report</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" [ngClass]="page === 'medications'? 'highlight' : ''"
+                                (click)="openPage('medications')" aria-current="page" href="#">Medications</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+<!--STATUS-GRAPHS-->
+<div class="row d-flex justify-contents-center">
+    <jhi-status *ngIf="page === 'status'"></jhi-status>
+    <h1 *ngIf="page !== 'status'">{{page}}</h1>
+</div>
+}
