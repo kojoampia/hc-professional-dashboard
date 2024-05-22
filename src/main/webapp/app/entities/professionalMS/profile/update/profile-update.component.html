@@ -1,0 +1,134 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-profile-heading" data-cy="ProfileCreateUpdateHeading"
+        jhiTranslate="professionalDashboardApp.professionalMsProfile.home.createOrEditLabel">
+        Create or edit a Profile
+      </h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        @if (editForm.controls.id.value !== null) {
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="global.field.id" for="field_id">ID</label>
+          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id"
+            [readonly]="true" />
+        </div>
+        }
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsProfile.firstName"
+            for="field_firstName">First Name</label>
+          <input type="text" class="form-control" name="firstName" id="field_firstName" data-cy="firstName"
+            formControlName="firstName" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsProfile.middleNames"
+            for="field_middleNames">Middle Names</label>
+          <input type="text" class="form-control" name="middleNames" id="field_middleNames" data-cy="middleNames"
+            formControlName="middleNames" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsProfile.lastName"
+            for="field_lastName">Last Name</label>
+          <input type="text" class="form-control" name="lastName" id="field_lastName" data-cy="lastName"
+            formControlName="lastName" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsProfile.membership"
+            for="field_membership">Membership</label>
+          <input type="text" class="form-control" name="membership" id="field_membership" data-cy="membership"
+            formControlName="membership" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsProfile.birthDate"
+            for="field_birthDate">Birth Date</label>
+          <div class="input-group">
+            <input id="field_birthDate" data-cy="birthDate" type="text" class="form-control" name="birthDate"
+              ngbDatepicker #birthDateDp="ngbDatepicker" formControlName="birthDate" />
+            <button type="button" class="btn btn-secondary" (click)="birthDateDp.toggle()"><fa-icon
+                icon="calendar-alt"></fa-icon></button>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsProfile.sex"
+            for="field_sex">Sex</label>
+          <input type="text" class="form-control" name="sex" id="field_sex" data-cy="sex" formControlName="sex" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsProfile.mobilePhone"
+            for="field_mobilePhone">Mobile Phone</label>
+          <input type="text" class="form-control" name="mobilePhone" id="field_mobilePhone" data-cy="mobilePhone"
+            formControlName="mobilePhone" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsProfile.phoneNumber"
+            for="field_phoneNumber">Phone Number</label>
+          <input type="text" class="form-control" name="phoneNumber" id="field_phoneNumber" data-cy="phoneNumber"
+            formControlName="phoneNumber" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsProfile.email"
+            for="field_email">Email</label>
+          <input type="text" class="form-control" name="email" id="field_email" data-cy="email"
+            formControlName="email" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsProfile.cardType"
+            for="field_cardType">Card Type</label>
+          <input type="text" class="form-control" name="cardType" id="field_cardType" data-cy="cardType"
+            formControlName="cardType" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsProfile.cardNumber"
+            for="field_cardNumber">Card Number</label>
+          <input type="text" class="form-control" name="cardNumber" id="field_cardNumber" data-cy="cardNumber"
+            formControlName="cardNumber" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsProfile.contacts"
+            for="field_contacts">Contacts</label>
+          <input type="text" class="form-control" name="contacts" id="field_contacts" data-cy="contacts"
+            formControlName="contacts" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsProfile.address"
+            for="field_address">Address</label>
+          <input type="text" class="form-control" name="address" id="field_address" data-cy="address"
+            formControlName="address" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsProfile.team"
+            for="field_team">Team</label>
+          <input type="text" class="form-control" name="team" id="field_team" data-cy="team" formControlName="team" />
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary"
+          (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button type="submit" id="save-entity" data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

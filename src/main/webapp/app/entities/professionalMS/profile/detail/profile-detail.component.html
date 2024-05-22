@@ -1,0 +1,88 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (profile) {
+    <div>
+      <h2 data-cy="profileDetailsHeading">
+        <span jhiTranslate="professionalDashboardApp.professionalMsProfile.detail.title">Profile</span>
+      </h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="global.field.id">ID</span></dt>
+        <dd>
+          <span>{{ profile.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsProfile.firstName">First Name</span></dt>
+        <dd>
+          <span>{{ profile.firstName }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsProfile.middleNames">Middle Names</span></dt>
+        <dd>
+          <span>{{ profile.middleNames }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsProfile.lastName">Last Name</span></dt>
+        <dd>
+          <span>{{ profile.lastName }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsProfile.membership">Membership</span></dt>
+        <dd>
+          <span>{{ profile.membership }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsProfile.birthDate">Birth Date</span></dt>
+        <dd>
+          <span>{{ profile.birthDate | formatMediumDate }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsProfile.sex">Sex</span></dt>
+        <dd>
+          <span>{{ profile.sex }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsProfile.mobilePhone">Mobile Phone</span></dt>
+        <dd>
+          <span>{{ profile.mobilePhone }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsProfile.phoneNumber">Phone Number</span></dt>
+        <dd>
+          <span>{{ profile.phoneNumber }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsProfile.email">Email</span></dt>
+        <dd>
+          <span>{{ profile.email }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsProfile.cardType">Card Type</span></dt>
+        <dd>
+          <span>{{ profile.cardType }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsProfile.cardNumber">Card Number</span></dt>
+        <dd>
+          <span>{{ profile.cardNumber }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsProfile.contacts">Contacts</span></dt>
+        <dd>
+          <span>{{ profile.contacts }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsProfile.address">Address</span></dt>
+        <dd>
+          <span>{{ profile.address }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsProfile.team">Team</span></dt>
+        <dd>
+          <span>{{ profile.team }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/profile', profile.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+    }
+  </div>
+</div>

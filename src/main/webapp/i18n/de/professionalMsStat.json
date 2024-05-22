@@ -1,0 +1,31 @@
+{
+  "professionalDashboardApp": {
+    "professionalMsStat": {
+      "home": {
+        "title": "Stats",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Stat erstellen",
+        "createOrEditLabel": "Stat erstellen oder bearbeiten",
+        "search": "Suche nach Stat",
+        "notFound": "Keine Stats gefunden"
+      },
+      "created": "Stat erstellt mit ID {{ param }}",
+      "updated": "Stat aktualisiert mit ID {{ param }}",
+      "deleted": "Stat gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Stat {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Stat"
+      },
+      "id": "ID",
+      "type": "Type",
+      "name": "Name",
+      "description": "Description",
+      "value": "Value",
+      "note": "Note",
+      "createdDate": "Created Date",
+      "createdBy": "Created By"
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "professionalDashboardApp": {
+    "professionalMsProfile": {
+      "home": {
+        "title": "Profiles",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Profile",
+        "createOrEditLabel": "Create or edit a Profile",
+        "search": "Search for Profile",
+        "notFound": "No Profiles found"
+      },
+      "created": "A new Profile is created with identifier {{ param }}",
+      "updated": "A Profile is updated with identifier {{ param }}",
+      "deleted": "A Profile is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Profile {{ id }}?"
+      },
+      "detail": {
+        "title": "Profile"
+      },
+      "id": "ID",
+      "firstName": "First Name",
+      "middleNames": "Middle Names",
+      "lastName": "Last Name",
+      "membership": "Membership",
+      "birthDate": "Birth Date",
+      "sex": "Sex",
+      "mobilePhone": "Mobile Phone",
+      "phoneNumber": "Phone Number",
+      "email": "Email",
+      "cardType": "Card Type",
+      "cardNumber": "Card Number",
+      "contacts": "Contacts",
+      "address": "Address",
+      "team": "Team"
+    }
+  }
+}

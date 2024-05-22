@@ -1,0 +1,30 @@
+{
+  "professionalDashboardApp": {
+    "hcProfessionalMsDocument": {
+      "home": {
+        "title": "Documents",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Document erstellen",
+        "createOrEditLabel": "Document erstellen oder bearbeiten",
+        "notFound": "Keine Documents gefunden"
+      },
+      "created": "Document erstellt mit ID {{ param }}",
+      "updated": "Document aktualisiert mit ID {{ param }}",
+      "deleted": "Document gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Document {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Document"
+      },
+      "id": "ID",
+      "name": "Name",
+      "profileId": "Profile Id",
+      "data": "Data",
+      "type": "Type",
+      "createdDate": "Created Date",
+      "modifiedDate": "Modified Date",
+      "lastModifiedBy": "Last Modified By"
+    }
+  }
+}

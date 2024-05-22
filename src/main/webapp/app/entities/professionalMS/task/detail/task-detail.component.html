@@ -1,0 +1,75 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (task) {
+    <div>
+      <h2 data-cy="taskDetailsHeading"><span
+          jhiTranslate="professionalDashboardApp.professionalMsTask.detail.title">Task</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="global.field.id">ID</span></dt>
+        <dd>
+          <span>{{ task.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsTask.name">Name</span></dt>
+        <dd>
+          <span>{{ task.name }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsTask.description">Description</span></dt>
+        <dd>
+          <span>{{ task.description }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsTask.schedule">Schedule</span></dt>
+        <dd>
+          <span>{{ task.schedule | formatMediumDate }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsTask.duration">Duration</span></dt>
+        <dd>
+          <span>{{ task.duration }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsTask.attendantId">Attendant Id</span></dt>
+        <dd>
+          <span>{{ task.attendantId }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsTask.teamId">Team Id</span></dt>
+        <dd>
+          <span>{{ task.teamId }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsTask.patientId">Patient Id</span></dt>
+        <dd>
+          <span>{{ task.patientId }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsTask.createdDate">Created Date</span></dt>
+        <dd>
+          <span>{{ task.createdDate | formatMediumDate }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsTask.modifiedDate">Modified Date</span></dt>
+        <dd>
+          <span>{{ task.modifiedDate | formatMediumDate }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsTask.createdBy">Created By</span></dt>
+        <dd>
+          <span>{{ task.createdBy }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalMsTask.modifiedBy">Modified By</span></dt>
+        <dd>
+          <span>{{ task.modifiedBy }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/task', task.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+    }
+  </div>
+</div>

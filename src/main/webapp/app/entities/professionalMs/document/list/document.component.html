@@ -1,0 +1,135 @@
+<div>
+  <h2 id="page-heading" data-cy="DocumentHeading">
+    <span jhiTranslate="professionalDashboardApp.professionalMsDocument.home.title">Documents</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <span jhiTranslate="professionalDashboardApp.professionalMsDocument.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button id="jh-create-entity" data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-document" [routerLink]="['/document/new']">
+        <fa-icon icon="plus"></fa-icon>
+        <span jhiTranslate="professionalDashboardApp.professionalMsDocument.home.createLabel">Create a new
+          Document</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  @if (documents?.length === 0) {
+  <div class="alert alert-warning" id="no-result">
+    <span jhiTranslate="professionalDashboardApp.professionalMsDocument.home.notFound">No Documents found</span>
+  </div>
+  }
+
+  @if (documents && documents.length > 0) {
+  <div class="table-responsive table-entities" id="entities">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+          <th scope="col" jhiSortBy="id">
+            <div class="d-flex">
+              <span jhiTranslate="global.field.id">ID</span>
+
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="name">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalMsDocument.name">Name</span>
+
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="profileId">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalMsDocument.profileId">Profile Id</span>
+
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="data">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalMsDocument.data">Data</span>
+
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="type">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalMsDocument.type">Type</span>
+
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="createdDate">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalMsDocument.createdDate">Created Date</span>
+
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="modifiedDate">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalMsDocument.modifiedDate">Modified Date</span>
+
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="lastModifiedBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalMsDocument.lastModifiedBy">Last Modified
+                By</span>
+
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (document of documents; track trackId) {
+        <tr data-cy="entityTable">
+          <td>
+            <a [routerLink]="['/document', document.id, 'view']">{{ document.id }}</a>
+          </td>
+          <td>{{ document.name }}</td>
+          <td>{{ document.profileId }}</td>
+          <td>{{ document.data }}</td>
+          <td jhiTranslate="{{ 'professionalDashboardApp.DocumentType.' + document.type }}">{{ document.type }}</td>
+          <td>{{ document.createdDate | formatMediumDate }}</td>
+          <td>{{ document.modifiedDate | formatMediumDate }}</td>
+          <td>{{ document.lastModifiedBy }}</td>
+          <td class="text-end">
+            <div class="btn-group">
+              <a [routerLink]="['/document', document.id, 'view']" class="btn btn-info btn-sm"
+                data-cy="entityDetailsButton">
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+              </a>
+
+              <a [routerLink]="['/document', document.id, 'edit']" class="btn btn-primary btn-sm"
+                data-cy="entityEditButton">
+                <fa-icon icon="pencil-alt"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+              </a>
+
+              <button type="submit" (click)="delete(document)" class="btn btn-danger btn-sm"
+                data-cy="entityDeleteButton">
+                <fa-icon icon="times"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+</div>
