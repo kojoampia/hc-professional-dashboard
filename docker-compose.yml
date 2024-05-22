@@ -11,7 +11,7 @@ services:
         - 'hc-professional-dashboard:0.0.1'
         - 'hc-professional-dashboard:latest'
     environment:
-      - SERVER_API_URL=http://localhost:8080/
+      - SERVER_API_URL=http://localhost:5505/
     volumes:
       - './hc-professional-dashboard:/usr/src/app'
     ports:
