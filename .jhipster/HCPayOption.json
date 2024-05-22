@@ -5,6 +5,7 @@
   "changelogDate": "20240206221753",
   "clientRootFolder": "professionalMS",
   "databaseType": "mongodb",
+  "entityTableName": "hcpay_option",
   "fields": [
     {
       "fieldName": "type",

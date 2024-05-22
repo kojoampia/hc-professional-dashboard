@@ -5,6 +5,7 @@
   "changelogDate": "20240206220119",
   "clientRootFolder": "professionalMS",
   "databaseType": "mongodb",
+  "entityTableName": "task",
   "fields": [
     {
       "fieldName": "name",
@@ -23,7 +24,15 @@
       "fieldType": "Double"
     },
     {
-      "fieldName": "attendant",
+      "fieldName": "attendantId",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "teamId",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "patientId",
       "fieldType": "String"
     },
     {
@@ -43,7 +52,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "professionalMS",
+  "microserviceName": "hcProfessionalMs",
   "name": "Task",
   "pagination": "no",
   "readOnly": false,

@@ -5,6 +5,7 @@
   "changelogDate": "20240206215832",
   "clientRootFolder": "professionalMS",
   "databaseType": "mongodb",
+  "entityTableName": "stat",
   "fields": [
     {
       "fieldName": "type",

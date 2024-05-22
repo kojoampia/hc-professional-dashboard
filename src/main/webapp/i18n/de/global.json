@@ -1,13 +1,25 @@
 {
   "global": {
-    "title": "professional Dashboard",
+    "title": "Professional Dashboard",
     "browsehappy": "Sie benutzen einen <strong>veralteten</strong> Browser. Bitte <a href=\"http://browsehappy.com/?locale=de/\">aktualisieren Sie Ihren Browser</a>, um die Benutzerfreundlichkeit zu erhöhen.",
     "menu": {
       "home": "Startseite",
       "jhipster-needle-menu-add-element": "JHipster will add additional menu entries here (do not translate!)",
       "entities": {
         "main": "Entitäten",
-        "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
+        "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)",
+        "professionalMsAddress": "Address",
+        "professionalMsMedication": "Medication",
+        "professionalMsStat": "Stat",
+        "professionalMsTeam": "Team",
+        "professionalMsTask": "Task",
+        "professionalMsMembership": "Membership",
+        "professionalMsReport": "Report",
+        "professionalMsMetadata": "Metadata",
+        "professionalMsProfile": "Profile",
+        "professionalMsHcCredential": "HC Credential",
+        "professionalMsHcPayOption": "HC Pay Option",
+        "professionalMsDocument": "Document"
       },
       "account": {
         "main": "Zugang",
@@ -20,7 +32,6 @@
       },
       "admin": {
         "main": "Administration",
-        "gateway": "Gateway",
         "userManagement": "Benutzerverwaltung",
         "tracker": "Benutzer Aktivitäten",
         "metrics": "Metriken",
@@ -48,13 +59,13 @@
     "messages": {
       "info": {
         "authenticated": {
-          "prefix": "Bitte ",
+          "prefix": "Bitte sich ",
           "link": "anmelden",
           "suffix": " möchten, versuchen Sie es mit <br/>- Administrator (Name=\"admin\" und Passwort=\"admin\")<br/>- Benutzer (Name=\"user\" und Passwort=\"user\")."
         },
         "register": {
-          "noaccount": "Wir kümmern uns um Ihre Wohlbefinden.",
-          "link": "Registrieren Sie sich!"
+          "noaccount": "Sie haben noch keinen Zugang?",
+          "link": "Registrieren Sie sich"
         }
       },
       "error": {
@@ -144,6 +155,6 @@
     }
   },
   "footer": {
-    "copyright": "&copy; {{ year }} Health Connect von Jojo Addison Information Systems Consultancy &reg; Alle Rechte vorbehalten."
+    "copyright": "&copy; {{ year }} Health Connect von Jojo Addison Information Systems Consultancy &reg; Alle Rechte Vorbehalten."
   }
 }

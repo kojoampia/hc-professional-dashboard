@@ -1,7 +1,7 @@
 {
   "home": {
-    "title": "Bienvenue!",
-    "subtitle": "Voici le tableau de bord des professionals Health Connect. Votre santé est notre devoir.",
+    "title": "Bienvenue, Agent de santé!",
+    "subtitle": "Ceci est votre Tableau de bord",
     "logged": {
       "message": "Vous êtes connecté en tant que \"{{username}}\"."
     },
@@ -11,12 +11,12 @@
       "stackoverflow": "Health Connect sur Stack Overflow",
       "bugtracker": "Health Connect bug tracker",
       "chat": "Health Connect public chat room",
-      "follow": "Suivez @jojoadison-health-connect sur Twitter"
+      "follow": "Suivez @jojoaddison-healthconnect sur Twitter"
     },
     "like": "Si vous aimez Health Connect, donnez nous une étoile sur",
-    "github": "GitHub ",
-    "facebook": "Facebook ",
-    "instagram": "Instagram ",
-    "linkedIn": "LinkedIn "
+    "github": "GitHub",
+    "facebook": "Facebook",
+    "instagram": "Instagram",
+    "linkedIn": "LinkedIn"
   }
 }

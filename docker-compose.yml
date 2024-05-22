@@ -15,7 +15,7 @@ services:
     volumes:
       - './hc-professional-dashboard:/usr/src/app'
     ports:
-      - 127.0.0.1:5701:80
+      - 127.0.0.1:5502:80
     networks:
       - devnet
 

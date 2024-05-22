@@ -24,16 +24,16 @@ describe('Task e2e test', () => {
   });
 
   beforeEach(() => {
-    cy.intercept('GET', '/services/professionalms/api/tasks+(?*|)').as('entitiesRequest');
-    cy.intercept('POST', '/services/professionalms/api/tasks').as('postEntityRequest');
-    cy.intercept('DELETE', '/services/professionalms/api/tasks/*').as('deleteEntityRequest');
+    cy.intercept('GET', '/services/hcprofessionalms/api/tasks+(?*|)').as('entitiesRequest');
+    cy.intercept('POST', '/services/hcprofessionalms/api/tasks').as('postEntityRequest');
+    cy.intercept('DELETE', '/services/hcprofessionalms/api/tasks/*').as('deleteEntityRequest');
   });
 
   afterEach(() => {
     if (task) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/services/professionalms/api/tasks/${task.id}`,
+        url: `/services/hcprofessionalms/api/tasks/${task.id}`,
       }).then(() => {
         task = undefined;
       });
@@ -78,7 +78,7 @@ describe('Task e2e test', () => {
       beforeEach(() => {
         cy.authenticatedRequest({
           method: 'POST',
-          url: '/services/professionalms/api/tasks',
+          url: '/services/hcprofessionalms/api/tasks',
           body: taskSample,
         }).then(({ body }) => {
           task = body;
@@ -86,7 +86,7 @@ describe('Task e2e test', () => {
           cy.intercept(
             {
               method: 'GET',
-              url: '/services/professionalms/api/tasks+(?*|)',
+              url: '/services/hcprofessionalms/api/tasks+(?*|)',
               times: 1,
             },
             {
@@ -157,35 +157,41 @@ describe('Task e2e test', () => {
     });
 
     it('should create an instance of Task', () => {
-      cy.get(`[data-cy="name"]`).type('bah uh-huh cheque');
-      cy.get(`[data-cy="name"]`).should('have.value', 'bah uh-huh cheque');
+      cy.get(`[data-cy="name"]`).type('these yippee');
+      cy.get(`[data-cy="name"]`).should('have.value', 'these yippee');
 
-      cy.get(`[data-cy="description"]`).type('questioningly as alongside');
-      cy.get(`[data-cy="description"]`).should('have.value', 'questioningly as alongside');
+      cy.get(`[data-cy="description"]`).type('pish');
+      cy.get(`[data-cy="description"]`).should('have.value', 'pish');
 
       cy.get(`[data-cy="schedule"]`).type('2024-02-06');
       cy.get(`[data-cy="schedule"]`).blur();
       cy.get(`[data-cy="schedule"]`).should('have.value', '2024-02-06');
 
-      cy.get(`[data-cy="duration"]`).type('20201.8');
-      cy.get(`[data-cy="duration"]`).should('have.value', '20201.8');
+      cy.get(`[data-cy="duration"]`).type('18486.8');
+      cy.get(`[data-cy="duration"]`).should('have.value', '18486.8');
 
-      cy.get(`[data-cy="attendant"]`).type('boo');
-      cy.get(`[data-cy="attendant"]`).should('have.value', 'boo');
+      cy.get(`[data-cy="attendantId"]`).type('wherever resident');
+      cy.get(`[data-cy="attendantId"]`).should('have.value', 'wherever resident');
 
-      cy.get(`[data-cy="createdDate"]`).type('2024-02-05');
+      cy.get(`[data-cy="teamId"]`).type('tic monthly');
+      cy.get(`[data-cy="teamId"]`).should('have.value', 'tic monthly');
+
+      cy.get(`[data-cy="patientId"]`).type('obvious');
+      cy.get(`[data-cy="patientId"]`).should('have.value', 'obvious');
+
+      cy.get(`[data-cy="createdDate"]`).type('2024-02-06');
       cy.get(`[data-cy="createdDate"]`).blur();
-      cy.get(`[data-cy="createdDate"]`).should('have.value', '2024-02-05');
+      cy.get(`[data-cy="createdDate"]`).should('have.value', '2024-02-06');
 
-      cy.get(`[data-cy="modifiedDate"]`).type('2024-02-06');
+      cy.get(`[data-cy="modifiedDate"]`).type('2024-02-05');
       cy.get(`[data-cy="modifiedDate"]`).blur();
-      cy.get(`[data-cy="modifiedDate"]`).should('have.value', '2024-02-06');
+      cy.get(`[data-cy="modifiedDate"]`).should('have.value', '2024-02-05');
 
-      cy.get(`[data-cy="createdBy"]`).type('hub plagiarism');
-      cy.get(`[data-cy="createdBy"]`).should('have.value', 'hub plagiarism');
+      cy.get(`[data-cy="createdBy"]`).type('beneath accident but');
+      cy.get(`[data-cy="createdBy"]`).should('have.value', 'beneath accident but');
 
-      cy.get(`[data-cy="modifiedBy"]`).type('aside so');
-      cy.get(`[data-cy="modifiedBy"]`).should('have.value', 'aside so');
+      cy.get(`[data-cy="modifiedBy"]`).type('why');
+      cy.get(`[data-cy="modifiedBy"]`).should('have.value', 'why');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

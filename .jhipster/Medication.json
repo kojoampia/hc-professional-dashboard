@@ -5,6 +5,7 @@
   "changelogDate": "20240206215539",
   "clientRootFolder": "professionalMS",
   "databaseType": "mongodb",
+  "entityTableName": "medication",
   "fields": [
     {
       "fieldName": "name",

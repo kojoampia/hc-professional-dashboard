@@ -5,7 +5,12 @@
   "changelogDate": "20240206205816",
   "clientRootFolder": "professionalMS",
   "databaseType": "mongodb",
+  "entityTableName": "address",
   "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
     {
       "fieldName": "digitalAddress",
       "fieldType": "String"
@@ -59,7 +64,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "professionalMS",
+  "microserviceName": "hcProfessionalMs",
   "name": "Address",
   "pagination": "no",
   "readOnly": false,

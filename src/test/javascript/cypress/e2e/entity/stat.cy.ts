@@ -157,24 +157,27 @@ describe('Stat e2e test', () => {
     });
 
     it('should create an instance of Stat', () => {
-      cy.get(`[data-cy="name"]`).type('colorful county inasmuch');
-      cy.get(`[data-cy="name"]`).should('have.value', 'colorful county inasmuch');
+      cy.get(`[data-cy="type"]`).type('grass');
+      cy.get(`[data-cy="type"]`).should('have.value', 'grass');
 
-      cy.get(`[data-cy="description"]`).type('questionably yellow');
-      cy.get(`[data-cy="description"]`).should('have.value', 'questionably yellow');
+      cy.get(`[data-cy="name"]`).type('lock vague');
+      cy.get(`[data-cy="name"]`).should('have.value', 'lock vague');
 
-      cy.get(`[data-cy="value"]`).type('9714.2');
-      cy.get(`[data-cy="value"]`).should('have.value', '9714.2');
+      cy.get(`[data-cy="description"]`).type('abaft spherical');
+      cy.get(`[data-cy="description"]`).should('have.value', 'abaft spherical');
 
-      cy.get(`[data-cy="note"]`).type('opposite outside demoralise');
-      cy.get(`[data-cy="note"]`).should('have.value', 'opposite outside demoralise');
+      cy.get(`[data-cy="value"]`).type('11245.68');
+      cy.get(`[data-cy="value"]`).should('have.value', '11245.68');
+
+      cy.get(`[data-cy="note"]`).type('until following');
+      cy.get(`[data-cy="note"]`).should('have.value', 'until following');
 
       cy.get(`[data-cy="createdDate"]`).type('2024-02-06');
       cy.get(`[data-cy="createdDate"]`).blur();
       cy.get(`[data-cy="createdDate"]`).should('have.value', '2024-02-06');
 
-      cy.get(`[data-cy="createdBy"]`).type('um gee');
-      cy.get(`[data-cy="createdBy"]`).should('have.value', 'um gee');
+      cy.get(`[data-cy="createdBy"]`).type('characterise brag positively');
+      cy.get(`[data-cy="createdBy"]`).should('have.value', 'characterise brag positively');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

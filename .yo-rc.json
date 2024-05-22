@@ -13,7 +13,6 @@
     "enableTranslation": true,
     "entities": [
       "Address",
-      "Condition",
       "Medication",
       "Stat",
       "Team",
@@ -23,7 +22,8 @@
       "Metadata",
       "Profile",
       "HCCredential",
-      "HCPayOption"
+      "HCPayOption",
+      "Document"
     ],
     "jhiPrefix": "hpd",
     "jhipsterVersion": "8.1.0",

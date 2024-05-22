@@ -5,6 +5,7 @@
   "changelogDate": "20240206220638",
   "clientRootFolder": "professionalMS",
   "databaseType": "mongodb",
+  "entityTableName": "metadata",
   "fields": [
     {
       "fieldName": "createdBy",

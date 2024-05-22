@@ -1,17 +1,17 @@
 {
   "home": {
-    "title": "Welcome!",
-    "subtitle": "Here is Health Connect professional Dashboard. Your health is our duty.",
+    "title": "Welcome, Health Professional!",
+    "subtitle": "This is your dashboard",
     "logged": {
       "message": "You are logged in as user \"{{username}}\"."
     },
-    "question": "If you have any question on Health Connect professional Dashboard:",
+    "question": "If you have any question on your dashboard:",
     "link": {
-      "homepage": "Health Connect professional Dashboard",
+      "homepage": "Health Connect Homepage",
       "stackoverflow": "Health Connect on Stack Overflow",
       "bugtracker": "Health Connect bug tracker",
-      "chat": "Health Connet public chat room",
-      "follow": "follow @jojoaddison-health-connect on Twitter"
+      "chat": "Health Connect public chat room",
+      "follow": "follow @jojoaddison-healthconnect on Twitter"
     },
     "like": "If you like Health Connect, don't forget to give us a star on",
     "github": "GitHub",
