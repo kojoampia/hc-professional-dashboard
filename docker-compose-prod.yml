@@ -11,10 +11,12 @@ services:
         - 'hc-professional-dashboard:0.0.1'
         - 'docker-registry.jojoaddison.net/hc-professional-dashboard:0.0.1'
         - 'docker-registry.jojoaddison.net/hc-professional-dashboard:latest'
+    environment:
+      - SERVER_API_URL=/
     volumes:
       - './hc-professional-dashboard:/usr/src/app'
     ports:
-      - 127.0.0.1:5502:80
+      - 127.0.0.1:5503:80
     networks:
       - hcnet
 

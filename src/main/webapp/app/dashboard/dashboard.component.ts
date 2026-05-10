@@ -23,15 +23,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
   phoneNumber!: string;
   membership!: string;
   private readonly destroy$ = new Subject<void>();
-  page: string = 'status';
-  temp = { id: 1, name: 'temperature', label: 'Temperature', value: 36, route: 'temperature', extra: '1' };
-  pressure = { id: 2, name: 'pressure', label: 'Blood pressure', value: 140, route: 'pressure', extra: '2' };
-  heart = { id: 3, name: 'heart rate', label: 'Heart rate', value: 36, route: 'heartrate', extra: '3' };
-  sugar = { id: 4, name: 'sugar', label: 'Sugar', value: 36, route: 'sugar', extra: '4' };
-  emergencies = { id: 1, name: 'emergencies', label: 'Emergencies', value: 1, route: 'emergencies', extra: '1' };
-  alergies = { id: 2, name: 'allergies', label: 'Allergies', value: 0, route: 'allergies', extra: '2' };
-  service = { id: 3, name: 'services', label: 'Services', value: 10, route: 'services', extra: '3' };
-  diet = { id: 4, name: 'diet', label: 'Diet', value: 3, route: 'diet', extra: '4' };
+  page: string = 'calendaraaaaaa';
+  patients = { id: 1, name: 'patients', label: 'Patients', value: 176, route: 'patients', extra: '1' };
+  female = { id: 2, name: 'female', label: 'Female', value: 104, route: 'female', extra: '2' };
+  male = { id: 3, name: 'male', label: 'Male', value: 36, route: 'male', extra: '3' };
+  kids = { id: 4, name: 'children', label: 'Chilren', value: 36, route: 'Children', extra: '4' };
+  urgent = { id: 1, name: 'urgent', label: 'Urgent', value: 1, route: 'urgent', extra: '1' };
+  open = { id: 2, name: 'open', label: 'Open', value: 2, route: 'open', extra: '2' };
+  cases = { id: 3, name: 'cases', label: 'Cases', value: 10, route: 'cases', extra: '3' };
+  notifications = { id: 4, name: 'notifications', label: 'Notifications', value: 3, route: 'notifications', extra: '4' };
 
   topCards: any[] = [];
   lowCards: any[] = [];
@@ -41,17 +41,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
   isOpen = false;
   isNavbarCollapsed = false;
 
+  imageUrl = 'content/images/healthconnect-angel.png';
+
   constructor(
     private dashboardService: DashboardService,
-    private modalService: NgbModal,
   ) {}
 
   ngOnInit(): void {
-    this.page = sessionStorage.getItem('page') || 'status';
-    this.topCards = [this.temp, this.pressure, this.heart, this.sugar];
-    this.lowCards = [this.emergencies, this.alergies, this.service, this.diet];
+    this.page = sessionStorage.getItem('page') || 'calendar';
+    this.topCards = [this.patients, this.female, this.male, this.kids];
+    this.lowCards = [this.urgent, this.open, this.cases, this.notifications];
     if (this.account && this.account.activated) {
       this.isUserRole = this.account.authorities.indexOf(Authority.USER) > -1;
+      this.imageUrl = this.account.imageUrl || 'content/images/healthconnect-angel.png';
       this.fetchProfileInformation(this.account.email);
     }
   }

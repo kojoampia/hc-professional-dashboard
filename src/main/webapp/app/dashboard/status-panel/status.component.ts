@@ -12,7 +12,7 @@ import { StatusService } from './status.service';
 })
 export class StatusComponent {
   /* Chart title */
-  @Input() chartTitle = 'Service: Last 7 Days';
+  @Input() chartTitle = 'Tasks: Last 7 Days';
 
   /* Chart data : Bar Chart */
   chartItems: IChartItem[] = [];
@@ -62,10 +62,10 @@ export class StatusComponent {
   @Input() showYAxisLabel = true;
 
   /* The x axis label text */
-  @Input() xAxisLabel = 'Days';
+  @Input() xAxisLabel = 'Patient';
 
   /* The x axis label text */
-  @Input() yAxisLabel = 'Services';
+  @Input() yAxisLabel = 'Hours';
 
   /* Show value number next to the bar */
   @Input() showDataLabel = true;
@@ -86,7 +86,7 @@ export class StatusComponent {
   @Input() showTimeline = true;
 
   constructor(private statusService: StatusService) {
-    this.chartItems = this.statusService.getServicesPerDay();
+    this.chartItems = this.statusService.getServicesItems();
     this.chartSeries = this.statusService.getServiceSeries();
   }
 

@@ -11,11 +11,11 @@ services:
         - 'hc-professional-dashboard:0.0.1'
         - 'hc-professional-dashboard:latest'
     environment:
-      - SERVER_API_URL=http://localhost:5505/
+      - SERVER_API_URL=http://localhost:5503/
     volumes:
       - './hc-professional-dashboard:/usr/src/app'
     ports:
-      - 127.0.0.1:5502:80
+      - 127.0.0.1:5503:80
     networks:
       - devnet
 

@@ -7,16 +7,6 @@ const routes: Routes = [
     loadChildren: () => import('./professionalMS/address/address.routes'),
   },
   {
-    path: 'medication',
-    data: { pageTitle: 'professionalDashboardApp.professionalMsMedication.home.title' },
-    loadChildren: () => import('./professionalMS/medication/medication.routes'),
-  },
-  {
-    path: 'stat',
-    data: { pageTitle: 'professionalDashboardApp.professionalMsStat.home.title' },
-    loadChildren: () => import('./professionalMS/stat/stat.routes'),
-  },
-  {
     path: 'team',
     data: { pageTitle: 'professionalDashboardApp.professionalMsTeam.home.title' },
     loadChildren: () => import('./professionalMS/team/team.routes'),
@@ -47,19 +37,9 @@ const routes: Routes = [
     loadChildren: () => import('./professionalMS/profile/profile.routes'),
   },
   {
-    path: 'hc-credential',
-    data: { pageTitle: 'professionalDashboardApp.professionalMsHCCredential.home.title' },
-    loadChildren: () => import('./professionalMS/hc-credential/hc-credential.routes'),
-  },
-  {
-    path: 'hc-pay-option',
-    data: { pageTitle: 'professionalDashboardApp.professionalMsHCPayOption.home.title' },
-    loadChildren: () => import('./professionalMS/hc-pay-option/hc-pay-option.routes'),
-  },
-  {
     path: 'document',
     data: { pageTitle: 'professionalDashboardApp.hcProfessionalMsDocument.home.title' },
-    loadChildren: () => import('./professionalMs/document/document.routes'),
+    loadChildren: () => import('./professionalMS/document/document.routes'),
   },
   /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
 ];
