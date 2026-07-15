@@ -1,265 +1,207 @@
-# professionalGateway
+# hc-professional-dashboard
 
-This application was generated using JHipster 8.1.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.1.0](https://www.jhipster.tech/documentation-archive/v8.1.0).
+A JHipster 8.1.0–generated **Angular frontend gateway** for the Health Connect
+microservice architecture. It provides the professional dashboard UI — entity
+CRUD screens, an analytics dashboard with charting widgets, account/auth/admin
+flows, and i18n — and proxies API calls to backend microservices that live in
+**separate repositories**.
 
-This is a "gateway" application intended to be part of a microservice architecture, please refer to the [Doing microservices with JHipster][] page of the documentation for more information.
-This application is configured for Service Discovery and Configuration with the JHipster-Registry. On launch, it will refuse to start if it is not able to connect to the JHipster-Registry at [http://localhost:8761](http://localhost:8761). For more information, read our documentation on [Service Discovery and Configuration with the JHipster-Registry][].
+> **This repository is frontend-only.** It was generated with JHipster
+> `"skipServer": true` (see `.yo-rc.json`): there is no Java/Spring Boot source,
+> no `src/main/java`, and no `src/main/resources` here. The `pom.xml` is retained
+> from the generator and is used by the `frontend-maven-plugin` to build the
+> Angular app; it does **not** build a runnable Spring Boot service. The backend
+> microservices (e.g. `hcprofessionalservice`) are developed and deployed
+> independently.
 
-## Project Structure
+Documentation for the generator itself is at the
+[JHipster 8.1.0 archive](https://www.jhipster.tech/documentation-archive/v8.1.0).
 
-Node is required for generation and recommended for development. `package.json` is always generated for a better development experience with prettier, commit hooks, scripts and so on.
+## Technology stack
 
-In the project root, JHipster generates configuration files for tools like git, prettier, eslint, husky, and others that are well known and you can find references in the web.
+| Area | Technology |
+| --- | --- |
+| Framework | Angular 17 (standalone components) |
+| Language | TypeScript 5.2 (`target: es2022`) |
+| State / data | RxJS 7.8, Angular `HttpClient` |
+| UI widgets | ng-bootstrap 16, Font Awesome, custom chart widgets |
+| i18n | `ngx-translate` — English, French, German (`src/main/webapp/i18n/{en,fr,de}`) |
+| Build | Angular CLI + custom-webpack (`@angular-builders/custom-webpack`), Webpack proxy |
+| Unit tests | Jest 29 + `jest-preset-angular` |
+| E2E tests | Cypress |
+| Database (configured) | MongoDB (dev and prod, per `.yo-rc.json`) — owned by the backend microservices, not this repo |
+| Infra (dev deps) | Docker Compose: MongoDB, JHipster Registry, Kafka — see `src/main/docker/` |
+| Package manager | npm (`./npmw` wrapper available for a Node-less environment) |
 
-`/src/*` structure follows default Java structure.
+## Project structure
 
-- `.yo-rc.json` - Yeoman configuration file
-  JHipster configuration is stored in this file at `generator-jhipster` key. You may find `generator-jhipster-*` for specific blueprints configuration.
-- `.yo-resolve` (optional) - Yeoman conflict resolver
-  Allows to use a specific action when conflicts are found skipping prompts for files that matches a pattern. Each line should match `[pattern] [action]` with pattern been a [Minimatch](https://github.com/isaacs/minimatch#minimatch) pattern and action been one of skip (default if ommited) or force. Lines starting with `#` are considered comments and are ignored.
-- `.jhipster/*.json` - JHipster entity configuration files
+```
+src/main/webapp/app/
+├── core/        # auth, HTTP interceptors, app config, request/util helpers (singletons)
+├── shared/      # reusable UI helpers, pipes, sort/pagination/filter/date/language/alert
+├── entities/    # entity modules split by microservice namespace
+│   ├── professionalMS/   # Address, Team, Task, Membership, Report, Metadata,
+│   │   #                 # Profile, HCCredential, HCPayOption, Stat, Medication, Document
+│   └── patientMS/        # parallel set (+ Condition) — present but not routed (see below)
+├── dashboard/   # analytics dashboard: metric-panel, status-panel, DashboardService
+├── widgets/     # chart/UI widgets: histogram, piechart, treemap, heatmap, linechart,
+│                # chatbot, file-viewer, faq, badgebox, info-box, slides, pnv, filter, page-display
+├── layouts/     # navbar, footer, error, profiles shell
+├── admin/       # JHipster admin screens (users, health, metrics, config, logs, …)
+├── account/     # register, activate, password, settings, password-reset
+├── home/  login/  config/
+└── app.routes.ts
+```
 
-- `npmw` - wrapper to use locally installed npm.
-  JHipster installs Node and npm locally using the build tool by default. This wrapper makes sure npm is installed locally and uses it avoiding some differences different versions can cause. By using `./npmw` instead of the traditional `npm` you can configure a Node-less environment to develop or test your application.
-- `/src/main/docker` - Docker configurations for the application and services that the application depends on
+### Entity microservice namespaces
+
+Entities are grouped under two namespaces that mirror the backend microservices:
+
+- **`professionalMS`** — the entities this dashboard primarily manages. Their routes
+  are registered in `src/main/webapp/app/entities/entity.routes.ts` (lazy-loaded).
+  This is the active entity surface.
+- **`patientMS`** — a parallel set of the same domain entities plus `Condition`. The
+  code is present under `entities/patientMS/` but its routes are **not** wired into
+  `entity.routes.ts`; it targets the separate patient microservice.
+
+When adding entities, preserve the `/* jhipster-needle-add-entity-route */` marker —
+that is where the JHipster generator inserts new routes.
+
+### API URLs and the dev proxy
+
+- Build every API URL through `ApplicationConfigService.getEndpointFor(api, microservice?)`
+  (`app/core/config/application-config.service.ts`) — do not hardcode service paths.
+  - `getEndpointFor('api/addresses')` → `/api/addresses` (gateway/monolith route)
+  - `getEndpointFor('api/profiles', 'hcprofessionalservice')` → `/services/hcprofessionalservice/api/profiles`
+- In development, `webpack/proxy.conf.js` forwards `/api`, `/services`, `/management`,
+  `/v3/api-docs`, `/auth`, `/health`, `/h2-console` to `http://localhost:5505`.
+  Make sure a backend microservice is reachable there before debugging API issues.
 
 ## Development
 
-Before you can build this project, you must install and configure the following dependencies on your machine:
+Requirements: [Node.js](https://nodejs.org/).
 
-1. [Node.js][]: We use Node to run a development web server and build the project.
-   Depending on your system, you can install Node either from source or as a pre-packaged bundle.
+Install dependencies (run when `package.json` changes):
 
-After installing Node, you should be able to run the following command to install development tools.
-You will only need to run this command when dependencies change in [package.json](package.json).
-
-```
+```bash
 npm install
 ```
 
-We use npm scripts and [Angular CLI][] with [Webpack][] as our build system.
+Run the dev server (HMR, served on http://localhost:4200):
 
-Run the following commands in two separate terminals to create a blissful development experience where your browser
-auto-refreshes when files change on your hard drive.
-
-```
-./mvnw
+```bash
 npm start
 ```
 
-Npm is also used to manage CSS and JavaScript dependencies used in this application. You can upgrade dependencies by
-specifying a newer version in [package.json](package.json). You can also run `npm update` and `npm install` to manage dependencies.
-Add the `help` flag on any command to see how you can use it. For example, `npm help update`.
+API calls are proxied to the backend at `localhost:5505` (see above).
 
-The `npm run` command will list all of the scripts available to run for this project.
+## Build
 
-### PWA Support
+Production web build (concatenates/minifies, rewrites `index.html` references):
 
-JHipster ships with PWA (Progressive Web App) support, and it's turned off by default. One of the main components of a PWA is a service worker.
-
-The service worker initialization code is disabled by default. To enable it, uncomment the following code in `src/main/webapp/app/app.config.ts`:
-
-```typescript
-ServiceWorkerModule.register('ngsw-worker.js', { enabled: false }),
+```bash
+npm run webapp:prod
 ```
 
-### Managing dependencies
+Build via Maven (drives the Angular build through `frontend-maven-plugin`):
 
-For example, to add [Leaflet][] library as a runtime dependency of your application, you would run following command:
-
-```
-npm install --save --save-exact leaflet
-```
-
-To benefit from TypeScript type definitions from [DefinitelyTyped][] repository in development, you would run following command:
-
-```
-npm install --save-dev --save-exact @types/leaflet
-```
-
-Then you would import the JS and CSS files specified in library's installation instructions so that [Webpack][] knows about them:
-Edit [src/main/webapp/app/app.config.ts](src/main/webapp/app/app.config.ts) file:
-
-```
-import 'leaflet/dist/leaflet.js';
-```
-
-Edit [src/main/webapp/content/scss/vendor.scss](src/main/webapp/content/scss/vendor.scss) file:
-
-```
-@import 'leaflet/dist/leaflet.css';
-```
-
-Note: There are still a few other things remaining to do for Leaflet that we won't detail here.
-
-For further instructions on how to develop with JHipster, have a look at [Using JHipster in development][].
-
-### Using Angular CLI
-
-You can also use [Angular CLI][] to generate some custom client code.
-
-For example, the following command:
-
-```
-ng generate component my-component
-```
-
-will generate few files:
-
-```
-create src/main/webapp/app/my-component/my-component.component.html
-create src/main/webapp/app/my-component/my-component.component.ts
-update src/main/webapp/app/app.config.ts
-```
-
-## Building for production
-
-### Packaging as jar
-
-To build the final jar and optimize the professionalGateway application for production, run:
-
-```
+```bash
 ./mvnw -Pprod clean verify
 ```
 
-This will concatenate and minify the client CSS and JavaScript files. It will also modify `index.html` so it references these new files.
-To ensure everything worked, run:
+To package a Docker image and run the full app container:
 
-```
-java -jar target/*.jar
-```
-
-Then navigate to [http://localhost:5055](http://localhost:5055) in your browser.
-
-Refer to [Using JHipster in production][] for more details.
-
-### Packaging as war
-
-To package your application as a war in order to deploy it to an application server, run:
-
-```
-./mvnw -Pprod,war clean verify
-```
-
-### JHipster Control Center
-
-JHipster Control Center can help you manage and control your application(s). You can start a local control center server (accessible on http://localhost:7419) with:
-
-```
-docker compose -f src/main/docker/jhipster-control-center.yml up
-```
-
-## Testing
-
-### Spring Boot tests
-
-To launch your application's tests, run:
-
-```
-./mvnw verify
-```
-
-### Client tests
-
-Unit tests are run by [Jest][]. They're located in [src/test/javascript/](src/test/javascript/) and can be run with:
-
-```
-npm test
-```
-
-## Others
-
-### Code quality using Sonar
-
-Sonar is used to analyse code quality. You can start a local Sonar server (accessible on http://localhost:9001) with:
-
-```
-docker compose -f src/main/docker/sonar.yml up -d
-```
-
-Note: we have turned off forced authentication redirect for UI in [src/main/docker/sonar.yml](src/main/docker/sonar.yml) for out of the box experience while trying out SonarQube, for real use cases turn it back on.
-
-You can run a Sonar analysis with using the [sonar-scanner](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner) or by using the maven plugin.
-
-Then, run a Sonar analysis:
-
-```
-./mvnw -Pprod clean verify sonar:sonar -Dsonar.login=admin -Dsonar.password=admin
-```
-
-If you need to re-run the Sonar phase, please be sure to specify at least the `initialize` phase since Sonar properties are loaded from the sonar-project.properties file.
-
-```
-./mvnw initialize sonar:sonar -Dsonar.login=admin -Dsonar.password=admin
-```
-
-Additionally, Instead of passing `sonar.password` and `sonar.login` as CLI arguments, these parameters can be configured from [sonar-project.properties](sonar-project.properties) as shown below:
-
-```
-sonar.login=admin
-sonar.password=admin
-```
-
-For more information, refer to the [Code quality page][].
-
-### Using Docker to simplify development (optional)
-
-You can use Docker to improve your JHipster development experience. A number of docker-compose configuration are available in the [src/main/docker](src/main/docker) folder to launch required third party services.
-
-For example, to start a mongodb database in a docker container, run:
-
-```
-docker compose -f src/main/docker/mongodb.yml up -d
-```
-
-To stop it and remove the container, run:
-
-```
-docker compose -f src/main/docker/mongodb.yml down
-```
-
-You can also fully dockerize your application and all the services that it depends on.
-To achieve this, first build a docker image of your app by running:
-
-```
-npm run java:docker
-```
-
-Or build a arm64 docker image when using an arm64 processor os like MacOS with M1 processor family running:
-
-```
-npm run java:docker:arm64
-```
-
-Then run:
-
-```
+```bash
+docker compose build            # dev image (docker-compose.yml)
+docker compose -f docker-compose-prod.yml build   # prod image
 docker compose -f src/main/docker/app.yml up -d
 ```
 
-When running Docker Desktop on MacOS Big Sur or later, consider enabling experimental `Use the new Virtualization framework` for better processing performance ([disk access performance is worse](https://github.com/docker/roadmap/issues/7)).
+The production app is served by Nginx (`nginx.conf`, `ngsw-config.json`). PWA/service
+worker is disabled by default — to enable, set `enabled: true` in the
+`ServiceWorkerModule.register(...)` call in `src/main/webapp/app/app.config.ts`.
 
-For more information refer to [Using Docker and Docker-Compose][], this page also contains information on the docker-compose sub-generator (`jhipster docker-compose`), which is able to generate docker configurations for one or several JHipster applications.
+## Testing
 
-## Continuous Integration (optional)
+### Unit tests (Jest)
 
-To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration][] page for more information.
+Specs live alongside components as `*.spec.ts` under `src/main/webapp/app/`:
 
-[JHipster Homepage and latest documentation]: https://www.jhipster.tech
-[JHipster 8.1.0 archive]: https://www.jhipster.tech/documentation-archive/v8.1.0
-[Doing microservices with JHipster]: https://www.jhipster.tech/documentation-archive/v8.1.0/microservices-architecture/
-[Using JHipster in development]: https://www.jhipster.tech/documentation-archive/v8.1.0/development/
-[Service Discovery and Configuration with the JHipster-Registry]: https://www.jhipster.tech/documentation-archive/v8.1.0/microservices-architecture/#jhipster-registry
-[Using Docker and Docker-Compose]: https://www.jhipster.tech/documentation-archive/v8.1.0/docker-compose
-[Using JHipster in production]: https://www.jhipster.tech/documentation-archive/v8.1.0/production/
-[Running tests page]: https://www.jhipster.tech/documentation-archive/v8.1.0/running-tests/
-[Code quality page]: https://www.jhipster.tech/documentation-archive/v8.1.0/code-quality/
-[Setting up Continuous Integration]: https://www.jhipster.tech/documentation-archive/v8.1.0/setting-up-ci/
-[Node.js]: https://nodejs.org/
-[NPM]: https://www.npmjs.com/
-[Webpack]: https://webpack.github.io/
-[BrowserSync]: https://www.browsersync.io/
-[Jest]: https://facebook.github.io/jest/
-[Leaflet]: https://leafletjs.com/
-[DefinitelyTyped]: https://definitelytyped.org/
-[Angular CLI]: https://cli.angular.io/
+```bash
+npm test                 # ng test --coverage
+npm run test:watch       # watch mode
+```
+
+Run a single spec:
+
+```bash
+npx jest --config jest.conf.js path/to/file.spec.ts
+# or
+npx ng test --include="**/address.service.spec.ts"
+```
+
+### End-to-end tests (Cypress)
+
+E2E specs are in `src/test/javascript/cypress/e2e/entity/*.cy.ts` (one per entity).
+They expect a reachable backend/auth endpoint.
+
+```bash
+npm run e2e              # headless
+npm run e2e:cypress      # Cypress runner
+```
+
+Run a single spec:
+
+```bash
+npx cypress run --spec src/test/javascript/cypress/e2e/entity/address.cy.ts
+```
+
+## Code quality
+
+Lint and format:
+
+```bash
+npm run lint
+npm run lint:fix
+npm run prettier:check
+npm run prettier:format
+```
+
+Sonar analysis — start a local SonarQube and run the scanner (creds are in
+`sonar-project.properties`):
+
+```bash
+docker compose -f src/main/docker/sonar.yml up -d
+npm run ci:backend:test   # or your usual CI script, then sonar:sonar
+```
+
+## Docker for development
+
+`src/main/docker/` holds compose files for the dev dependencies the gateway expects
+in the wider microservice topology:
+
+```bash
+npm run services:up      # starts MongoDB + JHipster Registry + Kafka (services.yml)
+docker compose -f src/main/docker/mongodb.yml up -d     # MongoDB only
+docker compose -f src/main/docker/jhipster-registry.yml up   # service registry
+docker compose -f src/main/docker/kafka.yml up          # Kafka + Zookeeper
+docker compose -f src/main/docker/jhipster-control-center.yml up   # Control Center on :7419
+```
+
+## Continuous integration
+
+CI scripts are defined in `package.json` (`ci:backend:test`, `ci:e2e:*`,
+`ci:frontend:build`, `ci:frontend:test`, `ci:server:await`). Generate CI pipeline
+config with the JHipster `ci-cd` sub-generator if needed; see
+[Setting up Continuous Integration](https://www.jhipster.tech/documentation-archive/v8.1.0/setting-up-ci/).
+
+## Useful references
+
+- [JHipster 8.1.0 archive](https://www.jhipster.tech/documentation-archive/v8.1.0)
+- [Doing microservices with JHipster](https://www.jhipster.tech/documentation-archive/v8.1.0/microservices-architecture/)
+- [Service Discovery and Configuration with the JHipster-Registry](https://www.jhipster.tech/documentation-archive/v8.1.0/microservices-architecture/#jhipster-registry)
+- [Using JHipster in development](https://www.jhipster.tech/documentation-archive/v8.1.0/development/)
+- [Using JHipster in production](https://www.jhipster.tech/documentation-archive/v8.1.0/production/)
+- [Running tests](https://www.jhipster.tech/documentation-archive/v8.1.0/running-tests/)
+- [Using Docker and Docker-Compose](https://www.jhipster.tech/documentation-archive/v8.1.0/docker-compose)
+- [Node.js](https://nodejs.org/) · [NPM](https://www.npmjs.com/) · [Webpack](https://webpack.github.io/) · [Jest](https://jestjs.io/) · [Angular CLI](https://angular.dev/tools/cli)
