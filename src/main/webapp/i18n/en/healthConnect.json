@@ -1,0 +1,105 @@
+{
+  "healthConnect": {
+    "navigation": {
+      "dashboard": "Dashboard",
+      "patients": "Patients",
+      "cases": "Cases",
+      "dutyRoster": "Duty roster"
+    },
+    "roles": {
+      "admin": "Admin",
+      "doctor": "Doctor",
+      "nurse": "Nurse",
+      "paramedic": "Paramedic",
+      "pharmacist": "Pharmacist",
+      "therapist": "Therapist",
+      "carer": "Carer",
+      "user": "User"
+    },
+    "stats": {
+      "patients": "Patients",
+      "female": "Female",
+      "male": "Male",
+      "kids": "Kids",
+      "urgent": "Urgent",
+      "open": "Open",
+      "closed": "Closed"
+    },
+    "actions": {
+      "view": "View",
+      "print": "Print",
+      "edit": "Edit",
+      "copy": "Copy",
+      "close": "Close",
+      "save": "Save",
+      "cancel": "Cancel",
+      "upload": "Upload report",
+      "retry": "Retry",
+      "reopen": "Reopen",
+      "archive": "Archive",
+      "subscribe": "Subscribe",
+      "unsubscribe": "Unsubscribe",
+      "previous": "Previous",
+      "next": "Next",
+      "confirm": "Confirm"
+    },
+    "dashboard": {
+      "caseTime": "Cases over time",
+      "caseDistribution": "Case distribution",
+      "casePatient": "Cases by patient",
+      "allPatients": "All patients"
+    },
+    "patient": {
+      "directory": "Patient directory",
+      "search": "Search patients",
+      "lastActivity": "Last activity",
+      "patient": "Patient",
+      "record": "Patient: {{name}}",
+      "identity": "Patient identity",
+      "dateOfBirth": "Date of birth",
+      "phone": "Phone",
+      "email": "Email",
+      "emergencyContact": "Emergency contact / next of kin",
+      "cases": "Cases",
+      "visitations": "Visitations",
+      "personalCareVisit": "Personal care visit",
+      "activityTrail": "Activity trail",
+      "medications": "Medications",
+      "reports": "Reports",
+      "copyConfirmation": "Create a draft duplicate of this patient record?"
+    },
+    "case": {
+      "queue": "Case queue",
+      "brief": "Brief",
+      "status": "Status",
+      "detail": "Case #{{number}}",
+      "symptoms": "Symptoms",
+      "diagnosis": "Diagnosis",
+      "recommendations": "Recommendations"
+    },
+    "activity": {
+      "title": "Activity log",
+      "eventTitle": "Title of event",
+      "description": "Detailed description of event."
+    },
+    "roster": {
+      "allCases": "All cases",
+      "myRoster": "My roster",
+      "activeShift": "On duty until {{time}}",
+      "nextShift": "Next shift: {{time}}",
+      "upcoming": "Upcoming",
+      "active": "Active",
+      "completed": "Completed"
+    },
+    "states": {
+      "loading": "Loading...",
+      "empty": "No records found.",
+      "error": "Unable to load this information.",
+      "readOnly": "You have read-only access."
+    },
+    "pagination": {
+      "label": "Pagination",
+      "page": "Page {{page}}"
+    }
+  }
+}

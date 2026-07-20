@@ -1,0 +1,105 @@
+{
+  "healthConnect": {
+    "navigation": {
+      "dashboard": "Tableau de bord",
+      "patients": "Patients",
+      "cases": "Cas",
+      "dutyRoster": "Planning de garde"
+    },
+    "roles": {
+      "admin": "Administrateur",
+      "doctor": "Médecin",
+      "nurse": "Infirmier",
+      "paramedic": "Paramédical",
+      "pharmacist": "Pharmacien",
+      "therapist": "Thérapeute",
+      "carer": "Aidant",
+      "user": "Utilisateur"
+    },
+    "stats": {
+      "patients": "Patients",
+      "female": "Femmes",
+      "male": "Hommes",
+      "kids": "Enfants",
+      "urgent": "Urgent",
+      "open": "Ouvert",
+      "closed": "Fermé"
+    },
+    "actions": {
+      "view": "Voir",
+      "print": "Imprimer",
+      "edit": "Modifier",
+      "copy": "Copier",
+      "close": "Fermer",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "upload": "Téléverser le rapport",
+      "retry": "Réessayer",
+      "reopen": "Rouvrir",
+      "archive": "Archiver",
+      "subscribe": "S'abonner",
+      "unsubscribe": "Se désabonner",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "confirm": "Confirmer"
+    },
+    "dashboard": {
+      "caseTime": "Cas au fil du temps",
+      "caseDistribution": "Répartition des cas",
+      "casePatient": "Cas par patient",
+      "allPatients": "Tous les patients"
+    },
+    "patient": {
+      "directory": "Répertoire des patients",
+      "search": "Rechercher des patients",
+      "lastActivity": "Dernière activité",
+      "patient": "Patient",
+      "record": "Patient : {{name}}",
+      "identity": "Identité du patient",
+      "dateOfBirth": "Date de naissance",
+      "phone": "Téléphone",
+      "email": "E-mail",
+      "emergencyContact": "Contact d'urgence / proche parent",
+      "cases": "Cas",
+      "visitations": "Visites",
+      "personalCareVisit": "Visite de soins personnels",
+      "activityTrail": "Historique d'activité",
+      "medications": "Médicaments",
+      "reports": "Rapports",
+      "copyConfirmation": "Créer un brouillon dupliqué de ce dossier patient ?"
+    },
+    "case": {
+      "queue": "File de cas",
+      "brief": "Résumé",
+      "status": "Statut",
+      "detail": "Cas n°{{number}}",
+      "symptoms": "Symptômes",
+      "diagnosis": "Diagnostic",
+      "recommendations": "Recommandations"
+    },
+    "activity": {
+      "title": "Journal d'activité",
+      "eventTitle": "Titre de l'événement",
+      "description": "Description détaillée de l'événement."
+    },
+    "roster": {
+      "allCases": "Tous les cas",
+      "myRoster": "Mon planning",
+      "activeShift": "En service jusqu'à {{time}}",
+      "nextShift": "Prochain service : {{time}}",
+      "upcoming": "À venir",
+      "active": "Actif",
+      "completed": "Terminé"
+    },
+    "states": {
+      "loading": "Chargement...",
+      "empty": "Aucun dossier trouvé.",
+      "error": "Impossible de charger ces informations.",
+      "readOnly": "Vous disposez d'un accès en lecture seule."
+    },
+    "pagination": {
+      "label": "Pagination",
+      "page": "Page {{page}}"
+    }
+  }
+}

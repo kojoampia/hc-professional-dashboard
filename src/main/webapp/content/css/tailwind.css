@@ -1,2 +1,13 @@
-@import "tailwindcss/theme";
-@import "tailwindcss/utilities";
+@import 'tailwindcss/theme';
+@import 'tailwindcss/utilities';
+
+@theme {
+  --color-hpd-primary: var(--hpd-color-primary-blue);
+  --color-hpd-surface: var(--hpd-color-surface);
+  --color-hpd-hero: var(--hpd-color-shell-background);
+  --color-hpd-neutral: var(--hpd-color-card-neutral);
+  --color-hpd-urgent: var(--hpd-color-card-urgent);
+  --color-hpd-open: var(--hpd-color-card-open);
+  --color-hpd-closed: var(--hpd-color-card-closed);
+  --color-hpd-success: var(--hpd-color-success);
+}
