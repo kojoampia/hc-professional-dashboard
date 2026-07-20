@@ -100,6 +100,12 @@
     "pagination": {
       "label": "Seitennavigation",
       "page": "Seite {{page}}"
+    },
+    "table": {
+      "actions": "Aktionen"
+    },
+    "validation": {
+      "invalidFile": "Wählen Sie eine unterstützte Datei innerhalb der zulässigen Größe aus."
     }
   }
 }

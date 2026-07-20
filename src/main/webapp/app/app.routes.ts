@@ -40,6 +40,10 @@ const routes: Routes = [
     path: '',
     loadChildren: () => import(`./entities/entity.routes`),
   },
+  {
+    path: '',
+    loadChildren: () => import('./health-connect/health-connect.routes'),
+  },
   ...errorRoute,
 ];
 
