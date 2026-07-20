@@ -24,4 +24,29 @@ describe('RouteDrivenOverlayHostComponent', () => {
     closeButton.click();
     expect(navigate).toHaveBeenCalledWith('/patients');
   });
+
+  it('supports Escape, focus containment, and browser printing for route-driven patient and case flows', () => {
+    TestBed.configureTestingModule({
+      imports: [RouteDrivenOverlayHostComponent, TranslateModule.forRoot()],
+      providers: [provideRouter([])],
+    });
+    const fixture: ComponentFixture<RouteDrivenOverlayHostComponent> = TestBed.createComponent(RouteDrivenOverlayHostComponent);
+    const component = fixture.componentInstance;
+    const router = TestBed.inject(Router);
+    const navigate = jest.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+    const print = jest.spyOn(window, 'print').mockImplementation(() => undefined);
+    component.closeUrl = '/cases';
+    fixture.detectChanges();
+    const dialog = fixture.nativeElement.querySelector('[role="dialog"]') as HTMLElement;
+    const buttons = dialog.querySelectorAll('button');
+
+    component.print();
+    expect(print).toHaveBeenCalled();
+
+    (buttons[0] as HTMLButtonElement).focus();
+    component.trapFocus(new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true }));
+    expect(document.activeElement).toBe(buttons[1]);
+    dialog.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    expect(navigate).toHaveBeenCalledWith('/cases');
+  });
 });

@@ -19,7 +19,7 @@ export interface CheckboxListOption {
             class="form-check-input hpd-focusable"
             type="checkbox"
             [checked]="checkedIds.includes(option.id)"
-            [disabled]="option.disabled ?? false"
+            [disabled]="disabled || (option.disabled ?? false)"
             (change)="toggle(option.id, $any($event.target).checked)"
           />
           <span class="form-check-label">{{ option.labelKey | translate }}</span>
@@ -33,9 +33,13 @@ export default class CheckboxListComponent {
   @Input({ required: true }) labelKey!: string;
   @Input({ required: true }) options: readonly CheckboxListOption[] = [];
   @Input() checkedIds: readonly string[] = [];
+  @Input() disabled = false;
   @Output() readonly checkedIdsChange = new EventEmitter<readonly string[]>();
 
   toggle(id: string, checked: boolean): void {
+    if (this.disabled) {
+      return;
+    }
     this.checkedIdsChange.emit(checked ? [...this.checkedIds, id] : this.checkedIds.filter(value => value !== id));
   }
 }

@@ -27,8 +27,13 @@ export interface DataTableActionEvent<T> {
   selector: 'hpd-data-table',
   imports: [TranslateModule],
   template: `
-    <div class="table-responsive">
+    <div class="table-responsive hpd-data-table__scroll" role="region" tabindex="0" [attr.aria-label]="tableLabelKey | translate">
       <table class="table hpd-data-table">
+        <caption class="visually-hidden">
+          {{
+            tableLabelKey | translate
+          }}
+        </caption>
         <thead [class]="headerVariant === 'neutral' ? '' : 'hpd-data-table__header--' + headerVariant">
           <tr>
             @for (column of columns; track column.id) {
@@ -88,6 +93,7 @@ export interface DataTableActionEvent<T> {
     .hpd-data-table thead.hpd-data-table__header--open th { background: var(--hpd-color-card-open); }
     .hpd-data-table thead.hpd-data-table__header--closed th { background: var(--hpd-color-card-closed); }
     .hpd-data-table__actions { display: flex; gap: 0.5rem; }
+    .hpd-data-table__scroll:focus-visible { outline: none; box-shadow: var(--hpd-focus-ring); }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -96,6 +102,7 @@ export default class DataTableComponent<T> {
   @Input({ required: true }) rows: readonly T[] = [];
   @Input() actions: readonly DataTableAction<T>[] = [];
   @Input() emptyKey = 'healthConnect.states.empty';
+  @Input() tableLabelKey = 'healthConnect.table.label';
   @Input() statusVariant: ((row: T) => DataTableStatusVariant) | null = null;
   @Input() headerVariant: DataTableStatusVariant = 'neutral';
   @Input() trackBy: (row: T) => string | number = (_row: T): number => 0;

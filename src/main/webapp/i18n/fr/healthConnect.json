@@ -126,7 +126,8 @@
       "page": "Page {{page}}"
     },
     "table": {
-      "actions": "Actions"
+      "actions": "Actions",
+      "label": "Tableau de résultats"
     },
     "validation": {
       "invalidFile": "Sélectionnez un fichier pris en charge dont la taille est autorisée.",

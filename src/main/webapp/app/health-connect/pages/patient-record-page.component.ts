@@ -22,14 +22,14 @@ const PAGE_SIZE = 3;
   template: `
     @if (record(); as patientRecord) {
       <article class="hpd-record">
-        <section class="hpd-identity">
+        <section class="hpd-identity" aria-labelledby="hpd-patient-identity-heading">
           @if (patientRecord.patient.avatarUrl) {
             <img [src]="patientRecord.patient.avatarUrl" [alt]="patientRecord.patient.patientName" />
           } @else {
             <span class="hpd-avatar" aria-hidden="true">{{ initials(patientRecord.patient.patientName) }}</span>
           }
           <div>
-            <h2>{{ patientRecord.patient.patientName }}</h2>
+            <h2 id="hpd-patient-identity-heading">{{ patientRecord.patient.patientName }}</h2>
             <dl>
               <dt>{{ 'healthConnect.patient.dateOfBirth' | translate }}</dt>
               <dd>{{ patientRecord.patient.dateOfBirth }}</dd>
@@ -45,8 +45,8 @@ const PAGE_SIZE = 3;
           </div>
         </section>
         <div class="hpd-record-grid">
-          <section class="hpd-panel">
-            <h2>{{ 'healthConnect.patient.cases' | translate }}</h2>
+          <section class="hpd-panel" aria-labelledby="hpd-patient-cases-heading">
+            <h2 id="hpd-patient-cases-heading">{{ 'healthConnect.patient.cases' | translate }}</h2>
             @for (item of casePage().items; track item.id) {
               <button class="btn btn-link p-0 d-block" type="button" (click)="openCase(item.id)">{{ item.brief }}</button>
             } @empty {
@@ -58,34 +58,39 @@ const PAGE_SIZE = 3;
               (pageChange)="casePageNumber.set($event)"
             />
           </section>
-          <section class="hpd-panel">
-            <h2>{{ 'healthConnect.patient.visitations' | translate }}</h2>
+          <section class="hpd-panel" aria-labelledby="hpd-patient-visitations-heading">
+            <h2 id="hpd-patient-visitations-heading">{{ 'healthConnect.patient.visitations' | translate }}</h2>
             <ng-container
               [ngTemplateOutlet]="entries"
               [ngTemplateOutletContext]="{ page: visitationPage(), change: visitationPageNumber }"
             />
           </section>
-          <section class="hpd-panel">
-            <h2>{{ 'healthConnect.patient.activityTrail' | translate }}</h2>
+          <section class="hpd-panel" aria-labelledby="hpd-patient-activity-heading">
+            <h2 id="hpd-patient-activity-heading">{{ 'healthConnect.patient.activityTrail' | translate }}</h2>
             @if (canMutate()) {
-              <button class="btn btn-outline-primary btn-sm mb-2" type="button" (click)="activityOpen.set(true)">
+              <button
+                class="hpd-focusable btn btn-outline-primary btn-sm mb-2 hpd-no-print"
+                type="button"
+                aria-haspopup="dialog"
+                (click)="activityOpen.set(true)"
+              >
                 {{ 'healthConnect.actions.edit' | translate }}
               </button>
             }
             <ng-container [ngTemplateOutlet]="entries" [ngTemplateOutletContext]="{ page: activityPage(), change: activityPageNumber }" />
           </section>
-          <section class="hpd-panel">
-            <h2>{{ 'healthConnect.patient.medications' | translate }}</h2>
+          <section class="hpd-panel" aria-labelledby="hpd-patient-medications-heading">
+            <h2 id="hpd-patient-medications-heading">{{ 'healthConnect.patient.medications' | translate }}</h2>
             <ng-container
               [ngTemplateOutlet]="entries"
               [ngTemplateOutletContext]="{ page: medicationPage(), change: medicationPageNumber }"
             />
           </section>
-          <section class="hpd-panel">
-            <h2>{{ 'healthConnect.patient.reports' | translate }}</h2>
+          <section class="hpd-panel" aria-labelledby="hpd-patient-reports-heading">
+            <h2 id="hpd-patient-reports-heading">{{ 'healthConnect.patient.reports' | translate }}</h2>
             <hpd-file-upload-trigger
               [labelKey]="'healthConnect.actions.upload'"
-              [disabled]="!canMutate()"
+              [disabled]="!canManageReports()"
               [acceptedTypes]="['application/pdf', 'image/png', 'image/jpeg']"
               (filesSelected)="upload($event)"
             />
@@ -118,8 +123,23 @@ const PAGE_SIZE = 3;
     </ng-template>
   `,
   styles: `
-    .hpd-identity { display:flex; gap:1rem; align-items:start; } .hpd-avatar { display:grid; place-items:center; width:4rem; height:4rem; border-radius:50%; background:var(--hpd-color-primary); color:white; font-weight:bold; }
-    dl { display:grid; grid-template-columns:auto 1fr; gap:.25rem .75rem; } dd { margin:0; } .hpd-record-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; margin-top:1rem; } .hpd-panel { padding:1rem; border:1px solid var(--hpd-color-border); } @media (max-width: 600px) { .hpd-record-grid { grid-template-columns:1fr; } }
+    .hpd-identity { display:flex; gap:1rem; align-items:start; }
+    .hpd-avatar { display:grid; place-items:center; width:4rem; height:4rem; border-radius:50%; background:var(--hpd-color-primary); color:white; font-weight:bold; }
+    dl { display:grid; grid-template-columns:auto 1fr; gap:.25rem .75rem; }
+    dd { margin:0; overflow-wrap:anywhere; }
+    .hpd-record-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; margin-top:1rem; }
+    .hpd-panel { min-width:0; padding:1rem; border:1px solid var(--hpd-color-border); }
+    @media (max-width: 600px) { .hpd-record-grid { grid-template-columns:1fr; } }
+    @media (max-width: 375px) {
+      .hpd-identity { align-items:center; flex-direction:column; }
+      dl { grid-template-columns:1fr; gap:.125rem; }
+      dd { margin-bottom:.5rem; }
+      .hpd-panel { padding:.75rem; }
+    }
+    @media print {
+      .hpd-record-grid { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+      .hpd-panel { break-inside:avoid; }
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -132,6 +152,7 @@ export default class PatientRecordPageComponent {
   readonly record = computed(() => this.repository.findPatient(this.patientId));
   private readonly currentAccount = toSignal(this.account.getAuthenticationState(), { initialValue: null });
   readonly canMutate = computed(() => hasHealthConnectPermission(this.currentAccount()?.authorities, 'manageActivity'));
+  readonly canManageReports = computed(() => hasHealthConnectPermission(this.currentAccount()?.authorities, 'manageReport'));
   readonly casePageNumber = signal(1);
   readonly visitationPageNumber = signal(1);
   readonly activityPageNumber = signal(1);
@@ -156,7 +177,7 @@ export default class PatientRecordPageComponent {
   }
   upload(files: readonly File[]): void {
     const file = files[0];
-    if (file && this.canMutate()) {
+    if (file && this.canManageReports()) {
       this.repository.appendReport(this.patientId, { reportType: file.type, url: file.name });
     }
   }

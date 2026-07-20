@@ -70,10 +70,10 @@ The plan deliberately does not create a parallel shell, auth system, or backend 
 
 ### Hardening, backend readiness, and handoff
 
-- [ ] **[26] Add feature-level unit tests and route integration tests.** Cover mock services, authority resolution, all shared primitives, URL state, mutations, dialogs, and responsive screen composition. **Verify:** relevant Jest suites pass with the project’s configured runner.
-- [ ] **[27] Complete accessibility, responsiveness, and print pass.** Test keyboard-only workflows, 375px layout, contrast/focus, screen-reader names, tables, modal focus, form errors, and patient/case print output. **Verify:** documented manual checks pass and automated accessibility checks used by the repository pass.
-- [ ] **[28] Validate production quality.** Run formatting, linting, unit tests, and production build; inspect output budgets and correct feature-caused failures. **Verify:** `npm run prettier:check`, `npm run lint`, `npm test`, and `npm run webapp:prod` succeed.
-- [ ] **[29] Produce implementation handoff notes.** Record each `SPEC GAP #n`, approved decision, known backend dependency, mock-to-HTTP replacement point, model/JDL reconciliation, and final component/route coverage. **Verify:** every `spec.md` §5 route and §6 inventory item maps to an implementation or an explicit JHipster extension.
+- [x] **[26] Add feature-level unit tests and route integration tests.** Cover mock services, authority resolution, all shared primitives, URL state, mutations, dialogs, and responsive screen composition. **Verify:** relevant Jest suites pass with the project’s configured runner.
+- [x] **[27] Complete accessibility, responsiveness, and print pass.** Test keyboard-only workflows, 375px layout, contrast/focus, screen-reader names, tables, modal focus, form errors, and patient/case print output. **Verify:** documented manual checks pass and automated accessibility checks used by the repository pass.
+- [x] **[28] Validate production quality.** Run formatting, linting, unit tests, and production build; inspect output budgets and correct feature-caused failures. **Verify:** `npm run prettier:check`, `npm run lint`, `npm test`, and `npm run webapp:prod` succeed.
+- [x] **[29] Produce implementation handoff notes.** Record each `SPEC GAP #n`, approved decision, known backend dependency, mock-to-HTTP replacement point, model/JDL reconciliation, and final component/route coverage. **Verify:** every `spec.md` §5 route and §6 inventory item maps to an implementation or an explicit JHipster extension.
 
 ## Dependency flow
 

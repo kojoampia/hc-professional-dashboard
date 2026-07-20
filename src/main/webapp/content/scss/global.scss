@@ -8,6 +8,8 @@ HealthConnect design tokens and layout primitives
 
 :root {
   --hpd-color-primary-blue: #3e7cb1;
+  --hpd-color-primary: #3e7cb1;
+  --hpd-color-border: #bac5d1;
   --hpd-color-shell-border: #3e7cb1;
   --hpd-color-shell-background: #0b0f1a;
   --hpd-color-shell-background-end: #1b2a45;
@@ -60,6 +62,11 @@ HealthConnect design tokens and layout primitives
   box-shadow: var(--hpd-focus-ring);
 }
 
+.hpd-data-table__scroll:focus-visible {
+  outline: none;
+  box-shadow: var(--hpd-focus-ring);
+}
+
 .hpd-stat-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -90,7 +97,31 @@ HealthConnect design tokens and layout primitives
   }
 }
 
+@media screen and (max-width: 375px) {
+  .hpd-stat-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .pagination .page-link {
+    min-width: 2.5rem;
+  }
+
+  .table-responsive {
+    margin-inline: -0.25rem;
+  }
+}
+
 @media print {
+  @page {
+    margin: 12mm;
+  }
+
   .hpd-no-print,
   .navbar,
   .footer {
@@ -102,6 +133,30 @@ HealthConnect design tokens and layout primitives
     border: 0;
     background: var(--hpd-color-surface);
     color: var(--hpd-color-text-primary);
+  }
+
+  .hpd-route-overlay,
+  .hpd-route-overlay > div {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    background: var(--hpd-color-surface) !important;
+  }
+
+  .hpd-route-overlay .hpd-surface {
+    border-radius: 0;
+  }
+
+  .hpd-data-table {
+    width: 100% !important;
+    font-size: 10pt;
+  }
+
+  .hpd-data-table tr,
+  .hpd-panel {
+    break-inside: avoid;
   }
 }
 
