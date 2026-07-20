@@ -124,7 +124,8 @@
       "actions": "Actions"
     },
     "validation": {
-      "invalidFile": "Select a supported file within the allowed size."
+      "invalidFile": "Select a supported file within the allowed size.",
+      "required": "Complete all required fields."
     }
   }
 }

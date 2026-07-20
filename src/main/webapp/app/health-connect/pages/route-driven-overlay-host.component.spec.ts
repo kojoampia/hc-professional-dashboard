@@ -19,8 +19,9 @@ describe('RouteDrivenOverlayHostComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('[role="dialog"]').getAttribute('aria-modal')).toBe('true');
-    expect(document.activeElement).toBe(fixture.nativeElement.querySelector('button'));
-    (fixture.nativeElement.querySelector('button') as HTMLButtonElement).click();
+    const closeButton = fixture.nativeElement.querySelectorAll('button')[1] as HTMLButtonElement;
+    expect(document.activeElement).toBe(closeButton);
+    closeButton.click();
     expect(navigate).toHaveBeenCalledWith('/patients');
   });
 });

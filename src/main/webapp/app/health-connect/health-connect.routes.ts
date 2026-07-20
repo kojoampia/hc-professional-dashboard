@@ -16,6 +16,9 @@ const patientDirectoryPage = (): Promise<typeof import('./pages/patient-director
   import('./pages/patient-directory-page.component');
 const overlayHost = (): Promise<typeof import('./pages/route-driven-overlay-host.component')> =>
   import('./pages/route-driven-overlay-host.component');
+const patientRecordPage = (): Promise<typeof import('./pages/patient-record-page.component')> =>
+  import('./pages/patient-record-page.component');
+const caseDetailPage = (): Promise<typeof import('./pages/case-detail-page.component')> => import('./pages/case-detail-page.component');
 
 const routes: Routes = [
   {
@@ -42,17 +45,13 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        loadComponent: featurePage,
+        loadComponent: patientRecordPage,
         data: { titleKey: 'healthConnect.patient.identity' },
       },
       {
         path: 'cases/:caseId',
-        loadComponent: overlayHost,
-        data: {
-          titleKey: 'healthConnect.case.detail',
-          closeUrl: '/patients',
-        },
-        children: [{ path: '', loadComponent: featurePage, data: { titleKey: 'healthConnect.case.detail' } }],
+        loadComponent: caseDetailPage,
+        data: { titleKey: 'healthConnect.case.detail' },
       },
     ],
   },
@@ -71,7 +70,7 @@ const routes: Routes = [
       titleKey: 'healthConnect.case.detail',
       closeUrl: '/cases',
     },
-    children: [{ path: '', loadComponent: featurePage, data: { titleKey: 'healthConnect.case.detail' } }],
+    children: [{ path: '', loadComponent: caseDetailPage, data: { titleKey: 'healthConnect.case.detail' } }],
   },
   {
     path: 'duty-roster',

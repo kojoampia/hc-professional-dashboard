@@ -124,7 +124,8 @@
       "actions": "Actions"
     },
     "validation": {
-      "invalidFile": "Sélectionnez un fichier pris en charge dont la taille est autorisée."
+      "invalidFile": "Sélectionnez un fichier pris en charge dont la taille est autorisée.",
+      "required": "Remplissez tous les champs obligatoires."
     }
   }
 }

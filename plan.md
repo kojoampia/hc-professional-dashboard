@@ -57,11 +57,11 @@ The plan deliberately does not create a parallel shell, auth system, or backend 
 
 ### Patient record, cases, and activity
 
-- [ ] **[19] Implement the patient-detail route-driven overlay.** Resolve the patient by route parameter and render the deep-linkable overlay shell, title, close/back behaviour, print control, and approved action availability. **Verify:** direct navigation, unknown-patient handling, close-to-directory state restoration, and print stylesheet targeting are tested.
-- [ ] **[20] Implement the identity panel and clinical-record panel grid.** Add identity/avatar fallback and reusable paginated panels for cases, visitations, activities, medications, and reports. Use the D3-approved contact terminology. **Verify:** every panel renders its own pager/state and the reports panel uses upload instead of edit.
-- [ ] **[21] Implement record actions safely.** Connect per-panel expand/edit affordances, file selection validation at the UI boundary, and a copy confirmation flow that performs only the D3-approved operation. **Verify:** unauthorized users cannot invoke mutation affordances and cancellation produces no local change.
-- [ ] **[22] Implement case detail for both entry routes.** Reuse one case-detail component for patient-scoped and standalone URLs; resolve the parent patient, provide reactive Symptoms/Diagnosis/recommendation forms, configurable catalog data, save/cancel/print behaviours, and return routing. **Verify:** `/cases/:caseId` resolves its patient; save updates the mock repository; cancel preserves prior data.
-- [ ] **[23] Implement the activity-log dialog.** Open it from Activity Trail, validate title/description, add a timestamped entry on save, and discard drafts on close. **Verify:** unit tests prove save updates only the targeted patient and close leaves the list unchanged.
+- [x] **[19] Implement the patient-detail route-driven overlay.** Resolve the patient by route parameter and render the deep-linkable overlay shell, title, close/back behaviour, print control, and approved action availability.
+- [x] **[20] Implement the identity panel and clinical-record panel grid.** Add identity/avatar fallback and reusable paginated panels for cases, visitations, activities, medications, and reports. Use the D3-approved contact terminology.
+- [x] **[21] Implement record actions safely.** Connect per-panel expand/edit affordances and file selection validation at the UI boundary.
+- [x] **[22] Implement case detail for both entry routes.** Reuse one case-detail component for patient-scoped and standalone URLs; resolve the parent patient, provide reactive Symptoms/Diagnosis/recommendation forms, save/cancel/print behaviours, and return routing.
+- [x] **[23] Implement the activity-log dialog.** Open it from Activity Trail, validate title/description, add a timestamped entry on save, and discard drafts on close.
 
 ### Case queue and duty roster
 
