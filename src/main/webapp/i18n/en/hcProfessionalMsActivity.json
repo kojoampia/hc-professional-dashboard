@@ -1,0 +1,30 @@
+{
+  "professionalDashboardApp": {
+    "hcprofessionalServiceActivity": {
+      "home": {
+        "title": "Activities",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Activity",
+        "createOrEditLabel": "Create or edit a Activity",
+        "notFound": "No Activities found"
+      },
+      "created": "A new Activity is created with identifier {{ param }}",
+      "updated": "A Activity is updated with identifier {{ param }}",
+      "deleted": "A Activity is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Activity {{ id }}?"
+      },
+      "detail": {
+        "title": "Activity"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "patientId": "Patient Id",
+      "createdDate": "Created Date",
+      "createdBy": "Created By",
+      "modifiedDate": "Modified Date",
+      "modifiedBy": "Modified By"
+    }
+  }
+}

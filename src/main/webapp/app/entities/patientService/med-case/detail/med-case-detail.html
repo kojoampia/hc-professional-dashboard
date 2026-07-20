@@ -1,0 +1,60 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (medCase(); as medCaseRef) {
+    <div>
+      <h2 data-cy="medCaseDetailsHeading">
+        <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.detail.title">Med Case</span>
+      </h2>
+
+      <hr />
+
+      <hpd-alert-error />
+
+      <hpd-alert />
+
+      <dl class="row-md jh-entity-details">
+        <dt><span hpdTranslate="global.field.id">ID</span></dt>
+        <dd>
+          <span>{{ medCaseRef.id }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.symptoms">Symptoms</span></dt>
+        <dd>
+          <span>{{ medCaseRef.symptoms }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.diagnoses">Diagnoses</span></dt>
+        <dd>
+          <span>{{ medCaseRef.diagnoses }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.recommendations">Recommendations</span></dt>
+        <dd>
+          <span>{{ medCaseRef.recommendations }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdDate">Created Date</span></dt>
+        <dd>
+          <span>{{ medCaseRef.createdDate | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdBy">Created By</span></dt>
+        <dd>
+          <span>{{ medCaseRef.createdBy }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedDate">Modified Date</span></dt>
+        <dd>
+          <span>{{ medCaseRef.modifiedDate | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedBy">Modified By</span></dt>
+        <dd>
+          <span>{{ medCaseRef.modifiedBy }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left" />&nbsp;<span hpdTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/med-case', medCaseRef.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt" />&nbsp;<span hpdTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+    }
+  </div>
+</div>

@@ -2,7 +2,7 @@
   "annotations": {
     "changelogDate": "20240320235005"
   },
-  "clientRootFolder": "professionalMs",
+  "clientRootFolder": "professionalService",
   "databaseType": "mongodb",
   "dto": "no",
   "entityTableName": "jhi_document",
@@ -17,7 +17,7 @@
     },
     {
       "fieldName": "data",
-      "fieldType": "byte[]",
+      "fieldType": "ByteBuffer",
       "fieldTypeBlobContent": "data"
     },
     {
@@ -34,11 +34,15 @@
       "fieldType": "LocalDate"
     },
     {
-      "fieldName": "lastModifiedBy",
+      "fieldName": "createdBy",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "modifiedBy",
       "fieldType": "String"
     }
   ],
-  "microserviceName": "hcProfessionalMs",
+  "microserviceName": "hcProfessionalService",
   "name": "Document",
   "pagination": "no",
   "readOnly": false,

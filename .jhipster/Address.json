@@ -3,7 +3,7 @@
     "changelogDate": "20240206205816"
   },
   "changelogDate": "20240206205816",
-  "clientRootFolder": "professionalMS",
+  "clientRootFolder": "professionalService",
   "databaseType": "mongodb",
   "entityTableName": "address",
   "fields": [
@@ -64,7 +64,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "hcProfessionalMs",
+  "microserviceName": "hcprofessionalService",
   "name": "Address",
   "pagination": "no",
   "readOnly": false,

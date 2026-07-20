@@ -1,0 +1,30 @@
+{
+  "professionalDashboardApp": {
+    "hcPatientServiceMedCase": {
+      "home": {
+        "title": "Med Cases",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Med Case",
+        "createOrEditLabel": "Create or edit a Med Case",
+        "notFound": "No Med Cases found"
+      },
+      "created": "A new Med Case is created with identifier {{ param }}",
+      "updated": "A Med Case is updated with identifier {{ param }}",
+      "deleted": "A Med Case is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Med Case {{ id }}?"
+      },
+      "detail": {
+        "title": "Med Case"
+      },
+      "id": "ID",
+      "symptoms": "Symptoms",
+      "diagnoses": "Diagnoses",
+      "recommendations": "Recommendations",
+      "createdDate": "Created Date",
+      "createdBy": "Created By",
+      "modifiedDate": "Modified Date",
+      "modifiedBy": "Modified By"
+    }
+  }
+}

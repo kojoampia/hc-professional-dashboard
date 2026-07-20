@@ -1,0 +1,84 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (address(); as addressRef) {
+    <div>
+      <h2 data-cy="addressDetailsHeading">
+        <span hpdTranslate="professionalDashboardApp.professionalServiceAddress.detail.title">Address</span>
+      </h2>
+
+      <hr />
+
+      <hpd-alert-error />
+
+      <hpd-alert />
+
+      <dl class="row-md jh-entity-details">
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceAddress.id">Id</span></dt>
+        <dd>
+          <span>{{ addressRef.id }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceAddress.digitalAddress">Digital Address</span></dt>
+        <dd>
+          <span>{{ addressRef.digitalAddress }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceAddress.streetAddress">Street Address</span></dt>
+        <dd>
+          <span>{{ addressRef.streetAddress }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceAddress.areaCode">Area Code</span></dt>
+        <dd>
+          <span>{{ addressRef.areaCode }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceAddress.town">Town</span></dt>
+        <dd>
+          <span>{{ addressRef.town }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceAddress.city">City</span></dt>
+        <dd>
+          <span>{{ addressRef.city }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceAddress.district">District</span></dt>
+        <dd>
+          <span>{{ addressRef.district }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceAddress.state">State</span></dt>
+        <dd>
+          <span>{{ addressRef.state }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceAddress.region">Region</span></dt>
+        <dd>
+          <span>{{ addressRef.region }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceAddress.country">Country</span></dt>
+        <dd>
+          <span>{{ addressRef.country }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceAddress.createdDate">Created Date</span></dt>
+        <dd>
+          <span>{{ addressRef.createdDate | formatMediumDate }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceAddress.modifiedDate">Modified Date</span></dt>
+        <dd>
+          <span>{{ addressRef.modifiedDate | formatMediumDate }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceAddress.createdBy">Created By</span></dt>
+        <dd>
+          <span>{{ addressRef.createdBy }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceAddress.modifiedBy">Modified By</span></dt>
+        <dd>
+          <span>{{ addressRef.modifiedBy }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left" />&nbsp;<span hpdTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/address', addressRef.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt" />&nbsp;<span hpdTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+    }
+  </div>
+</div>

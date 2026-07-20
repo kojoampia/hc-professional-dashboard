@@ -24,16 +24,16 @@ describe('Stat e2e test', () => {
   });
 
   beforeEach(() => {
-    cy.intercept('GET', '/services/professionalms/api/stats+(?*|)').as('entitiesRequest');
-    cy.intercept('POST', '/services/professionalms/api/stats').as('postEntityRequest');
-    cy.intercept('DELETE', '/services/professionalms/api/stats/*').as('deleteEntityRequest');
+    cy.intercept('GET', '/services/professionalService/api/stats+(?*|)').as('entitiesRequest');
+    cy.intercept('POST', '/services/professionalService/api/stats').as('postEntityRequest');
+    cy.intercept('DELETE', '/services/professionalService/api/stats/*').as('deleteEntityRequest');
   });
 
   afterEach(() => {
     if (stat) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/services/professionalms/api/stats/${stat.id}`,
+        url: `/services/professionalService/api/stats/${stat.id}`,
       }).then(() => {
         stat = undefined;
       });
@@ -78,7 +78,7 @@ describe('Stat e2e test', () => {
       beforeEach(() => {
         cy.authenticatedRequest({
           method: 'POST',
-          url: '/services/professionalms/api/stats',
+          url: '/services/professionalService/api/stats',
           body: statSample,
         }).then(({ body }) => {
           stat = body;
@@ -86,7 +86,7 @@ describe('Stat e2e test', () => {
           cy.intercept(
             {
               method: 'GET',
-              url: '/services/professionalms/api/stats+(?*|)',
+              url: '/services/professionalService/api/stats+(?*|)',
               times: 1,
             },
             {

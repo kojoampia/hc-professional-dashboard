@@ -6,13 +6,13 @@ The models in `src/main/webapp/app/health-connect/health-connect.models.ts` are 
 
 Status meanings:
 
-- **Existing**: a generated professionalMS client and endpoint path are present in this frontend.
+- **Existing**: a generated professionalService client and endpoint path are present in this frontend.
 - **Missing**: no generated client/model expresses the required feature contract.
 - **Awaiting confirmation**: an adjacent generated shape exists, but its relationship, semantics, or API fields cannot safely be assumed.
 
 ## Feature-model mapping
 
-| Frontend model / need                                                         | `hc-professional-spec.md` §7 basis             | Existing professionalMS client                                                                                                                                                                                     | Status                | Required backend reconciliation                                                                                                                                                                                   |
+| Frontend model / need                                                         | `hc-professional-spec.md` §7 basis             | Existing professionalService client                                                                                                                                                                                     | Status                | Required backend reconciliation                                                                                                                                                                                   |
 | ----------------------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `PatientRecord.patient`, `PatientListRow`, `PatientIdentity`                  | §7.2 `Profile`                                 | `ProfileService` (`api/profiles`) and `IProfile` expose name parts, birth date, sex, phones, email, `contacts`, `address`, and `team`.                                                                             | Awaiting confirmation | Confirm which Profiles are patients, a patient-directory query/sort contract, avatar, and a typed emergency-contact/next-of-kin relation. Current `contacts` is a string, not the §7.2 self-reference.            |
 | Patient address details                                                       | §7.2 `Address`                                 | `AddressService` (`api/addresses`) and `IAddress` expose digital/street address, town/city/district/state/region/country.                                                                                          | Existing              | Confirm Profile-to-Address lookup/embedding and terminology mapping (`townDistrict`/`cityState` in §7 versus current split fields).                                                                               |
@@ -29,7 +29,7 @@ Status meanings:
 
 ## Existing endpoint inventory
 
-The generated professionalMS service classes currently construct these endpoint paths through `ApplicationConfigService`: `api/profiles`, `api/addresses`, `api/documents`, `api/reports`, `api/tasks`, `api/medications`, `api/teams`, `api/memberships`, `api/metadata`, `api/stats`, `api/hc-credentials`, and `api/hc-pay-options`. Their presence is client code only; this document does not assert that a deployed backend supports every route or the feature relationships above.
+The generated professionalService service classes currently construct these endpoint paths through `ApplicationConfigService`: `api/profiles`, `api/addresses`, `api/documents`, `api/reports`, `api/tasks`, `api/medications`, `api/teams`, `api/memberships`, `api/metadata`, `api/stats`, `api/hc-credentials`, and `api/hc-pay-options`. Their presence is client code only; this document does not assert that a deployed backend supports every route or the feature relationships above.
 
 ## Integration sequence
 

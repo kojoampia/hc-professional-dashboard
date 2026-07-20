@@ -1,0 +1,180 @@
+<div>
+  <h2 id="page-heading" data-cy="ProfileHeading">
+    <span hpdTranslate="professionalDashboardApp.professionalServiceProfile.home.title">Profiles</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
+        <fa-icon icon="sync" [animation]="isLoading() ? 'spin' : undefined" />
+        <span hpdTranslate="professionalDashboardApp.professionalServiceProfile.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-profile"
+        [routerLink]="['/profile/new']"
+      >
+        <fa-icon icon="plus" />
+        <span hpdTranslate="professionalDashboardApp.professionalServiceProfile.home.createLabel">Create a new Profile</span>
+      </button>
+    </div>
+  </h2>
+
+  <hpd-alert-error />
+
+  <hpd-alert />
+
+  @if (profiles().length === 0) {
+  <div class="alert alert-warning" id="no-result">
+    <span hpdTranslate="professionalDashboardApp.professionalServiceProfile.home.notFound">No Profiles found</span>
+  </div>
+  } @else {
+  <div class="table-responsive table-entities" id="entities">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr hpdSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+          <th scope="col" hpdSortBy="id">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceProfile.id">Id</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="firstName">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceProfile.firstName">First Name</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="middleNames">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceProfile.middleNames">Middle Names</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="lastName">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceProfile.lastName">Last Name</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="birthDate">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceProfile.birthDate">Birth Date</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="sex">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceProfile.sex">Sex</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="mobilePhone">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceProfile.mobilePhone">Mobile Phone</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="phoneNumber">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceProfile.phoneNumber">Phone Number</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="email">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceProfile.email">Email</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="address">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceProfile.address">Address</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="rosterId">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceProfile.rosterId">Roster Id</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="teamId">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceProfile.teamId">Team Id</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (profile of profiles(); track trackId(profile)) {
+        <tr data-cy="entityTable">
+          <td><a [routerLink]="['/profile', profile.id, 'view']">{{ profile.id }}</a></td>
+          <td>{{ profile.firstName }}</td>
+          <td>{{ profile.middleNames }}</td>
+          <td>{{ profile.lastName }}</td>
+          <td>{{ profile.birthDate | formatMediumDate }}</td>
+          <td>{{ profile.sex }}</td>
+          <td>{{ profile.mobilePhone }}</td>
+          <td>{{ profile.phoneNumber }}</td>
+          <td>{{ profile.email }}</td>
+          <td>{{ profile.address }}</td>
+          <td>{{ profile.rosterId }}</td>
+          <td>{{ profile.teamId }}</td>
+          <td class="text-end">
+            <div class="btn-group">
+              <a [routerLink]="['/profile', profile.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                <fa-icon icon="eye" />
+                <span class="d-none d-md-inline" hpdTranslate="entity.action.view">View</span>
+              </a>
+
+              <a [routerLink]="['/profile', profile.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                <fa-icon icon="pencil-alt" />
+                <span class="d-none d-md-inline" hpdTranslate="entity.action.edit">Edit</span>
+              </a>
+
+              <button type="submit" (click)="delete(profile)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <fa-icon icon="times" />
+                <span class="d-none d-md-inline" hpdTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  } @if (profiles().length > 0) {
+  <div>
+    <div class="d-flex justify-content-center">
+      <hpd-item-count [params]="{ page: page(), totalItems: totalItems(), itemsPerPage: itemsPerPage() }" />
+    </div>
+
+    <div class="d-flex justify-content-center">
+      <ngb-pagination
+        [collectionSize]="totalItems()"
+        [page]="page()"
+        [pageSize]="itemsPerPage()"
+        [maxSize]="5"
+        [rotate]="true"
+        [boundaryLinks]="true"
+        (pageChange)="navigateToPage($event)"
+      />
+    </div>
+  </div>
+  }
+</div>

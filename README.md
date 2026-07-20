@@ -40,7 +40,7 @@ src/main/webapp/app/
 ├── core/        # auth, HTTP interceptors, app config, request/util helpers (singletons)
 ├── shared/      # reusable UI helpers, pipes, sort/pagination/filter/date/language/alert
 ├── entities/    # entity modules split by microservice namespace
-│   ├── professionalMS/   # Address, Team, Task, Membership, Report, Metadata,
+│   ├── professionalService/   # Address, Team, Task, Membership, Report, Metadata,
 │   │   #                 # Profile, HCCredential, HCPayOption, Stat, Medication, Document
 │   └── patientMS/        # parallel set (+ Condition) — present but not routed (see below)
 ├── dashboard/   # analytics dashboard: metric-panel, status-panel, DashboardService
@@ -57,7 +57,7 @@ src/main/webapp/app/
 
 Entities are grouped under two namespaces that mirror the backend microservices:
 
-- **`professionalMS`** — the entities this dashboard primarily manages. Their routes
+- **`professionalService`** — the entities this dashboard primarily manages. Their routes
   are registered in `src/main/webapp/app/entities/entity.routes.ts` (lazy-loaded).
   This is the active entity surface.
 - **`patientMS`** — a parallel set of the same domain entities plus `Condition`. The

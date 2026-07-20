@@ -1,0 +1,28 @@
+@if (medCase) {
+<form name="deleteForm" (ngSubmit)="confirmDelete(medCase.id!)">
+  <div class="modal-header">
+    <h4 class="modal-title" data-cy="medCaseDeleteDialogHeading" hpdTranslate="entity.delete.title">Confirm delete operation</h4>
+  </div>
+
+  <div class="modal-body">
+    <hpd-alert-error />
+    <p
+      id="hpd-delete-medCase-heading"
+      hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.delete.question"
+      [translateValues]="{ id: medCase.id }"
+    >
+      Are you sure you want to delete Med Case {{ medCase.id }}?
+    </p>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancel()">
+      <fa-icon icon="ban" />&nbsp;<span hpdTranslate="entity.action.cancel">Cancel</span>
+    </button>
+
+    <button id="hpd-confirm-delete-medCase" data-cy="entityConfirmDeleteButton" type="submit" class="btn btn-danger">
+      <fa-icon icon="times" />&nbsp;<span hpdTranslate="entity.action.delete">Delete</span>
+    </button>
+  </div>
+</form>
+}

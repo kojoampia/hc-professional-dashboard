@@ -1,0 +1,145 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="hpd-profile-heading"
+        data-cy="ProfileCreateUpdateHeading"
+        hpdTranslate="professionalDashboardApp.professionalServiceProfile.home.createOrEditLabel"
+      >
+        Create or edit a Profile
+      </h2>
+
+      <div>
+        <hpd-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+
+        <div class="mb-3">
+          <label class="form-label" for="field_id" hpdTranslate="professionalDashboardApp.professionalServiceProfile.id">Id</label>
+          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
+        }
+
+        <div class="mb-3">
+          <label class="form-label" for="field_firstName" hpdTranslate="professionalDashboardApp.professionalServiceProfile.firstName"
+            >First Name</label
+          >
+          <input type="text" class="form-control" name="firstName" id="field_firstName" data-cy="firstName" formControlName="firstName" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_middleNames" hpdTranslate="professionalDashboardApp.professionalServiceProfile.middleNames"
+            >Middle Names</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="middleNames"
+            id="field_middleNames"
+            data-cy="middleNames"
+            formControlName="middleNames"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_lastName" hpdTranslate="professionalDashboardApp.professionalServiceProfile.lastName"
+            >Last Name</label
+          >
+          <input type="text" class="form-control" name="lastName" id="field_lastName" data-cy="lastName" formControlName="lastName" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_birthDate" hpdTranslate="professionalDashboardApp.professionalServiceProfile.birthDate"
+            >Birth Date</label
+          >
+          <div class="input-group">
+            <input
+              id="field_birthDate"
+              data-cy="birthDate"
+              type="text"
+              class="form-control"
+              name="birthDate"
+              ngbDatepicker
+              #birthDateDp="ngbDatepicker"
+              formControlName="birthDate"
+            />
+            <button type="button" class="btn btn-secondary" (click)="birthDateDp.toggle()"><fa-icon icon="calendar-alt" /></button>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_sex" hpdTranslate="professionalDashboardApp.professionalServiceProfile.sex">Sex</label>
+          <input type="text" class="form-control" name="sex" id="field_sex" data-cy="sex" formControlName="sex" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_mobilePhone" hpdTranslate="professionalDashboardApp.professionalServiceProfile.mobilePhone"
+            >Mobile Phone</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="mobilePhone"
+            id="field_mobilePhone"
+            data-cy="mobilePhone"
+            formControlName="mobilePhone"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_phoneNumber" hpdTranslate="professionalDashboardApp.professionalServiceProfile.phoneNumber"
+            >Phone Number</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="phoneNumber"
+            id="field_phoneNumber"
+            data-cy="phoneNumber"
+            formControlName="phoneNumber"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_email" hpdTranslate="professionalDashboardApp.professionalServiceProfile.email">Email</label>
+          <input type="text" class="form-control" name="email" id="field_email" data-cy="email" formControlName="email" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_address" hpdTranslate="professionalDashboardApp.professionalServiceProfile.address"
+            >Address</label
+          >
+          <input type="text" class="form-control" name="address" id="field_address" data-cy="address" formControlName="address" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_rosterId" hpdTranslate="professionalDashboardApp.professionalServiceProfile.rosterId"
+            >Roster Id</label
+          >
+          <input type="text" class="form-control" name="rosterId" id="field_rosterId" data-cy="rosterId" formControlName="rosterId" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_teamId" hpdTranslate="professionalDashboardApp.professionalServiceProfile.teamId">Team Id</label>
+          <input type="text" class="form-control" name="teamId" id="field_teamId" data-cy="teamId" formControlName="teamId" />
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban" />&nbsp;<span hpdTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving()"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save" />&nbsp;<span hpdTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

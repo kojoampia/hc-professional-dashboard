@@ -1,0 +1,130 @@
+<div>
+  <h2 id="page-heading" data-cy="ActivityHeading">
+    <span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.home.title">Activities</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
+        <fa-icon icon="sync" [animation]="isLoading() ? 'spin' : undefined" />
+        <span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-activity"
+        [routerLink]="['/activity/new']"
+      >
+        <fa-icon icon="plus" />
+        <span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.home.createLabel">Create a new Activity</span>
+      </button>
+    </div>
+  </h2>
+
+  <hpd-alert-error />
+
+  <hpd-alert />
+
+  @if (activities().length === 0) {
+  <div class="alert alert-warning" id="no-result">
+    <span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.home.notFound">No Activities found</span>
+  </div>
+  } @else {
+  <div class="table-responsive table-entities" id="entities">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr hpdSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+          <th scope="col" hpdSortBy="id">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.id">Id</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="name">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.name">Name</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="description">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.description">Description</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="patientId">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.patientId">Patient Id</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="createdDate">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.createdDate">Created Date</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="createdBy">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.createdBy">Created By</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="modifiedDate">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.modifiedDate">Modified Date</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="modifiedBy">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.modifiedBy">Modified By</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (activity of activities(); track trackId(activity)) {
+        <tr data-cy="entityTable">
+          <td><a [routerLink]="['/activity', activity.id, 'view']">{{ activity.id }}</a></td>
+          <td>{{ activity.name }}</td>
+          <td>{{ activity.description }}</td>
+          <td>{{ activity.patientId }}</td>
+          <td>{{ activity.createdDate | formatMediumDatetime }}</td>
+          <td>{{ activity.createdBy }}</td>
+          <td>{{ activity.modifiedDate | formatMediumDatetime }}</td>
+          <td>{{ activity.modifiedBy }}</td>
+          <td class="text-end">
+            <div class="btn-group">
+              <a [routerLink]="['/activity', activity.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                <fa-icon icon="eye" />
+                <span class="d-none d-md-inline" hpdTranslate="entity.action.view">View</span>
+              </a>
+
+              <a [routerLink]="['/activity', activity.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                <fa-icon icon="pencil-alt" />
+                <span class="d-none d-md-inline" hpdTranslate="entity.action.edit">Edit</span>
+              </a>
+
+              <button type="submit" (click)="delete(activity)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <fa-icon icon="times" />
+                <span class="d-none d-md-inline" hpdTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+</div>

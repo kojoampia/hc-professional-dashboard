@@ -1,0 +1,52 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (metadata(); as metadataRef) {
+    <div>
+      <h2 data-cy="metadataDetailsHeading">
+        <span hpdTranslate="professionalDashboardApp.professionalServiceMetadata.detail.title">Metadata</span>
+      </h2>
+
+      <hr />
+
+      <hpd-alert-error />
+
+      <hpd-alert />
+
+      <dl class="row-md jh-entity-details">
+        <dt><span hpdTranslate="global.field.id">ID</span></dt>
+        <dd>
+          <span>{{ metadataRef.id }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceMetadata.createdBy">Created By</span></dt>
+        <dd>
+          <span>{{ metadataRef.createdBy }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceMetadata.modifiedBy">Modified By</span></dt>
+        <dd>
+          <span>{{ metadataRef.modifiedBy }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceMetadata.createdDate">Created Date</span></dt>
+        <dd>
+          <span>{{ metadataRef.createdDate | formatMediumDate }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceMetadata.modifiedDate">Modified Date</span></dt>
+        <dd>
+          <span>{{ metadataRef.modifiedDate | formatMediumDate }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.professionalServiceMetadata.data">Data</span></dt>
+        <dd>
+          <span>{{ metadataRef.data }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left" />&nbsp;<span hpdTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/metadata', metadataRef.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt" />&nbsp;<span hpdTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+    }
+  </div>
+</div>

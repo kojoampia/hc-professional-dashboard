@@ -24,16 +24,16 @@ describe('Profile e2e test', () => {
   });
 
   beforeEach(() => {
-    cy.intercept('GET', '/services/professionalms/api/profiles+(?*|)').as('entitiesRequest');
-    cy.intercept('POST', '/services/professionalms/api/profiles').as('postEntityRequest');
-    cy.intercept('DELETE', '/services/professionalms/api/profiles/*').as('deleteEntityRequest');
+    cy.intercept('GET', '/services/professionalService/api/profiles+(?*|)').as('entitiesRequest');
+    cy.intercept('POST', '/services/professionalService/api/profiles').as('postEntityRequest');
+    cy.intercept('DELETE', '/services/professionalService/api/profiles/*').as('deleteEntityRequest');
   });
 
   afterEach(() => {
     if (profile) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/services/professionalms/api/profiles/${profile.id}`,
+        url: `/services/professionalService/api/profiles/${profile.id}`,
       }).then(() => {
         profile = undefined;
       });
@@ -78,7 +78,7 @@ describe('Profile e2e test', () => {
       beforeEach(() => {
         cy.authenticatedRequest({
           method: 'POST',
-          url: '/services/professionalms/api/profiles',
+          url: '/services/professionalService/api/profiles',
           body: profileSample,
         }).then(({ body }) => {
           profile = body;
@@ -86,13 +86,13 @@ describe('Profile e2e test', () => {
           cy.intercept(
             {
               method: 'GET',
-              url: '/services/professionalms/api/profiles+(?*|)',
+              url: '/services/professionalService/api/profiles+(?*|)',
               times: 1,
             },
             {
               statusCode: 200,
               headers: {
-                link: '<http://localhost/services/professionalms/api/profiles?page=0&size=20>; rel="last",<http://localhost/services/professionalms/api/profiles?page=0&size=20>; rel="first"',
+                link: '<http://localhost/services/professionalService/api/profiles?page=0&size=20>; rel="last",<http://localhost/services/professionalService/api/profiles?page=0&size=20>; rel="first"',
               },
               body: [profile],
             },

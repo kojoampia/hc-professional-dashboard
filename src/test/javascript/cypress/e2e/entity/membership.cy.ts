@@ -24,16 +24,16 @@ describe('Membership e2e test', () => {
   });
 
   beforeEach(() => {
-    cy.intercept('GET', '/services/professionalms/api/memberships+(?*|)').as('entitiesRequest');
-    cy.intercept('POST', '/services/professionalms/api/memberships').as('postEntityRequest');
-    cy.intercept('DELETE', '/services/professionalms/api/memberships/*').as('deleteEntityRequest');
+    cy.intercept('GET', '/services/professionalService/api/memberships+(?*|)').as('entitiesRequest');
+    cy.intercept('POST', '/services/professionalService/api/memberships').as('postEntityRequest');
+    cy.intercept('DELETE', '/services/professionalService/api/memberships/*').as('deleteEntityRequest');
   });
 
   afterEach(() => {
     if (membership) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/services/professionalms/api/memberships/${membership.id}`,
+        url: `/services/professionalService/api/memberships/${membership.id}`,
       }).then(() => {
         membership = undefined;
       });
@@ -78,7 +78,7 @@ describe('Membership e2e test', () => {
       beforeEach(() => {
         cy.authenticatedRequest({
           method: 'POST',
-          url: '/services/professionalms/api/memberships',
+          url: '/services/professionalService/api/memberships',
           body: membershipSample,
         }).then(({ body }) => {
           membership = body;
@@ -86,7 +86,7 @@ describe('Membership e2e test', () => {
           cy.intercept(
             {
               method: 'GET',
-              url: '/services/professionalms/api/memberships+(?*|)',
+              url: '/services/professionalService/api/memberships+(?*|)',
               times: 1,
             },
             {

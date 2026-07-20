@@ -24,16 +24,16 @@ describe('Task e2e test', () => {
   });
 
   beforeEach(() => {
-    cy.intercept('GET', '/services/hcprofessionalms/api/tasks+(?*|)').as('entitiesRequest');
-    cy.intercept('POST', '/services/hcprofessionalms/api/tasks').as('postEntityRequest');
-    cy.intercept('DELETE', '/services/hcprofessionalms/api/tasks/*').as('deleteEntityRequest');
+    cy.intercept('GET', '/services/hcprofessionalService/api/tasks+(?*|)').as('entitiesRequest');
+    cy.intercept('POST', '/services/hcprofessionalService/api/tasks').as('postEntityRequest');
+    cy.intercept('DELETE', '/services/hcprofessionalService/api/tasks/*').as('deleteEntityRequest');
   });
 
   afterEach(() => {
     if (task) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/services/hcprofessionalms/api/tasks/${task.id}`,
+        url: `/services/hcprofessionalService/api/tasks/${task.id}`,
       }).then(() => {
         task = undefined;
       });
@@ -78,7 +78,7 @@ describe('Task e2e test', () => {
       beforeEach(() => {
         cy.authenticatedRequest({
           method: 'POST',
-          url: '/services/hcprofessionalms/api/tasks',
+          url: '/services/hcprofessionalService/api/tasks',
           body: taskSample,
         }).then(({ body }) => {
           task = body;
@@ -86,7 +86,7 @@ describe('Task e2e test', () => {
           cy.intercept(
             {
               method: 'GET',
-              url: '/services/hcprofessionalms/api/tasks+(?*|)',
+              url: '/services/hcprofessionalService/api/tasks+(?*|)',
               times: 1,
             },
             {

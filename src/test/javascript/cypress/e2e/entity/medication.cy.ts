@@ -24,16 +24,16 @@ describe('Medication e2e test', () => {
   });
 
   beforeEach(() => {
-    cy.intercept('GET', '/services/professionalms/api/medications+(?*|)').as('entitiesRequest');
-    cy.intercept('POST', '/services/professionalms/api/medications').as('postEntityRequest');
-    cy.intercept('DELETE', '/services/professionalms/api/medications/*').as('deleteEntityRequest');
+    cy.intercept('GET', '/services/professionalService/api/medications+(?*|)').as('entitiesRequest');
+    cy.intercept('POST', '/services/professionalService/api/medications').as('postEntityRequest');
+    cy.intercept('DELETE', '/services/professionalService/api/medications/*').as('deleteEntityRequest');
   });
 
   afterEach(() => {
     if (medication) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/services/professionalms/api/medications/${medication.id}`,
+        url: `/services/professionalService/api/medications/${medication.id}`,
       }).then(() => {
         medication = undefined;
       });
@@ -78,7 +78,7 @@ describe('Medication e2e test', () => {
       beforeEach(() => {
         cy.authenticatedRequest({
           method: 'POST',
-          url: '/services/professionalms/api/medications',
+          url: '/services/professionalService/api/medications',
           body: medicationSample,
         }).then(({ body }) => {
           medication = body;
@@ -86,7 +86,7 @@ describe('Medication e2e test', () => {
           cy.intercept(
             {
               method: 'GET',
-              url: '/services/professionalms/api/medications+(?*|)',
+              url: '/services/professionalService/api/medications+(?*|)',
               times: 1,
             },
             {

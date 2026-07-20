@@ -1,0 +1,220 @@
+<div>
+  <h2 id="page-heading" data-cy="AddressHeading">
+    <span hpdTranslate="professionalDashboardApp.professionalServiceAddress.home.title">Addresses</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
+        <fa-icon icon="sync" [animation]="isLoading() ? 'spin' : undefined" />
+        <span hpdTranslate="professionalDashboardApp.professionalServiceAddress.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-address"
+        [routerLink]="['/address/new']"
+      >
+        <fa-icon icon="plus" />
+        <span class="hidden-sm-down" hpdTranslate="professionalDashboardApp.professionalServiceAddress.home.createLabel"
+          >Create a new Address</span
+        >
+      </button>
+    </div>
+  </h2>
+
+  <hpd-alert-error />
+
+  <hpd-alert />
+
+  <form name="searchForm" class="row row-cols-sm-auto align-items-center">
+    <div class="col-sm-12">
+      <div class="input-group w-100 mt-3">
+        <label class="visually-hidden" for="currentSearch" hpdTranslate="professionalDashboardApp.professionalServiceAddress.home.search"
+          >Search for Address</label
+        >
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="currentSearch"
+          id="currentSearch"
+          name="currentSearch"
+          placeholder="{{ 'professionalDashboardApp.professionalServiceAddress.home.search' | translate }}"
+        />
+
+        <button class="btn btn-info" (click)="search(currentSearch())">
+          <fa-icon icon="search" />
+        </button>
+
+        @if (currentSearch()) {
+        <button class="btn btn-danger" (click)="search('')">
+          <fa-icon icon="trash-alt" />
+        </button>
+        }
+      </div>
+    </div>
+  </form>
+
+  @if (addresses().length === 0) {
+  <div class="alert alert-warning" id="no-result">
+    <span hpdTranslate="professionalDashboardApp.professionalServiceAddress.home.notFound">No Addresses found</span>
+  </div>
+  } @else {
+  <div class="table-responsive table-entities" id="entities">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr hpdSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+          <th scope="col" hpdSortBy="id">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceAddress.id">Id</span>
+              @if (!currentSearch()) {
+              <fa-icon class="p-1" icon="sort" />
+              }
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="digitalAddress">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceAddress.digitalAddress">Digital Address</span>
+              @if (!currentSearch()) {
+              <fa-icon class="p-1" icon="sort" />
+              }
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="streetAddress">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceAddress.streetAddress">Street Address</span>
+              @if (!currentSearch()) {
+              <fa-icon class="p-1" icon="sort" />
+              }
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="areaCode">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceAddress.areaCode">Area Code</span>
+              @if (!currentSearch()) {
+              <fa-icon class="p-1" icon="sort" />
+              }
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="town">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceAddress.town">Town</span>
+              @if (!currentSearch()) {
+              <fa-icon class="p-1" icon="sort" />
+              }
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="city">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceAddress.city">City</span>
+              @if (!currentSearch()) {
+              <fa-icon class="p-1" icon="sort" />
+              }
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="district">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceAddress.district">District</span>
+              @if (!currentSearch()) {
+              <fa-icon class="p-1" icon="sort" />
+              }
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="state">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceAddress.state">State</span>
+              @if (!currentSearch()) {
+              <fa-icon class="p-1" icon="sort" />
+              }
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="region">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceAddress.region">Region</span>
+              @if (!currentSearch()) {
+              <fa-icon class="p-1" icon="sort" />
+              }
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="country">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceAddress.country">Country</span>
+              @if (!currentSearch()) {
+              <fa-icon class="p-1" icon="sort" />
+              }
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="createdDate">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceAddress.createdDate">Created Date</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="modifiedDate">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceAddress.modifiedDate">Modified Date</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="createdBy">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceAddress.createdBy">Created By</span>
+              @if (!currentSearch()) {
+              <fa-icon class="p-1" icon="sort" />
+              }
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="modifiedBy">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.professionalServiceAddress.modifiedBy">Modified By</span>
+              @if (!currentSearch()) {
+              <fa-icon class="p-1" icon="sort" />
+              }
+            </div>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (address of addresses(); track trackId(address)) {
+        <tr data-cy="entityTable">
+          <td><a [routerLink]="['/address', address.id, 'view']">{{ address.id }}</a></td>
+          <td>{{ address.digitalAddress }}</td>
+          <td>{{ address.streetAddress }}</td>
+          <td>{{ address.areaCode }}</td>
+          <td>{{ address.town }}</td>
+          <td>{{ address.city }}</td>
+          <td>{{ address.district }}</td>
+          <td>{{ address.state }}</td>
+          <td>{{ address.region }}</td>
+          <td>{{ address.country }}</td>
+          <td>{{ address.createdDate | formatMediumDate }}</td>
+          <td>{{ address.modifiedDate | formatMediumDate }}</td>
+          <td>{{ address.createdBy }}</td>
+          <td>{{ address.modifiedBy }}</td>
+          <td class="text-end">
+            <div class="btn-group">
+              <a [routerLink]="['/address', address.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                <fa-icon icon="eye" />
+                <span class="d-none d-md-inline" hpdTranslate="entity.action.view">View</span>
+              </a>
+
+              <a [routerLink]="['/address', address.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                <fa-icon icon="pencil-alt" />
+                <span class="d-none d-md-inline" hpdTranslate="entity.action.edit">Edit</span>
+              </a>
+
+              <button type="submit" (click)="delete(address)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <fa-icon icon="times" />
+                <span class="d-none d-md-inline" hpdTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+</div>

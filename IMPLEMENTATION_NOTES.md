@@ -55,7 +55,7 @@ The required backend reconciliation is:
 - Custom authority provisioning and server-side authorization.
 - Aggregate analytics/search endpoints and pagination counts.
 
-Existing generated professionalMS clients are adjacent only: `Profile`, `Address`,
+Existing generated professionalService clients are adjacent only: `Profile`, `Address`,
 `Document`, `Report`, `Task`, `Medication`, `Team`, `Membership`, `Metadata`, `Stat`,
 `HC Credential`, and `HC Pay Option`. Their existence does not establish the clinical
 relationships above.

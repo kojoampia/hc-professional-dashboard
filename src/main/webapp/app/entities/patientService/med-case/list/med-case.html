@@ -1,0 +1,130 @@
+<div>
+  <h2 id="page-heading" data-cy="MedCaseHeading">
+    <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.home.title">Med Cases</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
+        <fa-icon icon="sync" [animation]="isLoading() ? 'spin' : undefined" />
+        <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-med-case"
+        [routerLink]="['/med-case/new']"
+      >
+        <fa-icon icon="plus" />
+        <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.home.createLabel">Create a new Med Case</span>
+      </button>
+    </div>
+  </h2>
+
+  <hpd-alert-error />
+
+  <hpd-alert />
+
+  @if (medCases().length === 0) {
+  <div class="alert alert-warning" id="no-result">
+    <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.home.notFound">No Med Cases found</span>
+  </div>
+  } @else {
+  <div class="table-responsive table-entities" id="entities">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr hpdSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+          <th scope="col" hpdSortBy="id">
+            <div class="d-flex">
+              <span hpdTranslate="global.field.id">ID</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="symptoms">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.symptoms">Symptoms</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="diagnoses">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.diagnoses">Diagnoses</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="recommendations">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.recommendations">Recommendations</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="createdDate">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdDate">Created Date</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="createdBy">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdBy">Created By</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="modifiedDate">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedDate">Modified Date</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col" hpdSortBy="modifiedBy">
+            <div class="d-flex">
+              <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedBy">Modified By</span>
+
+              <fa-icon class="p-1" icon="sort" />
+            </div>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody infinite-scroll (scrolled)="loadNextPage()" [infiniteScrollDisabled]="!hasMorePage()" [infiniteScrollDistance]="0">
+        @for (medCase of medCases(); track trackId(medCase)) {
+        <tr data-cy="entityTable">
+          <td><a [routerLink]="['/med-case', medCase.id, 'view']">{{ medCase.id }}</a></td>
+          <td>{{ medCase.symptoms }}</td>
+          <td>{{ medCase.diagnoses }}</td>
+          <td>{{ medCase.recommendations }}</td>
+          <td>{{ medCase.createdDate | formatMediumDatetime }}</td>
+          <td>{{ medCase.createdBy }}</td>
+          <td>{{ medCase.modifiedDate | formatMediumDatetime }}</td>
+          <td>{{ medCase.modifiedBy }}</td>
+          <td class="text-end">
+            <div class="btn-group">
+              <a [routerLink]="['/med-case', medCase.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                <fa-icon icon="eye" />
+                <span class="d-none d-md-inline" hpdTranslate="entity.action.view">View</span>
+              </a>
+
+              <a [routerLink]="['/med-case', medCase.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                <fa-icon icon="pencil-alt" />
+                <span class="d-none d-md-inline" hpdTranslate="entity.action.edit">Edit</span>
+              </a>
+
+              <button type="submit" (click)="delete(medCase)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <fa-icon icon="times" />
+                <span class="d-none d-md-inline" hpdTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+</div>

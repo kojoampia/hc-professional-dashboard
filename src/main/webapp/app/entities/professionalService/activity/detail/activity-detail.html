@@ -1,0 +1,60 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (activity(); as activityRef) {
+    <div>
+      <h2 data-cy="activityDetailsHeading">
+        <span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.detail.title">Activity</span>
+      </h2>
+
+      <hr />
+
+      <hpd-alert-error />
+
+      <hpd-alert />
+
+      <dl class="row-md jh-entity-details">
+        <dt><span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.id">Id</span></dt>
+        <dd>
+          <span>{{ activityRef.id }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.name">Name</span></dt>
+        <dd>
+          <span>{{ activityRef.name }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.description">Description</span></dt>
+        <dd>
+          <span>{{ activityRef.description }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.patientId">Patient Id</span></dt>
+        <dd>
+          <span>{{ activityRef.patientId }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.createdDate">Created Date</span></dt>
+        <dd>
+          <span>{{ activityRef.createdDate | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.createdBy">Created By</span></dt>
+        <dd>
+          <span>{{ activityRef.createdBy }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.modifiedDate">Modified Date</span></dt>
+        <dd>
+          <span>{{ activityRef.modifiedDate | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span hpdTranslate="professionalDashboardApp.hcprofessionalServiceActivity.modifiedBy">Modified By</span></dt>
+        <dd>
+          <span>{{ activityRef.modifiedBy }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left" />&nbsp;<span hpdTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/activity', activityRef.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt" />&nbsp;<span hpdTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+    }
+  </div>
+</div>

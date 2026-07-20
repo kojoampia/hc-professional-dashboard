@@ -24,16 +24,16 @@ describe('Address e2e test', () => {
   });
 
   beforeEach(() => {
-    cy.intercept('GET', '/services/hcprofessionalms/api/addresses+(?*|)').as('entitiesRequest');
-    cy.intercept('POST', '/services/hcprofessionalms/api/addresses').as('postEntityRequest');
-    cy.intercept('DELETE', '/services/hcprofessionalms/api/addresses/*').as('deleteEntityRequest');
+    cy.intercept('GET', '/services/hcprofessionalService/api/addresses+(?*|)').as('entitiesRequest');
+    cy.intercept('POST', '/services/hcprofessionalService/api/addresses').as('postEntityRequest');
+    cy.intercept('DELETE', '/services/hcprofessionalService/api/addresses/*').as('deleteEntityRequest');
   });
 
   afterEach(() => {
     if (address) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/services/hcprofessionalms/api/addresses/${address.id}`,
+        url: `/services/hcprofessionalService/api/addresses/${address.id}`,
       }).then(() => {
         address = undefined;
       });
@@ -78,7 +78,7 @@ describe('Address e2e test', () => {
       beforeEach(() => {
         cy.authenticatedRequest({
           method: 'POST',
-          url: '/services/hcprofessionalms/api/addresses',
+          url: '/services/hcprofessionalService/api/addresses',
           body: addressSample,
         }).then(({ body }) => {
           address = body;
@@ -86,7 +86,7 @@ describe('Address e2e test', () => {
           cy.intercept(
             {
               method: 'GET',
-              url: '/services/hcprofessionalms/api/addresses+(?*|)',
+              url: '/services/hcprofessionalService/api/addresses+(?*|)',
               times: 1,
             },
             {

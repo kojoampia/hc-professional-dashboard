@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repository actually is
 
-A JHipster 8.1.0–generated **Angular frontend gateway** (`hc-professional-dashboard`, npm package `hc-professional-dashboard`) for a healthcare microservice architecture. The app groups entity CRUD UI under two microservice namespaces — `professionalMS` and `patientMS`.
+A JHipster 8.1.0–generated **Angular frontend gateway** (`hc-professional-dashboard`, npm package `hc-professional-dashboard`) for a healthcare microservice architecture. The app groups entity CRUD UI under two microservice namespaces — `professionalService` and `patientMS`.
 
 **Important reality check:** `pom.xml`, `AGENTS.md`, and `README.md` describe a full Spring Boot 4 / Java 26 backend (Controllers/Services/Repositories, Kafka, MinIO, Liquibase, etc.), but **there is no Java source in this repo** (`src/main/java` and `src/main/resources` do not exist; `.yo-rc.json` sets `"skipServer": true`). The backend microservices live in separate repositories. `pom.xml` is retained from the JHipster generator and is used primarily by the `frontend-maven-plugin` to build the Angular app. Do not assume Java/Spring code exists here — verify before referencing it.
 
@@ -37,7 +37,7 @@ npm run backend:unit:test                  # maven verify skipping npm (runs any
 Jest (Angular spec):
 
 ```bash
-npx jest --config jest.conf.js src/main/webapp/app/entities/professionalMS/address/service/address.service.spec.ts
+npx jest --config jest.conf.js src/main/webapp/app/entities/professionalService/address/service/address.service.spec.ts
 npx ng test --include="**/address.service.spec.ts"   # via Angular CLI
 ```
 
@@ -52,7 +52,7 @@ npx cypress run --spec src/test/javascript/cypress/e2e/<file>.spec.ts
 - Dev API traffic is proxied by `webpack/proxy.conf.js` to `http://localhost:5505` (paths: `/api`, `/services`, `/management`, `/v3/api-docs`, `/auth`, `/health`, `/h2-console`). Verify the backend target is running before debugging API issues.
 - Build API URLs through `ApplicationConfigService.getEndpointFor(api, microservice?)` (`app/core/config/application-config.service.ts`) — never hardcode service paths.
   - `getEndpointFor('api/addresses')` → `/api/addresses` (gateway/monolith route)
-  - `getEndpointFor('api/...', 'professionalms')` → `/services/professionalms/api/...` (microservice route)
+  - `getEndpointFor('api/...', 'professionalService')` → `/services/professionalService/api/...` (microservice route)
 - Entity services (`app/entities/<ms>/<entity>/service/*.service.ts`) follow the JHipster pattern: typed model interface + `New*`/`PartialUpdate*` aliases, REST `Rest*` shapes (dayjs fields serialized to/from strings), and `createRequestOption` for query/pagination params. Match this pattern for new entities.
 
 ## Frontend architecture
@@ -62,8 +62,8 @@ npx cypress run --spec src/test/javascript/cypress/e2e/<file>.spec.ts
   - `core/` — authentication, HTTP interceptors, app config, low-level request/util helpers (singletons).
   - `shared/` — reusable UI helpers, pipes, sort/pagination/filter/date/language/alert utilities.
   - `entities/` — entity modules, split by microservice namespace:
-    - `entities/professionalMS/` and `entities/patientMS/` — parallel sets of the same domain entities (address, team, task, membership, report, metadata, profile, hc-credential, hc-pay-option, stat, medication; `patientMS` also has `condition`). Each entity has `list`, `detail`, `update`, `delete`, `service`, `route`, plus `<entity>.model.ts` and `<entity>.routes.ts`.
-    - `entities/entity.routes.ts` aggregates lazy-loaded entity routes — **currently only `professionalMS` routes are registered**; `patientMS` code is present but not wired in (it targets a separate patient microservice). The `/* jhipster-needle-add-entity-route */` comment is the JHipster generator's insertion point.
+    - `entities/professionalService/` and `entities/patientMS/` — parallel sets of the same domain entities (address, team, task, membership, report, metadata, profile, hc-credential, hc-pay-option, stat, medication; `patientMS` also has `condition`). Each entity has `list`, `detail`, `update`, `delete`, `service`, `route`, plus `<entity>.model.ts` and `<entity>.routes.ts`.
+    - `entities/entity.routes.ts` aggregates lazy-loaded entity routes — **currently only `professionalService` routes are registered**; `patientMS` code is present but not wired in (it targets a separate patient microservice). The `/* jhipster-needle-add-entity-route */` comment is the JHipster generator's insertion point.
   - `layouts/` — shell/navbar/footer/error/profiles.
   - `admin/`, `account/`, `home/`, `login/`, `dashboard/`, `pages/`, `widgets/` (histogram, piechart, treemap, slides, chatbot, filter).
 - Routing is standalone (`app.routes.ts`) with lazy `loadChildren` per area; route guards via `UserRouteAccessService` with `Authority` constants (`app/config/authority.constants.ts`). i18n is enabled (en/fr/de).

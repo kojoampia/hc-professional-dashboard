@@ -1,0 +1,60 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (membership) {
+      <div>
+        <h2 data-cy="membershipDetailsHeading">
+          <span jhiTranslate="professionalDashboardApp.professionalServiceMembership.detail.title">Membership</span>
+        </h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ membership.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="professionalDashboardApp.professionalServiceMembership.name">Name</span></dt>
+          <dd>
+            <span>{{ membership.name }}</span>
+          </dd>
+          <dt><span jhiTranslate="professionalDashboardApp.professionalServiceMembership.description">Description</span></dt>
+          <dd>
+            <span>{{ membership.description }}</span>
+          </dd>
+          <dt><span jhiTranslate="professionalDashboardApp.professionalServiceMembership.status">Status</span></dt>
+          <dd>
+            <span>{{ membership.status }}</span>
+          </dd>
+          <dt><span jhiTranslate="professionalDashboardApp.professionalServiceMembership.createdDate">Created Date</span></dt>
+          <dd>
+            <span>{{ membership.createdDate | formatMediumDate }}</span>
+          </dd>
+          <dt><span jhiTranslate="professionalDashboardApp.professionalServiceMembership.modifiedDate">Modified Date</span></dt>
+          <dd>
+            <span>{{ membership.modifiedDate | formatMediumDate }}</span>
+          </dd>
+          <dt><span jhiTranslate="professionalDashboardApp.professionalServiceMembership.createdBy">Created By</span></dt>
+          <dd>
+            <span>{{ membership.createdBy }}</span>
+          </dd>
+          <dt><span jhiTranslate="professionalDashboardApp.professionalServiceMembership.modifiedBy">Modified By</span></dt>
+          <dd>
+            <span>{{ membership.modifiedBy }}</span>
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/membership', membership.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

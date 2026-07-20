@@ -24,16 +24,16 @@ describe('Condition e2e test', () => {
   });
 
   beforeEach(() => {
-    cy.intercept('GET', '/services/professionalms/api/conditions+(?*|)').as('entitiesRequest');
-    cy.intercept('POST', '/services/professionalms/api/conditions').as('postEntityRequest');
-    cy.intercept('DELETE', '/services/professionalms/api/conditions/*').as('deleteEntityRequest');
+    cy.intercept('GET', '/services/professionalService/api/conditions+(?*|)').as('entitiesRequest');
+    cy.intercept('POST', '/services/professionalService/api/conditions').as('postEntityRequest');
+    cy.intercept('DELETE', '/services/professionalService/api/conditions/*').as('deleteEntityRequest');
   });
 
   afterEach(() => {
     if (condition) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/services/professionalms/api/conditions/${condition.id}`,
+        url: `/services/professionalService/api/conditions/${condition.id}`,
       }).then(() => {
         condition = undefined;
       });
@@ -78,7 +78,7 @@ describe('Condition e2e test', () => {
       beforeEach(() => {
         cy.authenticatedRequest({
           method: 'POST',
-          url: '/services/professionalms/api/conditions',
+          url: '/services/professionalService/api/conditions',
           body: conditionSample,
         }).then(({ body }) => {
           condition = body;
@@ -86,7 +86,7 @@ describe('Condition e2e test', () => {
           cy.intercept(
             {
               method: 'GET',
-              url: '/services/professionalms/api/conditions+(?*|)',
+              url: '/services/professionalService/api/conditions+(?*|)',
               times: 1,
             },
             {

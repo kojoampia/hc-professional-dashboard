@@ -3,7 +3,7 @@
     "changelogDate": "20240206221158"
   },
   "changelogDate": "20240206221158",
-  "clientRootFolder": "professionalMS",
+  "clientRootFolder": "professionalService",
   "databaseType": "mongodb",
   "dto": "no",
   "entityTableName": "profile",
@@ -81,7 +81,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "professionalMS",
+  "microserviceName": "professionalService",
   "name": "Profile",
   "pagination": "pagination",
   "readOnly": false,

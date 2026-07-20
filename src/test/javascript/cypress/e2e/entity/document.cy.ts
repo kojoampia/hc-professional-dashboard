@@ -24,16 +24,16 @@ describe('Document e2e test', () => {
   });
 
   beforeEach(() => {
-    cy.intercept('GET', '/services/hcprofessionalms/api/documents+(?*|)').as('entitiesRequest');
-    cy.intercept('POST', '/services/hcprofessionalms/api/documents').as('postEntityRequest');
-    cy.intercept('DELETE', '/services/hcprofessionalms/api/documents/*').as('deleteEntityRequest');
+    cy.intercept('GET', '/services/hcprofessionalService/api/documents+(?*|)').as('entitiesRequest');
+    cy.intercept('POST', '/services/hcprofessionalService/api/documents').as('postEntityRequest');
+    cy.intercept('DELETE', '/services/hcprofessionalService/api/documents/*').as('deleteEntityRequest');
   });
 
   afterEach(() => {
     if (document) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/services/hcprofessionalms/api/documents/${document.id}`,
+        url: `/services/hcprofessionalService/api/documents/${document.id}`,
       }).then(() => {
         document = undefined;
       });
@@ -78,7 +78,7 @@ describe('Document e2e test', () => {
       beforeEach(() => {
         cy.authenticatedRequest({
           method: 'POST',
-          url: '/services/hcprofessionalms/api/documents',
+          url: '/services/hcprofessionalService/api/documents',
           body: documentSample,
         }).then(({ body }) => {
           document = body;
@@ -86,7 +86,7 @@ describe('Document e2e test', () => {
           cy.intercept(
             {
               method: 'GET',
-              url: '/services/hcprofessionalms/api/documents+(?*|)',
+              url: '/services/hcprofessionalService/api/documents+(?*|)',
               times: 1,
             },
             {

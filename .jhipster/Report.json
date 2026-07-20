@@ -3,7 +3,7 @@
     "changelogDate": "20240206220512"
   },
   "changelogDate": "20240206220512",
-  "clientRootFolder": "professionalMS",
+  "clientRootFolder": "professionalService",
   "databaseType": "mongodb",
   "entityTableName": "report",
   "fields": [
@@ -40,7 +40,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "professionalMS",
+  "microserviceName": "professionalService",
   "name": "Report",
   "pagination": "no",
   "readOnly": false,
