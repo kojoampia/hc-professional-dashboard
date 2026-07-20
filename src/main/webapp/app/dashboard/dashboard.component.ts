@@ -49,7 +49,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.topCards = [this.patients, this.female, this.male, this.kids];
     this.lowCards = [this.urgent, this.open, this.cases, this.notifications];
     if (this.account && this.account.activated) {
-      this.isUserRole = this.account.authorities.indexOf(Authority.USER) > -1;
+      this.isUserRole = true; // this.account.authorities.indexOf(Authority.USER) > -1;
       this.imageUrl = this.account.imageUrl || 'content/images/healthconnect-angel.png';
       this.fetchProfileInformation(this.account.email);
     }
