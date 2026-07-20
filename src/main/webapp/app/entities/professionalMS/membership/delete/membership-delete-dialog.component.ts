@@ -8,8 +8,8 @@ import { IMembership } from '../membership.model';
 import { MembershipService } from '../service/membership.service';
 
 @Component({
-    templateUrl: './membership-delete-dialog.component.html',
-    imports: [SharedModule, FormsModule]
+  templateUrl: './membership-delete-dialog.component.html',
+  imports: [SharedModule, FormsModule],
 })
 export class MembershipDeleteDialogComponent {
   membership?: IMembership;

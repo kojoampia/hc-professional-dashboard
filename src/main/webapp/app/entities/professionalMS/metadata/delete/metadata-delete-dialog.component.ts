@@ -8,8 +8,8 @@ import { IMetadata } from '../metadata.model';
 import { MetadataService } from '../service/metadata.service';
 
 @Component({
-    templateUrl: './metadata-delete-dialog.component.html',
-    imports: [SharedModule, FormsModule]
+  templateUrl: './metadata-delete-dialog.component.html',
+  imports: [SharedModule, FormsModule],
 })
 export class MetadataDeleteDialogComponent {
   metadata?: IMetadata;

@@ -5,11 +5,11 @@ import SharedModule from 'app/shared/shared.module';
 import { Subject } from 'rxjs';
 
 @Component({
-    selector: 'jhi-info-box',
-    templateUrl: './info-box.component.html',
-    styleUrls: ['./info-box.component.scss'],
-    imports: [SharedModule],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  selector: 'jhi-info-box',
+  templateUrl: './info-box.component.html',
+  styleUrls: ['./info-box.component.scss'],
+  imports: [SharedModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class InfoBoxComponent implements OnInit, OnDestroy {
   url?: string;

@@ -12,9 +12,9 @@ describe('PasswordResetFinish Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [],
-    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-});
+      imports: [],
+      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    });
 
     service = TestBed.inject(PasswordResetFinishService);
     applicationConfigService = TestBed.inject(ApplicationConfigService);

@@ -14,18 +14,18 @@ import { EntityArrayResponseType, MembershipService } from '../service/membershi
 import { MembershipDeleteDialogComponent } from '../delete/membership-delete-dialog.component';
 
 @Component({
-    selector: 'hpd-membership',
-    templateUrl: './membership.component.html',
-    imports: [
-        RouterModule,
-        FormsModule,
-        SharedModule,
-        SortDirective,
-        SortByDirective,
-        DurationPipe,
-        FormatMediumDatetimePipe,
-        FormatMediumDatePipe,
-    ]
+  selector: 'hpd-membership',
+  templateUrl: './membership.component.html',
+  imports: [
+    RouterModule,
+    FormsModule,
+    SharedModule,
+    SortDirective,
+    SortByDirective,
+    DurationPipe,
+    FormatMediumDatetimePipe,
+    FormatMediumDatePipe,
+  ],
 })
 export class MembershipComponent implements OnInit {
   private static readonly NOT_SORTABLE_FIELDS_AFTER_SEARCH = ['id', 'name', 'description', 'status', 'createdBy', 'modifiedBy'];

@@ -12,9 +12,9 @@ import { TaskService } from '../service/task.service';
 import { TaskFormService, TaskFormGroup } from './task-form.service';
 
 @Component({
-    selector: 'hpd-task-update',
-    templateUrl: './task-update.component.html',
-    imports: [SharedModule, FormsModule, ReactiveFormsModule]
+  selector: 'hpd-task-update',
+  templateUrl: './task-update.component.html',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class TaskUpdateComponent implements OnInit {
   isSaving = false;

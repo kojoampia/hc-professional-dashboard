@@ -11,9 +11,8 @@ describe('StatusComponent', () => {
     await TestBed.configureTestingModule({
       imports: [StatusComponent],
       providers: [provideNoopAnimations()],
-    })
-    .compileComponents();
-    
+    }).compileComponents();
+
     fixture = TestBed.createComponent(StatusComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

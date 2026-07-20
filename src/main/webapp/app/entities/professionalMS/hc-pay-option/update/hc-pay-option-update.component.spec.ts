@@ -21,19 +21,19 @@ describe('HCPayOption Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [RouterTestingModule.withRoutes([]), HCPayOptionUpdateComponent],
-    providers: [
+      imports: [RouterTestingModule.withRoutes([]), HCPayOptionUpdateComponent],
+      providers: [
         FormBuilder,
         {
-            provide: ActivatedRoute,
-            useValue: {
-                params: from([{}]),
-            },
+          provide: ActivatedRoute,
+          useValue: {
+            params: from([{}]),
+          },
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-    ]
-})
+      ],
+    })
       .overrideTemplate(HCPayOptionUpdateComponent, '')
       .compileComponents();
 

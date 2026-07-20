@@ -16,26 +16,28 @@ describe('Team Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [RouterTestingModule.withRoutes([{ path: 'team', component: TeamComponent }]), TeamComponent],
-    providers: [
+      imports: [RouterTestingModule.withRoutes([{ path: 'team', component: TeamComponent }]), TeamComponent],
+      providers: [
         {
-            provide: ActivatedRoute,
-            useValue: {
-                data: of({
-                    defaultSort: 'id,asc',
-                }),
-                queryParamMap: of(jest.requireActual('@angular/router').convertToParamMap({
-                    page: '1',
-                    size: '1',
-                    sort: 'id,desc',
-                })),
-                snapshot: { queryParams: {} },
-            },
+          provide: ActivatedRoute,
+          useValue: {
+            data: of({
+              defaultSort: 'id,asc',
+            }),
+            queryParamMap: of(
+              jest.requireActual('@angular/router').convertToParamMap({
+                page: '1',
+                size: '1',
+                sort: 'id,desc',
+              }),
+            ),
+            snapshot: { queryParams: {} },
+          },
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-    ]
-})
+      ],
+    })
       .overrideTemplate(TeamComponent, '')
       .compileComponents();
 

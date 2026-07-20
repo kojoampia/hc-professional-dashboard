@@ -7,9 +7,9 @@ import { User } from '../user-management.model';
 import { UserManagementService } from '../service/user-management.service';
 
 @Component({
-    selector: 'jhi-user-mgmt-delete-dialog',
-    templateUrl: './user-management-delete-dialog.component.html',
-    imports: [SharedModule, FormsModule]
+  selector: 'jhi-user-mgmt-delete-dialog',
+  templateUrl: './user-management-delete-dialog.component.html',
+  imports: [SharedModule, FormsModule],
 })
 export default class UserManagementDeleteDialogComponent {
   user?: User;

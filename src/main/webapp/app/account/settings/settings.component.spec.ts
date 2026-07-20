@@ -29,9 +29,9 @@ describe('SettingsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-    imports: [TranslateModule.forRoot(), SettingsComponent],
-    providers: [FormBuilder, AccountService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-})
+      imports: [TranslateModule.forRoot(), SettingsComponent],
+      providers: [FormBuilder, AccountService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    })
       .overrideTemplate(SettingsComponent, '')
       .compileComponents();
   }));

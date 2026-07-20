@@ -18,9 +18,9 @@ describe('Report Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [ReportDeleteDialogComponent],
-    providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-})
+      imports: [ReportDeleteDialogComponent],
+      providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    })
       .overrideTemplate(ReportDeleteDialogComponent, '')
       .compileComponents();
     fixture = TestBed.createComponent(ReportDeleteDialogComponent);

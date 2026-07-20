@@ -18,9 +18,9 @@ describe('Task Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [TaskDeleteDialogComponent],
-    providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-})
+      imports: [TaskDeleteDialogComponent],
+      providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    })
       .overrideTemplate(TaskDeleteDialogComponent, '')
       .compileComponents();
     fixture = TestBed.createComponent(TaskDeleteDialogComponent);

@@ -4,9 +4,9 @@ import SharedModule from 'app/shared/shared.module';
 import { GarbageCollector } from 'app/admin/metrics/metrics.model';
 
 @Component({
-    selector: 'jhi-metrics-garbagecollector',
-    templateUrl: './metrics-garbagecollector.component.html',
-    imports: [SharedModule]
+  selector: 'jhi-metrics-garbagecollector',
+  templateUrl: './metrics-garbagecollector.component.html',
+  imports: [SharedModule],
 })
 export class MetricsGarbageCollectorComponent {
   /**

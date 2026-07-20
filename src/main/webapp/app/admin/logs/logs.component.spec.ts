@@ -15,9 +15,9 @@ describe('LogsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-    imports: [LogsComponent],
-    providers: [LogsService, GatewayRoutesService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-})
+      imports: [LogsComponent],
+      providers: [LogsService, GatewayRoutesService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    })
       .overrideTemplate(LogsComponent, '')
       .compileComponents();
   }));

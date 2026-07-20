@@ -6,9 +6,9 @@ import { Thread, ThreadState } from 'app/admin/metrics/metrics.model';
 import { MetricsModalThreadsComponent } from '../metrics-modal-threads/metrics-modal-threads.component';
 
 @Component({
-    selector: 'jhi-jvm-threads',
-    templateUrl: './jvm-threads.component.html',
-    imports: [SharedModule]
+  selector: 'jhi-jvm-threads',
+  templateUrl: './jvm-threads.component.html',
+  imports: [SharedModule],
 })
 export class JvmThreadsComponent {
   threadStats = {

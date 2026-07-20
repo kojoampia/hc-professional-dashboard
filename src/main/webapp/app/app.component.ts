@@ -12,12 +12,12 @@ import { fontAwesomeIcons } from './config/font-awesome-icons';
 import MainComponent from './layouts/main/main.component';
 
 @Component({
-    selector: 'jhi-app',
-    template: '<jhi-main></jhi-main>',
-    imports: [
-        MainComponent,
-        // jhipster-needle-angular-add-module JHipster will add new module here
-    ]
+  selector: 'jhi-app',
+  template: '<jhi-main></jhi-main>',
+  imports: [
+    MainComponent,
+    // jhipster-needle-angular-add-module JHipster will add new module here
+  ],
 })
 export default class AppComponent {
   constructor(applicationConfigService: ApplicationConfigService, iconLibrary: FaIconLibrary, dpConfig: NgbDatepickerConfig) {

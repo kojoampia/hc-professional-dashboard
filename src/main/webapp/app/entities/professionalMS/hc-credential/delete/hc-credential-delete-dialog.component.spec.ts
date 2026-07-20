@@ -18,9 +18,9 @@ describe('HCCredential Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [HCCredentialDeleteDialogComponent],
-    providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-})
+      imports: [HCCredentialDeleteDialogComponent],
+      providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    })
       .overrideTemplate(HCCredentialDeleteDialogComponent, '')
       .compileComponents();
     fixture = TestBed.createComponent(HCCredentialDeleteDialogComponent);

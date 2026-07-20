@@ -12,9 +12,9 @@ import { MembershipService } from '../service/membership.service';
 import { MembershipFormService, MembershipFormGroup } from './membership-form.service';
 
 @Component({
-    selector: 'hpd-membership-update',
-    templateUrl: './membership-update.component.html',
-    imports: [SharedModule, FormsModule, ReactiveFormsModule]
+  selector: 'hpd-membership-update',
+  templateUrl: './membership-update.component.html',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class MembershipUpdateComponent implements OnInit {
   isSaving = false;

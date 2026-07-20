@@ -8,8 +8,8 @@ import { IHCPayOption } from '../hc-pay-option.model';
 import { HCPayOptionService } from '../service/hc-pay-option.service';
 
 @Component({
-    templateUrl: './hc-pay-option-delete-dialog.component.html',
-    imports: [SharedModule, FormsModule]
+  templateUrl: './hc-pay-option-delete-dialog.component.html',
+  imports: [SharedModule, FormsModule],
 })
 export class HCPayOptionDeleteDialogComponent {
   hCPayOption?: IHCPayOption;

@@ -6,11 +6,11 @@ import { FrequentAskedService } from '../../faq/frequent-asked.service';
 import SharedModule from 'app/shared/shared.module';
 
 @Component({
-    selector: 'jhi-chat-faq',
-    templateUrl: './chat-faq.component.html',
-    styleUrls: ['./chat-faq.component.scss'],
-    imports: [SharedModule],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  selector: 'jhi-chat-faq',
+  templateUrl: './chat-faq.component.html',
+  styleUrls: ['./chat-faq.component.scss'],
+  imports: [SharedModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class ChatFaqComponent implements OnInit {
   faqCategoryList?: IFaqCategory[];

@@ -18,9 +18,9 @@ describe('HCPayOption Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [HCPayOptionDeleteDialogComponent],
-    providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-})
+      imports: [HCPayOptionDeleteDialogComponent],
+      providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    })
       .overrideTemplate(HCPayOptionDeleteDialogComponent, '')
       .compileComponents();
     fixture = TestBed.createComponent(HCPayOptionDeleteDialogComponent);

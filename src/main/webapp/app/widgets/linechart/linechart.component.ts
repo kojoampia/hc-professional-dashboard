@@ -2,10 +2,10 @@ import { OnInit, Component, Input, EventEmitter, Output, TemplateRef } from '@an
 import { NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
 
 @Component({
-    selector: 'jhi-linechart',
-    templateUrl: './linechart.component.html',
-    styleUrls: ['./linechart.component.scss'],
-    imports: [NgxChartsModule]
+  selector: 'jhi-linechart',
+  templateUrl: './linechart.component.html',
+  styleUrls: ['./linechart.component.scss'],
+  imports: [NgxChartsModule],
 })
 export class LineChartComponent implements OnInit {
   @Output() dataSelected: EventEmitter<any> = new EventEmitter<any>();

@@ -5,9 +5,9 @@ import SharedModule from 'app/shared/shared.module';
 import { PasswordResetInitService } from './password-reset-init.service';
 
 @Component({
-    selector: 'jhi-password-reset-init',
-    imports: [SharedModule, FormsModule, ReactiveFormsModule],
-    templateUrl: './password-reset-init.component.html'
+  selector: 'jhi-password-reset-init',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
+  templateUrl: './password-reset-init.component.html',
 })
 export default class PasswordResetInitComponent implements AfterViewInit {
   @ViewChild('email', { static: false })

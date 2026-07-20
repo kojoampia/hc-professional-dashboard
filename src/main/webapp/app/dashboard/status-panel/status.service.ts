@@ -12,10 +12,10 @@ export class StatusService {
     return seriesData.map(item => {
       const name = item.name;
       return {
-          name: item.label,
-          value: item.value,
-          label: name.charAt(0).toUpperCase() + name.slice(1), // Capitalize the first letter of the label
-        };
+        name: item.label,
+        value: item.value,
+        label: name.charAt(0).toUpperCase() + name.slice(1), // Capitalize the first letter of the label
+      };
     });
   }
 
@@ -209,6 +209,6 @@ export class StatusService {
     data.push({ name: 'Nana', label: 'Washing', value: 4 });
     data.push({ name: 'Nana', label: 'Grocery', value: 5 });
     data.push({ name: 'Nana', label: 'Dining', value: 3 });
-    return data
+    return data;
   }
 }

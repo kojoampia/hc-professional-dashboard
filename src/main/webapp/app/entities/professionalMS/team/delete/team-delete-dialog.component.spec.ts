@@ -18,9 +18,9 @@ describe('Team Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [TeamDeleteDialogComponent],
-    providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-})
+      imports: [TeamDeleteDialogComponent],
+      providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    })
       .overrideTemplate(TeamDeleteDialogComponent, '')
       .compileComponents();
     fixture = TestBed.createComponent(TeamDeleteDialogComponent);

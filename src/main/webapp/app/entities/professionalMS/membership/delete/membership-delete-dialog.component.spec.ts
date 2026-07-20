@@ -18,9 +18,9 @@ describe('Membership Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [MembershipDeleteDialogComponent],
-    providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-})
+      imports: [MembershipDeleteDialogComponent],
+      providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    })
       .overrideTemplate(MembershipDeleteDialogComponent, '')
       .compileComponents();
     fixture = TestBed.createComponent(MembershipDeleteDialogComponent);

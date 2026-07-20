@@ -1,4 +1,5 @@
 # HealthConnect — Professional Portal
+
 ## Frontend Technical Specification (v2)
 
 > Source: `HC-Professional.pdf` (static mockup, 8 pages/screens).
@@ -6,14 +7,14 @@
 
 ### 0.1 Tech Stack
 
-| Layer | Choice | Notes |
-|---|---|---|
-| Framework | **Angular 19** | Standalone components (no `NgModule` scaffolding), signals-based state (`signal`, `computed`, `effect`) preferred over `BehaviorSubject` for local component state; use the new control-flow syntax (`@if`, `@for`, `@switch`) instead of `*ngIf`/`*ngFor`. |
-| Design system | **Material 3 (M3)** via Angular Material | Use M3 theming (`mat.theme()` / M3 tokens) for base components: buttons, checkboxes, tables (`mat-table` or CDK table), dialogs (`MatDialog` for the Activity Log modal and Case Detail overlay), form fields, tabs, menus (`mat-menu` for the closed-case hamburger menu), badges. |
-| Styling / utility layer | **TailwindCSS** | Used for layout (grid/flex utilities), spacing, color tokens, and one-off styling on top of M3 components. Tailwind config should expose the color tokens in §2.2 as custom theme colors (e.g. `card-urgent`, `card-open`, `card-closed`) so M3 and Tailwind share a single palette source of truth. |
-| Charts | Angular-friendly chart lib (e.g. `ngx-charts` or `Chart.js` via `ng2-charts`) | Wraps the Line/Pie/Bar charts in §3.1 as standalone Angular components. |
-| State management | Angular signals + a thin service layer (`PatientService`, `CaseService`, `DutyRosterService`, `AuthService`) | No heavier state library required at this scope; escalate to NgRx only if cross-feature state sharing becomes complex. |
-| Routing | Angular Router | Route map in §5 maps directly to Angular routes; Patient Detail Record and Case Detail should use **named/auxiliary routes or route-driven `MatDialog`** so they remain deep-linkable overlays as described in §3.3. |
+| Layer                   | Choice                                                                                                       | Notes                                                                                                                                                                                                                                                                                                |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Framework               | **Angular 19**                                                                                               | Standalone components (no `NgModule` scaffolding), signals-based state (`signal`, `computed`, `effect`) preferred over `BehaviorSubject` for local component state; use the new control-flow syntax (`@if`, `@for`, `@switch`) instead of `*ngIf`/`*ngFor`.                                          |
+| Design system           | **Material 3 (M3)** via Angular Material                                                                     | Use M3 theming (`mat.theme()` / M3 tokens) for base components: buttons, checkboxes, tables (`mat-table` or CDK table), dialogs (`MatDialog` for the Activity Log modal and Case Detail overlay), form fields, tabs, menus (`mat-menu` for the closed-case hamburger menu), badges.                  |
+| Styling / utility layer | **TailwindCSS**                                                                                              | Used for layout (grid/flex utilities), spacing, color tokens, and one-off styling on top of M3 components. Tailwind config should expose the color tokens in §2.2 as custom theme colors (e.g. `card-urgent`, `card-open`, `card-closed`) so M3 and Tailwind share a single palette source of truth. |
+| Charts                  | Angular-friendly chart lib (e.g. `ngx-charts` or `Chart.js` via `ng2-charts`)                                | Wraps the Line/Pie/Bar charts in §3.1 as standalone Angular components.                                                                                                                                                                                                                              |
+| State management        | Angular signals + a thin service layer (`PatientService`, `CaseService`, `DutyRosterService`, `AuthService`) | No heavier state library required at this scope; escalate to NgRx only if cross-feature state sharing becomes complex.                                                                                                                                                                               |
+| Routing                 | Angular Router                                                                                               | Route map in §5 maps directly to Angular routes; Patient Detail Record and Case Detail should use **named/auxiliary routes or route-driven `MatDialog`** so they remain deep-linkable overlays as described in §3.3.                                                                                 |
 
 Component-naming convention below (`AppHeader`, `StatCard`, etc.) should map to Angular standalone components, e.g. `AppHeaderComponent`, `StatCardComponent`, using `app-` selector prefix (`app-stat-card`, `app-data-table`, etc.).
 
@@ -21,15 +22,15 @@ Component-naming convention below (`AppHeader`, `StatCard`, etc.) should map to 
 
 This frontend is implemented **inside an existing JHipster application**, which already provides the Angular workspace, build tooling, authentication/account module, and base navbar/footer. This spec's component list (§6) describes the target UI regardless of shell; the notes below map that target onto what JHipster already supplies so nothing is duplicated or rebuilt from scratch.
 
-| Spec concept | JHipster equivalent | Guidance |
-|---|---|---|
-| App shell (outer frame, header, footer) | JHipster's generated `layouts/navbar` and `layouts/footer` components | **Extend, don't replace.** Add the `AuthorityRoleBadgeComponent` and optional active-shift label into the existing navbar; keep JHipster's existing account/session menu, language selector, and alerts intact. |
-| `AuthorityRole` (§1.1) | JHipster's built-in authority/role system (`ROLE_USER`, `ROLE_ADMIN`, plus any custom authorities defined in the app's security config) | See the mapping table in §1.1 — the 8 clinical roles are additional custom authorities layered on top of JHipster's existing two defaults, not a replacement for them. |
-| Route guarding (`authorityRoleGuard`) | JHipster's existing `UserRouteAccessService` / functional route guards pattern | Implement `authorityRoleGuard` following the same functional-guard convention JHipster already uses elsewhere in the app, rather than introducing a second guarding mechanism. |
-| Entities (`Patient`, `Case`, `DutyRoster`, etc.) | JHipster JDL / entity sub-generator | This spec is frontend-only and does not define backend contracts (see Purpose above), but if/when a backend is generated, the `interface`s in §1 and §3 should be used as the basis for a JDL model so generated entity DTOs line up with these frontend shapes. Flagged as a follow-up, not part of this frontend build. |
-| Styling (Bootstrap + SCSS) | JHipster ships Bootstrap-based theming by default | Tailwind and M3 tokens (§2.2) must be layered alongside JHipster's existing Bootstrap/SCSS setup, not swapped in as a full replacement — scope Tailwind's preflight/reset so it doesn't fight Bootstrap's base styles. |
-| i18n | JHipster's built-in `ngx-translate` setup | All new copy introduced by this spec (stat card labels, panel headers, button text, Duty Roster strings) should go through the existing translation files/keys convention rather than hardcoded strings, so the new screens stay consistent with JHipster's existing language-switching behavior. |
-| Folder structure | JHipster's generated `webapp/app/` layout (`entities/`, `shared/`, `layouts/`, feature folders) | New components from §6 should be placed following this existing convention (e.g. shared/reusable primitives under `shared/`, screen-specific components under a new feature folder per screen) rather than introducing a parallel folder structure. |
+| Spec concept                                     | JHipster equivalent                                                                                                                     | Guidance                                                                                                                                                                                                                                                                                                                  |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| App shell (outer frame, header, footer)          | JHipster's generated `layouts/navbar` and `layouts/footer` components                                                                   | **Extend, don't replace.** Add the `AuthorityRoleBadgeComponent` and optional active-shift label into the existing navbar; keep JHipster's existing account/session menu, language selector, and alerts intact.                                                                                                           |
+| `AuthorityRole` (§1.1)                           | JHipster's built-in authority/role system (`ROLE_USER`, `ROLE_ADMIN`, plus any custom authorities defined in the app's security config) | See the mapping table in §1.1 — the 8 clinical roles are additional custom authorities layered on top of JHipster's existing two defaults, not a replacement for them.                                                                                                                                                    |
+| Route guarding (`authorityRoleGuard`)            | JHipster's existing `UserRouteAccessService` / functional route guards pattern                                                          | Implement `authorityRoleGuard` following the same functional-guard convention JHipster already uses elsewhere in the app, rather than introducing a second guarding mechanism.                                                                                                                                            |
+| Entities (`Patient`, `Case`, `DutyRoster`, etc.) | JHipster JDL / entity sub-generator                                                                                                     | This spec is frontend-only and does not define backend contracts (see Purpose above), but if/when a backend is generated, the `interface`s in §1 and §3 should be used as the basis for a JDL model so generated entity DTOs line up with these frontend shapes. Flagged as a follow-up, not part of this frontend build. |
+| Styling (Bootstrap + SCSS)                       | JHipster ships Bootstrap-based theming by default                                                                                       | Tailwind and M3 tokens (§2.2) must be layered alongside JHipster's existing Bootstrap/SCSS setup, not swapped in as a full replacement — scope Tailwind's preflight/reset so it doesn't fight Bootstrap's base styles.                                                                                                    |
+| i18n                                             | JHipster's built-in `ngx-translate` setup                                                                                               | All new copy introduced by this spec (stat card labels, panel headers, button text, Duty Roster strings) should go through the existing translation files/keys convention rather than hardcoded strings, so the new screens stay consistent with JHipster's existing language-switching behavior.                         |
+| Folder structure                                 | JHipster's generated `webapp/app/` layout (`entities/`, `shared/`, `layouts/`, feature folders)                                         | New components from §6 should be placed following this existing convention (e.g. shared/reusable primitives under `shared/`, screen-specific components under a new feature folder per screen) rather than introducing a parallel folder structure.                                                                       |
 
 ---
 
@@ -58,15 +59,7 @@ Every authenticated user in the system holds one **Authority Role**, which gover
 - `User`
 
 ```ts
-type AuthorityRole =
-  | 'Doctor'
-  | 'Nurse'
-  | 'Paramedic'
-  | 'Pharmacist'
-  | 'Therapist'
-  | 'Carer'
-  | 'Admin'
-  | 'User';
+type AuthorityRole = 'Doctor' | 'Nurse' | 'Paramedic' | 'Pharmacist' | 'Therapist' | 'Carer' | 'Admin' | 'User';
 
 interface Professional {
   id: string;
@@ -82,16 +75,16 @@ Role should drive an Angular route guard (`authorityRoleGuard`) and structural d
 
 **JHipster authority mapping.** Per §0.2, `AuthorityRole` is layered on top of JHipster's existing authority system rather than replacing it. Recommended mapping, to be confirmed with the team owning the JHipster security config before build:
 
-| `AuthorityRole` | JHipster authority | Notes |
-|---|---|---|
-| `Admin` | `ROLE_ADMIN` | Maps directly to JHipster's built-in admin authority; retains access to JHipster's existing admin screens (user management, metrics, etc.) in addition to this app's clinical screens. |
-| `User` | `ROLE_USER` | Maps directly to JHipster's built-in default authority; treated as the most restricted/read-only viewer role in this spec (§1.1). |
-| `Doctor` | `ROLE_DOCTOR` (custom) | New custom authority to be added to the JHipster security config/authority table. |
-| `Nurse` | `ROLE_NURSE` (custom) | New custom authority. |
-| `Paramedic` | `ROLE_PARAMEDIC` (custom) | New custom authority. |
-| `Pharmacist` | `ROLE_PHARMACIST` (custom) | New custom authority. |
-| `Therapist` | `ROLE_THERAPIST` (custom) | New custom authority. |
-| `Carer` | `ROLE_CARER` (custom) | New custom authority; expected to be the second-most restricted role after `User` (§1.1 recommends read-only rendering for Diagnosis/Case-editing affordances for this role, to be confirmed). |
+| `AuthorityRole` | JHipster authority         | Notes                                                                                                                                                                                          |
+| --------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Admin`         | `ROLE_ADMIN`               | Maps directly to JHipster's built-in admin authority; retains access to JHipster's existing admin screens (user management, metrics, etc.) in addition to this app's clinical screens.         |
+| `User`          | `ROLE_USER`                | Maps directly to JHipster's built-in default authority; treated as the most restricted/read-only viewer role in this spec (§1.1).                                                              |
+| `Doctor`        | `ROLE_DOCTOR` (custom)     | New custom authority to be added to the JHipster security config/authority table.                                                                                                              |
+| `Nurse`         | `ROLE_NURSE` (custom)      | New custom authority.                                                                                                                                                                          |
+| `Paramedic`     | `ROLE_PARAMEDIC` (custom)  | New custom authority.                                                                                                                                                                          |
+| `Pharmacist`    | `ROLE_PHARMACIST` (custom) | New custom authority.                                                                                                                                                                          |
+| `Therapist`     | `ROLE_THERAPIST` (custom)  | New custom authority.                                                                                                                                                                          |
+| `Carer`         | `ROLE_CARER` (custom)      | New custom authority; expected to be the second-most restricted role after `User` (§1.1 recommends read-only rendering for Diagnosis/Case-editing affordances for this role, to be confirmed). |
 
 A given JHipster account may hold more than one authority simultaneously (JHipster's model is many-to-many between users and authorities) — where an account holds more than one of the roles above, the frontend should resolve to the **highest-privilege** role for badge display purposes (e.g. `Admin` > `Doctor` > others), while still evaluating `*appHasRole` checks against the full authority set, not just the displayed one.
 
@@ -102,7 +95,7 @@ Each `Professional` **subscribes to a Duty Roster** — the schedule/rotation th
 ```ts
 interface DutyRoster {
   id: string;
-  name: string;                // e.g. "Ward 3 — Night Shift"
+  name: string; // e.g. "Ward 3 — Night Shift"
   subscribedProfessionalIds: string[]; // Professionals subscribed to this roster
   shifts: DutyShift[];
 }
@@ -111,13 +104,14 @@ interface DutyShift {
   id: string;
   rosterId: string;
   professionalId: string;
-  startsAt: string;   // ISO datetime
-  endsAt: string;     // ISO datetime
+  startsAt: string; // ISO datetime
+  endsAt: string; // ISO datetime
   status: 'upcoming' | 'active' | 'completed';
 }
 ```
 
 **Frontend implications for this spec:**
+
 - `AppHeader` should optionally surface the current professional's **active/next shift** from their subscribed `DutyRoster` (e.g. a small "On duty until 8:00 PM" or "Next shift: Tomorrow 6:00 AM" indicator) — not present in the static mockup, recommended as a v2 addition adjacent to the role badge.
 - A new **Duty Roster screen** (`/duty-roster`) is implied but not present in the mockup pages supplied; recommended component: `DutyRosterCalendarComponent` (weekly/monthly view of shifts, subscribe/unsubscribe action per roster, list of rosters available to subscribe to). Flagged as an open scope item — see §4, Gap 13.
 - The Case Queue (§3.4) urgent/open filtering should, in a future iteration, be able to filter by "My Roster" (cases relevant to the current professional's subscribed roster/shift) in addition to the global status filters — add a `rosterScope: 'all' | 'mine'` toggle to `DataTable`/`StatCardRow` interactions.
@@ -138,38 +132,42 @@ interface DutyShift {
 ## 2. Global Design System
 
 ### 2.1 Layout
+
 - Fixed-width contained layout, max content width ~1160px, centered, with a thick blue (`--color-shell-border: #3E7CB1` approx) outer frame border (8–10px) top/left/right/bottom — treat as the app's outer chrome/background in a browser tab or kiosk-style container.
 - Vertical rhythm: Top bar → Header (logo + role badge) → Stat card row → Body content (white card / panel) → Footer.
 - Body content sits on a white background card (`--color-surface: #FFFFFF`) with soft rounded corners against a dark, blurred hero background (`--color-hero-bg: radial gradient, near-black/navy #0B0F1A → #1B2A45`) used only behind the header/stat area, not behind body content.
 
 ### 2.2 Color Tokens
-| Token | Approx Value | Usage |
-|---|---|---|
-| `--color-primary-blue` | `#3E7CB1` | Outer chrome border, top URL bar |
-| `--color-shell-bg` | `#0B0F1A`–`#1B2A45` (radial/blurred) | Header hero background |
-| `--color-surface` | `#FFFFFF` | Body/content panels |
-| `--color-card-neutral` | `#7C8792` (gray) | Patient/Female/Male/Kids stat cards |
-| `--color-card-urgent-bg` | `#FBE2E1` | Urgent stat card |
-| `--color-card-open-bg` | `#E7F0FB` | Open stat card |
-| `--color-card-closed-bg` | `#DFF2E1` | Closed stat card |
-| `--color-text-primary` | `#FFFFFF` (on dark) / `#2B2B2B` (on light) | Header/labels |
-| `--color-text-muted` | `#6B7280` | Table secondary text |
-| `--color-accent-teal` | `#1FBE9C` / `#0E7C6B` | Chart lines/bars |
-| `--color-accent-blue-chart` | `#5B9BD5` / `#1B3A57` | Pie chart segments |
-| `--color-success` | `#3EAE5B` | Resolved/checkmark icon |
-| `--color-warning-row` | `#FBE9E7` (pink tint) | Urgent row/table header tint |
-| `--color-open-row` | `#EAF2FB` (blue tint) | Open row/table header tint |
-| `--color-closed-row` | `#E6F6E9` (green tint) | Closed row/table header tint |
-| `--color-highlight-edit` | `#FBE7B8` | Edit button (amber) |
-| `--color-highlight-copy` | `#D9F2DC` | Copy button (mint) |
-| `--color-highlight-close` | `#5A5A5A` | Close button (dark gray) |
+
+| Token                       | Approx Value                               | Usage                               |
+| --------------------------- | ------------------------------------------ | ----------------------------------- |
+| `--color-primary-blue`      | `#3E7CB1`                                  | Outer chrome border, top URL bar    |
+| `--color-shell-bg`          | `#0B0F1A`–`#1B2A45` (radial/blurred)       | Header hero background              |
+| `--color-surface`           | `#FFFFFF`                                  | Body/content panels                 |
+| `--color-card-neutral`      | `#7C8792` (gray)                           | Patient/Female/Male/Kids stat cards |
+| `--color-card-urgent-bg`    | `#FBE2E1`                                  | Urgent stat card                    |
+| `--color-card-open-bg`      | `#E7F0FB`                                  | Open stat card                      |
+| `--color-card-closed-bg`    | `#DFF2E1`                                  | Closed stat card                    |
+| `--color-text-primary`      | `#FFFFFF` (on dark) / `#2B2B2B` (on light) | Header/labels                       |
+| `--color-text-muted`        | `#6B7280`                                  | Table secondary text                |
+| `--color-accent-teal`       | `#1FBE9C` / `#0E7C6B`                      | Chart lines/bars                    |
+| `--color-accent-blue-chart` | `#5B9BD5` / `#1B3A57`                      | Pie chart segments                  |
+| `--color-success`           | `#3EAE5B`                                  | Resolved/checkmark icon             |
+| `--color-warning-row`       | `#FBE9E7` (pink tint)                      | Urgent row/table header tint        |
+| `--color-open-row`          | `#EAF2FB` (blue tint)                      | Open row/table header tint          |
+| `--color-closed-row`        | `#E6F6E9` (green tint)                     | Closed row/table header tint        |
+| `--color-highlight-edit`    | `#FBE7B8`                                  | Edit button (amber)                 |
+| `--color-highlight-copy`    | `#D9F2DC`                                  | Copy button (mint)                  |
+| `--color-highlight-close`   | `#5A5A5A`                                  | Close button (dark gray)            |
 
 ### 2.3 Typography
+
 - Display/label font: a rounded, hand-drawn/marker-style display face (mockup placeholder — recommend a friendly geometric sans like "Baloo 2", "Fredoka", or "Comic Neue" for stat labels/headers; recommend a clean neutral sans, e.g. "Inter" or "Source Sans Pro", for tabular/body data in production).
 - Stat numbers rendered as a circular badge overlapping the bottom-right corner of each card (white circle, dark border, bold number).
 - Table headers: bold, larger size than row text.
 
 ### 2.4 Iconography
+
 - Eye icon = "View" action (row-level, opens detail).
 - Pencil/edit icon = inline edit affordance (per-panel and per-field).
 - Diagonal arrow (expand) icon = "expand panel" / "view all" affordance.
@@ -179,6 +177,7 @@ interface DutyShift {
 - Magnifying glass = search input adornment.
 
 ### 2.5 Reusable Primitives (must be built as shared components)
+
 - `AppHeader` (logo + role badge + top URL bar)
 - `StatCard` (label + count badge), variant: neutral | urgent | open | closed
 - `DataTable` (generic: columns, rows, row actions, pagination, tint variants)
@@ -201,6 +200,7 @@ interface DutyShift {
 **Purpose:** Landing view giving the clinician a quick census + case analytics.
 
 **Components:**
+
 - `AppHeader`
   - `logoUrl: string` ("HealthConnect" wordmark, blue/green)
   - `authorityRole: AuthorityRole` (renders as badge, e.g. "DOCTOR", "NURSE", "ADMIN" — see §1.1; mockup shows "PROFESSIONAL" as a placeholder generic label)
@@ -227,6 +227,7 @@ interface DutyShift {
   - `right: vendor logo badge "<jojoaddison/>"` (linkable, likely to vendor site)
 
 **Interactions:**
+
 - Clicking a demographic `StatCard` should filter the Patient Directory (§3.2) by that segment (e.g., clicking "FEMALE" → `/patients?gender=female`).
 - Clicking URGENT/OPEN/CLOSED navigates to the Case Queue screen (§3.4) pre-filtered.
 - Charts are read-only in the mock; v2 should support hover tooltips showing exact values and date-range filtering.
@@ -236,6 +237,7 @@ interface DutyShift {
 ### 3.2 Screen: Patient Directory (`/patients`) — Page 2
 
 **Components:**
+
 - `AppHeader` (same as 3.1)
 - `StatCardRow` (demographics — identical to 3.1, always visible/persistent across patient-related screens)
 - `SearchInput`
@@ -267,6 +269,7 @@ interface DutyShift {
 Rendered as a full-screen overlay (dark border frame + white modal card) above the Directory, not a route replacement — implies a modal/drawer pattern in v2 (e.g., route-driven modal so it's deep-linkable).
 
 **Top Bar (within overlay):**
+
 - `title: "Patient: {patientName}"`
 - `IconButtonGroup`: `Print`, `Edit` (amber highlight = currently in edit-affordance state), `Copy`, `Close`
   - `Print` → triggers browser print / PDF export of current panel state
@@ -277,6 +280,7 @@ Rendered as a full-screen overlay (dark border frame + white modal card) above t
 **Panel Grid (2 rows × 3 columns):**
 
 1. **Patient Identity Panel** (top-left)
+
    - `avatarUrl?: string` (fallback silhouette icon shown, with pencil overlay to upload/change photo)
    - Fields (label:value pairs, each independently editable via pencil icon):
      - `name: string` (e.g. "Kojo Ampia-Addison")
@@ -288,21 +292,25 @@ Rendered as a full-screen overlay (dark border frame + white modal card) above t
    - Header-level actions: edit icon, expand icon.
 
 2. **Cases Panel** (top-center)
+
    - `PaginatedList` of case summaries: `{ date: string, label: string }` e.g. `30-Nov-2021 — Case 1`
    - Row click → opens **Case Detail View** (§3.3.1)
    - Pagination: `<< Prev | 1..10 | Next >>` (static page-number pagination, 10 pages visible)
    - Header actions: edit icon, expand icon.
 
 3. **Visitations Panel** (top-right)
+
    - `PaginatedList` of `{ date: string, label: string }` e.g. `30-Nov-2021 — Grooming`
    - Same pagination pattern.
    - **Note:** "Grooming" as a repeated visitation type suggests this may be a veterinary or personal-care context rather than a strictly human hospital context — confirm domain with stakeholders since "Prostate"/"HPV" fields elsewhere suggest human patients. Flag as a content/domain inconsistency in the source mock.
 
 4. **Activity Trail Panel** (bottom-left)
+
    - `PaginatedList` of `{ date: string, description: string }` e.g. `30-Nov-2021 — Urea test recommended`
    - Header actions: edit icon, expand icon (expand opens `ActivityLogModal`, see §3.3.2).
 
 5. **Medications Panel** (bottom-center)
+
    - `PaginatedList` of `{ date: string, description: string }` e.g. `30-Nov-2021 — Urea prescription`
    - Same pagination pattern; header actions: edit icon, expand icon.
 
@@ -311,18 +319,20 @@ Rendered as a full-screen overlay (dark border frame + white modal card) above t
    - Header action: **Upload** icon (cloud/upload glyph, replacing the pencil seen elsewhere) → opens file picker / upload dialog for attaching a new report document; expand icon also present.
 
 **Shared list-row data model:**
+
 ```ts
 interface RecordEntry {
-  date: string;      // display format "DD-Mon-YYYY"
-  label: string;      // short description
+  date: string; // display format "DD-Mon-YYYY"
+  label: string; // short description
 }
 ```
 
 **Shared pagination control:**
+
 ```ts
 interface PaginationProps {
   currentPage: number;
-  totalPages: number;       // mock shows up to 10
+  totalPages: number; // mock shows up to 10
   onPrev: () => void;
   onNext: () => void;
   onPageSelect: (page: number) => void;
@@ -338,6 +348,7 @@ Replaces the panel grid within the same overlay frame when a case row is opened.
 **Top bar:** `Patient: {patientName}` (left) · `Case # {caseNumber}` (center, underlined) · `Print`, `Save`, `Cancel` (right)
 
 **Body — 3 columns:**
+
 - **Symptoms** (`TextArea`, editable, freeform clinician notes)
 - **Diagnosis** (`TextArea`, editable, freeform clinician notes)
 - **Recommendations** (`CheckboxList`)
@@ -353,6 +364,7 @@ Replaces the panel grid within the same overlay frame when a case row is opened.
   - **Note:** this checkbox list is almost certainly patient-specific/condition-specific rather than a fixed global enum — v2 should support a configurable recommendation catalog rather than hardcoding these 4 items.
 
 **Actions:**
+
 - `Print` → export/print this case
 - `Save` → persist Symptoms/Diagnosis text + Recommendation checkbox states, returns to Patient Detail Record panel grid
 - `Cancel` → discard changes, return to panel grid
@@ -364,12 +376,14 @@ Replaces the panel grid within the same overlay frame when a case row is opened.
 Triggered from the Activity Trail panel's expand icon. Rendered as a centered modal on top of the Patient Detail Record (dimmed background of the record still visible behind it).
 
 **Components:**
+
 - `ModalHeader`: title `"Activity Log"` + icon (pencil/log glyph) + `Close` button (top-right)
 - `TextInput`: `placeholder: "Title of event"`
 - `TextArea`: `placeholder: "Detailed description of event."`
 - `Footer`: `Save` button (bottom-right of modal body)
 
 **Data model:**
+
 ```ts
 interface ActivityLogEntry {
   title: string;
@@ -387,6 +401,7 @@ interface ActivityLogEntry {
 Three visual states of essentially the same table, keyed by which stat card was clicked (`urgent`, `open`, `closed`). Table header tint and row action icons change based on status.
 
 **Components:**
+
 - `AppHeader`
 - `StatCardRow`: `URGENT (2)`, `OPEN (5)`, `CLOSED (109)` — active/selected state should be visually indicated (e.g. border or elevated tint); mock does not clearly show a "selected" state, **recommend adding one in v2** (e.g. bold border or filled background on the active filter).
 - `DataTable`
@@ -396,9 +411,9 @@ Three visual states of essentially the same table, keyed by which stat card was 
     ```ts
     interface CaseQueueRow {
       id: string;
-      date: string;          // "21 May, 2022 05:43 AM"
-      brief: string;         // "Severe pain due to a fall."
-      status: "urgent" | "open" | "closed";
+      date: string; // "21 May, 2022 05:43 AM"
+      brief: string; // "Severe pain due to a fall."
+      status: 'urgent' | 'open' | 'closed';
     }
     ```
   - Example rows (shared across urgent/open states in mock — likely placeholder duplication rather than real distinct data):
@@ -434,15 +449,15 @@ These are not shown/resolved in the static mockup and should be explicitly scope
 
 ## 5. Suggested Route Map
 
-| Route | Screen |
-|---|---|
-| `/dashboard` | Dashboard (§3.1) |
-| `/patients` | Patient Directory (§3.2) |
-| `/patients/:patientId` | Patient Detail Record overlay (§3.3) |
-| `/patients/:patientId/cases/:caseId` | Case Detail sub-view (§3.3.1) |
-| `/cases?status=urgent\|open\|closed` | Case Queue (§3.4) |
-| `/cases/:caseId` | Case Detail (deep-linkable, independent of patient context) |
-| `/duty-roster` | Duty Roster calendar/subscription screen (§1.2, new) |
+| Route                                | Screen                                                      |
+| ------------------------------------ | ----------------------------------------------------------- |
+| `/dashboard`                         | Dashboard (§3.1)                                            |
+| `/patients`                          | Patient Directory (§3.2)                                    |
+| `/patients/:patientId`               | Patient Detail Record overlay (§3.3)                        |
+| `/patients/:patientId/cases/:caseId` | Case Detail sub-view (§3.3.1)                               |
+| `/cases?status=urgent\|open\|closed` | Case Queue (§3.4)                                           |
+| `/cases/:caseId`                     | Case Detail (deep-linkable, independent of patient context) |
+| `/duty-roster`                       | Duty Roster calendar/subscription screen (§1.2, new)        |
 
 ---
 
@@ -475,4 +490,4 @@ These are not shown/resolved in the static mockup and should be explicitly scope
 
 ---
 
-*End of specification.*
+_End of specification._

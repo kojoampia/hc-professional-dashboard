@@ -18,9 +18,9 @@ describe('Medication Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [MedicationDeleteDialogComponent],
-    providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-})
+      imports: [MedicationDeleteDialogComponent],
+      providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    })
       .overrideTemplate(MedicationDeleteDialogComponent, '')
       .compileComponents();
     fixture = TestBed.createComponent(MedicationDeleteDialogComponent);

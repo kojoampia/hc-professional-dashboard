@@ -18,9 +18,9 @@ describe('Profile Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [ProfileDeleteDialogComponent],
-    providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-})
+      imports: [ProfileDeleteDialogComponent],
+      providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    })
       .overrideTemplate(ProfileDeleteDialogComponent, '')
       .compileComponents();
     fixture = TestBed.createComponent(ProfileDeleteDialogComponent);

@@ -17,6 +17,7 @@ You are implementing the frontend for **HealthConnect Professional**, a clinicia
 - Known gaps (§4) — where the spec is intentionally silent, make the smallest reasonable assumption, note it in a `// SPEC GAP:` code comment referencing the gap number, and move on. Do not block on these.
 
 **Existing shell application:** this is being implemented into an **existing JHipster application** that already provides the Angular workspace, build tooling, routing shell, and authentication/account management. Do **not** scaffold a new workspace, and do **not** rebuild the app shell, header, or footer from scratch — the phases below start from Phase 1 and integrate into what JHipster already generated (see Phase 1 for specifics). Before writing any feature code, locate:
+
 - The existing navbar/header component (typically `NavbarComponent` or similar under `webapp/app/layouts/`) — you will extend this, not replace it.
 - The existing authentication/authority model (JHipster's `Account`/`authorities` — typically `ROLE_USER`, `ROLE_ADMIN`, etc.) — you will map `AuthorityRole` (§1.1) onto this, not build a parallel auth system.
 - The existing theming setup (SCSS variables, Bootstrap classes JHipster ships with by default) — Tailwind and M3 tokens from §2.2 need to coexist with whatever JHipster already has, not fight it.
@@ -27,7 +28,7 @@ Read `spec.md` in full before writing any code. Do not invent components, routes
 
 ## Working Agreement
 
-1. **One phase at a time, starting at Phase 1.** Complete a phase fully (code + a short self-check) before moving to the next. Summarize and commit to git what you built and any assumptions made at the end of each phase. 
+1. **One phase at a time, starting at Phase 1.** Complete a phase fully (code + a short self-check) before moving to the next. Summarize and commit to git what you built and any assumptions made at the end of each phase.
 2. **Componentize per §6.** Every checklist item in §6 becomes its own standalone component file, `app-` prefixed, in its own folder with a co-located spec/test file if the project has a test runner configured.
 3. **Tokens before pixels.** Before building any visual component, port the color table in §2.2 into the Tailwind theme config and/or Angular Material M3 theme so every subsequent component pulls from named tokens (`card-urgent`, `card-open`, `card-closed`, etc.), never raw hex.
 4. **Signals-first state.** Use `signal()`/`computed()` for component-local state and a small set of injectable services (`PatientService`, `CaseService`, `DutyRosterService`, `AuthService`) backed by in-memory mock data for now (no real backend exists yet — stub with realistic fixtures matching the interfaces in spec.md).

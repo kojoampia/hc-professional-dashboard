@@ -1,8 +1,11 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
     <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
-      <h2 id="jhi-document-heading" data-cy="DocumentCreateUpdateHeading"
-        jhiTranslate="professionalDashboardApp.professionalMsDocument.home.createOrEditLabel">
+      <h2
+        id="jhi-document-heading"
+        data-cy="DocumentCreateUpdateHeading"
+        jhiTranslate="professionalDashboardApp.professionalMsDocument.home.createOrEditLabel"
+      >
         Create or edit a Document
       </h2>
 
@@ -10,66 +13,76 @@
         <jhi-alert-error></jhi-alert-error>
 
         @if (editForm.controls.id.value !== null) {
-        <div class="mb-3">
-          <label class="form-label" jhiTranslate="global.field.id" for="field_id">ID</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id"
-            [readonly]="true" />
-        </div>
+          <div class="mb-3">
+            <label class="form-label" jhiTranslate="global.field.id" for="field_id">ID</label>
+            <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
         }
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsDocument.name"
-            for="field_name">Name</label>
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsDocument.name" for="field_name">Name</label>
           <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsDocument.profileId"
-            for="field_profileId">Profile Id</label>
-          <input type="text" class="form-control" name="profileId" id="field_profileId" data-cy="profileId"
-            formControlName="profileId" />
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsDocument.profileId" for="field_profileId"
+            >Profile Id</label
+          >
+          <input type="text" class="form-control" name="profileId" id="field_profileId" data-cy="profileId" formControlName="profileId" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsDocument.data"
-            for="field_data">Data</label>
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsDocument.data" for="field_data">Data</label>
           <div>
             @if (editForm.get('data')!.value) {
-            <div class="form-text text-danger clearfix">
-              <span class="pull-start">{{ editForm.get('dataContentType')!.value }}, {{
-                byteSize(editForm.get('data')!.value!) }}</span>
-              <button type="button" (click)="editForm.patchValue({ data: undefined, dataContentType: undefined })"
-                class="btn btn-secondary btn-xs pull-end">
-                <fa-icon icon="times"></fa-icon>
-              </button>
-            </div>
+              <div class="form-text text-danger clearfix">
+                <span class="pull-start">{{ editForm.get('dataContentType')!.value }}, {{ byteSize(editForm.get('data')!.value!) }}</span>
+                <button
+                  type="button"
+                  (click)="editForm.patchValue({ data: undefined, dataContentType: undefined })"
+                  class="btn btn-secondary btn-xs pull-end"
+                >
+                  <fa-icon icon="times"></fa-icon>
+                </button>
+              </div>
             }
-            <input type="file" id="file_data" data-cy="data" (change)="setFileData($event, 'data', false)"
-              jhiTranslate="entity.action.addblob" />
+            <input
+              type="file"
+              id="file_data"
+              data-cy="data"
+              (change)="setFileData($event, 'data', false)"
+              jhiTranslate="entity.action.addblob"
+            />
           </div>
           <input type="hidden" class="form-control" name="data" id="field_data" data-cy="data" formControlName="data" />
-          <input type="hidden" class="form-control" name="dataContentType" id="field_dataContentType"
-            formControlName="dataContentType" />
+          <input type="hidden" class="form-control" name="dataContentType" id="field_dataContentType" formControlName="dataContentType" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsDocument.type"
-            for="field_type">Type</label>
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsDocument.type" for="field_type">Type</label>
           <select class="form-control" name="type" formControlName="type" id="field_type" data-cy="type">
             <option [ngValue]="null">{{ 'professionalDashboardApp.DocumentType.null' | translate }}</option>
             @for (documentType of documentTypeValues; track $index) {
-            <option [value]="documentType">{{ 'professionalDashboardApp.DocumentType.' + documentType | translate }}
-            </option>
+              <option [value]="documentType">{{ 'professionalDashboardApp.DocumentType.' + documentType | translate }}</option>
             }
           </select>
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsDocument.createdDate"
-            for="field_createdDate">Created Date</label>
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsDocument.createdDate" for="field_createdDate"
+            >Created Date</label
+          >
           <div class="input-group">
-            <input id="field_createdDate" data-cy="createdDate" type="text" class="form-control" name="createdDate"
-              ngbDatepicker #createdDateDp="ngbDatepicker" formControlName="createdDate" />
+            <input
+              id="field_createdDate"
+              data-cy="createdDate"
+              type="text"
+              class="form-control"
+              name="createdDate"
+              ngbDatepicker
+              #createdDateDp="ngbDatepicker"
+              formControlName="createdDate"
+            />
             <button type="button" class="btn btn-secondary" (click)="createdDateDp.toggle()">
               <fa-icon icon="calendar-alt"></fa-icon>
             </button>
@@ -77,11 +90,20 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsDocument.modifiedDate"
-            for="field_modifiedDate">Modified Date</label>
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsDocument.modifiedDate" for="field_modifiedDate"
+            >Modified Date</label
+          >
           <div class="input-group">
-            <input id="field_modifiedDate" data-cy="modifiedDate" type="text" class="form-control" name="modifiedDate"
-              ngbDatepicker #modifiedDateDp="ngbDatepicker" formControlName="modifiedDate" />
+            <input
+              id="field_modifiedDate"
+              data-cy="modifiedDate"
+              type="text"
+              class="form-control"
+              name="modifiedDate"
+              ngbDatepicker
+              #modifiedDateDp="ngbDatepicker"
+              formControlName="modifiedDate"
+            />
             <button type="button" class="btn btn-secondary" (click)="modifiedDateDp.toggle()">
               <fa-icon icon="calendar-alt"></fa-icon>
             </button>
@@ -89,21 +111,32 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsDocument.lastModifiedBy"
-            for="field_lastModifiedBy">Last Modified By</label>
-          <input type="text" class="form-control" name="lastModifiedBy" id="field_lastModifiedBy"
-            data-cy="lastModifiedBy" formControlName="lastModifiedBy" />
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsDocument.lastModifiedBy" for="field_lastModifiedBy"
+            >Last Modified By</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="lastModifiedBy"
+            id="field_lastModifiedBy"
+            data-cy="lastModifiedBy"
+            formControlName="lastModifiedBy"
+          />
         </div>
       </div>
 
       <div>
-        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary"
-          (click)="previousState()">
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
           <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
         </button>
 
-        <button type="submit" id="save-entity" data-cy="entityCreateSaveButton"
-          [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
           <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
         </button>
       </div>

@@ -8,7 +8,7 @@ import SortByDirective from './sort-by.directive';
 import SortDirective from './sort.directive';
 
 @Component({
-    template: `
+  template: `
     <table>
       <thead>
         <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="transition($event)">
@@ -22,7 +22,7 @@ import SortDirective from './sort.directive';
       </thead>
     </table>
   `,
-    standalone: false
+  standalone: false,
 })
 class TestSortByDirectiveComponent {
   predicate?: string;

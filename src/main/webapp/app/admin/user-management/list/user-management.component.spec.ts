@@ -31,9 +31,14 @@ describe('User Management Component', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-    imports: [RouterTestingModule.withRoutes([]), UserManagementComponent],
-    providers: [{ provide: ActivatedRoute, useValue: { data, queryParamMap } }, AccountService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-})
+      imports: [RouterTestingModule.withRoutes([]), UserManagementComponent],
+      providers: [
+        { provide: ActivatedRoute, useValue: { data, queryParamMap } },
+        AccountService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
+    })
       .overrideTemplate(UserManagementComponent, '')
       .compileComponents();
   }));

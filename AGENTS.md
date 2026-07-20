@@ -1,6 +1,7 @@
-# Project Overview 
+# Project Overview
 
 ## Code Quality and Style
+
 - Follow SOLID principles and clean code practices.
 - Use consistent naming conventions and code formatting.
 - Implement comprehensive unit and integration tests using JUnit 5 and Mockito.
@@ -14,6 +15,7 @@
 - Follow resource leak prevention best practices, especially in file handling and database connections.
 
 ## Architecture and Design
+
 - Use a layered architecture (Controller, Service, Repository) for separation of concerns.
 - Implement domain-driven design principles for modeling the healthcare workforce and related entities.
 - Dependency injection should be used for all services and repositories to promote testability and maintainability.
@@ -24,6 +26,7 @@
 - Immutable objects for data transfer objects (DTOs) and domain models where appropriate to ensure thread safety and maintainability.
 
 ## Security Considerations
+
 - Implement authentication and authorization using Spring Security, with role-based access control for all stakeholders (Professionals, Vendors, Admins).
 - Ensure all sensitive data (e.g., personal information, documents) is encrypted at rest and in transit.
 - Use secure password storage practices (e.g., bcrypt) for any user credentials.
@@ -39,6 +42,7 @@
 - Implement a secure document upload mechanism that validates file types, sizes, and content to prevent malicious uploads and ensure the integrity of stored documents.
 
 ## Performance Optimization
+
 - Use pagination and filtering for API endpoints that return large datasets to improve response times and reduce memory usage.
 - Implement caching strategies (e.g., using Spring Cache) for frequently accessed data to reduce database load and improve response times.
 - Optimize database queries using indexing and proper query design to ensure efficient data retrieval and manipulation.
@@ -50,6 +54,7 @@
 - Ensure that the application can scale horizontally by designing stateless services and using appropriate load balancing strategies to handle increased traffic and workload effectively.
 
 ## Technology Stack
+
 - Java 26
 - Spring Boot 4
 - Spring Web, Spring Data JPA, Spring Security, Spring Kafka, Spring Cloud AWS

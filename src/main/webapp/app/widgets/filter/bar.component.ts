@@ -3,11 +3,11 @@ import { FormsModule } from '@angular/forms';
 import SharedModule from 'app/shared/shared.module';
 
 @Component({
-    selector: 'jhi-filter-bar',
-    templateUrl: './bar.component.html',
-    styleUrls: ['./bar.component.scss'],
-    imports: [SharedModule, FormsModule],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  selector: 'jhi-filter-bar',
+  templateUrl: './bar.component.html',
+  styleUrls: ['./bar.component.scss'],
+  imports: [SharedModule, FormsModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class BarComponent implements OnInit {
   @Input() itemList?: any[] | [];

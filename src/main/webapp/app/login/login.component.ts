@@ -7,9 +7,9 @@ import { LoginService } from 'app/login/login.service';
 import { AccountService } from 'app/core/auth/account.service';
 
 @Component({
-    selector: 'jhi-login',
-    imports: [SharedModule, FormsModule, ReactiveFormsModule, RouterModule],
-    templateUrl: './login.component.html'
+  selector: 'jhi-login',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule, RouterModule],
+  templateUrl: './login.component.html',
 })
 export default class LoginComponent implements OnInit, AfterViewInit {
   @ViewChild('username', { static: false })

@@ -1,20 +1,27 @@
 <form class="form-row text-right" name="registerForm" role="form" [formGroup]="registerForm" *ngIf="checkPhoneNumber">
-    <div class="form-group p-1">
-        <button (click)="verifyPhoneNumber()" class="btn-lg btn-primary border-0" type="button"
-            [disabled]="showCodeInput">
-            Verify number: {{destinationNumber}}
-        </button>
-    </div>
-    <div *ngIf="showCodeInput" class="form-group p-1">
-        <label class="form-control-label" jhiTranslate="register.form.code" for="field_code">Verfication Code</label>
-        <input type="text" maxlength="5" placeholder="-----" class="col-md-2" name="verificationCode" id="field_code"
-            formControlName="verificationCode" (keyup)="verifyCode()" />
-    </div>
-    <span class="badge badge-warning p-2">{{codeVerificationStatus}}</span>
-    <div class="alert alert-warning" *ngIf="isCodeNumberChecking && !isCodeNumberValid">
-        <p>
-            <strong>Number verification failed! Please correct your verification code.</strong>
-        </p>
-    </div>
-    <!-- Provide Code Resend Button -->
+  <div class="form-group p-1">
+    <button (click)="verifyPhoneNumber()" class="btn-lg btn-primary border-0" type="button" [disabled]="showCodeInput">
+      Verify number: {{ destinationNumber }}
+    </button>
+  </div>
+  <div *ngIf="showCodeInput" class="form-group p-1">
+    <label class="form-control-label" jhiTranslate="register.form.code" for="field_code">Verfication Code</label>
+    <input
+      type="text"
+      maxlength="5"
+      placeholder="-----"
+      class="col-md-2"
+      name="verificationCode"
+      id="field_code"
+      formControlName="verificationCode"
+      (keyup)="verifyCode()"
+    />
+  </div>
+  <span class="badge badge-warning p-2">{{ codeVerificationStatus }}</span>
+  <div class="alert alert-warning" *ngIf="isCodeNumberChecking && !isCodeNumberValid">
+    <p>
+      <strong>Number verification failed! Please correct your verification code.</strong>
+    </p>
+  </div>
+  <!-- Provide Code Resend Button -->
 </form>

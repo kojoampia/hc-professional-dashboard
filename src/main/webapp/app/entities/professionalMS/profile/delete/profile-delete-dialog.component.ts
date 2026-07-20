@@ -8,8 +8,8 @@ import { IProfile } from '../profile.model';
 import { ProfileService } from '../service/profile.service';
 
 @Component({
-    templateUrl: './profile-delete-dialog.component.html',
-    imports: [SharedModule, FormsModule]
+  templateUrl: './profile-delete-dialog.component.html',
+  imports: [SharedModule, FormsModule],
 })
 export class ProfileDeleteDialogComponent {
   profile?: IProfile;

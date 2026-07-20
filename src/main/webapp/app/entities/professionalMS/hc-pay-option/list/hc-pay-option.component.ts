@@ -14,18 +14,18 @@ import { EntityArrayResponseType, HCPayOptionService } from '../service/hc-pay-o
 import { HCPayOptionDeleteDialogComponent } from '../delete/hc-pay-option-delete-dialog.component';
 
 @Component({
-    selector: 'hpd-hc-pay-option',
-    templateUrl: './hc-pay-option.component.html',
-    imports: [
-        RouterModule,
-        FormsModule,
-        SharedModule,
-        SortDirective,
-        SortByDirective,
-        DurationPipe,
-        FormatMediumDatetimePipe,
-        FormatMediumDatePipe,
-    ]
+  selector: 'hpd-hc-pay-option',
+  templateUrl: './hc-pay-option.component.html',
+  imports: [
+    RouterModule,
+    FormsModule,
+    SharedModule,
+    SortDirective,
+    SortByDirective,
+    DurationPipe,
+    FormatMediumDatetimePipe,
+    FormatMediumDatePipe,
+  ],
 })
 export class HCPayOptionComponent implements OnInit {
   private static readonly NOT_SORTABLE_FIELDS_AFTER_SEARCH = ['id', 'type', 'userID', 'metadata'];

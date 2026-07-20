@@ -1,52 +1,52 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
     @if (metadata) {
-    <div>
-      <h2 data-cy="metadataDetailsHeading">
-        <span jhiTranslate="professionalDashboardApp.professionalMsMetadata.detail.title">Metadata</span>
-      </h2>
+      <div>
+        <h2 data-cy="metadataDetailsHeading">
+          <span jhiTranslate="professionalDashboardApp.professionalMsMetadata.detail.title">Metadata</span>
+        </h2>
 
-      <hr />
+        <hr />
 
-      <jhi-alert-error></jhi-alert-error>
+        <jhi-alert-error></jhi-alert-error>
 
-      <jhi-alert></jhi-alert>
+        <jhi-alert></jhi-alert>
 
-      <dl class="row-md jh-entity-details">
-        <dt><span jhiTranslate="global.field.id">ID</span></dt>
-        <dd>
-          <span>{{ metadata.id }}</span>
-        </dd>
-        <dt><span jhiTranslate="professionalDashboardApp.professionalMsMetadata.createdBy">Created By</span></dt>
-        <dd>
-          <span>{{ metadata.createdBy }}</span>
-        </dd>
-        <dt><span jhiTranslate="professionalDashboardApp.professionalMsMetadata.modifiedBy">Modified By</span></dt>
-        <dd>
-          <span>{{ metadata.modifiedBy }}</span>
-        </dd>
-        <dt><span jhiTranslate="professionalDashboardApp.professionalMsMetadata.createdDate">Created Date</span></dt>
-        <dd>
-          <span>{{ metadata.createdDate | formatMediumDate }}</span>
-        </dd>
-        <dt><span jhiTranslate="professionalDashboardApp.professionalMsMetadata.modifiedDate">Modified Date</span></dt>
-        <dd>
-          <span>{{ metadata.modifiedDate | formatMediumDate }}</span>
-        </dd>
-        <dt><span jhiTranslate="professionalDashboardApp.professionalMsMetadata.data">Data</span></dt>
-        <dd>
-          <span>{{ metadata.data }}</span>
-        </dd>
-      </dl>
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ metadata.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="professionalDashboardApp.professionalMsMetadata.createdBy">Created By</span></dt>
+          <dd>
+            <span>{{ metadata.createdBy }}</span>
+          </dd>
+          <dt><span jhiTranslate="professionalDashboardApp.professionalMsMetadata.modifiedBy">Modified By</span></dt>
+          <dd>
+            <span>{{ metadata.modifiedBy }}</span>
+          </dd>
+          <dt><span jhiTranslate="professionalDashboardApp.professionalMsMetadata.createdDate">Created Date</span></dt>
+          <dd>
+            <span>{{ metadata.createdDate | formatMediumDate }}</span>
+          </dd>
+          <dt><span jhiTranslate="professionalDashboardApp.professionalMsMetadata.modifiedDate">Modified Date</span></dt>
+          <dd>
+            <span>{{ metadata.modifiedDate | formatMediumDate }}</span>
+          </dd>
+          <dt><span jhiTranslate="professionalDashboardApp.professionalMsMetadata.data">Data</span></dt>
+          <dd>
+            <span>{{ metadata.data }}</span>
+          </dd>
+        </dl>
 
-      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
-        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
-      </button>
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
 
-      <button type="button" [routerLink]="['/metadata', metadata.id, 'edit']" class="btn btn-primary">
-        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
-      </button>
-    </div>
+        <button type="button" [routerLink]="['/metadata', metadata.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
     }
   </div>
 </div>

@@ -5,16 +5,19 @@
     <div class="d-flex justify-content-end">
       <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span jhiTranslate="professionalDashboardApp.professionalMsHCPayOption.home.refreshListLabel">Refresh
-          list</span>
+        <span jhiTranslate="professionalDashboardApp.professionalMsHCPayOption.home.refreshListLabel">Refresh list</span>
       </button>
 
-      <button id="jh-create-entity" data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-hc-pay-option" [routerLink]="['/hc-pay-option/new']">
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-hc-pay-option"
+        [routerLink]="['/hc-pay-option/new']"
+      >
         <fa-icon icon="plus"></fa-icon>
-        <span class="hidden-sm-down"
-          jhiTranslate="professionalDashboardApp.professionalMsHCPayOption.home.createLabel">Create a new HC Pay
-          Option</span>
+        <span class="hidden-sm-down" jhiTranslate="professionalDashboardApp.professionalMsHCPayOption.home.createLabel"
+          >Create a new HC Pay Option</span
+        >
       </button>
     </div>
   </h2>
@@ -26,104 +29,108 @@
   <form name="searchForm" class="row row-cols-sm-auto align-items-center">
     <div class="col-sm-12">
       <div class="input-group w-100 mt-3">
-        <label class="visually-hidden" for="currentSearch"
-          jhiTranslate="professionalDashboardApp.professionalMsHCPayOption.home.search">Search for HC Pay Option</label>
-        <input type="text" class="form-control" [(ngModel)]="currentSearch" id="currentSearch" name="currentSearch"
-          placeholder="{{ 'professionalDashboardApp.professionalMsHCPayOption.home.search' | translate }}" />
+        <label class="visually-hidden" for="currentSearch" jhiTranslate="professionalDashboardApp.professionalMsHCPayOption.home.search"
+          >Search for HC Pay Option</label
+        >
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="currentSearch"
+          id="currentSearch"
+          name="currentSearch"
+          placeholder="{{ 'professionalDashboardApp.professionalMsHCPayOption.home.search' | translate }}"
+        />
 
         <button class="btn btn-info" (click)="search(currentSearch)">
           <fa-icon icon="search"></fa-icon>
         </button>
 
         @if (currentSearch) {
-        <button class="btn btn-danger" (click)="search('')">
-          <fa-icon icon="trash-alt"></fa-icon>
-        </button>
+          <button class="btn btn-danger" (click)="search('')">
+            <fa-icon icon="trash-alt"></fa-icon>
+          </button>
         }
       </div>
     </div>
   </form>
 
   @if (hCPayOptions?.length === 0) {
-  <div class="alert alert-warning" id="no-result">
-    <span jhiTranslate="professionalDashboardApp.professionalMsHCPayOption.home.notFound">No HC Pay Options found</span>
-  </div>
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="professionalDashboardApp.professionalMsHCPayOption.home.notFound">No HC Pay Options found</span>
+    </div>
   }
 
   @if (hCPayOptions && hCPayOptions.length > 0) {
-  <div class="table-responsive table-entities" id="entities">
-    <table class="table table-striped" aria-describedby="page-heading">
-      <thead>
-        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
-          <th scope="col" jhiSortBy="id">
-            <div class="d-flex">
-              <span jhiTranslate="global.field.id">ID</span>
-              @if (!currentSearch) {
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-              }
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="type">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsHCPayOption.type">Type</span>
-              @if (!currentSearch) {
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-              }
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="userID">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsHCPayOption.userID">User ID</span>
-              @if (!currentSearch) {
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-              }
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="metadata">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsHCPayOption.metadata">Metadata</span>
-              @if (!currentSearch) {
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-              }
-            </div>
-          </th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (hCPayOption of hCPayOptions; track trackId) {
-        <tr data-cy="entityTable">
-          <td>
-            <a [routerLink]="['/hc-pay-option', hCPayOption.id, 'view']">{{ hCPayOption.id }}</a>
-          </td>
-          <td>{{ hCPayOption.type }}</td>
-          <td>{{ hCPayOption.userID }}</td>
-          <td>{{ hCPayOption.metadata }}</td>
-          <td class="text-end">
-            <div class="btn-group">
-              <a [routerLink]="['/hc-pay-option', hCPayOption.id, 'view']" class="btn btn-info btn-sm"
-                data-cy="entityDetailsButton">
-                <fa-icon icon="eye"></fa-icon>
-                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
-              </a>
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="global.field.id">ID</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="type">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsHCPayOption.type">Type</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="userID">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsHCPayOption.userID">User ID</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="metadata">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsHCPayOption.metadata">Metadata</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (hCPayOption of hCPayOptions; track trackId) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/hc-pay-option', hCPayOption.id, 'view']">{{ hCPayOption.id }}</a>
+              </td>
+              <td>{{ hCPayOption.type }}</td>
+              <td>{{ hCPayOption.userID }}</td>
+              <td>{{ hCPayOption.metadata }}</td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/hc-pay-option', hCPayOption.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                  </a>
 
-              <a [routerLink]="['/hc-pay-option', hCPayOption.id, 'edit']" class="btn btn-primary btn-sm"
-                data-cy="entityEditButton">
-                <fa-icon icon="pencil-alt"></fa-icon>
-                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
-              </a>
+                  <a [routerLink]="['/hc-pay-option', hCPayOption.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                  </a>
 
-              <button type="submit" (click)="delete(hCPayOption)" class="btn btn-danger btn-sm"
-                data-cy="entityDeleteButton">
-                <fa-icon icon="times"></fa-icon>
-                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
-              </button>
-            </div>
-          </td>
-        </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+                  <button type="submit" (click)="delete(hCPayOption)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   }
 </div>

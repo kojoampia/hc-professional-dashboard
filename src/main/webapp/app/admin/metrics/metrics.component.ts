@@ -15,21 +15,21 @@ import { MetricsRequestComponent } from './blocks/metrics-request/metrics-reques
 import { MetricsSystemComponent } from './blocks/metrics-system/metrics-system.component';
 
 @Component({
-    selector: 'jhi-metrics',
-    templateUrl: './metrics.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        SharedModule,
-        JvmMemoryComponent,
-        JvmThreadsComponent,
-        MetricsCacheComponent,
-        MetricsDatasourceComponent,
-        MetricsEndpointsRequestsComponent,
-        MetricsGarbageCollectorComponent,
-        MetricsModalThreadsComponent,
-        MetricsRequestComponent,
-        MetricsSystemComponent,
-    ]
+  selector: 'jhi-metrics',
+  templateUrl: './metrics.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    SharedModule,
+    JvmMemoryComponent,
+    JvmThreadsComponent,
+    MetricsCacheComponent,
+    MetricsDatasourceComponent,
+    MetricsEndpointsRequestsComponent,
+    MetricsGarbageCollectorComponent,
+    MetricsModalThreadsComponent,
+    MetricsRequestComponent,
+    MetricsSystemComponent,
+  ],
 })
 export default class MetricsComponent implements OnInit {
   metrics?: Metrics;

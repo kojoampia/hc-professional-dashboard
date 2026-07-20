@@ -7,9 +7,9 @@ import { ConfigurationService } from './configuration.service';
 import { Bean, PropertySource } from './configuration.model';
 
 @Component({
-    selector: 'jhi-configuration',
-    templateUrl: './configuration.component.html',
-    imports: [SharedModule, FormsModule, SortDirective, SortByDirective]
+  selector: 'jhi-configuration',
+  templateUrl: './configuration.component.html',
+  imports: [SharedModule, FormsModule, SortDirective, SortByDirective],
 })
 export default class ConfigurationComponent implements OnInit {
   allBeans!: Bean[];

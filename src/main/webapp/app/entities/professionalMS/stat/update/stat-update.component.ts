@@ -12,9 +12,9 @@ import { StatService } from '../service/stat.service';
 import { StatFormService, StatFormGroup } from './stat-form.service';
 
 @Component({
-    selector: 'hpd-stat-update',
-    templateUrl: './stat-update.component.html',
-    imports: [SharedModule, FormsModule, ReactiveFormsModule]
+  selector: 'hpd-stat-update',
+  templateUrl: './stat-update.component.html',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class StatUpdateComponent implements OnInit {
   isSaving = false;

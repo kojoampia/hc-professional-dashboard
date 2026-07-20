@@ -12,9 +12,9 @@ import { HCPayOptionService } from '../service/hc-pay-option.service';
 import { HCPayOptionFormService, HCPayOptionFormGroup } from './hc-pay-option-form.service';
 
 @Component({
-    selector: 'hpd-hc-pay-option-update',
-    templateUrl: './hc-pay-option-update.component.html',
-    imports: [SharedModule, FormsModule, ReactiveFormsModule]
+  selector: 'hpd-hc-pay-option-update',
+  templateUrl: './hc-pay-option-update.component.html',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class HCPayOptionUpdateComponent implements OnInit {
   isSaving = false;

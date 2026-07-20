@@ -12,6 +12,6 @@ export class FaqCategory implements IFaqCategory {
     public description?: string,
     public color?: string,
     public matIcon?: string,
-    public svgIcon?: string
+    public svgIcon?: string,
   ) {}
 }

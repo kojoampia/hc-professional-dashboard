@@ -18,9 +18,9 @@ describe('PasswordComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-    imports: [PasswordComponent],
-    providers: [FormBuilder, AccountService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-})
+      imports: [PasswordComponent],
+      providers: [FormBuilder, AccountService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    })
       .overrideTemplate(PasswordComponent, '')
       .compileComponents();
   }));

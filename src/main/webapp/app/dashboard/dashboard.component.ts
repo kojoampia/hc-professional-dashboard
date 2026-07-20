@@ -12,10 +12,10 @@ import { Authority } from 'app/config/authority.constants';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-    selector: 'jhi-dashboard',
-    imports: [CommonModule, SharedModule, RouterModule, MetricPanelModule, StatusModule],
-    templateUrl: './dashboard.component.html',
-    styleUrl: './dashboard.component.scss'
+  selector: 'jhi-dashboard',
+  imports: [CommonModule, SharedModule, RouterModule, MetricPanelModule, StatusModule],
+  templateUrl: './dashboard.component.html',
+  styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   @Input() account!: Account;
@@ -42,9 +42,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   imageUrl = 'content/images/healthconnect-angel.png';
 
-  constructor(
-    private dashboardService: DashboardService,
-  ) {}
+  constructor(private dashboardService: DashboardService) {}
 
   ngOnInit(): void {
     this.page = sessionStorage.getItem('page') || 'calendar';

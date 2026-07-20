@@ -20,21 +20,13 @@ import { ProfileDetailComponent } from '../detail/profile-detail.component';
 import { ProfileUpdateComponent } from '../update/profile-update.component';
 
 @Component({
-    selector: 'jhi-profile',
-    templateUrl: './profile.component.html',
-    imports: [
-        RouterModule,
-        FormsModule,
-        SharedModule,
-        ProfileDetailComponent,
-        ProfileUpdateComponent
-    ]
+  selector: 'jhi-profile',
+  templateUrl: './profile.component.html',
+  imports: [RouterModule, FormsModule, SharedModule, ProfileDetailComponent, ProfileUpdateComponent],
 })
 export class ProfileComponent implements OnInit {
-
   profile?: IProfile;
   isLoading = false;
-
 
   constructor(
     protected profileService: ProfileService,
@@ -45,10 +37,5 @@ export class ProfileComponent implements OnInit {
 
   trackId = (_index: number, item: IProfile): string => this.profileService.getProfileIdentifier(item);
 
-
-  ngOnInit(): void {
-  }
-
-
-
+  ngOnInit(): void {}
 }

@@ -6,9 +6,9 @@ import { DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe } from 'ap
 import { IHCCredential } from '../hc-credential.model';
 
 @Component({
-    selector: 'hpd-hc-credential-detail',
-    templateUrl: './hc-credential-detail.component.html',
-    imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe]
+  selector: 'hpd-hc-credential-detail',
+  templateUrl: './hc-credential-detail.component.html',
+  imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],
 })
 export class HCCredentialDetailComponent {
   @Input() hCCredential: IHCCredential | null = null;

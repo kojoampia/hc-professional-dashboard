@@ -226,7 +226,7 @@ describe('MainComponent', () => {
 });
 
 @Component({
-    template: '',
-    standalone: false
+  template: '',
+  standalone: false,
 })
 export class BlankComponent {}

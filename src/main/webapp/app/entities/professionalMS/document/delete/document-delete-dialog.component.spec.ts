@@ -18,9 +18,9 @@ describe('Document Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [DocumentDeleteDialogComponent],
-    providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-})
+      imports: [DocumentDeleteDialogComponent],
+      providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    })
       .overrideTemplate(DocumentDeleteDialogComponent, '')
       .compileComponents();
     fixture = TestBed.createComponent(DocumentDeleteDialogComponent);

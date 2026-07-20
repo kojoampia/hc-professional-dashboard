@@ -4,10 +4,10 @@ import { IChartItem } from './chart-item-model';
 import { StatusService } from './status.service';
 
 @Component({
-    selector: 'jhi-status',
-    imports: [NgxChartsModule],
-    templateUrl: './status.component.html',
-    styleUrl: './status.component.scss'
+  selector: 'jhi-status',
+  imports: [NgxChartsModule],
+  templateUrl: './status.component.html',
+  styleUrl: './status.component.scss',
 })
 export class StatusComponent {
   /* Chart title */

@@ -18,9 +18,9 @@ describe('Metadata Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [MetadataDeleteDialogComponent],
-    providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-})
+      imports: [MetadataDeleteDialogComponent],
+      providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    })
       .overrideTemplate(MetadataDeleteDialogComponent, '')
       .compileComponents();
     fixture = TestBed.createComponent(MetadataDeleteDialogComponent);

@@ -8,11 +8,14 @@
         <span jhiTranslate="professionalDashboardApp.professionalMsTask.home.refreshListLabel">Refresh list</span>
       </button>
 
-      <button id="jh-create-entity" data-cy="entityCreateButton" class="btn btn-primary jh-create-entity create-task"
-        [routerLink]="['/task/new']">
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-task"
+        [routerLink]="['/task/new']"
+      >
         <fa-icon icon="plus"></fa-icon>
-        <span class="hidden-sm-down" jhiTranslate="professionalDashboardApp.professionalMsTask.home.createLabel">Create
-          a new Task</span>
+        <span class="hidden-sm-down" jhiTranslate="professionalDashboardApp.professionalMsTask.home.createLabel">Create a new Task</span>
       </button>
     </div>
   </h2>
@@ -24,169 +27,176 @@
   <form name="searchForm" class="row row-cols-sm-auto align-items-center">
     <div class="col-sm-12">
       <div class="input-group w-100 mt-3">
-        <label class="visually-hidden" for="currentSearch"
-          jhiTranslate="professionalDashboardApp.professionalMsTask.home.search">Search for Task</label>
-        <input type="text" class="form-control" [(ngModel)]="currentSearch" id="currentSearch" name="currentSearch"
-          placeholder="{{ 'professionalDashboardApp.professionalMsTask.home.search' | translate }}" />
+        <label class="visually-hidden" for="currentSearch" jhiTranslate="professionalDashboardApp.professionalMsTask.home.search"
+          >Search for Task</label
+        >
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="currentSearch"
+          id="currentSearch"
+          name="currentSearch"
+          placeholder="{{ 'professionalDashboardApp.professionalMsTask.home.search' | translate }}"
+        />
 
         <button class="btn btn-info" (click)="search(currentSearch)">
           <fa-icon icon="search"></fa-icon>
         </button>
 
         @if (currentSearch) {
-        <button class="btn btn-danger" (click)="search('')">
-          <fa-icon icon="trash-alt"></fa-icon>
-        </button>
+          <button class="btn btn-danger" (click)="search('')">
+            <fa-icon icon="trash-alt"></fa-icon>
+          </button>
         }
       </div>
     </div>
   </form>
 
   @if (tasks?.length === 0) {
-  <div class="alert alert-warning" id="no-result">
-    <span jhiTranslate="professionalDashboardApp.professionalMsTask.home.notFound">No Tasks found</span>
-  </div>
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="professionalDashboardApp.professionalMsTask.home.notFound">No Tasks found</span>
+    </div>
   }
 
   @if (tasks && tasks.length > 0) {
-  <div class="table-responsive table-entities" id="entities">
-    <table class="table table-striped" aria-describedby="page-heading">
-      <thead>
-        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
-          <th scope="col" jhiSortBy="id">
-            <div class="d-flex">
-              <span jhiTranslate="global.field.id">ID</span>
-              @if (!currentSearch) {
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-              }
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="name">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsTask.name">Name</span>
-              @if (!currentSearch) {
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-              }
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="description">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsTask.description">Description</span>
-              @if (!currentSearch) {
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-              }
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="schedule">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsTask.schedule">Schedule</span>
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="global.field.id">ID</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="name">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsTask.name">Name</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="description">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsTask.description">Description</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="schedule">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsTask.schedule">Schedule</span>
 
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="duration">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsTask.duration">Duration</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="duration">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsTask.duration">Duration</span>
 
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="attendantId">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsTask.attendantId">Attendant Id</span>
-              @if (!currentSearch) {
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-              }
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="teamId">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsTask.teamId">Team Id</span>
-              @if (!currentSearch) {
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-              }
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="patientId">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsTask.patientId">Patient Id</span>
-              @if (!currentSearch) {
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-              }
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="createdDate">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsTask.createdDate">Created Date</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="attendantId">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsTask.attendantId">Attendant Id</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="teamId">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsTask.teamId">Team Id</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="patientId">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsTask.patientId">Patient Id</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="createdDate">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsTask.createdDate">Created Date</span>
 
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="modifiedDate">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsTask.modifiedDate">Modified Date</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="modifiedDate">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsTask.modifiedDate">Modified Date</span>
 
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="createdBy">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsTask.createdBy">Created By</span>
-              @if (!currentSearch) {
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-              }
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="modifiedBy">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsTask.modifiedBy">Modified By</span>
-              @if (!currentSearch) {
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-              }
-            </div>
-          </th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (task of tasks; track trackId) {
-        <tr data-cy="entityTable">
-          <td>
-            <a [routerLink]="['/task', task.id, 'view']">{{ task.id }}</a>
-          </td>
-          <td>{{ task.name }}</td>
-          <td>{{ task.description }}</td>
-          <td>{{ task.schedule | formatMediumDate }}</td>
-          <td>{{ task.duration }}</td>
-          <td>{{ task.attendantId }}</td>
-          <td>{{ task.teamId }}</td>
-          <td>{{ task.patientId }}</td>
-          <td>{{ task.createdDate | formatMediumDate }}</td>
-          <td>{{ task.modifiedDate | formatMediumDate }}</td>
-          <td>{{ task.createdBy }}</td>
-          <td>{{ task.modifiedBy }}</td>
-          <td class="text-end">
-            <div class="btn-group">
-              <a [routerLink]="['/task', task.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
-                <fa-icon icon="eye"></fa-icon>
-                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
-              </a>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="createdBy">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsTask.createdBy">Created By</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="modifiedBy">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsTask.modifiedBy">Modified By</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (task of tasks; track trackId) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/task', task.id, 'view']">{{ task.id }}</a>
+              </td>
+              <td>{{ task.name }}</td>
+              <td>{{ task.description }}</td>
+              <td>{{ task.schedule | formatMediumDate }}</td>
+              <td>{{ task.duration }}</td>
+              <td>{{ task.attendantId }}</td>
+              <td>{{ task.teamId }}</td>
+              <td>{{ task.patientId }}</td>
+              <td>{{ task.createdDate | formatMediumDate }}</td>
+              <td>{{ task.modifiedDate | formatMediumDate }}</td>
+              <td>{{ task.createdBy }}</td>
+              <td>{{ task.modifiedBy }}</td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/task', task.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                  </a>
 
-              <a [routerLink]="['/task', task.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
-                <fa-icon icon="pencil-alt"></fa-icon>
-                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
-              </a>
+                  <a [routerLink]="['/task', task.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                  </a>
 
-              <button type="submit" (click)="delete(task)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                <fa-icon icon="times"></fa-icon>
-                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
-              </button>
-            </div>
-          </td>
-        </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+                  <button type="submit" (click)="delete(task)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   }
 </div>

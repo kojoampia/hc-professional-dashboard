@@ -18,9 +18,9 @@ describe('Address Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [AddressDeleteDialogComponent],
-    providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-})
+      imports: [AddressDeleteDialogComponent],
+      providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    })
       .overrideTemplate(AddressDeleteDialogComponent, '')
       .compileComponents();
     fixture = TestBed.createComponent(AddressDeleteDialogComponent);

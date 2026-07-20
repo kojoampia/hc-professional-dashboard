@@ -16,9 +16,9 @@ describe('RegisterComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-    imports: [TranslateModule.forRoot(), RegisterComponent],
-    providers: [FormBuilder, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-})
+      imports: [TranslateModule.forRoot(), RegisterComponent],
+      providers: [FormBuilder, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    })
       .overrideTemplate(RegisterComponent, '')
       .compileComponents();
   }));

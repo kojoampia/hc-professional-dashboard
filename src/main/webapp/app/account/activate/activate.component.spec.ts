@@ -12,16 +12,16 @@ describe('ActivateComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-    imports: [ActivateComponent],
-    providers: [
+      imports: [ActivateComponent],
+      providers: [
         {
-            provide: ActivatedRoute,
-            useValue: { queryParams: of({ key: 'ABC123' }) },
+          provide: ActivatedRoute,
+          useValue: { queryParams: of({ key: 'ABC123' }) },
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-    ]
-})
+      ],
+    })
       .overrideTemplate(ActivateComponent, '')
       .compileComponents();
   }));

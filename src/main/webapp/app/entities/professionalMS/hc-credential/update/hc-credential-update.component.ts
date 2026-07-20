@@ -12,9 +12,9 @@ import { HCCredentialService } from '../service/hc-credential.service';
 import { HCCredentialFormService, HCCredentialFormGroup } from './hc-credential-form.service';
 
 @Component({
-    selector: 'hpd-hc-credential-update',
-    templateUrl: './hc-credential-update.component.html',
-    imports: [SharedModule, FormsModule, ReactiveFormsModule]
+  selector: 'hpd-hc-credential-update',
+  templateUrl: './hc-credential-update.component.html',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class HCCredentialUpdateComponent implements OnInit {
   isSaving = false;

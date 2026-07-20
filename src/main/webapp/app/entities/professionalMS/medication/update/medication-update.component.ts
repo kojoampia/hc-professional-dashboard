@@ -12,9 +12,9 @@ import { MedicationService } from '../service/medication.service';
 import { MedicationFormService, MedicationFormGroup } from './medication-form.service';
 
 @Component({
-    selector: 'hpd-medication-update',
-    templateUrl: './medication-update.component.html',
-    imports: [SharedModule, FormsModule, ReactiveFormsModule]
+  selector: 'hpd-medication-update',
+  templateUrl: './medication-update.component.html',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class MedicationUpdateComponent implements OnInit {
   isSaving = false;

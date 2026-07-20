@@ -1,27 +1,57 @@
 <div class="card-group jh-card status">
-    <div class="card col-md-4 border-0 mr-1">
-        <div class="card-header">
-            <h3>Service per Patient</h3>
-        </div>
-        <div class="card-body">
-            <ngx-charts-line-chart class="col" [view]="[0,360]" [results]="chartSeries" [scheme]="colorScheme"
-                [schemeType]="schemeType" [animations]="animations" [legend]="showLegend" [legendTitle]="legendTitle"
-                [legendPosition]="legendPosition" [xAxis]="showXAxis" [yAxis]="showYAxis"
-                [showGridLines]="showGridLines" [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel"
-                [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel" [timeline]="showTimeline" [gradient]="gradient">
-            </ngx-charts-line-chart>
-        </div>
+  <div class="card col-md-4 border-0 mr-1">
+    <div class="card-header">
+      <h3>Service per Patient</h3>
     </div>
-    <div class="card col-md-4 border-0">
-        <div class="card-header">
-            <h3>Recent Patient Service Hours</h3>
-        </div>
-        <ngx-charts-bar-vertical-stacked class="col" [view]="[0,320]" [results]="chartItems" [scheme]="colorScheme"
-            [schemeType]="schemeType" [animations]="animations" [legend]="showLegend" [legendTitle]="legendTitle"
-            [legendPosition]="legendPosition" [xAxis]="showXAxis" [yAxis]="showYAxis" [showGridLines]="false"
-            [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="xAxisLabel"
-            [yAxisLabel]="yAxisLabel" [showDataLabel]="showDataLabel" [noBarWhenZero]="noBarWhenZero"
-            [gradient]="gradient">
-        </ngx-charts-bar-vertical-stacked>
+    <div class="card-body">
+      <ngx-charts-line-chart
+        class="col"
+        [view]="[0, 360]"
+        [results]="chartSeries"
+        [scheme]="colorScheme"
+        [schemeType]="schemeType"
+        [animations]="animations"
+        [legend]="showLegend"
+        [legendTitle]="legendTitle"
+        [legendPosition]="legendPosition"
+        [xAxis]="showXAxis"
+        [yAxis]="showYAxis"
+        [showGridLines]="showGridLines"
+        [showXAxisLabel]="showXAxisLabel"
+        [showYAxisLabel]="showYAxisLabel"
+        [xAxisLabel]="xAxisLabel"
+        [yAxisLabel]="yAxisLabel"
+        [timeline]="showTimeline"
+        [gradient]="gradient"
+      >
+      </ngx-charts-line-chart>
     </div>
+  </div>
+  <div class="card col-md-4 border-0">
+    <div class="card-header">
+      <h3>Recent Patient Service Hours</h3>
+    </div>
+    <ngx-charts-bar-vertical-stacked
+      class="col"
+      [view]="[0, 320]"
+      [results]="chartItems"
+      [scheme]="colorScheme"
+      [schemeType]="schemeType"
+      [animations]="animations"
+      [legend]="showLegend"
+      [legendTitle]="legendTitle"
+      [legendPosition]="legendPosition"
+      [xAxis]="showXAxis"
+      [yAxis]="showYAxis"
+      [showGridLines]="false"
+      [showXAxisLabel]="showXAxisLabel"
+      [showYAxisLabel]="showYAxisLabel"
+      [xAxisLabel]="xAxisLabel"
+      [yAxisLabel]="yAxisLabel"
+      [showDataLabel]="showDataLabel"
+      [noBarWhenZero]="noBarWhenZero"
+      [gradient]="gradient"
+    >
+    </ngx-charts-bar-vertical-stacked>
+  </div>
 </div>

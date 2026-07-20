@@ -8,8 +8,8 @@ import { IMedication } from '../medication.model';
 import { MedicationService } from '../service/medication.service';
 
 @Component({
-    templateUrl: './medication-delete-dialog.component.html',
-    imports: [SharedModule, FormsModule]
+  templateUrl: './medication-delete-dialog.component.html',
+  imports: [SharedModule, FormsModule],
 })
 export class MedicationDeleteDialogComponent {
   medication?: IMedication;
