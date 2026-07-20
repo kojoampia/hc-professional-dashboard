@@ -8,9 +8,8 @@ import { IAddress } from '../address.model';
 import { AddressService } from '../service/address.service';
 
 @Component({
-  standalone: true,
-  templateUrl: './address-delete-dialog.component.html',
-  imports: [SharedModule, FormsModule],
+    templateUrl: './address-delete-dialog.component.html',
+    imports: [SharedModule, FormsModule]
 })
 export class AddressDeleteDialogComponent {
   address?: IAddress;

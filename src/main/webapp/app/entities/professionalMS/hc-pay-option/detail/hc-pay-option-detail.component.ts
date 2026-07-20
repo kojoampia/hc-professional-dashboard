@@ -6,10 +6,9 @@ import { DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe } from 'ap
 import { IHCPayOption } from '../hc-pay-option.model';
 
 @Component({
-  standalone: true,
-  selector: 'hpd-hc-pay-option-detail',
-  templateUrl: './hc-pay-option-detail.component.html',
-  imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],
+    selector: 'hpd-hc-pay-option-detail',
+    templateUrl: './hc-pay-option-detail.component.html',
+    imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe]
 })
 export class HCPayOptionDetailComponent {
   @Input() hCPayOption: IHCPayOption | null = null;

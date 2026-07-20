@@ -6,10 +6,9 @@ import SharedModule from 'app/shared/shared.module';
 import { ActivateService } from './activate.service';
 
 @Component({
-  selector: 'jhi-activate',
-  standalone: true,
-  imports: [SharedModule, RouterModule],
-  templateUrl: './activate.component.html',
+    selector: 'jhi-activate',
+    imports: [SharedModule, RouterModule],
+    templateUrl: './activate.component.html'
 })
 export default class ActivateComponent implements OnInit {
   error = false;

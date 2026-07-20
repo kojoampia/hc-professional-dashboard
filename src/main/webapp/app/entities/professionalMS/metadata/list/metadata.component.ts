@@ -14,19 +14,18 @@ import { EntityArrayResponseType, MetadataService } from '../service/metadata.se
 import { MetadataDeleteDialogComponent } from '../delete/metadata-delete-dialog.component';
 
 @Component({
-  standalone: true,
-  selector: 'hpd-metadata',
-  templateUrl: './metadata.component.html',
-  imports: [
-    RouterModule,
-    FormsModule,
-    SharedModule,
-    SortDirective,
-    SortByDirective,
-    DurationPipe,
-    FormatMediumDatetimePipe,
-    FormatMediumDatePipe,
-  ],
+    selector: 'hpd-metadata',
+    templateUrl: './metadata.component.html',
+    imports: [
+        RouterModule,
+        FormsModule,
+        SharedModule,
+        SortDirective,
+        SortByDirective,
+        DurationPipe,
+        FormatMediumDatetimePipe,
+        FormatMediumDatePipe,
+    ]
 })
 export class MetadataComponent implements OnInit {
   private static readonly NOT_SORTABLE_FIELDS_AFTER_SEARCH = ['id', 'createdBy', 'modifiedBy', 'data'];

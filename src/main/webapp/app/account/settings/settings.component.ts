@@ -10,10 +10,9 @@ import { LANGUAGES } from 'app/config/language.constants';
 const initialAccount: Account = {} as Account;
 
 @Component({
-  selector: 'jhi-settings',
-  standalone: true,
-  imports: [SharedModule, FormsModule, ReactiveFormsModule],
-  templateUrl: './settings.component.html',
+    selector: 'jhi-settings',
+    imports: [SharedModule, FormsModule, ReactiveFormsModule],
+    templateUrl: './settings.component.html'
 })
 export default class SettingsComponent implements OnInit {
   success = false;

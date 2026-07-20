@@ -16,11 +16,10 @@ import ActiveMenuDirective from './active-menu.directive';
 import NavbarItem from './navbar-item.model';
 
 @Component({
-  standalone: true,
-  selector: 'jhi-navbar',
-  templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.scss',
-  imports: [RouterModule, SharedModule, HasAnyAuthorityDirective, ActiveMenuDirective],
+    selector: 'jhi-navbar',
+    templateUrl: './navbar.component.html',
+    styleUrl: './navbar.component.scss',
+    imports: [RouterModule, SharedModule, HasAnyAuthorityDirective, ActiveMenuDirective]
 })
 export default class NavbarComponent implements OnInit {
   inProduction?: boolean;

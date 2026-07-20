@@ -2,11 +2,10 @@ import { OnInit, Component, Input, EventEmitter, Output, TemplateRef, CUSTOM_ELE
 import { LegendPosition, NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
 
 @Component({
-  standalone: true,
-  selector: 'jhi-histogram',
-  templateUrl: './histogram.component.html',
-  imports: [NgxChartsModule],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    selector: 'jhi-histogram',
+    templateUrl: './histogram.component.html',
+    imports: [NgxChartsModule],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class HistogramComponent implements OnInit {
   @Output() dataSelected: EventEmitter<any> = new EventEmitter<any>();

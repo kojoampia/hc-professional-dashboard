@@ -20,16 +20,15 @@ import { ProfileDetailComponent } from '../detail/profile-detail.component';
 import { ProfileUpdateComponent } from '../update/profile-update.component';
 
 @Component({
-  standalone: true,
-  selector: 'jhi-profile',
-  templateUrl: './profile.component.html',
-  imports: [
-    RouterModule,
-    FormsModule,
-    SharedModule,
-    ProfileDetailComponent,
-    ProfileUpdateComponent
-  ],
+    selector: 'jhi-profile',
+    templateUrl: './profile.component.html',
+    imports: [
+        RouterModule,
+        FormsModule,
+        SharedModule,
+        ProfileDetailComponent,
+        ProfileUpdateComponent
+    ]
 })
 export class ProfileComponent implements OnInit {
 

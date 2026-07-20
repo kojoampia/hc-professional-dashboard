@@ -1,11 +1,12 @@
 import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed, inject } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { FormBuilder } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 
 import PasswordResetInitComponent from './password-reset-init.component';
 import { PasswordResetInitService } from './password-reset-init.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('PasswordResetInitComponent', () => {
   let fixture: ComponentFixture<PasswordResetInitComponent>;
@@ -13,9 +14,9 @@ describe('PasswordResetInitComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, PasswordResetInitComponent],
-      providers: [FormBuilder],
-    })
+    imports: [PasswordResetInitComponent],
+    providers: [FormBuilder, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+})
       .overrideTemplate(PasswordResetInitComponent, '')
       .createComponent(PasswordResetInitComponent);
     comp = fixture.componentInstance;

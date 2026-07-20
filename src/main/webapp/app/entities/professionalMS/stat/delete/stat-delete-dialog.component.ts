@@ -8,9 +8,8 @@ import { IStat } from '../stat.model';
 import { StatService } from '../service/stat.service';
 
 @Component({
-  standalone: true,
-  templateUrl: './stat-delete-dialog.component.html',
-  imports: [SharedModule, FormsModule],
+    templateUrl: './stat-delete-dialog.component.html',
+    imports: [SharedModule, FormsModule]
 })
 export class StatDeleteDialogComponent {
   stat?: IStat;

@@ -5,10 +5,9 @@ import { TranslateService } from '@ngx-translate/core';
 import SharedModule from 'app/shared/shared.module';
 
 @Component({
-  standalone: true,
-  selector: 'jhi-error',
-  templateUrl: './error.component.html',
-  imports: [SharedModule],
+    selector: 'jhi-error',
+    templateUrl: './error.component.html',
+    imports: [SharedModule]
 })
 export default class ErrorComponent implements OnInit, OnDestroy {
   errorMessage?: string;

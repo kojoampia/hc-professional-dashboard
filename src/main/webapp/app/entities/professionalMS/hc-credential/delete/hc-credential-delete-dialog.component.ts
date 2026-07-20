@@ -8,9 +8,8 @@ import { IHCCredential } from '../hc-credential.model';
 import { HCCredentialService } from '../service/hc-credential.service';
 
 @Component({
-  standalone: true,
-  templateUrl: './hc-credential-delete-dialog.component.html',
-  imports: [SharedModule, FormsModule],
+    templateUrl: './hc-credential-delete-dialog.component.html',
+    imports: [SharedModule, FormsModule]
 })
 export class HCCredentialDeleteDialogComponent {
   hCCredential?: IHCCredential;

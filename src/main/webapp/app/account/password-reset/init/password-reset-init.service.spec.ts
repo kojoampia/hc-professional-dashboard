@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { PasswordResetInitService } from './password-reset-init.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('PasswordResetInit Service', () => {
   let service: PasswordResetInitService;
@@ -11,8 +12,9 @@ describe('PasswordResetInit Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-    });
+    imports: [],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
 
     service = TestBed.inject(PasswordResetInitService);
     applicationConfigService = TestBed.inject(ApplicationConfigService);

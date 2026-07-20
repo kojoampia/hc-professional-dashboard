@@ -14,19 +14,18 @@ import { EntityArrayResponseType, ReportService } from '../service/report.servic
 import { ReportDeleteDialogComponent } from '../delete/report-delete-dialog.component';
 
 @Component({
-  standalone: true,
-  selector: 'jhi-report',
-  templateUrl: './report.component.html',
-  imports: [
-    RouterModule,
-    FormsModule,
-    SharedModule,
-    SortDirective,
-    SortByDirective,
-    DurationPipe,
-    FormatMediumDatetimePipe,
-    FormatMediumDatePipe,
-  ],
+    selector: 'jhi-report',
+    templateUrl: './report.component.html',
+    imports: [
+        RouterModule,
+        FormsModule,
+        SharedModule,
+        SortDirective,
+        SortByDirective,
+        DurationPipe,
+        FormatMediumDatetimePipe,
+        FormatMediumDatePipe,
+    ]
 })
 export class ReportComponent implements OnInit {
   private static readonly NOT_SORTABLE_FIELDS_AFTER_SEARCH = ['id', 'category', 'description', 'name', 'url', 'createdBy', 'modifiedBy'];

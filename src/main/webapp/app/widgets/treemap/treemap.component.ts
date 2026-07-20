@@ -1,12 +1,11 @@
 import { OnInit, OnChanges, Component, Input, EventEmitter, Output, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 @Component({
-  standalone: true,
-  selector: 'jhi-treemap',
-  templateUrl: './treemap.component.html',
-  styleUrls: ['./treemap.component.scss'],
-  imports: [NgxChartsModule],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    selector: 'jhi-treemap',
+    templateUrl: './treemap.component.html',
+    styleUrls: ['./treemap.component.scss'],
+    imports: [NgxChartsModule],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class TreeMapComponent implements OnInit {
   @Input() isFiltered = true;

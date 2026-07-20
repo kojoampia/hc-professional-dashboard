@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { PasswordResetFinishService } from './password-reset-finish.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('PasswordResetFinish Service', () => {
   let service: PasswordResetFinishService;
@@ -11,8 +12,9 @@ describe('PasswordResetFinish Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-    });
+    imports: [],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
 
     service = TestBed.inject(PasswordResetFinishService);
     applicationConfigService = TestBed.inject(ApplicationConfigService);

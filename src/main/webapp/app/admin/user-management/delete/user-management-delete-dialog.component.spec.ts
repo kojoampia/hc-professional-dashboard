@@ -1,13 +1,14 @@
 jest.mock('@ng-bootstrap/ng-bootstrap');
 
 import { ComponentFixture, TestBed, waitForAsync, inject, fakeAsync, tick } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { of } from 'rxjs';
 
 import { UserManagementService } from '../service/user-management.service';
 
 import UserManagementDeleteDialogComponent from './user-management-delete-dialog.component';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('User Management Delete Component', () => {
   let comp: UserManagementDeleteDialogComponent;
@@ -17,9 +18,9 @@ describe('User Management Delete Component', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, UserManagementDeleteDialogComponent],
-      providers: [NgbActiveModal],
-    })
+    imports: [UserManagementDeleteDialogComponent],
+    providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+})
       .overrideTemplate(UserManagementDeleteDialogComponent, '')
       .compileComponents();
   }));

@@ -5,11 +5,10 @@ import SharedModule from 'app/shared/shared.module';
 import { Thread, ThreadState } from 'app/admin/metrics/metrics.model';
 
 @Component({
-  standalone: true,
-  selector: 'jhi-thread-modal',
-  templateUrl: './metrics-modal-threads.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SharedModule],
+    selector: 'jhi-thread-modal',
+    templateUrl: './metrics-modal-threads.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [SharedModule]
 })
 export class MetricsModalThreadsComponent implements OnInit {
   ThreadState = ThreadState;

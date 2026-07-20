@@ -6,10 +6,9 @@ import { DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe } from 'ap
 import { IMetadata } from '../metadata.model';
 
 @Component({
-  standalone: true,
-  selector: 'hpd-metadata-detail',
-  templateUrl: './metadata-detail.component.html',
-  imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],
+    selector: 'hpd-metadata-detail',
+    templateUrl: './metadata-detail.component.html',
+    imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe]
 })
 export class MetadataDetailComponent {
   @Input() metadata: IMetadata | null = null;

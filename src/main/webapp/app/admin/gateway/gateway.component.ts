@@ -5,11 +5,10 @@ import { GatewayRoutesService } from './gateway-routes.service';
 import { GatewayRoute } from './gateway-route.model';
 
 @Component({
-  standalone: true,
-  selector: 'jhi-gateway',
-  templateUrl: './gateway.component.html',
-  providers: [GatewayRoutesService],
-  imports: [SharedModule],
+    selector: 'jhi-gateway',
+    templateUrl: './gateway.component.html',
+    providers: [GatewayRoutesService],
+    imports: [SharedModule]
 })
 export default class GatewayComponent implements OnInit {
   gatewayRoutes: GatewayRoute[] = [];

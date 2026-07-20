@@ -14,19 +14,18 @@ import { EntityArrayResponseType, AddressService } from '../service/address.serv
 import { AddressDeleteDialogComponent } from '../delete/address-delete-dialog.component';
 
 @Component({
-  standalone: true,
-  selector: 'hpd-address',
-  templateUrl: './address.component.html',
-  imports: [
-    RouterModule,
-    FormsModule,
-    SharedModule,
-    SortDirective,
-    SortByDirective,
-    DurationPipe,
-    FormatMediumDatetimePipe,
-    FormatMediumDatePipe,
-  ],
+    selector: 'hpd-address',
+    templateUrl: './address.component.html',
+    imports: [
+        RouterModule,
+        FormsModule,
+        SharedModule,
+        SortDirective,
+        SortByDirective,
+        DurationPipe,
+        FormatMediumDatetimePipe,
+        FormatMediumDatePipe,
+    ]
 })
 export class AddressComponent implements OnInit {
   private static readonly NOT_SORTABLE_FIELDS_AFTER_SEARCH = [

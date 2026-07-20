@@ -2,11 +2,10 @@ import { CommonModule } from '@angular/common';
 import { OnInit, Input, Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
-  selector: 'jhi-badgebox',
-  standalone: true,
-  templateUrl: './badgebox.component.html',
-  styleUrls: ['./badgebox.component.scss'],
-  imports: [CommonModule],
+    selector: 'jhi-badgebox',
+    templateUrl: './badgebox.component.html',
+    styleUrls: ['./badgebox.component.scss'],
+    imports: [CommonModule]
 })
 export class BadgeboxComponent implements OnInit {
   @Input() config: {};

@@ -6,10 +6,9 @@ import { DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe } from 'ap
 import { ITeam } from '../team.model';
 
 @Component({
-  standalone: true,
-  selector: 'hpd-team-detail',
-  templateUrl: './team-detail.component.html',
-  imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],
+    selector: 'hpd-team-detail',
+    templateUrl: './team-detail.component.html',
+    imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe]
 })
 export class TeamDetailComponent {
   @Input() team: ITeam | null = null;

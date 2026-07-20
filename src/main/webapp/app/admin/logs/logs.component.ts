@@ -9,11 +9,10 @@ import { Log, LoggersResponse, Level } from './log.model';
 import { LogsService } from './logs.service';
 
 @Component({
-  standalone: true,
-  selector: 'jhi-logs',
-  templateUrl: './logs.component.html',
-  providers: [GatewayRoutesService],
-  imports: [SharedModule, FormsModule, SortDirective, SortByDirective],
+    selector: 'jhi-logs',
+    templateUrl: './logs.component.html',
+    providers: [GatewayRoutesService],
+    imports: [SharedModule, FormsModule, SortDirective, SortByDirective]
 })
 export default class LogsComponent implements OnInit {
   loggers?: Log[];

@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ThreadState } from '../../metrics.model';
 import { MetricsModalThreadsComponent } from './metrics-modal-threads.component';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('MetricsModalThreadsComponent', () => {
   let comp: MetricsModalThreadsComponent;
@@ -12,9 +13,9 @@ describe('MetricsModalThreadsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, MetricsModalThreadsComponent],
-      providers: [NgbActiveModal],
-    })
+    imports: [MetricsModalThreadsComponent],
+    providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+})
       .overrideTemplate(MetricsModalThreadsComponent, '')
       .compileComponents();
   }));

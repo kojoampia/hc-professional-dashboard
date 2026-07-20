@@ -5,10 +5,9 @@ import SharedModule from 'app/shared/shared.module';
 import { HealthKey, HealthDetails } from '../health.model';
 
 @Component({
-  standalone: true,
-  selector: 'jhi-health-modal',
-  templateUrl: './health-modal.component.html',
-  imports: [SharedModule],
+    selector: 'jhi-health-modal',
+    templateUrl: './health-modal.component.html',
+    imports: [SharedModule]
 })
 export default class HealthModalComponent {
   health?: { key: HealthKey; value: HealthDetails };

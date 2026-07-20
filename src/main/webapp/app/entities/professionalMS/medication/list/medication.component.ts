@@ -14,19 +14,18 @@ import { EntityArrayResponseType, MedicationService } from '../service/medicatio
 import { MedicationDeleteDialogComponent } from '../delete/medication-delete-dialog.component';
 
 @Component({
-  standalone: true,
-  selector: 'hpd-medication',
-  templateUrl: './medication.component.html',
-  imports: [
-    RouterModule,
-    FormsModule,
-    SharedModule,
-    SortDirective,
-    SortByDirective,
-    DurationPipe,
-    FormatMediumDatetimePipe,
-    FormatMediumDatePipe,
-  ],
+    selector: 'hpd-medication',
+    templateUrl: './medication.component.html',
+    imports: [
+        RouterModule,
+        FormsModule,
+        SharedModule,
+        SortDirective,
+        SortByDirective,
+        DurationPipe,
+        FormatMediumDatetimePipe,
+        FormatMediumDatePipe,
+    ]
 })
 export class MedicationComponent implements OnInit {
   private static readonly NOT_SORTABLE_FIELDS_AFTER_SEARCH = ['id', 'name', 'description', 'prescription', 'createdBy', 'modifiedBy'];

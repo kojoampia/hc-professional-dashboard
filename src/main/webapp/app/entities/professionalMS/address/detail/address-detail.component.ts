@@ -6,10 +6,9 @@ import { DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe } from 'ap
 import { IAddress } from '../address.model';
 
 @Component({
-  standalone: true,
-  selector: 'hpd-address-detail',
-  templateUrl: './address-detail.component.html',
-  imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],
+    selector: 'hpd-address-detail',
+    templateUrl: './address-detail.component.html',
+    imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe]
 })
 export class AddressDetailComponent {
   @Input() address: IAddress | null = null;

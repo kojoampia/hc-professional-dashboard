@@ -2,12 +2,11 @@ import { Component, Input, Output, EventEmitter, OnDestroy, CUSTOM_ELEMENTS_SCHE
 import SharedModule from 'app/shared/shared.module';
 
 @Component({
-  selector: 'jhi-slider',
-  standalone: true,
-  imports: [SharedModule],
-  templateUrl: './slides.component.html',
-  styleUrls: ['./slides.component.scss'],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    selector: 'jhi-slider',
+    imports: [SharedModule],
+    templateUrl: './slides.component.html',
+    styleUrls: ['./slides.component.scss'],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class SlidesComponent implements OnDestroy {
   @Input() slides: any[] = [];

@@ -8,9 +8,8 @@ import { ITask } from '../task.model';
 import { TaskService } from '../service/task.service';
 
 @Component({
-  standalone: true,
-  templateUrl: './task-delete-dialog.component.html',
-  imports: [SharedModule, FormsModule],
+    templateUrl: './task-delete-dialog.component.html',
+    imports: [SharedModule, FormsModule]
 })
 export class TaskDeleteDialogComponent {
   task?: ITask;

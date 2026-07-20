@@ -1,11 +1,12 @@
 import { ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 
 import MetricsComponent from './metrics.component';
 import { MetricsService } from './metrics.service';
 import { Metrics, Thread, ThreadDump } from './metrics.model';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('MetricsComponent', () => {
   let comp: MetricsComponent;
@@ -15,8 +16,9 @@ describe('MetricsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, MetricsComponent],
-    })
+    imports: [MetricsComponent],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+})
       .overrideTemplate(MetricsComponent, '')
       .compileComponents();
   }));

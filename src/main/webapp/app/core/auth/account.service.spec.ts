@@ -2,7 +2,7 @@ jest.mock('app/core/auth/state-storage.service');
 
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
@@ -13,6 +13,7 @@ import { StateStorageService } from 'app/core/auth/state-storage.service';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 
 import { AccountService } from './account.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 function accountWithAuthorities(authorities: string[]): Account {
   return {
@@ -37,9 +38,9 @@ describe('Account Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), TranslateModule.forRoot()],
-      providers: [StateStorageService],
-    });
+    imports: [RouterTestingModule.withRoutes([]), TranslateModule.forRoot()],
+    providers: [StateStorageService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
 
     service = TestBed.inject(AccountService);
     applicationConfigService = TestBed.inject(ApplicationConfigService);

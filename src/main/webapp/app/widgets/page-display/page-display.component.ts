@@ -4,11 +4,10 @@ import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 import SharedModule from 'app/shared/shared.module';
 
 @Component({
-  selector: 'jhi-page-display',
-  standalone: true,
-  templateUrl: './page-display.component.html',
-  styleUrls: ['./page-display.component.scss'],
-  imports: [SharedModule],
+    selector: 'jhi-page-display',
+    templateUrl: './page-display.component.html',
+    styleUrls: ['./page-display.component.scss'],
+    imports: [SharedModule]
 })
 export class PageDisplayComponent implements OnInit {
   @Input() title?: string;

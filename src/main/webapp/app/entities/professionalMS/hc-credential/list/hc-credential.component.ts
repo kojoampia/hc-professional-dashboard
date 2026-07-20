@@ -14,19 +14,18 @@ import { EntityArrayResponseType, HCCredentialService } from '../service/hc-cred
 import { HCCredentialDeleteDialogComponent } from '../delete/hc-credential-delete-dialog.component';
 
 @Component({
-  standalone: true,
-  selector: 'hpd-hc-credential',
-  templateUrl: './hc-credential.component.html',
-  imports: [
-    RouterModule,
-    FormsModule,
-    SharedModule,
-    SortDirective,
-    SortByDirective,
-    DurationPipe,
-    FormatMediumDatetimePipe,
-    FormatMediumDatePipe,
-  ],
+    selector: 'hpd-hc-credential',
+    templateUrl: './hc-credential.component.html',
+    imports: [
+        RouterModule,
+        FormsModule,
+        SharedModule,
+        SortDirective,
+        SortByDirective,
+        DurationPipe,
+        FormatMediumDatetimePipe,
+        FormatMediumDatePipe,
+    ]
 })
 export class HCCredentialComponent implements OnInit {
   private static readonly NOT_SORTABLE_FIELDS_AFTER_SEARCH = ['id', 'email', 'phoneNumber', 'password', 'role'];

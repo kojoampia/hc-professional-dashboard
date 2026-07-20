@@ -15,19 +15,18 @@ import { EntityArrayResponseType, DocumentService } from '../service/document.se
 import { DocumentDeleteDialogComponent } from '../delete/document-delete-dialog.component';
 
 @Component({
-  standalone: true,
-  selector: 'hpd-document',
-  templateUrl: './document.component.html',
-  imports: [
-    RouterModule,
-    FormsModule,
-    SharedModule,
-    SortDirective,
-    SortByDirective,
-    DurationPipe,
-    FormatMediumDatetimePipe,
-    FormatMediumDatePipe,
-  ],
+    selector: 'hpd-document',
+    templateUrl: './document.component.html',
+    imports: [
+        RouterModule,
+        FormsModule,
+        SharedModule,
+        SortDirective,
+        SortByDirective,
+        DurationPipe,
+        FormatMediumDatetimePipe,
+        FormatMediumDatePipe,
+    ]
 })
 export class DocumentComponent implements OnInit {
   documents?: IDocument[];

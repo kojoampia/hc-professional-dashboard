@@ -8,9 +8,8 @@ import { IDocument } from '../document.model';
 import { DocumentService } from '../service/document.service';
 
 @Component({
-  standalone: true,
-  templateUrl: './document-delete-dialog.component.html',
-  imports: [SharedModule, FormsModule],
+    templateUrl: './document-delete-dialog.component.html',
+    imports: [SharedModule, FormsModule]
 })
 export class DocumentDeleteDialogComponent {
   document?: IDocument;

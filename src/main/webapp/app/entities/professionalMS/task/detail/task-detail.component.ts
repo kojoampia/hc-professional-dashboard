@@ -6,10 +6,9 @@ import { DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe } from 'ap
 import { ITask } from '../task.model';
 
 @Component({
-  standalone: true,
-  selector: 'jhi-task-detail',
-  templateUrl: './task-detail.component.html',
-  imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],
+    selector: 'jhi-task-detail',
+    templateUrl: './task-detail.component.html',
+    imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe]
 })
 export class TaskDetailComponent {
   @Input() task: ITask | null = null;

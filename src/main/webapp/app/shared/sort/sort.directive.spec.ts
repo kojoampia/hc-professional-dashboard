@@ -5,13 +5,14 @@ import { By } from '@angular/platform-browser';
 import SortDirective from './sort.directive';
 
 @Component({
-  template: `
+    template: `
     <table>
       <thead>
         <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="transition($event)"></tr>
       </thead>
     </table>
   `,
+    standalone: false
 })
 class TestSortDirectiveComponent {
   predicate?: string;
