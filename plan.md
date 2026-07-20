@@ -65,8 +65,8 @@ The plan deliberately does not create a parallel shell, auth system, or backend 
 
 ### Case queue and duty roster
 
-- [ ] **[24] Implement the case queue.** Bind status card selection to `status` query parameters, apply typed header variants, display urgent/open view actions, and show approved closed-case contextual actions. **Verify:** URL, selected card, header tint, and row set remain synchronized through navigation and back/forward.
-- [ ] **[25] Implement the duty-roster view and roster scope.** Show subscribed/available rosters, upcoming/active/completed shifts, and subscribe/unsubscribe controls; add “all cases/my roster” scope to case queue based on assigned roster IDs. **Verify:** local subscription changes immediately update header shift text and scoped queue rows.
+- [x] **[24] Implement the case queue.** Bind status card selection to `status` query parameters, apply typed header variants, display urgent/open view actions, and show approved closed-case contextual actions. **Verify:** URL, selected card, header tint, and row set remain synchronized through navigation and back/forward.
+- [x] **[25] Implement the duty-roster view and roster scope.** Show subscribed/available rosters, upcoming/active/completed shifts, and subscribe/unsubscribe controls; add “all cases/my roster” scope to case queue based on assigned roster IDs. **Verify:** local subscription changes immediately update header shift text and scoped queue rows.
 
 ### Hardening, backend readiness, and handoff
 

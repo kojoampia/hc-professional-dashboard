@@ -32,6 +32,14 @@ export const HEALTH_CONNECT_DUTY_ROSTERS: readonly DutyRoster[] = [
         endsAt: '2026-07-21T20:00:00Z',
         status: 'upcoming',
       },
+      {
+        id: 'ward-3-completed',
+        rosterId: 'ward-3-night',
+        professionalId: 'professional-doctor',
+        startsAt: '2026-07-19T08:00:00Z',
+        endsAt: '2026-07-19T20:00:00Z',
+        status: 'completed',
+      },
     ],
   },
   {

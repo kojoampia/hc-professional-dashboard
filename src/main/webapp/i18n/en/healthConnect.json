@@ -90,7 +90,9 @@
     "case": {
       "queue": "Case queue",
       "brief": "Brief",
+      "date": "Opened",
       "status": "Status",
+      "scope": "Case scope",
       "detail": "Case #{{number}}",
       "symptoms": "Symptoms",
       "diagnosis": "Diagnosis",
@@ -104,6 +106,9 @@
     "roster": {
       "allCases": "All cases",
       "myRoster": "My roster",
+      "subscribed": "My subscribed rosters",
+      "available": "Available rosters",
+      "shifts": "Shifts",
       "activeShift": "On duty until {{time}}",
       "nextShift": "Next shift: {{time}}",
       "upcoming": "Upcoming",

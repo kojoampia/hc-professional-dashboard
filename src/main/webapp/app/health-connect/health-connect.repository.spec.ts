@@ -67,6 +67,13 @@ describe('MockHealthConnectRepository', () => {
     expect(repository.findCase('case-kojo-urgent')).toEqual(expect.objectContaining({ diagnosis: '', recommendationIds: [] }));
   });
 
+  it('archives local queue rows without deleting the case detail record', () => {
+    expect(repository.archiveCase('case-nii-closed')).toBe(true);
+    expect(repository.listCases('closed')).not.toEqual(expect.arrayContaining([expect.objectContaining({ id: 'case-nii-closed' })]));
+    expect(repository.findCase('case-nii-closed')).toEqual(expect.objectContaining({ status: 'closed' }));
+    expect(repository.archiveCase('case-nii-closed')).toBe(false);
+  });
+
   it('appends a timestamped activity only to the requested patient', () => {
     const activity = repository.appendActivity('patient-kojo', {
       title: 'Review completed',

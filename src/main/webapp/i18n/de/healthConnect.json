@@ -90,7 +90,9 @@
     "case": {
       "queue": "Fallwarteschlange",
       "brief": "Kurzbeschreibung",
+      "date": "Eröffnet",
       "status": "Status",
+      "scope": "Fallumfang",
       "detail": "Fall #{{number}}",
       "symptoms": "Symptome",
       "diagnosis": "Diagnose",
@@ -104,6 +106,9 @@
     "roster": {
       "allCases": "Alle Fälle",
       "myRoster": "Mein Dienstplan",
+      "subscribed": "Meine abonnierten Dienstpläne",
+      "available": "Verfügbare Dienstpläne",
+      "shifts": "Schichten",
       "activeShift": "Im Dienst bis {{time}}",
       "nextShift": "Nächste Schicht: {{time}}",
       "upcoming": "Bevorstehend",

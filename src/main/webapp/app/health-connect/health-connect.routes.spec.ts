@@ -64,6 +64,18 @@ describe('HealthConnect feature routes', () => {
                 imageUrl: null,
               }),
             ),
+            getAuthenticationState: jest.fn(() =>
+              of({
+                activated: true,
+                authorities: [Authority.USER],
+                email: 'professional@example.test',
+                firstName: null,
+                langKey: 'en',
+                lastName: null,
+                login: 'professional',
+                imageUrl: null,
+              }),
+            ),
             hasAnyAuthority: jest.fn(() => true),
           },
         },

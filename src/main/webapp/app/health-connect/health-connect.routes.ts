@@ -10,7 +10,6 @@ const protectedFeatureRoute = {
   canActivate: [UserRouteAccessService, healthConnectRoleGuard],
 };
 
-const featurePage = (): Promise<typeof import('./pages/feature-page.component')> => import('./pages/feature-page.component');
 const dashboardPage = (): Promise<typeof import('./pages/dashboard-page.component')> => import('./pages/dashboard-page.component');
 const patientDirectoryPage = (): Promise<typeof import('./pages/patient-directory-page.component')> =>
   import('./pages/patient-directory-page.component');
@@ -19,6 +18,8 @@ const overlayHost = (): Promise<typeof import('./pages/route-driven-overlay-host
 const patientRecordPage = (): Promise<typeof import('./pages/patient-record-page.component')> =>
   import('./pages/patient-record-page.component');
 const caseDetailPage = (): Promise<typeof import('./pages/case-detail-page.component')> => import('./pages/case-detail-page.component');
+const caseQueuePage = (): Promise<typeof import('./pages/case-queue-page.component')> => import('./pages/case-queue-page.component');
+const dutyRosterPage = (): Promise<typeof import('./pages/duty-roster-page.component')> => import('./pages/duty-roster-page.component');
 
 const routes: Routes = [
   {
@@ -58,7 +59,7 @@ const routes: Routes = [
   {
     path: 'cases',
     ...protectedFeatureRoute,
-    loadComponent: featurePage,
+    loadComponent: caseQueuePage,
     data: { ...protectedFeatureRoute.data, titleKey: 'healthConnect.case.queue' },
   },
   {
@@ -75,7 +76,7 @@ const routes: Routes = [
   {
     path: 'duty-roster',
     ...protectedFeatureRoute,
-    loadComponent: featurePage,
+    loadComponent: dutyRosterPage,
     data: { ...protectedFeatureRoute.data, titleKey: 'healthConnect.navigation.dutyRoster' },
   },
 ];

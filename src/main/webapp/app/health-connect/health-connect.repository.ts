@@ -44,6 +44,7 @@ export interface HealthConnectRepository {
   findCase(id: string): ClinicalCase | undefined;
   listCases(status?: CaseStatus, rosterScope?: RosterScope, professionalId?: string): readonly CaseQueueRow[];
   recommendations(category?: string): readonly Recommendation[];
+  professionalIdForAccount(accountLogin: string): string | null;
   shiftLabelForAccount(accountLogin: string): ShiftLabel | null;
   updateCase(
     id: string,
@@ -59,6 +60,7 @@ export interface HealthConnectRepository {
   ): ClinicalReport | null;
   subscribeProfessionalToRoster(professionalId: string, rosterId: string): boolean;
   unsubscribeProfessionalFromRoster(professionalId: string, rosterId: string): boolean;
+  archiveCase(id: string): boolean;
   setLoading(loading: boolean): void;
   setError(error: string | null): void;
   reset(): void;
@@ -108,6 +110,7 @@ const toPatientRow = (record: PatientRecord): PatientListRow => ({
 export class MockHealthConnectRepository implements HealthConnectRepository {
   private readonly records = signal<readonly PatientRecord[]>(copyRecords());
   private readonly rosters = signal<readonly DutyRoster[]>(copyRosters());
+  private readonly archivedCaseIds = signal<ReadonlySet<string>>(new Set());
   private readonly loading = signal(false);
   private readonly error = signal<string | null>(null);
 
@@ -138,6 +141,7 @@ export class MockHealthConnectRepository implements HealthConnectRepository {
             }) satisfies CaseQueueRow,
         ),
       )
+      .filter(item => !this.archivedCaseIds().has(item.id))
       .sort((left, right) => right.date.localeCompare(left.date)),
   );
   readonly caseCounts = computed<Record<CaseStatus, number>>(() =>
@@ -199,15 +203,19 @@ export class MockHealthConnectRepository implements HealthConnectRepository {
     return HEALTH_CONNECT_RECOMMENDATIONS.filter(recommendation => !category || recommendation.category === category);
   }
 
+  professionalIdForAccount(accountLogin: string): string | null {
+    return HEALTH_CONNECT_PROFESSIONALS.find(candidate => candidate.accountLogin === accountLogin)?.id ?? null;
+  }
+
   shiftLabelForAccount(accountLogin: string): ShiftLabel | null {
-    const professional = HEALTH_CONNECT_PROFESSIONALS.find(candidate => candidate.accountLogin === accountLogin);
-    if (!professional) {
+    const professionalId = this.professionalIdForAccount(accountLogin);
+    if (!professionalId) {
       return null;
     }
     const shifts = this.rosters()
-      .filter(roster => roster.subscribedProfessionalIds.includes(professional.id))
+      .filter(roster => roster.subscribedProfessionalIds.includes(professionalId))
       .flatMap(roster => roster.shifts)
-      .filter(shift => shift.professionalId === professional.id);
+      .filter(shift => shift.professionalId === professionalId);
     const shift = shifts.find(candidate => candidate.status === 'active') ?? shifts.find(candidate => candidate.status === 'upcoming');
     if (!shift) {
       return null;
@@ -296,6 +304,14 @@ export class MockHealthConnectRepository implements HealthConnectRepository {
     return this.updateRosterSubscription(professionalId, rosterId, false);
   }
 
+  archiveCase(id: string): boolean {
+    if (!this.findCase(id) || this.archivedCaseIds().has(id)) {
+      return false;
+    }
+    this.archivedCaseIds.update(ids => new Set(ids).add(id));
+    return true;
+  }
+
   setLoading(loading: boolean): void {
     this.loading.set(loading);
   }
@@ -307,6 +323,7 @@ export class MockHealthConnectRepository implements HealthConnectRepository {
   reset(): void {
     this.records.set(copyRecords());
     this.rosters.set(copyRosters());
+    this.archivedCaseIds.set(new Set());
     this.loading.set(false);
     this.error.set(null);
   }

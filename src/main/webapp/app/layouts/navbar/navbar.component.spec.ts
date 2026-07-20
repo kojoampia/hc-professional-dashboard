@@ -11,6 +11,7 @@ import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
 import { ProfileService } from 'app/layouts/profiles/profile.service';
 import { LoginService } from 'app/login/login.service';
+import { MockHealthConnectRepository } from 'app/health-connect/health-connect.repository';
 
 import NavbarComponent from './navbar.component';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -101,6 +102,14 @@ describe('Navbar Component', () => {
     comp.ngOnInit();
 
     expect(comp.roleBadgeTranslationKey).toBe('healthConnect.roles.doctor');
+    expect(comp.shiftLabel).toEqual({
+      translationKey: 'healthConnect.roster.activeShift',
+      translationParams: { time: '20:00' },
+    });
+    const repository = TestBed.inject(MockHealthConnectRepository);
+    repository.unsubscribeProfessionalFromRoster('professional-doctor', 'ward-3-night');
+    expect(comp.shiftLabel).toBeNull();
+    repository.subscribeProfessionalToRoster('professional-doctor', 'ward-3-night');
     expect(comp.shiftLabel).toEqual({
       translationKey: 'healthConnect.roster.activeShift',
       translationParams: { time: '20:00' },

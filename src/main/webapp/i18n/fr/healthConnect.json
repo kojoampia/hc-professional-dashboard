@@ -90,7 +90,9 @@
     "case": {
       "queue": "File de cas",
       "brief": "Résumé",
+      "date": "Ouvert le",
       "status": "Statut",
+      "scope": "Périmètre des cas",
       "detail": "Cas n°{{number}}",
       "symptoms": "Symptômes",
       "diagnosis": "Diagnostic",
@@ -104,6 +106,9 @@
     "roster": {
       "allCases": "Tous les cas",
       "myRoster": "Mon planning",
+      "subscribed": "Mes plannings abonnés",
+      "available": "Plannings disponibles",
+      "shifts": "Services",
       "activeShift": "En service jusqu'à {{time}}",
       "nextShift": "Prochain service : {{time}}",
       "upcoming": "À venir",

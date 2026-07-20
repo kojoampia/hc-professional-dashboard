@@ -29,10 +29,12 @@ describe('DataTableComponent', () => {
     component.rows = [{ id: '1', name: 'Ada', status: 'urgent' }];
     component.actions = [{ id: 'view', labelKey: 'healthConnect.actions.view' }];
     component.statusVariant = row => row.status;
+    component.headerVariant = 'urgent';
     component.actionTriggered.subscribe(actionTriggered);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelectorAll('th[scope="col"]')).toHaveLength(3);
+    expect(fixture.nativeElement.querySelector('thead').classList).toContain('hpd-data-table__header--urgent');
     expect(fixture.nativeElement.querySelector('tbody tr').classList).toContain('hpd-data-table--urgent');
     (fixture.nativeElement.querySelector('.hpd-data-table__actions button') as HTMLButtonElement).click();
     expect(actionTriggered).toHaveBeenCalledWith({ actionId: 'view', row: component.rows[0] });

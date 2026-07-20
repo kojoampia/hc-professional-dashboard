@@ -29,7 +29,7 @@ export interface DataTableActionEvent<T> {
   template: `
     <div class="table-responsive">
       <table class="table hpd-data-table">
-        <thead>
+        <thead [class]="headerVariant === 'neutral' ? '' : 'hpd-data-table__header--' + headerVariant">
           <tr>
             @for (column of columns; track column.id) {
               <th scope="col">{{ column.labelKey | translate }}</th>
@@ -84,6 +84,9 @@ export interface DataTableActionEvent<T> {
     .hpd-data-table tr.hpd-data-table--urgent > * { background: var(--hpd-color-row-urgent); }
     .hpd-data-table tr.hpd-data-table--open > * { background: var(--hpd-color-row-open); }
     .hpd-data-table tr.hpd-data-table--closed > * { background: var(--hpd-color-row-closed); }
+    .hpd-data-table thead.hpd-data-table__header--urgent th { background: var(--hpd-color-card-urgent); }
+    .hpd-data-table thead.hpd-data-table__header--open th { background: var(--hpd-color-card-open); }
+    .hpd-data-table thead.hpd-data-table__header--closed th { background: var(--hpd-color-card-closed); }
     .hpd-data-table__actions { display: flex; gap: 0.5rem; }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -94,6 +97,7 @@ export default class DataTableComponent<T> {
   @Input() actions: readonly DataTableAction<T>[] = [];
   @Input() emptyKey = 'healthConnect.states.empty';
   @Input() statusVariant: ((row: T) => DataTableStatusVariant) | null = null;
+  @Input() headerVariant: DataTableStatusVariant = 'neutral';
   @Input() trackBy: (row: T) => string | number = (_row: T): number => 0;
   @Output() readonly actionTriggered = new EventEmitter<DataTableActionEvent<T>>();
 
