@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -14,9 +14,11 @@ import { ProfileService } from 'app/layouts/profiles/profile.service';
 import { EntityNavbarItems } from 'app/entities/entity-navbar-items';
 import ActiveMenuDirective from './active-menu.directive';
 import NavbarItem from './navbar-item.model';
+import { resolveAuthorityRole } from 'app/health-connect/authority-role';
+import { HEALTH_CONNECT_REPOSITORY, HealthConnectRepository } from 'app/health-connect/health-connect.repository';
+import { ShiftLabel } from 'app/health-connect/health-connect.models';
 
 @Component({
-  standalone: true,
   selector: 'jhi-navbar',
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
@@ -38,6 +40,7 @@ export default class NavbarComponent implements OnInit {
     private accountService: AccountService,
     private profileService: ProfileService,
     private router: Router,
+    @Inject(HEALTH_CONNECT_REPOSITORY) private healthConnectRepository: HealthConnectRepository,
   ) {
     if (VERSION) {
       this.version = VERSION.toLowerCase().startsWith('v') ? VERSION : `v${VERSION}`;
@@ -77,5 +80,14 @@ export default class NavbarComponent implements OnInit {
 
   toggleNavbar(): void {
     this.isNavbarCollapsed = !this.isNavbarCollapsed;
+  }
+
+  get roleBadgeTranslationKey(): string | null {
+    const role = resolveAuthorityRole(this.account?.authorities).primaryRole;
+    return role ? `healthConnect.roles.${role.toLocaleLowerCase()}` : null;
+  }
+
+  get shiftLabel(): ShiftLabel | null {
+    return this.account ? this.healthConnectRepository.shiftLabelForAccount(this.account.login) : null;
   }
 }

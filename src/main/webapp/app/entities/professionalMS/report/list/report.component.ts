@@ -14,7 +14,6 @@ import { EntityArrayResponseType, ReportService } from '../service/report.servic
 import { ReportDeleteDialogComponent } from '../delete/report-delete-dialog.component';
 
 @Component({
-  standalone: true,
   selector: 'jhi-report',
   templateUrl: './report.component.html',
   imports: [

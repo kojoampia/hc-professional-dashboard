@@ -14,7 +14,6 @@ import { EntityArrayResponseType, TeamService } from '../service/team.service';
 import { TeamDeleteDialogComponent } from '../delete/team-delete-dialog.component';
 
 @Component({
-  standalone: true,
   selector: 'hpd-team',
   templateUrl: './team.component.html',
   imports: [

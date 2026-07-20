@@ -6,7 +6,6 @@ import { DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe } from 'ap
 import { IProfile } from '../profile.model';
 
 @Component({
-  standalone: true,
   selector: 'hpd-profile-detail',
   templateUrl: './profile-detail.component.html',
   imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],

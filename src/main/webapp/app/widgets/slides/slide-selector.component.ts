@@ -3,7 +3,6 @@ import SharedModule from 'app/shared/shared.module';
 
 @Component({
   selector: 'jhi-slide-selector',
-  standalone: true,
   templateUrl: './slide-selector.component.html',
   styleUrls: ['./slides.component.scss'],
   imports: [SharedModule],

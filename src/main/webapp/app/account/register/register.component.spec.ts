@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync, inject, tick, fakeAsync } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { FormBuilder } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -8,6 +8,7 @@ import { EMAIL_ALREADY_USED_TYPE, LOGIN_ALREADY_USED_TYPE } from 'app/config/err
 
 import { RegisterService } from './register.service';
 import RegisterComponent from './register.component';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('RegisterComponent', () => {
   let fixture: ComponentFixture<RegisterComponent>;
@@ -15,8 +16,8 @@ describe('RegisterComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot(), HttpClientTestingModule, RegisterComponent],
-      providers: [FormBuilder],
+      imports: [TranslateModule.forRoot(), RegisterComponent],
+      providers: [FormBuilder, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     })
       .overrideTemplate(RegisterComponent, '')
       .compileComponents();

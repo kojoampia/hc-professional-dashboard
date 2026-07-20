@@ -4,7 +4,6 @@ import { NguCarousel, NguCarouselConfig } from '@ngu/carousel';
 import SharedModule from 'app/shared/shared.module';
 @Component({
   selector: 'jhi-tilebox',
-  standalone: true,
   imports: [SharedModule, NguCarousel],
   templateUrl: './tilebox.component.html',
   styleUrls: ['./tilebox.component.scss'],

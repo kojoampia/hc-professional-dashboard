@@ -16,7 +16,6 @@ import { IDocument } from '../document.model';
 import { DocumentFormService, DocumentFormGroup } from './document-form.service';
 
 @Component({
-  standalone: true,
   selector: 'jhi-document-update',
   templateUrl: './document-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],

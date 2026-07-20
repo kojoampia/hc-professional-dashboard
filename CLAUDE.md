@@ -26,18 +26,23 @@ npm run e2e                # Cypress E2E (expects a reachable backend)
 ```
 
 Maven (frontend-driven; `./mvnw` defaults to `spring-boot:run` but no Spring app exists here):
+
 ```bash
 ./mvnw -Dskip.installnodenpm -Dskip.npm    # backend:start script — builds/runs only what exists
 npm run backend:unit:test                  # maven verify skipping npm (runs any Java tests; none here)
 ```
 
 ### Running a single test
+
 Jest (Angular spec):
+
 ```bash
 npx jest --config jest.conf.js src/main/webapp/app/entities/professionalMS/address/service/address.service.spec.ts
 npx ng test --include="**/address.service.spec.ts"   # via Angular CLI
 ```
+
 Cypress single spec:
+
 ```bash
 npx cypress run --spec src/test/javascript/cypress/e2e/<file>.spec.ts
 ```

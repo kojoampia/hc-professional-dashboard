@@ -1,0 +1,137 @@
+{
+  "healthConnect": {
+    "navigation": {
+      "dashboard": "Dashboard",
+      "patients": "Patienten",
+      "cases": "Fälle",
+      "dutyRoster": "Dienstplan"
+    },
+    "roles": {
+      "admin": "Administrator",
+      "doctor": "Arzt",
+      "nurse": "Pflegekraft",
+      "paramedic": "Sanitäter",
+      "pharmacist": "Apotheker",
+      "therapist": "Therapeut",
+      "carer": "Betreuungskraft",
+      "user": "Benutzer"
+    },
+    "stats": {
+      "patients": "Patienten",
+      "female": "Weiblich",
+      "male": "Männlich",
+      "kids": "Kinder",
+      "unspecified": "Nicht angegeben",
+      "urgent": "Dringend",
+      "open": "Offen",
+      "closed": "Abgeschlossen"
+    },
+    "actions": {
+      "view": "Anzeigen",
+      "print": "Drucken",
+      "edit": "Bearbeiten",
+      "copy": "Kopieren",
+      "close": "Schließen",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "upload": "Bericht hochladen",
+      "retry": "Erneut versuchen",
+      "reopen": "Wieder öffnen",
+      "archive": "Archivieren",
+      "subscribe": "Abonnieren",
+      "unsubscribe": "Abbestellen",
+      "previous": "Zurück",
+      "next": "Weiter",
+      "confirm": "Bestätigen"
+    },
+    "dashboard": {
+      "demographics": "Patientendemografie",
+      "caseStatus": "Fallstatus",
+      "caseTime": "Fälle im Zeitverlauf",
+      "caseDistribution": "Fallverteilung",
+      "casePatient": "Fälle nach Patient",
+      "allPatients": "Alle Patienten",
+      "charts": {
+        "title": "Falldiagramme",
+        "caseTimeDescription": "Eine Zeitachse mit der kumulierten Anzahl von Fällen nach Datum.",
+        "caseDistributionDescription": "Die Anzahl dringender, offener und abgeschlossener Fälle.",
+        "casePatientDescription": "Die Anzahl der Fälle für jeden Patienten.",
+        "caseSeries": "Fälle",
+        "statusLegend": "Fallstatus",
+        "caseLegend": "Fälle",
+        "cases": "Fälle",
+        "date": "Datum",
+        "caseCount": "Anzahl der Fälle"
+      }
+    },
+    "patient": {
+      "directory": "Patientenverzeichnis",
+      "search": "Patienten suchen",
+      "filters": "Patientenfilter",
+      "gender": "Geschlecht",
+      "allGenders": "Alle Geschlechter",
+      "childrenOnly": "Nur Kinder",
+      "lastActivity": "Letzte Aktivität",
+      "patient": "Patient",
+      "record": "Patient: {{name}}",
+      "identity": "Patientenidentität",
+      "dateOfBirth": "Geburtsdatum",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "emergencyContact": "Notfallkontakt / nächste Angehörige",
+      "cases": "Fälle",
+      "visitations": "Besuche",
+      "personalCareVisit": "Besuch zur persönlichen Pflege",
+      "activityTrail": "Aktivitätsverlauf",
+      "medications": "Medikamente",
+      "reports": "Berichte",
+      "copyConfirmation": "Einen neuen Entwurf dieses Patientendatensatzes erstellen?"
+    },
+    "case": {
+      "queue": "Fallwarteschlange",
+      "brief": "Kurzbeschreibung",
+      "date": "Eröffnet",
+      "status": "Status",
+      "scope": "Fallumfang",
+      "detail": "Fall #{{number}}",
+      "symptoms": "Symptome",
+      "diagnosis": "Diagnose",
+      "recommendations": "Empfehlungen"
+    },
+    "activity": {
+      "title": "Aktivitätsprotokoll",
+      "eventTitle": "Ereignistitel",
+      "description": "Detaillierte Ereignisbeschreibung."
+    },
+    "roster": {
+      "allCases": "Alle Fälle",
+      "myRoster": "Mein Dienstplan",
+      "subscribed": "Meine abonnierten Dienstpläne",
+      "available": "Verfügbare Dienstpläne",
+      "shifts": "Schichten",
+      "activeShift": "Im Dienst bis {{time}}",
+      "nextShift": "Nächste Schicht: {{time}}",
+      "upcoming": "Bevorstehend",
+      "active": "Aktiv",
+      "completed": "Abgeschlossen"
+    },
+    "states": {
+      "loading": "Wird geladen...",
+      "empty": "Keine Einträge gefunden.",
+      "error": "Diese Informationen konnten nicht geladen werden.",
+      "readOnly": "Sie haben schreibgeschützten Zugriff."
+    },
+    "pagination": {
+      "label": "Seitennavigation",
+      "page": "Seite {{page}}"
+    },
+    "table": {
+      "actions": "Aktionen",
+      "label": "Ergebnistabelle"
+    },
+    "validation": {
+      "invalidFile": "Wählen Sie eine unterstützte Datei innerhalb der zulässigen Größe aus.",
+      "required": "Füllen Sie alle Pflichtfelder aus."
+    }
+  }
+}

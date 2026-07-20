@@ -13,7 +13,6 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'jhi-dashboard',
-  standalone: true,
   imports: [CommonModule, SharedModule, RouterModule, MetricPanelModule, StatusModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -43,9 +42,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   imageUrl = 'content/images/healthconnect-angel.png';
 
-  constructor(
-    private dashboardService: DashboardService,
-  ) {}
+  constructor(private dashboardService: DashboardService) {}
 
   ngOnInit(): void {
     this.page = sessionStorage.getItem('page') || 'calendar';

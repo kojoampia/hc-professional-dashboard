@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpHeaders, HttpResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpHeaders, HttpResponse, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
@@ -16,11 +16,7 @@ describe('Medication Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule.withRoutes([{ path: 'medication', component: MedicationComponent }]),
-        HttpClientTestingModule,
-        MedicationComponent,
-      ],
+      imports: [RouterTestingModule.withRoutes([{ path: 'medication', component: MedicationComponent }]), MedicationComponent],
       providers: [
         {
           provide: ActivatedRoute,
@@ -38,6 +34,8 @@ describe('Medication Management Component', () => {
             snapshot: { queryParams: {} },
           },
         },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     })
       .overrideTemplate(MedicationComponent, '')

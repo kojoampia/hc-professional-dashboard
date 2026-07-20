@@ -5,7 +5,6 @@ import SharedModule from 'app/shared/shared.module';
 
 @Component({
   selector: 'jhi-page-display',
-  standalone: true,
   templateUrl: './page-display.component.html',
   styleUrls: ['./page-display.component.scss'],
   imports: [SharedModule],

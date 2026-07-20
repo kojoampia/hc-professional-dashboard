@@ -6,7 +6,6 @@ import { DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe } from 'ap
 import { IMembership } from '../membership.model';
 
 @Component({
-  standalone: true,
   selector: 'hpd-membership-detail',
   templateUrl: './membership-detail.component.html',
   imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],

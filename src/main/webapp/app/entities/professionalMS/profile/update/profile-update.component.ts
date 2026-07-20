@@ -12,7 +12,6 @@ import { ProfileService } from '../service/profile.service';
 import { ProfileFormService, ProfileFormGroup } from './profile-form.service';
 
 @Component({
-  standalone: true,
   selector: 'hpd-profile-update',
   templateUrl: './profile-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],

@@ -4,7 +4,6 @@ import SharedModule from 'app/shared/shared.module';
 
 @Component({
   selector: 'jhi-password-strength-bar',
-  standalone: true,
   imports: [SharedModule],
   templateUrl: './password-strength-bar.component.html',
   styleUrl: './password-strength-bar.component.scss',

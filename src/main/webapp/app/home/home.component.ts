@@ -9,7 +9,6 @@ import { Account } from 'app/core/auth/account.model';
 import { DashboardComponent } from 'app/dashboard/dashboard.component';
 
 @Component({
-  standalone: true,
   selector: 'jhi-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',

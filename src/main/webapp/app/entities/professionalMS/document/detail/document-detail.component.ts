@@ -7,7 +7,6 @@ import { DataUtils } from 'app/core/util/data-util.service';
 import { IDocument } from '../document.model';
 
 @Component({
-  standalone: true,
   selector: 'hpd-document-detail',
   templateUrl: './document-detail.component.html',
   imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],

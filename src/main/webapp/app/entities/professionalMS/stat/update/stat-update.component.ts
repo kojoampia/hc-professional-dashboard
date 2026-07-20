@@ -12,7 +12,6 @@ import { StatService } from '../service/stat.service';
 import { StatFormService, StatFormGroup } from './stat-form.service';
 
 @Component({
-  standalone: true,
   selector: 'hpd-stat-update',
   templateUrl: './stat-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],

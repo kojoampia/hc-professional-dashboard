@@ -14,7 +14,6 @@ import { EntityArrayResponseType, MembershipService } from '../service/membershi
 import { MembershipDeleteDialogComponent } from '../delete/membership-delete-dialog.component';
 
 @Component({
-  standalone: true,
   selector: 'hpd-membership',
   templateUrl: './membership.component.html',
   imports: [

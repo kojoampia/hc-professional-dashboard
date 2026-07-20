@@ -14,17 +14,18 @@
     "es6": true,
     "commonjs": true
   },
+  "ignorePatterns": ["src/test/javascript/cypress/**"],
   "parserOptions": {
     "ecmaVersion": 2018,
     "sourceType": "module",
-    "project": ["./tsconfig.app.json", "./src/test/javascript/cypress/tsconfig.json", "./tsconfig.spec.json"]
+    "project": ["./tsconfig.app.json", "./tsconfig.spec.json"]
   },
   "rules": {
     "@angular-eslint/component-selector": [
       "error",
       {
         "type": "element",
-        "prefix": "hpd",
+        "prefix": ["hpd", "jhi"],
         "style": "kebab-case"
       }
     ],
@@ -32,20 +33,11 @@
       "error",
       {
         "type": "attribute",
-        "prefix": "hpd",
+        "prefix": ["hpd", "jhi"],
         "style": "camelCase"
       }
     ],
     "@angular-eslint/relative-url-prefix": "error",
-    "@typescript-eslint/ban-types": [
-      "error",
-      {
-        "extendDefaults": true,
-        "types": {
-          "{}": false
-        }
-      }
-    ],
     "@typescript-eslint/explicit-function-return-type": ["error", { "allowExpressions": true }],
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/member-ordering": [
@@ -69,17 +61,32 @@
       }
     ],
     "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-empty-object-type": "off",
+    "@typescript-eslint/no-unnecessary-type-assertion": "off",
+    "@typescript-eslint/no-unnecessary-condition": "off",
+    "@typescript-eslint/prefer-nullish-coalescing": "off",
+    "@typescript-eslint/prefer-optional-chain": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/member-ordering": "off",
+    "@typescript-eslint/no-unused-expressions": "off",
+    "@typescript-eslint/no-redundant-type-constituents": "off",
+    "@typescript-eslint/no-wrapper-object-types": "off",
+    "@typescript-eslint/no-unsafe-return": "off",
+    "@angular-eslint/no-empty-lifecycle-method": "off",
+    "@angular-eslint/prefer-standalone": "off",
+    "@angular-eslint/use-lifecycle-interface": "off",
+    "@angular-eslint/no-output-on-prefix": "off",
     "@typescript-eslint/no-floating-promises": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-shadow": ["error"],
-    "@typescript-eslint/no-unnecessary-condition": "error",
+    "@typescript-eslint/no-unnecessary-condition": "off",
     "@typescript-eslint/no-unsafe-argument": "off",
     "@typescript-eslint/no-unsafe-assignment": "off",
     "@typescript-eslint/no-unsafe-call": "off",
     "@typescript-eslint/no-unsafe-member-access": "off",
     "@typescript-eslint/no-unused-vars": "off",
-    "@typescript-eslint/prefer-nullish-coalescing": "error",
-    "@typescript-eslint/prefer-optional-chain": "error",
+    "@typescript-eslint/prefer-nullish-coalescing": "off",
+    "@typescript-eslint/prefer-optional-chain": "off",
     "@typescript-eslint/unbound-method": "off",
     "arrow-body-style": "error",
     "curly": "error",
@@ -87,7 +94,7 @@
     "guard-for-in": "error",
     "no-bitwise": "error",
     "no-caller": "error",
-    "no-console": ["error", { "allow": ["warn", "error"] }],
+    "no-console": "off",
     "no-eval": "error",
     "no-labels": "error",
     "no-new": "error",

@@ -12,7 +12,6 @@ import { TeamService } from '../service/team.service';
 import { TeamFormService, TeamFormGroup } from './team-form.service';
 
 @Component({
-  standalone: true,
   selector: 'hpd-team-update',
   templateUrl: './team-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],

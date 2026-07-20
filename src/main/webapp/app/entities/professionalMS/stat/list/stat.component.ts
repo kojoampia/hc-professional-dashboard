@@ -14,7 +14,6 @@ import { EntityArrayResponseType, StatService } from '../service/stat.service';
 import { StatDeleteDialogComponent } from '../delete/stat-delete-dialog.component';
 
 @Component({
-  standalone: true,
   selector: 'hpd-stat',
   templateUrl: './stat.component.html',
   imports: [

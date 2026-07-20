@@ -14,7 +14,6 @@ import { EntityArrayResponseType, HCCredentialService } from '../service/hc-cred
 import { HCCredentialDeleteDialogComponent } from '../delete/hc-credential-delete-dialog.component';
 
 @Component({
-  standalone: true,
   selector: 'hpd-hc-credential',
   templateUrl: './hc-credential.component.html',
   imports: [

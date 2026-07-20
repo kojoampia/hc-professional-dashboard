@@ -14,7 +14,6 @@ import { EntityArrayResponseType, AddressService } from '../service/address.serv
 import { AddressDeleteDialogComponent } from '../delete/address-delete-dialog.component';
 
 @Component({
-  standalone: true,
   selector: 'hpd-address',
   templateUrl: './address.component.html',
   imports: [

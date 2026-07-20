@@ -1,0 +1,137 @@
+{
+  "healthConnect": {
+    "navigation": {
+      "dashboard": "Dashboard",
+      "patients": "Patients",
+      "cases": "Cases",
+      "dutyRoster": "Duty roster"
+    },
+    "roles": {
+      "admin": "Admin",
+      "doctor": "Doctor",
+      "nurse": "Nurse",
+      "paramedic": "Paramedic",
+      "pharmacist": "Pharmacist",
+      "therapist": "Therapist",
+      "carer": "Carer",
+      "user": "User"
+    },
+    "stats": {
+      "patients": "Patients",
+      "female": "Female",
+      "male": "Male",
+      "kids": "Kids",
+      "unspecified": "Unspecified",
+      "urgent": "Urgent",
+      "open": "Open",
+      "closed": "Closed"
+    },
+    "actions": {
+      "view": "View",
+      "print": "Print",
+      "edit": "Edit",
+      "copy": "Copy",
+      "close": "Close",
+      "save": "Save",
+      "cancel": "Cancel",
+      "upload": "Upload report",
+      "retry": "Retry",
+      "reopen": "Reopen",
+      "archive": "Archive",
+      "subscribe": "Subscribe",
+      "unsubscribe": "Unsubscribe",
+      "previous": "Previous",
+      "next": "Next",
+      "confirm": "Confirm"
+    },
+    "dashboard": {
+      "demographics": "Patient demographics",
+      "caseStatus": "Case status",
+      "caseTime": "Cases over time",
+      "caseDistribution": "Case distribution",
+      "casePatient": "Cases by patient",
+      "allPatients": "All patients",
+      "charts": {
+        "title": "Case charts",
+        "caseTimeDescription": "A timeline showing the cumulative number of cases by date.",
+        "caseDistributionDescription": "The number of urgent, open, and closed cases.",
+        "casePatientDescription": "The number of cases associated with each patient.",
+        "caseSeries": "Cases",
+        "statusLegend": "Case status",
+        "caseLegend": "Cases",
+        "cases": "Cases",
+        "date": "Date",
+        "caseCount": "Number of cases"
+      }
+    },
+    "patient": {
+      "directory": "Patient directory",
+      "search": "Search patients",
+      "filters": "Patient filters",
+      "gender": "Gender",
+      "allGenders": "All genders",
+      "childrenOnly": "Children only",
+      "lastActivity": "Last activity",
+      "patient": "Patient",
+      "record": "Patient: {{name}}",
+      "identity": "Patient identity",
+      "dateOfBirth": "Date of birth",
+      "phone": "Phone",
+      "email": "Email",
+      "emergencyContact": "Emergency contact / next of kin",
+      "cases": "Cases",
+      "visitations": "Visitations",
+      "personalCareVisit": "Personal care visit",
+      "activityTrail": "Activity trail",
+      "medications": "Medications",
+      "reports": "Reports",
+      "copyConfirmation": "Create a draft duplicate of this patient record?"
+    },
+    "case": {
+      "queue": "Case queue",
+      "brief": "Brief",
+      "date": "Opened",
+      "status": "Status",
+      "scope": "Case scope",
+      "detail": "Case #{{number}}",
+      "symptoms": "Symptoms",
+      "diagnosis": "Diagnosis",
+      "recommendations": "Recommendations"
+    },
+    "activity": {
+      "title": "Activity log",
+      "eventTitle": "Title of event",
+      "description": "Detailed description of event."
+    },
+    "roster": {
+      "allCases": "All cases",
+      "myRoster": "My roster",
+      "subscribed": "My subscribed rosters",
+      "available": "Available rosters",
+      "shifts": "Shifts",
+      "activeShift": "On duty until {{time}}",
+      "nextShift": "Next shift: {{time}}",
+      "upcoming": "Upcoming",
+      "active": "Active",
+      "completed": "Completed"
+    },
+    "states": {
+      "loading": "Loading...",
+      "empty": "No records found.",
+      "error": "Unable to load this information.",
+      "readOnly": "You have read-only access."
+    },
+    "pagination": {
+      "label": "Pagination",
+      "page": "Page {{page}}"
+    },
+    "table": {
+      "actions": "Actions",
+      "label": "Results table"
+    },
+    "validation": {
+      "invalidFile": "Select a supported file within the allowed size.",
+      "required": "Complete all required fields."
+    }
+  }
+}

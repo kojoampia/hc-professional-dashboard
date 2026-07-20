@@ -12,7 +12,6 @@ import { HCPayOptionService } from '../service/hc-pay-option.service';
 import { HCPayOptionFormService, HCPayOptionFormGroup } from './hc-pay-option-form.service';
 
 @Component({
-  standalone: true,
   selector: 'hpd-hc-pay-option-update',
   templateUrl: './hc-pay-option-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],

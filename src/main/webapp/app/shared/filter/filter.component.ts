@@ -4,7 +4,6 @@ import { IFilterOptions } from './filter.model';
 
 @Component({
   selector: 'jhi-filter',
-  standalone: true,
   imports: [SharedModule],
   templateUrl: './filter.component.html',
 })

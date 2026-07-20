@@ -8,7 +8,6 @@ import { IMetadata } from '../metadata.model';
 import { MetadataService } from '../service/metadata.service';
 
 @Component({
-  standalone: true,
   templateUrl: './metadata-delete-dialog.component.html',
   imports: [SharedModule, FormsModule],
 })

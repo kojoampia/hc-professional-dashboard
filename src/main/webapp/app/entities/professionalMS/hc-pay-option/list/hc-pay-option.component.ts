@@ -14,7 +14,6 @@ import { EntityArrayResponseType, HCPayOptionService } from '../service/hc-pay-o
 import { HCPayOptionDeleteDialogComponent } from '../delete/hc-pay-option-delete-dialog.component';
 
 @Component({
-  standalone: true,
   selector: 'hpd-hc-pay-option',
   templateUrl: './hc-pay-option.component.html',
   imports: [

@@ -2,6 +2,164 @@
 @import 'bootstrap/scss/functions';
 @import 'bootstrap/scss/variables';
 
+/* ==========================================================================
+HealthConnect design tokens and layout primitives
+========================================================================== */
+
+:root {
+  --hpd-color-primary-blue: #3e7cb1;
+  --hpd-color-primary: #3e7cb1;
+  --hpd-color-border: #bac5d1;
+  --hpd-color-shell-border: #3e7cb1;
+  --hpd-color-shell-background: #0b0f1a;
+  --hpd-color-shell-background-end: #1b2a45;
+  --hpd-color-surface: #fff;
+  --hpd-color-card-neutral: #7c8792;
+  --hpd-color-card-urgent: #fbe2e1;
+  --hpd-color-card-open: #e7f0fb;
+  --hpd-color-card-closed: #dff2e1;
+  --hpd-color-text-on-dark: #fff;
+  --hpd-color-text-primary: #2b2b2b;
+  --hpd-color-text-muted: #6b7280;
+  --hpd-color-accent-teal: #1fbe9c;
+  --hpd-color-accent-teal-dark: #0e7c6b;
+  --hpd-color-chart-blue: #5b9bd5;
+  --hpd-color-chart-navy: #1b3a57;
+  --hpd-color-success: #3eae5b;
+  --hpd-color-row-urgent: #fbe9e7;
+  --hpd-color-row-open: #eaf2fb;
+  --hpd-color-row-closed: #e6f6e9;
+  --hpd-color-action-edit: #fbe7b8;
+  --hpd-color-action-copy: #d9f2dc;
+  --hpd-color-action-close: #5a5a5a;
+  --hpd-font-display: 'Trebuchet MS', 'Arial Rounded MT Bold', sans-serif;
+  --hpd-font-body: Inter, Arial, sans-serif;
+  --hpd-content-max-width: 1160px;
+  --hpd-shell-border-width: 8px;
+  --hpd-focus-ring: 0 0 0 3px rgb(62 124 177 / 45%);
+}
+
+.hpd-shell {
+  min-height: 100vh;
+  border: var(--hpd-shell-border-width) solid var(--hpd-color-shell-border);
+  background: radial-gradient(circle at top, var(--hpd-color-shell-background-end), var(--hpd-color-shell-background));
+  color: var(--hpd-color-text-on-dark);
+}
+
+.hpd-container {
+  width: min(100% - 2rem, var(--hpd-content-max-width));
+  margin-inline: auto;
+}
+
+.hpd-surface {
+  border-radius: 1rem;
+  background: var(--hpd-color-surface);
+  color: var(--hpd-color-text-primary);
+}
+
+.hpd-focusable:focus-visible {
+  outline: none;
+  box-shadow: var(--hpd-focus-ring);
+}
+
+.hpd-data-table__scroll:focus-visible {
+  outline: none;
+  box-shadow: var(--hpd-focus-ring);
+}
+
+.hpd-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.hpd-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media screen and (max-width: 767px) {
+  :root {
+    --hpd-shell-border-width: 0;
+  }
+
+  .hpd-container {
+    width: min(100% - 1rem, var(--hpd-content-max-width));
+  }
+
+  .hpd-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hpd-panel-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media screen and (max-width: 375px) {
+  .hpd-stat-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .pagination .page-link {
+    min-width: 2.5rem;
+  }
+
+  .table-responsive {
+    margin-inline: -0.25rem;
+  }
+}
+
+@media print {
+  @page {
+    margin: 12mm;
+  }
+
+  .hpd-no-print,
+  .navbar,
+  .footer {
+    display: none !important;
+  }
+
+  .hpd-shell {
+    min-height: auto;
+    border: 0;
+    background: var(--hpd-color-surface);
+    color: var(--hpd-color-text-primary);
+  }
+
+  .hpd-route-overlay,
+  .hpd-route-overlay > div {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    background: var(--hpd-color-surface) !important;
+  }
+
+  .hpd-route-overlay .hpd-surface {
+    border-radius: 0;
+  }
+
+  .hpd-data-table {
+    width: 100% !important;
+    font-size: 10pt;
+  }
+
+  .hpd-data-table tr,
+  .hpd-panel {
+    break-inside: avoid;
+  }
+}
+
 /* ==============================================================
 Bootstrap tweaks
 ===============================================================*/
@@ -160,12 +318,10 @@ Custom alerts for notification
       bottom: 55px;
     }
   }
-  .alert-link{
+  .alert-link {
     color: #1b67e2;
   }
 }
-
-
 
 @media screen and (min-width: 480px) {
   .alerts .jhi-toast {

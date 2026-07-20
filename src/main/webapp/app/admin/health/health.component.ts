@@ -8,7 +8,6 @@ import { Health, HealthDetails, HealthStatus } from './health.model';
 import HealthModalComponent from './modal/health-modal.component';
 
 @Component({
-  standalone: true,
   selector: 'jhi-health',
   templateUrl: './health.component.html',
   imports: [SharedModule, HealthModalComponent],

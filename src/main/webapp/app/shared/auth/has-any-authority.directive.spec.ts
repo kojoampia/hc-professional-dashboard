@@ -12,6 +12,7 @@ import HasAnyAuthorityDirective from './has-any-authority.directive';
 
 @Component({
   template: ` <div *jhiHasAnyAuthority="'ROLE_ADMIN'" #content></div> `,
+  standalone: false,
 })
 class TestHasAnyAuthorityDirectiveComponent {
   @ViewChild('content', { static: false })

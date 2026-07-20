@@ -19,19 +19,19 @@ Documentation for the generator itself is at the
 
 ## Technology stack
 
-| Area | Technology |
-| --- | --- |
-| Framework | Angular 17 (standalone components) |
-| Language | TypeScript 5.2 (`target: es2022`) |
-| State / data | RxJS 7.8, Angular `HttpClient` |
-| UI widgets | ng-bootstrap 16, Font Awesome, custom chart widgets |
-| i18n | `ngx-translate` — English, French, German (`src/main/webapp/i18n/{en,fr,de}`) |
-| Build | Angular CLI + custom-webpack (`@angular-builders/custom-webpack`), Webpack proxy |
-| Unit tests | Jest 29 + `jest-preset-angular` |
-| E2E tests | Cypress |
+| Area                  | Technology                                                                                    |
+| --------------------- | --------------------------------------------------------------------------------------------- |
+| Framework             | Angular 17 (standalone components)                                                            |
+| Language              | TypeScript 5.2 (`target: es2022`)                                                             |
+| State / data          | RxJS 7.8, Angular `HttpClient`                                                                |
+| UI widgets            | ng-bootstrap 16, Font Awesome, custom chart widgets                                           |
+| i18n                  | `ngx-translate` — English, French, German (`src/main/webapp/i18n/{en,fr,de}`)                 |
+| Build                 | Angular CLI + custom-webpack (`@angular-builders/custom-webpack`), Webpack proxy              |
+| Unit tests            | Jest 29 + `jest-preset-angular`                                                               |
+| E2E tests             | Cypress                                                                                       |
 | Database (configured) | MongoDB (dev and prod, per `.yo-rc.json`) — owned by the backend microservices, not this repo |
-| Infra (dev deps) | Docker Compose: MongoDB, JHipster Registry, Kafka — see `src/main/docker/` |
-| Package manager | npm (`./npmw` wrapper available for a Node-less environment) |
+| Infra (dev deps)      | Docker Compose: MongoDB, JHipster Registry, Kafka — see `src/main/docker/`                    |
+| Package manager       | npm (`./npmw` wrapper available for a Node-less environment)                                  |
 
 ## Project structure
 

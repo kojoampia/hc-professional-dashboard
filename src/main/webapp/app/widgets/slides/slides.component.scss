@@ -73,7 +73,9 @@ p {
   display: inline !important;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 1.2s ease-in-out, visibility 1.2s !important;
+  transition:
+    opacity 1.2s ease-in-out,
+    visibility 1.2s !important;
 }
 
 ::ng-deep.carousel-item.active {

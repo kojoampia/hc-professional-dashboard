@@ -12,6 +12,7 @@ import SortDirective from './sort.directive';
       </thead>
     </table>
   `,
+  standalone: false,
 })
 class TestSortDirectiveComponent {
   predicate?: string;

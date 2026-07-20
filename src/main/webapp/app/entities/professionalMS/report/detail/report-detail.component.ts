@@ -6,7 +6,6 @@ import { DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe } from 'ap
 import { IReport } from '../report.model';
 
 @Component({
-  standalone: true,
   selector: 'jhi-report-detail',
   templateUrl: './report-detail.component.html',
   imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],

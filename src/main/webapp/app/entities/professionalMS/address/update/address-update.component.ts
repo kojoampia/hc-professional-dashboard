@@ -12,7 +12,6 @@ import { AddressService } from '../service/address.service';
 import { AddressFormService, AddressFormGroup } from './address-form.service';
 
 @Component({
-  standalone: true,
   selector: 'hpd-address-update',
   templateUrl: './address-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],

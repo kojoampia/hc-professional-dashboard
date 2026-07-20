@@ -1,10 +1,11 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 
 import ConfigurationComponent from './configuration.component';
 import { ConfigurationService } from './configuration.service';
 import { Bean, PropertySource } from './configuration.model';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('ConfigurationComponent', () => {
   let comp: ConfigurationComponent;
@@ -13,8 +14,8 @@ describe('ConfigurationComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, ConfigurationComponent],
-      providers: [ConfigurationService],
+      imports: [ConfigurationComponent],
+      providers: [ConfigurationService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     })
       .overrideTemplate(ConfigurationComponent, '')
       .compileComponents();

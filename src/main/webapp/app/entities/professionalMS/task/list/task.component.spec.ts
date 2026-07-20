@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpHeaders, HttpResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpHeaders, HttpResponse, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
@@ -16,7 +16,7 @@ describe('Task Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([{ path: 'task', component: TaskComponent }]), HttpClientTestingModule, TaskComponent],
+      imports: [RouterTestingModule.withRoutes([{ path: 'task', component: TaskComponent }]), TaskComponent],
       providers: [
         {
           provide: ActivatedRoute,
@@ -34,6 +34,8 @@ describe('Task Management Component', () => {
             snapshot: { queryParams: {} },
           },
         },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     })
       .overrideTemplate(TaskComponent, '')

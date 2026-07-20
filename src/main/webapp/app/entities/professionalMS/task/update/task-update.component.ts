@@ -12,7 +12,6 @@ import { TaskService } from '../service/task.service';
 import { TaskFormService, TaskFormGroup } from './task-form.service';
 
 @Component({
-  standalone: true,
   selector: 'hpd-task-update',
   templateUrl: './task-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],

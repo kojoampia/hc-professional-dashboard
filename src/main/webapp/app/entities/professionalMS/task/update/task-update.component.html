@@ -1,8 +1,11 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
     <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
-      <h2 id="jhi-task-heading" data-cy="TaskCreateUpdateHeading"
-        jhiTranslate="professionalDashboardApp.professionalMsTask.home.createOrEditLabel">
+      <h2
+        id="jhi-task-heading"
+        data-cy="TaskCreateUpdateHeading"
+        jhiTranslate="professionalDashboardApp.professionalMsTask.home.createOrEditLabel"
+      >
         Create or edit a Task
       </h2>
 
@@ -10,71 +13,98 @@
         <jhi-alert-error></jhi-alert-error>
 
         @if (editForm.controls.id.value !== null) {
-        <div class="mb-3">
-          <label class="form-label" jhiTranslate="global.field.id" for="field_id">ID</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id"
-            [readonly]="true" />
-        </div>
+          <div class="mb-3">
+            <label class="form-label" jhiTranslate="global.field.id" for="field_id">ID</label>
+            <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
         }
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.name"
-            for="field_name">Name</label>
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.name" for="field_name">Name</label>
           <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.description"
-            for="field_description">Description</label>
-          <input type="text" class="form-control" name="description" id="field_description" data-cy="description"
-            formControlName="description" />
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.description" for="field_description"
+            >Description</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="description"
+            id="field_description"
+            data-cy="description"
+            formControlName="description"
+          />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.schedule"
-            for="field_schedule">Schedule</label>
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.schedule" for="field_schedule"
+            >Schedule</label
+          >
           <div class="input-group">
-            <input id="field_schedule" data-cy="schedule" type="text" class="form-control" name="schedule" ngbDatepicker
-              #scheduleDp="ngbDatepicker" formControlName="schedule" />
-            <button type="button" class="btn btn-secondary" (click)="scheduleDp.toggle()"><fa-icon
-                icon="calendar-alt"></fa-icon></button>
+            <input
+              id="field_schedule"
+              data-cy="schedule"
+              type="text"
+              class="form-control"
+              name="schedule"
+              ngbDatepicker
+              #scheduleDp="ngbDatepicker"
+              formControlName="schedule"
+            />
+            <button type="button" class="btn btn-secondary" (click)="scheduleDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
           </div>
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.duration"
-            for="field_duration">Duration</label>
-          <input type="number" class="form-control" name="duration" id="field_duration" data-cy="duration"
-            formControlName="duration" />
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.duration" for="field_duration"
+            >Duration</label
+          >
+          <input type="number" class="form-control" name="duration" id="field_duration" data-cy="duration" formControlName="duration" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.attendantId"
-            for="field_attendantId">Attendant Id</label>
-          <input type="text" class="form-control" name="attendantId" id="field_attendantId" data-cy="attendantId"
-            formControlName="attendantId" />
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.attendantId" for="field_attendantId"
+            >Attendant Id</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="attendantId"
+            id="field_attendantId"
+            data-cy="attendantId"
+            formControlName="attendantId"
+          />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.teamId"
-            for="field_teamId">Team Id</label>
-          <input type="text" class="form-control" name="teamId" id="field_teamId" data-cy="teamId"
-            formControlName="teamId" />
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.teamId" for="field_teamId">Team Id</label>
+          <input type="text" class="form-control" name="teamId" id="field_teamId" data-cy="teamId" formControlName="teamId" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.patientId"
-            for="field_patientId">Patient Id</label>
-          <input type="text" class="form-control" name="patientId" id="field_patientId" data-cy="patientId"
-            formControlName="patientId" />
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.patientId" for="field_patientId"
+            >Patient Id</label
+          >
+          <input type="text" class="form-control" name="patientId" id="field_patientId" data-cy="patientId" formControlName="patientId" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.createdDate"
-            for="field_createdDate">Created Date</label>
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.createdDate" for="field_createdDate"
+            >Created Date</label
+          >
           <div class="input-group">
-            <input id="field_createdDate" data-cy="createdDate" type="text" class="form-control" name="createdDate"
-              ngbDatepicker #createdDateDp="ngbDatepicker" formControlName="createdDate" />
+            <input
+              id="field_createdDate"
+              data-cy="createdDate"
+              type="text"
+              class="form-control"
+              name="createdDate"
+              ngbDatepicker
+              #createdDateDp="ngbDatepicker"
+              formControlName="createdDate"
+            />
             <button type="button" class="btn btn-secondary" (click)="createdDateDp.toggle()">
               <fa-icon icon="calendar-alt"></fa-icon>
             </button>
@@ -82,11 +112,20 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.modifiedDate"
-            for="field_modifiedDate">Modified Date</label>
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.modifiedDate" for="field_modifiedDate"
+            >Modified Date</label
+          >
           <div class="input-group">
-            <input id="field_modifiedDate" data-cy="modifiedDate" type="text" class="form-control" name="modifiedDate"
-              ngbDatepicker #modifiedDateDp="ngbDatepicker" formControlName="modifiedDate" />
+            <input
+              id="field_modifiedDate"
+              data-cy="modifiedDate"
+              type="text"
+              class="form-control"
+              name="modifiedDate"
+              ngbDatepicker
+              #modifiedDateDp="ngbDatepicker"
+              formControlName="modifiedDate"
+            />
             <button type="button" class="btn btn-secondary" (click)="modifiedDateDp.toggle()">
               <fa-icon icon="calendar-alt"></fa-icon>
             </button>
@@ -94,28 +133,39 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.createdBy"
-            for="field_createdBy">Created By</label>
-          <input type="text" class="form-control" name="createdBy" id="field_createdBy" data-cy="createdBy"
-            formControlName="createdBy" />
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.createdBy" for="field_createdBy"
+            >Created By</label
+          >
+          <input type="text" class="form-control" name="createdBy" id="field_createdBy" data-cy="createdBy" formControlName="createdBy" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.modifiedBy"
-            for="field_modifiedBy">Modified By</label>
-          <input type="text" class="form-control" name="modifiedBy" id="field_modifiedBy" data-cy="modifiedBy"
-            formControlName="modifiedBy" />
+          <label class="form-label" jhiTranslate="professionalDashboardApp.professionalMsTask.modifiedBy" for="field_modifiedBy"
+            >Modified By</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="modifiedBy"
+            id="field_modifiedBy"
+            data-cy="modifiedBy"
+            formControlName="modifiedBy"
+          />
         </div>
       </div>
 
       <div>
-        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary"
-          (click)="previousState()">
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
           <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
         </button>
 
-        <button type="submit" id="save-entity" data-cy="entityCreateSaveButton"
-          [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
           <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
         </button>
       </div>

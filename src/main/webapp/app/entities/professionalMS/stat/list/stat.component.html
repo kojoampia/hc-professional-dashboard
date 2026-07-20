@@ -4,15 +4,18 @@
 
     <div class="d-flex justify-content-end">
       <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
-        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
         <span jhiTranslate="professionalDashboardApp.professionalMsStat.home.refreshListLabel">Refresh list</span>
       </button>
 
-      <button id="jh-create-entity" data-cy="entityCreateButton" class="btn btn-primary jh-create-entity create-stat"
-        [routerLink]="['/stat/new']">
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-stat"
+        [routerLink]="['/stat/new']"
+      >
         <fa-icon icon="plus"></fa-icon>
-        <span class="hidden-sm-down" jhiTranslate="professionalDashboardApp.professionalMsStat.home.createLabel">Create
-          a new Stat</span>
+        <span class="hidden-sm-down" jhiTranslate="professionalDashboardApp.professionalMsStat.home.createLabel">Create a new Stat</span>
       </button>
     </div>
   </h2>
@@ -24,135 +27,142 @@
   <form name="searchForm" class="row row-cols-sm-auto align-items-center">
     <div class="col-sm-12">
       <div class="input-group w-100 mt-3">
-        <label class="visually-hidden" for="currentSearch"
-          jhiTranslate="professionalDashboardApp.professionalMsStat.home.search">Search for Stat</label>
-        <input type="text" class="form-control" [(ngModel)]="currentSearch" id="currentSearch" name="currentSearch"
-          placeholder="{{ 'professionalDashboardApp.professionalMsStat.home.search' | translate }}" />
+        <label class="visually-hidden" for="currentSearch" jhiTranslate="professionalDashboardApp.professionalMsStat.home.search"
+          >Search for Stat</label
+        >
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="currentSearch"
+          id="currentSearch"
+          name="currentSearch"
+          placeholder="{{ 'professionalDashboardApp.professionalMsStat.home.search' | translate }}"
+        />
 
         <button class="btn btn-info" (click)="search(currentSearch)">
           <fa-icon icon="search"></fa-icon>
         </button>
 
         @if (currentSearch) {
-        <button class="btn btn-danger" (click)="search('')">
-          <fa-icon icon="trash-alt"></fa-icon>
-        </button>
+          <button class="btn btn-danger" (click)="search('')">
+            <fa-icon icon="trash-alt"></fa-icon>
+          </button>
         }
       </div>
     </div>
   </form>
 
   @if (stats?.length === 0) {
-  <div class="alert alert-warning" id="no-result">
-    <span jhiTranslate="professionalDashboardApp.professionalMsStat.home.notFound">No Stats found</span>
-  </div>
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="professionalDashboardApp.professionalMsStat.home.notFound">No Stats found</span>
+    </div>
   }
 
   @if (stats && stats.length > 0) {
-  <div class="table-responsive table-entities" id="entities">
-    <table class="table table-striped" aria-describedby="page-heading">
-      <thead>
-        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
-          <th scope="col" jhiSortBy="id">
-            <div class="d-flex">
-              <span jhiTranslate="global.field.id">ID</span>
-              @if (!currentSearch) {
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-              }
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="type">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsStat.type">Type</span>
-              @if (!currentSearch) {
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-              }
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="name">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsStat.name">Name</span>
-              @if (!currentSearch) {
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-              }
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="description">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsStat.description">Description</span>
-              @if (!currentSearch) {
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-              }
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="value">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsStat.value">Value</span>
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="global.field.id">ID</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="type">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsStat.type">Type</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="name">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsStat.name">Name</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="description">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsStat.description">Description</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="value">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsStat.value">Value</span>
 
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="note">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsStat.note">Note</span>
-              @if (!currentSearch) {
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-              }
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="createdDate">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsStat.createdDate">Created Date</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="note">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsStat.note">Note</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="createdDate">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsStat.createdDate">Created Date</span>
 
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="createdBy">
-            <div class="d-flex">
-              <span jhiTranslate="professionalDashboardApp.professionalMsStat.createdBy">Created By</span>
-              @if (!currentSearch) {
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-              }
-            </div>
-          </th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (stat of stats; track trackId) {
-        <tr data-cy="entityTable">
-          <td>
-            <a [routerLink]="['/stat', stat.id, 'view']">{{ stat.id }}</a>
-          </td>
-          <td>{{ stat.type }}</td>
-          <td>{{ stat.name }}</td>
-          <td>{{ stat.description }}</td>
-          <td>{{ stat.value }}</td>
-          <td>{{ stat.note }}</td>
-          <td>{{ stat.createdDate | formatMediumDate }}</td>
-          <td>{{ stat.createdBy }}</td>
-          <td class="text-end">
-            <div class="btn-group">
-              <a [routerLink]="['/stat', stat.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
-                <fa-icon icon="eye"></fa-icon>
-                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
-              </a>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="createdBy">
+              <div class="d-flex">
+                <span jhiTranslate="professionalDashboardApp.professionalMsStat.createdBy">Created By</span>
+                @if (!currentSearch) {
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                }
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (stat of stats; track trackId) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/stat', stat.id, 'view']">{{ stat.id }}</a>
+              </td>
+              <td>{{ stat.type }}</td>
+              <td>{{ stat.name }}</td>
+              <td>{{ stat.description }}</td>
+              <td>{{ stat.value }}</td>
+              <td>{{ stat.note }}</td>
+              <td>{{ stat.createdDate | formatMediumDate }}</td>
+              <td>{{ stat.createdBy }}</td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/stat', stat.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                  </a>
 
-              <a [routerLink]="['/stat', stat.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
-                <fa-icon icon="pencil-alt"></fa-icon>
-                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
-              </a>
+                  <a [routerLink]="['/stat', stat.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                  </a>
 
-              <button type="submit" (click)="delete(stat)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                <fa-icon icon="times"></fa-icon>
-                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
-              </button>
-            </div>
-          </td>
-        </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+                  <button type="submit" (click)="delete(stat)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   }
 </div>

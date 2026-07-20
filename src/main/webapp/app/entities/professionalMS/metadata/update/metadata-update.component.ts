@@ -12,7 +12,6 @@ import { MetadataService } from '../service/metadata.service';
 import { MetadataFormService, MetadataFormGroup } from './metadata-form.service';
 
 @Component({
-  standalone: true,
   selector: 'hpd-metadata-update',
   templateUrl: './metadata-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],

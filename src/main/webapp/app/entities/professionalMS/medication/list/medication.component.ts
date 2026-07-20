@@ -14,7 +14,6 @@ import { EntityArrayResponseType, MedicationService } from '../service/medicatio
 import { MedicationDeleteDialogComponent } from '../delete/medication-delete-dialog.component';
 
 @Component({
-  standalone: true,
   selector: 'hpd-medication',
   templateUrl: './medication.component.html',
   imports: [

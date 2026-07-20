@@ -18,7 +18,7 @@
     "useDefineForClassFields": false,
     "target": "es2022",
     "module": "es2020",
-    "types": ["node","hammerjs"],
+    "types": ["node", "hammerjs"],
     "lib": ["es2018", "es2020", "dom"]
   },
   "references": [
@@ -32,7 +32,5 @@
     "strictTemplates": true,
     "preserveWhitespaces": true
   },
-  "types": [
-    "hammerjs"
-  ]
+  "types": ["hammerjs"]
 }

@@ -35,7 +35,12 @@
               "src/main/webapp/manifest.webapp",
               "src/main/webapp/robots.txt"
             ],
-            "styles": ["src/main/webapp/content/scss/vendor.scss", "src/main/webapp/content/scss/global.scss"],
+            "styles": [
+              "src/main/webapp/content/scss/vendor.scss",
+              "src/main/webapp/content/scss/global.scss",
+              "src/main/webapp/content/css/tailwind.css",
+              "node_modules/@angular/material/prebuilt-themes/azure-blue.css"
+            ],
             "scripts": [],
             "allowedCommonJsDependencies": ["hammerjs", "sockjs-client", "webstomp-client"]
           },

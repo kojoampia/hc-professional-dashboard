@@ -1,12 +1,13 @@
 import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed, inject, tick, fakeAsync } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { of, throwError } from 'rxjs';
 
 import PasswordResetFinishComponent from './password-reset-finish.component';
 import { PasswordResetFinishService } from './password-reset-finish.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('PasswordResetFinishComponent', () => {
   let fixture: ComponentFixture<PasswordResetFinishComponent>;
@@ -14,13 +15,15 @@ describe('PasswordResetFinishComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, PasswordResetFinishComponent],
+      imports: [PasswordResetFinishComponent],
       providers: [
         FormBuilder,
         {
           provide: ActivatedRoute,
           useValue: { queryParams: of({ key: 'XYZPDQ' }) },
         },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     })
       .overrideTemplate(PasswordResetFinishComponent, '')

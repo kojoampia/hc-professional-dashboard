@@ -4,7 +4,6 @@ import { NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
 
 @Component({
   selector: 'jhi-heatmap',
-  standalone: true,
   templateUrl: './heatmap.component.html',
   imports: [NgxChartsModule, CommonModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

@@ -14,7 +14,6 @@ import { EntityArrayResponseType, MetadataService } from '../service/metadata.se
 import { MetadataDeleteDialogComponent } from '../delete/metadata-delete-dialog.component';
 
 @Component({
-  standalone: true,
   selector: 'hpd-metadata',
   templateUrl: './metadata.component.html',
   imports: [

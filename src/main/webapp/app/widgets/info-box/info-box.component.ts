@@ -6,7 +6,6 @@ import { Subject } from 'rxjs';
 
 @Component({
   selector: 'jhi-info-box',
-  standalone: true,
   templateUrl: './info-box.component.html',
   styleUrls: ['./info-box.component.scss'],
   imports: [SharedModule],

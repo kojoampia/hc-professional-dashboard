@@ -13,7 +13,6 @@ import MainComponent from './layouts/main/main.component';
 
 @Component({
   selector: 'jhi-app',
-  standalone: true,
   template: '<jhi-main></jhi-main>',
   imports: [
     MainComponent,

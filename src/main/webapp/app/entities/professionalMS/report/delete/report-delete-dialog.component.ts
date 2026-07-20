@@ -8,7 +8,6 @@ import { IReport } from '../report.model';
 import { ReportService } from '../service/report.service';
 
 @Component({
-  standalone: true,
   templateUrl: './report-delete-dialog.component.html',
   imports: [SharedModule, FormsModule],
 })

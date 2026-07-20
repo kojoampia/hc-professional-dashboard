@@ -5,7 +5,6 @@ import { StatusService } from './status.service';
 
 @Component({
   selector: 'jhi-status',
-  standalone: true,
   imports: [NgxChartsModule],
   templateUrl: './status.component.html',
   styleUrl: './status.component.scss',

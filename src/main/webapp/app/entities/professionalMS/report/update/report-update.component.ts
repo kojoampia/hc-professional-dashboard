@@ -12,7 +12,6 @@ import { ReportService } from '../service/report.service';
 import { ReportFormService, ReportFormGroup } from './report-form.service';
 
 @Component({
-  standalone: true,
   selector: 'hpd-report-update',
   templateUrl: './report-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],

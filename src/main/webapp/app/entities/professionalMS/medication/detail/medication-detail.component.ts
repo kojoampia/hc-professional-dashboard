@@ -6,7 +6,6 @@ import { DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe } from 'ap
 import { IMedication } from '../medication.model';
 
 @Component({
-  standalone: true,
   selector: 'hpd-medication-detail',
   templateUrl: './medication-detail.component.html',
   imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],

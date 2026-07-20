@@ -7,7 +7,6 @@ import SharedModule from 'app/shared/shared.module';
 
 @Component({
   selector: 'jhi-chat-faq',
-  standalone: true,
   templateUrl: './chat-faq.component.html',
   styleUrls: ['./chat-faq.component.scss'],
   imports: [SharedModule],

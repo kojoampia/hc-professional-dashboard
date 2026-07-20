@@ -12,7 +12,6 @@ import { MedicationService } from '../service/medication.service';
 import { MedicationFormService, MedicationFormGroup } from './medication-form.service';
 
 @Component({
-  standalone: true,
   selector: 'hpd-medication-update',
   templateUrl: './medication-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],

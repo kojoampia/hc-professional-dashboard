@@ -12,7 +12,6 @@ import { MembershipService } from '../service/membership.service';
 import { MembershipFormService, MembershipFormGroup } from './membership-form.service';
 
 @Component({
-  standalone: true,
   selector: 'hpd-membership-update',
   templateUrl: './membership-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],

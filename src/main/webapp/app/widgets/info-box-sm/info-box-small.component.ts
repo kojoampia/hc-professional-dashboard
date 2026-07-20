@@ -3,7 +3,6 @@ import SharedModule from 'app/shared/shared.module';
 
 @Component({
   selector: 'jhi-info-box-small',
-  standalone: true,
   templateUrl: './info-box-small.component.html',
   styleUrls: ['./info-box-small.component.scss'],
   imports: [SharedModule],

@@ -1,22 +1,25 @@
 import { TestBed, waitForAsync, tick, fakeAsync, inject } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute } from '@angular/router';
 import { of, throwError } from 'rxjs';
 
 import { ActivateService } from './activate.service';
 import ActivateComponent from './activate.component';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('ActivateComponent', () => {
   let comp: ActivateComponent;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, ActivateComponent],
+      imports: [ActivateComponent],
       providers: [
         {
           provide: ActivatedRoute,
           useValue: { queryParams: of({ key: 'ABC123' }) },
         },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     })
       .overrideTemplate(ActivateComponent, '')

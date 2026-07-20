@@ -3,7 +3,6 @@ import { OnInit, Input, Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'jhi-badgebox',
-  standalone: true,
   templateUrl: './badgebox.component.html',
   styleUrls: ['./badgebox.component.scss'],
   imports: [CommonModule],

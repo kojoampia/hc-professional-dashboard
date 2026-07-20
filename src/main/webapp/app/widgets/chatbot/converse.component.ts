@@ -13,7 +13,6 @@ import { FormatMediumDatetimePipe, FormatMediumDatePipe } from 'app/shared/date'
 
 @Component({
   selector: 'jhi-converse',
-  standalone: true,
   templateUrl: './converse.component.html',
   styleUrls: ['./converse.component.scss'],
   imports: [SharedModule, FormsModule, ReactiveFormsModule, FormatMediumDatetimePipe, FormatMediumDatePipe],

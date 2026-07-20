@@ -4,7 +4,6 @@ import SharedModule from 'app/shared/shared.module';
 
 @Component({
   selector: 'jhi-filter-bar',
-  standalone: true,
   templateUrl: './bar.component.html',
   styleUrls: ['./bar.component.scss'],
   imports: [SharedModule, FormsModule],

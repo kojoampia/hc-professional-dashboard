@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./target/out-tsc/app",
-    "types": ["hammerjs","@angular/localize"]
+    "types": ["hammerjs", "@angular/localize"]
   },
   "files": ["src/main/webapp/main.ts"],
   "include": ["src/main/webapp/**/*.d.ts"]

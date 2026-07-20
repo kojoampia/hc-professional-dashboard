@@ -4,7 +4,6 @@ import { IFrequentAsked } from 'app/widgets/faq/frequent-asked.model';
 
 @Component({
   selector: 'jhi-chat-accordion',
-  standalone: true,
   templateUrl: './chat-accordion.component.html',
   styleUrls: ['./chat-accordion.component.scss'],
   imports: [SharedModule],
