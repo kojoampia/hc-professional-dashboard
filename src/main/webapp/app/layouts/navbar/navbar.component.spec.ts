@@ -33,9 +33,9 @@ describe('Navbar Component', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-    imports: [NavbarComponent, RouterTestingModule.withRoutes([]), TranslateModule.forRoot()],
-    providers: [LoginService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-})
+      imports: [NavbarComponent, RouterTestingModule.withRoutes([]), TranslateModule.forRoot()],
+      providers: [LoginService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    })
       .overrideTemplate(NavbarComponent, '')
       .compileComponents();
   }));
@@ -93,5 +93,24 @@ describe('Navbar Component', () => {
 
     // THEN
     expect(comp.account).toBeNull();
+  });
+
+  it('should resolve a translated clinical role badge and optional shift from the authenticated account', () => {
+    accountService.authenticate({ ...account, authorities: ['ROLE_DOCTOR'], login: 'doctor' });
+
+    comp.ngOnInit();
+
+    expect(comp.roleBadgeTranslationKey).toBe('healthConnect.roles.doctor');
+    expect(comp.shiftLabel).toEqual({
+      translationKey: 'healthConnect.roster.activeShift',
+      translationParams: { time: '20:00' },
+    });
+  });
+
+  it('should not resolve clinical navbar context for a logged-out account', () => {
+    comp.ngOnInit();
+
+    expect(comp.roleBadgeTranslationKey).toBeNull();
+    expect(comp.shiftLabel).toBeNull();
   });
 });

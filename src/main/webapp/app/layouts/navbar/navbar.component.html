@@ -27,6 +27,21 @@
             </span>
           </a>
         </li>
+        @if (roleBadgeTranslationKey; as roleBadgeTranslationKey) {
+          <li class="nav-item d-flex align-items-center">
+            <span class="badge text-bg-primary" data-cy="healthConnectRoleBadge" [jhiTranslate]="roleBadgeTranslationKey"></span>
+          </li>
+        }
+        @if (shiftLabel; as shiftLabel) {
+          <li class="nav-item d-flex align-items-center">
+            <span
+              class="nav-link py-0"
+              data-cy="healthConnectShiftLabel"
+              [jhiTranslate]="shiftLabel.translationKey"
+              [translateValues]="shiftLabel.translationParams"
+            ></span>
+          </li>
+        }
         <!-- jhipster-needle-add-element-to-menu - JHipster will add new menu items here -->
         @if (account !== null) {
           <li
