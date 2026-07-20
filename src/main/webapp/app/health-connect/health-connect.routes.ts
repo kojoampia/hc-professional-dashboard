@@ -11,6 +11,9 @@ const protectedFeatureRoute = {
 };
 
 const featurePage = (): Promise<typeof import('./pages/feature-page.component')> => import('./pages/feature-page.component');
+const dashboardPage = (): Promise<typeof import('./pages/dashboard-page.component')> => import('./pages/dashboard-page.component');
+const patientDirectoryPage = (): Promise<typeof import('./pages/patient-directory-page.component')> =>
+  import('./pages/patient-directory-page.component');
 const overlayHost = (): Promise<typeof import('./pages/route-driven-overlay-host.component')> =>
   import('./pages/route-driven-overlay-host.component');
 
@@ -18,13 +21,13 @@ const routes: Routes = [
   {
     path: 'dashboard',
     ...protectedFeatureRoute,
-    loadComponent: featurePage,
+    loadComponent: dashboardPage,
     data: { ...protectedFeatureRoute.data, titleKey: 'healthConnect.navigation.dashboard' },
   },
   {
     path: 'patients',
     ...protectedFeatureRoute,
-    loadComponent: featurePage,
+    loadComponent: patientDirectoryPage,
     data: { ...protectedFeatureRoute.data, titleKey: 'healthConnect.patient.directory' },
   },
   {

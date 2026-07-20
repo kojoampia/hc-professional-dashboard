@@ -51,9 +51,9 @@ The plan deliberately does not create a parallel shell, auth system, or backend 
 
 ### Dashboard and directory
 
-- [ ] **[16] Implement the dashboard route and KPI integration.** Render demographic and case-status cards from computed service data; navigate demographics to patient filters and status cards to the case queue query parameter. **Verify:** route/component tests prove each card creates the correct URL and active count.
-- [ ] **[17] Implement accessible chart components.** Wrap the approved existing or newly added chart library with line, pie, and grouped-bar components, text alternatives, legends/tooltips, and the approved labels/units. **Verify:** chart data transforms are unit-tested and charts have accessible titles/descriptions without hardcoded SVG paths.
-- [ ] **[18] Implement the patient directory.** Render the query-backed demographic filter, debounced name search (unless D3 expands scope), table, pagination, and view action; preserve filter/search/page state in URL query parameters. **Verify:** tests cover filtering, pagination, deep-link restoration, and patient-detail navigation.
+- [x] **[16] Implement the dashboard route and KPI integration.** Render demographic and case-status cards from computed service data; navigate demographics to patient filters and status cards to the case queue query parameter. **Verify:** route/component tests prove each card creates the correct URL and active count.
+- [x] **[17] Implement accessible chart components.** Wrap the approved existing or newly added chart library with line, pie, and grouped-bar components, text alternatives, legends/tooltips, and the approved labels/units. **Verify:** chart data transforms are unit-tested and charts have accessible titles/descriptions without hardcoded SVG paths.
+- [x] **[18] Implement the patient directory.** Render the query-backed demographic filter, debounced name search (unless D3 expands scope), table, pagination, and view action; preserve filter/search/page state in URL query parameters. **Verify:** tests cover filtering, pagination, deep-link restoration, and patient-detail navigation.
 
 ### Patient record, cases, and activity
 

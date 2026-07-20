@@ -168,7 +168,8 @@ export interface AsyncViewState {
 
 export interface PatientDirectoryViewState extends PageRequest, AsyncViewState {
   query: string;
-  sex?: PatientSex;
+  gender?: PatientSex;
+  childrenOnly?: boolean;
 }
 
 export interface CaseQueueViewState extends PageRequest, AsyncViewState {

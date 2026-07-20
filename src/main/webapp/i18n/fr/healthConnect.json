@@ -21,6 +21,7 @@
       "female": "Femmes",
       "male": "Hommes",
       "kids": "Enfants",
+      "unspecified": "Non précisé",
       "urgent": "Urgent",
       "open": "Ouvert",
       "closed": "Fermé"
@@ -44,14 +45,32 @@
       "confirm": "Confirmer"
     },
     "dashboard": {
+      "demographics": "Démographie des patients",
+      "caseStatus": "État des cas",
       "caseTime": "Cas au fil du temps",
       "caseDistribution": "Répartition des cas",
       "casePatient": "Cas par patient",
-      "allPatients": "Tous les patients"
+      "allPatients": "Tous les patients",
+      "charts": {
+        "title": "Graphiques des cas",
+        "caseTimeDescription": "Chronologie montrant le nombre cumulé de cas par date.",
+        "caseDistributionDescription": "Le nombre de cas urgents, ouverts et fermés.",
+        "casePatientDescription": "Le nombre de cas associés à chaque patient.",
+        "caseSeries": "Cas",
+        "statusLegend": "État des cas",
+        "caseLegend": "Cas",
+        "cases": "Cas",
+        "date": "Date",
+        "caseCount": "Nombre de cas"
+      }
     },
     "patient": {
       "directory": "Répertoire des patients",
       "search": "Rechercher des patients",
+      "filters": "Filtres des patients",
+      "gender": "Genre",
+      "allGenders": "Tous les genres",
+      "childrenOnly": "Enfants uniquement",
       "lastActivity": "Dernière activité",
       "patient": "Patient",
       "record": "Patient : {{name}}",

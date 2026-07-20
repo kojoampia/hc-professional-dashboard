@@ -39,6 +39,16 @@ describe('MockHealthConnectRepository', () => {
     expect(repository.findPatient('unknown-patient')).toBeUndefined();
   });
 
+  it('filters patient rows by URL-backed gender and child demographics', () => {
+    expect(repository.filterPatients('', { page: 1, pageSize: 10 }, { gender: 'female' }).items).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: 'patient-ama', sex: 'female' })]),
+    );
+    expect(repository.filterPatients('', { page: 1, pageSize: 10 }, { childrenOnly: true }).items).toEqual([
+      expect.objectContaining({ id: 'patient-yaw', isChild: true }),
+      expect.objectContaining({ id: 'patient-akosua', isChild: true }),
+    ]);
+  });
+
   it('looks up and filters cases by status and subscribed roster', () => {
     expect(repository.findCase('case-kojo-urgent')?.brief).toBe('Severe pain due to a fall.');
     expect(repository.listCases('urgent')).toHaveLength(2);

@@ -13,6 +13,7 @@ import {
   PageRequest,
   PatientListRow,
   PatientRecord,
+  PatientSex,
   Recommendation,
   RosterScope,
   ShiftLabel,
@@ -24,6 +25,11 @@ import {
   HEALTH_CONNECT_RECOMMENDATIONS,
 } from './health-connect.fixtures';
 
+export interface PatientDirectoryFilters {
+  gender?: PatientSex;
+  childrenOnly?: boolean;
+}
+
 export interface HealthConnectRepository {
   readonly patients: Signal<readonly PatientRecord[]>;
   readonly dutyRosters: Signal<readonly DutyRoster[]>;
@@ -33,7 +39,7 @@ export interface HealthConnectRepository {
   readonly caseCounts: Signal<Record<CaseStatus, number>>;
   readonly charts: Signal<ChartData>;
 
-  filterPatients(query: string, pageRequest: PageRequest): Page<PatientListRow>;
+  filterPatients(query: string, pageRequest: PageRequest, filters?: PatientDirectoryFilters): Page<PatientListRow>;
   findPatient(id: string): PatientRecord | undefined;
   findCase(id: string): ClinicalCase | undefined;
   listCases(status?: CaseStatus, rosterScope?: RosterScope, professionalId?: string): readonly CaseQueueRow[];
@@ -153,9 +159,14 @@ export class MockHealthConnectRepository implements HealthConnectRepository {
     };
   });
 
-  filterPatients(query: string, pageRequest: PageRequest): Page<PatientListRow> {
+  filterPatients(query: string, pageRequest: PageRequest, filters: PatientDirectoryFilters = {}): Page<PatientListRow> {
     const normalizedQuery = query.trim().toLocaleLowerCase();
-    const matches = this.patientRows().filter(row => row.patientName.toLocaleLowerCase().includes(normalizedQuery));
+    const matches = this.patientRows().filter(
+      row =>
+        row.patientName.toLocaleLowerCase().includes(normalizedQuery) &&
+        (!filters.gender || row.sex === filters.gender) &&
+        (!filters.childrenOnly || row.isChild),
+    );
     return page(matches, pageRequest);
   }
 

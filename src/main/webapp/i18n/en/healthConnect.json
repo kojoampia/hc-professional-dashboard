@@ -21,6 +21,7 @@
       "female": "Female",
       "male": "Male",
       "kids": "Kids",
+      "unspecified": "Unspecified",
       "urgent": "Urgent",
       "open": "Open",
       "closed": "Closed"
@@ -44,14 +45,32 @@
       "confirm": "Confirm"
     },
     "dashboard": {
+      "demographics": "Patient demographics",
+      "caseStatus": "Case status",
       "caseTime": "Cases over time",
       "caseDistribution": "Case distribution",
       "casePatient": "Cases by patient",
-      "allPatients": "All patients"
+      "allPatients": "All patients",
+      "charts": {
+        "title": "Case charts",
+        "caseTimeDescription": "A timeline showing the cumulative number of cases by date.",
+        "caseDistributionDescription": "The number of urgent, open, and closed cases.",
+        "casePatientDescription": "The number of cases associated with each patient.",
+        "caseSeries": "Cases",
+        "statusLegend": "Case status",
+        "caseLegend": "Cases",
+        "cases": "Cases",
+        "date": "Date",
+        "caseCount": "Number of cases"
+      }
     },
     "patient": {
       "directory": "Patient directory",
       "search": "Search patients",
+      "filters": "Patient filters",
+      "gender": "Gender",
+      "allGenders": "All genders",
+      "childrenOnly": "Children only",
       "lastActivity": "Last activity",
       "patient": "Patient",
       "record": "Patient: {{name}}",

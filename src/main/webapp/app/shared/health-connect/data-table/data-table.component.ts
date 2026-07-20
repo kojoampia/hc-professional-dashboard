@@ -13,6 +13,7 @@ export interface DataTableColumn<T> {
 export interface DataTableAction<T> {
   id: string;
   labelKey: string;
+  icon?: string;
   isAvailable?: (row: T) => boolean;
 }
 
@@ -53,9 +54,15 @@ export interface DataTableActionEvent<T> {
                       <button
                         class="hpd-focusable btn btn-sm btn-outline-primary"
                         type="button"
+                        [attr.aria-label]="action.labelKey | translate"
                         (click)="actionTriggered.emit({ actionId: action.id, row })"
                       >
-                        {{ action.labelKey | translate }}
+                        @if (action.icon) {
+                          <span aria-hidden="true">{{ action.icon }}</span>
+                          <span class="visually-hidden">{{ action.labelKey | translate }}</span>
+                        } @else {
+                          {{ action.labelKey | translate }}
+                        }
                       </button>
                     }
                   }

@@ -7,7 +7,7 @@ export interface StatCard {
   labelKey: string;
   count: number;
   variant?: StatCardVariant;
-  link?: string | readonly string[];
+  link?: string | string[];
 }
 
 @Component({

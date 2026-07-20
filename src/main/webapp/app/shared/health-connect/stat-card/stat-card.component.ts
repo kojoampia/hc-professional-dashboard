@@ -71,6 +71,6 @@ export default class StatCardComponent {
   @Input() variant: StatCardVariant = 'neutral';
   @Input() selected = false;
   @Input() interactive = true;
-  @Input() link: string | readonly string[] | null = null;
+  @Input() link: string | string[] | null = null;
   @Output() readonly activate = new EventEmitter<void>();
 }
