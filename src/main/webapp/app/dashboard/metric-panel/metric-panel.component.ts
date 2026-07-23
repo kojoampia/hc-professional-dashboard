@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
 
 @Component({
-  selector: 'jhi-metric-panel',
+  selector: 'hpd-metric-panel',
   templateUrl: './metric-panel.component.html',
   styleUrls: ['./metric-panel.component.scss'],
   imports: [NgxChartsModule],

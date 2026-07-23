@@ -2,7 +2,7 @@ import { OnInit, Component, Input, EventEmitter, Output, TemplateRef } from '@an
 import { NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
 
 @Component({
-  selector: 'jhi-linechart',
+  selector: 'hpd-linechart',
   templateUrl: './linechart.component.html',
   styleUrls: ['./linechart.component.scss'],
   imports: [NgxChartsModule],

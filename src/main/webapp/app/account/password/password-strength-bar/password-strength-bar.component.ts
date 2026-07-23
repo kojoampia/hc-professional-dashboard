@@ -3,7 +3,7 @@ import { Component, ElementRef, Input, Renderer2 } from '@angular/core';
 import SharedModule from 'app/shared/shared.module';
 
 @Component({
-  selector: 'jhi-password-strength-bar',
+  selector: 'hpd-password-strength-bar',
   imports: [SharedModule],
   templateUrl: './password-strength-bar.component.html',
   styleUrl: './password-strength-bar.component.scss',

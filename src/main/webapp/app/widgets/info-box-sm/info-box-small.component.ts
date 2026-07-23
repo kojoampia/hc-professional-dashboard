@@ -2,7 +2,7 @@ import { Component, Input, OnInit, Output, EventEmitter, CUSTOM_ELEMENTS_SCHEMA 
 import SharedModule from 'app/shared/shared.module';
 
 @Component({
-  selector: 'jhi-info-box-small',
+  selector: 'hpd-info-box-small',
   templateUrl: './info-box-small.component.html',
   styleUrls: ['./info-box-small.component.scss'],
   imports: [SharedModule],

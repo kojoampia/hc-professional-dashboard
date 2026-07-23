@@ -3,7 +3,7 @@ import SharedModule from 'app/shared/shared.module';
 import { IFrequentAsked } from 'app/widgets/faq/frequent-asked.model';
 
 @Component({
-  selector: 'jhi-chat-accordion',
+  selector: 'hpd-chat-accordion',
   templateUrl: './chat-accordion.component.html',
   styleUrls: ['./chat-accordion.component.scss'],
   imports: [SharedModule],

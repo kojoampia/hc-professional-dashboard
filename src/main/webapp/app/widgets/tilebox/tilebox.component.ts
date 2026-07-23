@@ -3,7 +3,7 @@ import { ConsoleLoggerService } from 'app/core/util/console-logger.service';
 import { NguCarousel, NguCarouselConfig } from '@ngu/carousel';
 import SharedModule from 'app/shared/shared.module';
 @Component({
-  selector: 'jhi-tilebox',
+  selector: 'hpd-tilebox',
   imports: [SharedModule, NguCarousel],
   templateUrl: './tilebox.component.html',
   styleUrls: ['./tilebox.component.scss'],

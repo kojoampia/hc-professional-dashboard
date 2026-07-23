@@ -3,7 +3,7 @@ import { OnInit, Component, Input, EventEmitter, Output, CUSTOM_ELEMENTS_SCHEMA 
 import { NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
 
 @Component({
-  selector: 'jhi-heatmap',
+  selector: 'hpd-heatmap',
   templateUrl: './heatmap.component.html',
   imports: [NgxChartsModule, CommonModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

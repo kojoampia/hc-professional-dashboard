@@ -6,7 +6,7 @@ import { FrequentAskedService } from '../../faq/frequent-asked.service';
 import SharedModule from 'app/shared/shared.module';
 
 @Component({
-  selector: 'jhi-chat-faq',
+  selector: 'hpd-chat-faq',
   templateUrl: './chat-faq.component.html',
   styleUrls: ['./chat-faq.component.scss'],
   imports: [SharedModule],

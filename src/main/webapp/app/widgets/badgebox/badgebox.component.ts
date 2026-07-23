@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { OnInit, Input, Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
-  selector: 'jhi-badgebox',
+  selector: 'hpd-badgebox',
   templateUrl: './badgebox.component.html',
   styleUrls: ['./badgebox.component.scss'],
   imports: [CommonModule],

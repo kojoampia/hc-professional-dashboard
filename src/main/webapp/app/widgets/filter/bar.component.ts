@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import SharedModule from 'app/shared/shared.module';
 
 @Component({
-  selector: 'jhi-filter-bar',
+  selector: 'hpd-filter-bar',
   templateUrl: './bar.component.html',
   styleUrls: ['./bar.component.scss'],
   imports: [SharedModule, FormsModule],

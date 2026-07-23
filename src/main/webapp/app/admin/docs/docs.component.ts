@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   standalone: true,
-  selector: 'jhi-docs',
+  selector: 'hpd-docs',
   templateUrl: './docs.component.html',
   styleUrl: './docs.component.scss',
 })

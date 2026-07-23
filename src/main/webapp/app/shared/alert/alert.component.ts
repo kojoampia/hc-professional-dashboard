@@ -5,7 +5,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService, Alert } from 'app/core/util/alert.service';
 
 @Component({
-  selector: 'jhi-alert',
+  selector: 'hpd-alert',
   templateUrl: './alert.component.html',
   imports: [CommonModule, NgbModule],
 })
@@ -19,7 +19,7 @@ export class AlertComponent implements OnInit, OnDestroy {
   }
 
   setClasses(alert: Alert): { [key: string]: boolean } {
-    const classes = { 'jhi-toast': Boolean(alert.toast) };
+    const classes = { 'hpd-toast': Boolean(alert.toast) };
     if (alert.position) {
       return { ...classes, [alert.position]: true };
     }

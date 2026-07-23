@@ -12,7 +12,7 @@ import { Authority } from 'app/config/authority.constants';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'jhi-dashboard',
+  selector: 'hpd-dashboard',
   imports: [CommonModule, SharedModule, RouterModule, MetricPanelModule, StatusModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',

@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import SharedModule from 'app/shared/shared.module';
 
 @Component({
-  selector: 'jhi-error',
+  selector: 'hpd-error',
   templateUrl: './error.component.html',
   imports: [SharedModule],
 })

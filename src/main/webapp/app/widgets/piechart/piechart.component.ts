@@ -2,7 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, Component, EventEmitter, Input, OnInit, Output 
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 @Component({
-  selector: 'jhi-piechart',
+  selector: 'hpd-piechart',
   templateUrl: './piechart.component.html',
   styleUrls: ['./piechart.component.scss'],
   imports: [NgxChartsModule],

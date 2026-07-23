@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, OnDestroy } from '@angular/core
 import SharedModule from 'app/shared/shared.module';
 
 @Component({
-  selector: 'jhi-slide-selector',
+  selector: 'hpd-slide-selector',
   templateUrl: './slide-selector.component.html',
   styleUrls: ['./slides.component.scss'],
   imports: [SharedModule],

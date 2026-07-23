@@ -12,8 +12,8 @@ import { fontAwesomeIcons } from './config/font-awesome-icons';
 import MainComponent from './layouts/main/main.component';
 
 @Component({
-  selector: 'jhi-app',
-  template: '<jhi-main></jhi-main>',
+  selector: 'hpd-app',
+  template: '<hpd-main></hpd-main>',
   imports: [
     MainComponent,
     // jhipster-needle-angular-add-module JHipster will add new module here

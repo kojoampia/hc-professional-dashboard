@@ -3,7 +3,7 @@ import SharedModule from 'app/shared/shared.module';
 import dayjs from 'dayjs/esm';
 
 @Component({
-  selector: 'jhi-footer',
+  selector: 'hpd-footer',
   templateUrl: './footer.component.html',
   imports: [SharedModule],
 })

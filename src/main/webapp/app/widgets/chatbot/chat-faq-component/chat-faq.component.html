@@ -11,7 +11,7 @@
     </div>
   </div>
   <div class="faq-list" *ngIf="selectedCategory">
-    <jhi-chat-accordion [faq]="faq" *ngFor="let faq of getSelectedCategoryFaqs()"></jhi-chat-accordion>
+    <hpd-chat-accordion [faq]="faq" *ngFor="let faq of getSelectedCategoryFaqs()"></hpd-chat-accordion>
     <!--
         <ngb-accordion #acc="ngbAccordion" [closeOthers]="true" *ngIf="getSelectedCategoryFaqs().length > 0">
             <ngb-panel *ngFor="let faq of getSelectedCategoryFaqs()">

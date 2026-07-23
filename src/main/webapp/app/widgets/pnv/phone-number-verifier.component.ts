@@ -7,7 +7,7 @@ import { HttpResponse } from '@angular/common/http';
 import { validatePhoneCode } from '../../shared/util/validators';
 
 @Component({
-  selector: 'jhi-phone-number-verifier',
+  selector: 'hpd-phone-number-verifier',
   standalone: true,
   templateUrl: './phone-number-verifier.component.html',
   styleUrls: ['./phone-number-verifier.component.scss'],

@@ -5,7 +5,7 @@ import { Databases } from 'app/admin/metrics/metrics.model';
 import { filterNaN } from 'app/core/util/operators';
 
 @Component({
-  selector: 'jhi-metrics-datasource',
+  selector: 'hpd-metrics-datasource',
   templateUrl: './metrics-datasource.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [SharedModule],

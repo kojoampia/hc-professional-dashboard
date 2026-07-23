@@ -1,7 +1,7 @@
 import { OnInit, OnChanges, Component, Input, EventEmitter, Output, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 @Component({
-  selector: 'jhi-treemap',
+  selector: 'hpd-treemap',
   templateUrl: './treemap.component.html',
   styleUrls: ['./treemap.component.scss'],
   imports: [NgxChartsModule],

@@ -4,7 +4,7 @@ import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 import SharedModule from 'app/shared/shared.module';
 
 @Component({
-  selector: 'jhi-page-display',
+  selector: 'hpd-page-display',
   templateUrl: './page-display.component.html',
   styleUrls: ['./page-display.component.scss'],
   imports: [SharedModule],

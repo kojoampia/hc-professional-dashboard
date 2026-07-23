@@ -2,7 +2,7 @@ import { OnInit, Component, Input, EventEmitter, Output, TemplateRef, CUSTOM_ELE
 import { LegendPosition, NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
 
 @Component({
-  selector: 'jhi-histogram',
+  selector: 'hpd-histogram',
   templateUrl: './histogram.component.html',
   imports: [NgxChartsModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

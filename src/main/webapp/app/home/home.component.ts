@@ -7,12 +7,13 @@ import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import { DashboardComponent } from 'app/dashboard/dashboard.component';
+import DashboardPageComponent from 'app/health-connect/pages/dashboard-page.component';
 
 @Component({
-  selector: 'jhi-home',
+  selector: 'hpd-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  imports: [SharedModule, RouterModule, DashboardComponent],
+  imports: [SharedModule, RouterModule, DashboardComponent, DashboardPageComponent],
 })
 export default class HomeComponent implements OnInit, OnDestroy {
   account: Account | null = null;

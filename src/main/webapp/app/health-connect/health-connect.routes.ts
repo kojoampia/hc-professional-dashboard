@@ -6,7 +6,7 @@ import { UserRouteAccessService } from 'app/core/auth/user-route-access.service'
 import { healthConnectRoleGuard } from './authority-role.guard';
 
 const protectedFeatureRoute = {
-  data: { authorities: [Authority.USER] },
+  data: { authorities: [Authority.ADMIN, Authority.DOCTOR, Authority.USER, Authority.NURSE, Authority.PARAMEDIC, Authority.PHARMACIST, Authority.THERAPIST, Authority.CARER] },
   canActivate: [UserRouteAccessService, healthConnectRoleGuard],
 };
 

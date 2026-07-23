@@ -4,13 +4,12 @@ import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-
 import { Alert, AlertService } from 'app/core/util/alert.service';
 import { EventManager, EventWithContent } from 'app/core/util/event-manager.service';
 import { AlertError } from './alert-error.model';
 
 @Component({
-  selector: 'jhi-alert-error',
+  selector: 'hpd-alert-error',
   templateUrl: './alert-error.component.html',
   imports: [CommonModule, NgbModule],
 })
@@ -95,7 +94,7 @@ export class AlertErrorComponent implements OnDestroy {
   }
 
   setClasses(alert: Alert): { [key: string]: boolean } {
-    const classes = { 'jhi-toast': Boolean(alert.toast) };
+    const classes = { 'hpd-toast': Boolean(alert.toast) };
     if (alert.position) {
       return { ...classes, [alert.position]: true };
     }

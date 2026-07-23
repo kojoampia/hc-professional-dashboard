@@ -18,9 +18,9 @@
     </div>
     <div class="col-md-8 round-border dashboard-component-center">
       <!--PATIENTS, FEMALE, MALE, CHILDREN--><!-- Metrics Panel -->
-      <jhi-metric-panel [metricItems]="topCards" (selectedItem)="metricSelected($event)"></jhi-metric-panel>
+      <hpd-metric-panel [metricItems]="topCards" (selectedItem)="metricSelected($event)"></hpd-metric-panel>
       <!--URGENT, OPEN, CLOSED, NOTIFICATIONS-->
-      <jhi-metric-panel [metricItems]="lowCards" (selectedItem)="metricSelected($event)"></jhi-metric-panel>
+      <hpd-metric-panel [metricItems]="lowCards" (selectedItem)="metricSelected($event)"></hpd-metric-panel>
     </div>
     <div class="col-md-2 round-border p-3 dashboard-component-right">
       <div class="row d-flex justify-content-end">
@@ -124,7 +124,7 @@
   </div>
   <!--STATUS-GRAPHS-->
   <div class="row d-flex justify-contents-center">
-    <jhi-status *ngIf="page === 'status'"></jhi-status>
+    <hpd-status *ngIf="page === 'status'"></hpd-status>
     <h1 *ngIf="page !== 'status'">{{ page }}</h1>
   </div>
 }

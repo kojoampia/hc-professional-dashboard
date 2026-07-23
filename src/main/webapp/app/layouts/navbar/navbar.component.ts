@@ -19,7 +19,7 @@ import { HEALTH_CONNECT_REPOSITORY, HealthConnectRepository } from 'app/health-c
 import { ShiftLabel } from 'app/health-connect/health-connect.models';
 
 @Component({
-  selector: 'jhi-navbar',
+  selector: 'hpd-navbar',
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
   imports: [RouterModule, SharedModule, HasAnyAuthorityDirective, ActiveMenuDirective],

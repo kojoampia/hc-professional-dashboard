@@ -1,0 +1,994 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HealthConnect — Professional Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+
+<style type="text/tailwindcss">
+  @theme {
+    --color-primary-blue: #6366f1;
+    --color-shell-bg-start: #0f172a;
+    --color-shell-bg-end: #0f172a;
+    --color-surface: #f8fafc;
+    --color-card-neutral: #ffffff;
+    --color-card-urgent-bg: #ffffff;
+    --color-card-open-bg: #ffffff;
+    --color-card-closed-bg: #ffffff;
+    --color-text-primary-light: #ffffff;
+    --color-text-primary-dark: #0f172a;
+    --color-text-muted: #64748b;
+    --color-accent-teal: #6366f1;
+    --color-accent-blue-chart: #818cf8;
+    --color-success: #10b981;
+    --color-warning-row: #fff1f2;
+    --color-open-row: #eef2ff;
+    --color-closed-row: #ecfdf5;
+    /* referenced by the patient-detail Edit/Copy buttons but never defined in the source app's theme */
+    --color-highlight-edit: #fde68a;
+    --color-highlight-copy: #99f6e4;
+
+    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  }
+
+  body {
+    font-family: "Inter", sans-serif;
+    background-color: var(--color-surface);
+    margin: 0;
+    padding: 0;
+    color: var(--color-text-primary-dark);
+  }
+</style>
+</head>
+<body class="min-h-screen">
+  <div class="min-h-screen flex flex-col relative bg-[var(--color-surface)] max-w-[1440px] mx-auto overflow-hidden text-slate-900 font-sans">
+    <!-- Background hero for the top section -->
+    <div class="absolute top-0 left-0 right-0 h-[300px] bg-slate-50 z-0 pointer-events-none"></div>
+
+    <!-- Content -->
+    <div class="relative z-10 flex flex-col flex-1">
+
+      <!-- Header -->
+      <header class="bg-white border-b border-slate-200 h-16 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center gap-6">
+              <a href="#/dashboard" class="flex items-center gap-2 text-xl font-bold tracking-tight text-slate-900">
+                <div class="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
+                  <div class="w-4 h-4 border-2 border-white rounded-full"></div>
+                </div>
+                HealthConnect
+              </a>
+
+              <nav class="hidden md:flex space-x-2 border-l pl-6 border-slate-200 ml-2" id="main-nav">
+                <a href="#/dashboard" data-nav="dashboard" class="px-4 py-2 rounded-xl text-sm font-medium transition-colors">Dashboard</a>
+                <a href="#/patients" data-nav="patients" class="px-4 py-2 rounded-xl text-sm font-medium transition-colors">Patients</a>
+                <a href="#/cases" data-nav="cases" class="px-4 py-2 rounded-xl text-sm font-medium transition-colors">Cases</a>
+              </nav>
+            </div>
+
+            <div class="flex items-center gap-4">
+              <div class="hidden sm:flex flex-col text-right">
+                <span class="text-xs font-bold text-slate-900">Dr. Sarah Connor</span>
+                <span class="text-[10px] text-slate-500">On duty until 8:00 PM</span>
+              </div>
+
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium tracking-wide uppercase shadow-sm border bg-blue-100 text-blue-800 border-blue-200">
+                Doctor
+              </span>
+
+              <div class="h-8 w-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 border border-slate-300">
+                <span class="material-icons text-sm">person</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Router outlet -->
+      <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-8">
+
+        <!-- ============ DASHBOARD PAGE ============ -->
+        <section id="page-dashboard" class="hidden">
+          <div class="px-4 py-8">
+            <div id="dashboard-demographic-cards" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"></div>
+            <div id="dashboard-status-cards" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"></div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+              <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 h-full flex flex-col">
+                <h3 class="font-bold text-slate-900 mb-4">Case - Time</h3>
+                <div class="flex-1 min-h-[250px] relative">
+                  <canvas id="lineChart"></canvas>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 h-full flex flex-col">
+                <h3 class="font-bold text-slate-900 mb-4">Case Distribution</h3>
+                <div class="flex-1 min-h-[250px] relative">
+                  <canvas id="pieChart"></canvas>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 h-full flex flex-col">
+                <h3 class="font-bold text-slate-900 mb-4">Case - Patient</h3>
+                <div class="flex-1 min-h-[250px] relative">
+                  <canvas id="barChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ PATIENTS PAGE ============ -->
+        <section id="page-patients" class="hidden">
+          <div class="px-4 py-8">
+            <div id="patients-demographic-cards" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"></div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-black/5 p-6 mt-6">
+              <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-display font-bold text-[var(--color-text-primary-dark)]">Patient Directory</h2>
+                <div class="relative w-full max-w-md">
+                  <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                    <span class="material-icons text-lg">search</span>
+                  </div>
+                  <input
+                    id="patient-search"
+                    type="text"
+                    placeholder="Search patients..."
+                    class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[var(--color-primary-blue)] focus:border-[var(--color-primary-blue)] block w-full pl-10 p-2.5 shadow-sm"
+                  />
+                </div>
+              </div>
+
+              <div id="patients-table"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ CASES PAGE ============ -->
+        <section id="page-cases" class="hidden">
+          <div class="px-4 py-8">
+            <h1 class="text-2xl font-display font-bold text-[var(--color-text-primary-dark)] mb-6">Case Queue</h1>
+
+            <div id="cases-status-cards" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"></div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-black/5 p-6 mt-6">
+              <h2 id="cases-table-title" class="text-lg font-semibold mb-4 capitalize">Open Cases</h2>
+              <div id="cases-table"></div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Footer -->
+      <footer class="bg-gray-50 border-t border-gray-200 mt-12 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-sm text-[var(--color-text-muted)]">
+          <div class="flex gap-4 mb-4 md:mb-0">
+            <a href="#" class="hover:text-[var(--color-primary-blue)] transition-colors">Legal</a>
+            <span>|</span>
+            <a href="#" class="hover:text-[var(--color-primary-blue)] transition-colors">Management</a>
+          </div>
+
+          <div class="text-center mb-4 md:mb-0">
+            Copyright &copy; 2026 Jojo Addison Information Systems - All Rights Reserved
+          </div>
+
+          <div>
+            <a href="#" class="font-mono bg-gray-200 px-2 py-1 rounded text-gray-700 hover:bg-gray-300 transition-colors">
+              &lt;jojoaddison/&gt;
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ============ PATIENT DETAIL MODAL ============ -->
+  <div id="modal-patient-detail" class="hidden">
+    <div class="fixed inset-0 bg-black/40 z-40 backdrop-blur-sm"></div>
+    <div class="fixed inset-4 md:inset-10 z-50 bg-[var(--color-surface)] rounded-2xl shadow-2xl border border-black/10 flex flex-col overflow-hidden max-w-6xl mx-auto">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+        <h2 class="text-xl font-display font-bold text-[var(--color-text-primary-dark)]">
+          Patient: <span class="font-normal" id="pd-name"></span>
+        </h2>
+
+        <div class="flex items-center gap-2">
+          <button class="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors flex items-center gap-1">
+            <span class="material-icons text-sm">print</span> Print
+          </button>
+          <button class="px-3 py-1.5 rounded-full text-sm font-medium bg-[var(--color-highlight-edit)] text-amber-900 hover:bg-amber-200 transition-colors flex items-center gap-1">
+            <span class="material-icons text-sm">edit</span> Edit
+          </button>
+          <button class="px-3 py-1.5 rounded-full text-sm font-medium bg-[var(--color-highlight-copy)] text-teal-900 hover:bg-teal-200 transition-colors flex items-center gap-1">
+            <span class="material-icons text-sm">content_copy</span> Copy
+          </button>
+          <div class="w-px h-6 bg-gray-300 mx-2"></div>
+          <button data-action="close-patient" class="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-700 text-white hover:bg-gray-800 transition-colors flex items-center gap-1">
+            <span class="material-icons text-sm">close</span> Close
+          </button>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-6 bg-gray-50/30">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 h-full">
+
+          <!-- Identity Panel -->
+          <div class="bg-white rounded-xl shadow-sm border border-black/5 p-5 flex flex-col">
+            <div class="flex justify-between items-start mb-4">
+              <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                <span class="material-icons text-gray-400">badge</span> Identity
+              </h3>
+              <div class="flex gap-1">
+                <button class="text-gray-400 hover:text-amber-500"><span class="material-icons text-sm">edit</span></button>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-4">
+              <div class="flex items-center gap-4 mb-2">
+                <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 text-gray-400">
+                  <span class="material-icons text-3xl">person</span>
+                </div>
+                <div>
+                  <div class="text-xs uppercase text-gray-400 tracking-wider">Name</div>
+                  <div class="font-medium" id="pd-name-2"></div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <div class="text-xs uppercase text-gray-400 tracking-wider">DOB</div>
+                  <div class="text-sm font-medium" id="pd-dob"></div>
+                </div>
+                <div>
+                  <div class="text-xs uppercase text-gray-400 tracking-wider">Phone</div>
+                  <div class="text-sm font-medium" id="pd-phone"></div>
+                </div>
+                <div class="col-span-2">
+                  <div class="text-xs uppercase text-gray-400 tracking-wider">Email</div>
+                  <div class="text-sm font-medium" id="pd-email"></div>
+                </div>
+                <div class="col-span-2 pt-2 border-t border-gray-100">
+                  <div class="text-xs uppercase text-teal-600 font-semibold tracking-wider mb-1">Angel / Next of Kin</div>
+                  <div class="flex justify-between text-sm">
+                    <span class="font-medium" id="pd-angel"></span>
+                    <span class="text-gray-600" id="pd-angel-phone"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cases Panel -->
+          <div class="bg-white rounded-xl shadow-sm border border-black/5 p-5 flex flex-col">
+            <div class="flex justify-between items-start mb-4 border-b border-gray-100 pb-2">
+              <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                <span class="material-icons text-gray-400">folder_shared</span> Cases
+              </h3>
+              <div class="flex gap-1">
+                <button class="text-gray-400 hover:text-amber-500"><span class="material-icons text-sm">edit</span></button>
+                <button class="text-gray-400 hover:text-blue-500"><span class="material-icons text-sm">open_in_full</span></button>
+              </div>
+            </div>
+
+            <ul class="flex-1 divide-y divide-gray-50 text-sm">
+              <li class="py-2 hover:bg-gray-50 cursor-pointer px-1 rounded flex justify-between">
+                <span class="text-gray-500 text-xs w-24">30-Nov-2021</span>
+                <span class="font-medium flex-1">Case 1</span>
+              </li>
+              <li class="py-2 hover:bg-gray-50 cursor-pointer px-1 rounded flex justify-between">
+                <span class="text-gray-500 text-xs w-24">12-Dec-2021</span>
+                <span class="font-medium flex-1">Case 2</span>
+              </li>
+            </ul>
+
+            <div class="pt-3 border-t border-gray-100 flex justify-center text-xs text-[var(--color-primary-blue)] font-medium gap-2">
+              <button>&lt;&lt; Prev</button>
+              <span>1..10</span>
+              <button>Next &gt;&gt;</button>
+            </div>
+          </div>
+
+          <!-- Visitations Panel -->
+          <div class="bg-white rounded-xl shadow-sm border border-black/5 p-5 flex flex-col">
+            <div class="flex justify-between items-start mb-4 border-b border-gray-100 pb-2">
+              <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                <span class="material-icons text-gray-400">event</span> Visitations
+              </h3>
+              <div class="flex gap-1">
+                <button class="text-gray-400 hover:text-amber-500"><span class="material-icons text-sm">edit</span></button>
+                <button class="text-gray-400 hover:text-blue-500"><span class="material-icons text-sm">open_in_full</span></button>
+              </div>
+            </div>
+            <ul class="flex-1 divide-y divide-gray-50 text-sm">
+              <li class="py-2 flex justify-between">
+                <span class="text-gray-500 text-xs w-24">30-Nov-2021</span>
+                <span class="font-medium flex-1">Grooming</span>
+              </li>
+            </ul>
+            <div class="pt-3 border-t border-gray-100 flex justify-center text-xs text-[var(--color-primary-blue)] font-medium gap-2">
+              <button>&lt;&lt; Prev</button>
+              <span>1..10</span>
+              <button>Next &gt;&gt;</button>
+            </div>
+          </div>
+
+          <!-- Activity Trail Panel -->
+          <div class="bg-white rounded-xl shadow-sm border border-black/5 p-5 flex flex-col">
+            <div class="flex justify-between items-start mb-4 border-b border-gray-100 pb-2">
+              <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                <span class="material-icons text-gray-400">timeline</span> Activity Trail
+              </h3>
+              <div class="flex gap-1">
+                <button class="text-gray-400 hover:text-amber-500"><span class="material-icons text-sm">edit</span></button>
+                <button class="text-gray-400 hover:text-blue-500"><span class="material-icons text-sm">open_in_full</span></button>
+              </div>
+            </div>
+            <ul class="flex-1 divide-y divide-gray-50 text-sm">
+              <li class="py-2 flex flex-col gap-1">
+                <span class="text-gray-500 text-xs">30-Nov-2021</span>
+                <span class="font-medium text-gray-700">Urea test recommended</span>
+              </li>
+            </ul>
+            <div class="pt-3 border-t border-gray-100 flex justify-center text-xs text-[var(--color-primary-blue)] font-medium gap-2">
+              <button>&lt;&lt; Prev</button>
+              <span>1..10</span>
+              <button>Next &gt;&gt;</button>
+            </div>
+          </div>
+
+          <!-- Medications Panel -->
+          <div class="bg-white rounded-xl shadow-sm border border-black/5 p-5 flex flex-col">
+            <div class="flex justify-between items-start mb-4 border-b border-gray-100 pb-2">
+              <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                <span class="material-icons text-gray-400">medication</span> Medications
+              </h3>
+              <div class="flex gap-1">
+                <button class="text-gray-400 hover:text-amber-500"><span class="material-icons text-sm">edit</span></button>
+                <button class="text-gray-400 hover:text-blue-500"><span class="material-icons text-sm">open_in_full</span></button>
+              </div>
+            </div>
+            <ul class="flex-1 divide-y divide-gray-50 text-sm">
+              <li class="py-2 flex flex-col gap-1">
+                <span class="text-gray-500 text-xs">30-Nov-2021</span>
+                <span class="font-medium text-gray-700">Urea prescription</span>
+              </li>
+            </ul>
+            <div class="pt-3 border-t border-gray-100 flex justify-center text-xs text-[var(--color-primary-blue)] font-medium gap-2">
+              <button>&lt;&lt; Prev</button>
+              <span>1..10</span>
+              <button>Next &gt;&gt;</button>
+            </div>
+          </div>
+
+          <!-- Reports Panel -->
+          <div class="bg-white rounded-xl shadow-sm border border-black/5 p-5 flex flex-col">
+            <div class="flex justify-between items-start mb-4 border-b border-gray-100 pb-2">
+              <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                <span class="material-icons text-gray-400">summarize</span> Reports
+              </h3>
+              <div class="flex gap-1">
+                <button class="text-gray-400 hover:text-blue-500"><span class="material-icons text-sm">cloud_upload</span></button>
+                <button class="text-gray-400 hover:text-blue-500"><span class="material-icons text-sm">open_in_full</span></button>
+              </div>
+            </div>
+            <ul class="flex-1 divide-y divide-gray-50 text-sm">
+              <li class="py-2 flex flex-col gap-1">
+                <span class="text-gray-500 text-xs">12-Dec-2021</span>
+                <span class="font-medium text-[var(--color-primary-blue)] hover:underline cursor-pointer flex items-center gap-1">
+                  <span class="material-icons text-xs">description</span> Lab test report for Urea
+                </span>
+              </li>
+            </ul>
+            <div class="pt-3 border-t border-gray-100 flex justify-center text-xs text-[var(--color-primary-blue)] font-medium gap-2">
+              <button>&lt;&lt; Prev</button>
+              <span>1..10</span>
+              <button>Next &gt;&gt;</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ CASE DETAIL MODAL ============ -->
+  <div id="modal-case-detail" class="hidden">
+    <div class="fixed inset-0 bg-black/40 z-40 backdrop-blur-sm"></div>
+    <div class="fixed inset-4 md:inset-10 z-50 bg-[var(--color-surface)] rounded-2xl shadow-2xl border border-black/10 flex flex-col overflow-hidden max-w-5xl mx-auto">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+        <div class="flex items-center gap-4">
+          <h2 class="text-lg font-display font-bold text-[var(--color-text-primary-dark)]">
+            Patient: <span class="font-normal" id="cd-patient-name"></span>
+          </h2>
+          <span class="text-gray-300">|</span>
+          <h3 class="text-lg font-medium text-gray-700 underline decoration-2 decoration-[var(--color-primary-blue)] underline-offset-4">
+            Case # <span id="cd-case-number"></span>
+          </h3>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button class="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors flex items-center gap-1">
+            <span class="material-icons text-sm">print</span> Print
+          </button>
+          <button data-action="save-case" class="px-3 py-1.5 rounded-full text-sm font-medium bg-[var(--color-primary-blue)] text-white hover:bg-blue-700 transition-colors flex items-center gap-1">
+            <span class="material-icons text-sm">save</span> Save
+          </button>
+          <button data-action="close-case" class="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-700 text-white hover:bg-gray-800 transition-colors flex items-center gap-1">
+            <span class="material-icons text-sm">close</span> Cancel
+          </button>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-6 bg-gray-50/30">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 h-full">
+
+          <div class="flex flex-col">
+            <h4 class="font-bold text-gray-800 mb-2 uppercase tracking-wide text-sm flex items-center gap-2">
+              <span class="material-icons text-gray-400">sick</span> Symptoms
+            </h4>
+            <textarea id="cd-symptoms" class="w-full flex-1 p-3 border border-gray-200 rounded-lg focus:ring-[var(--color-primary-blue)] focus:border-[var(--color-primary-blue)] resize-none bg-white shadow-sm" placeholder="Enter symptoms..."></textarea>
+          </div>
+
+          <div class="flex flex-col">
+            <h4 class="font-bold text-gray-800 mb-2 uppercase tracking-wide text-sm flex items-center gap-2">
+              <span class="material-icons text-gray-400">medical_services</span> Diagnosis
+            </h4>
+            <textarea id="cd-diagnosis" class="w-full flex-1 p-3 border border-gray-200 rounded-lg focus:ring-[var(--color-primary-blue)] focus:border-[var(--color-primary-blue)] resize-none bg-white shadow-sm" placeholder="Enter diagnosis..."></textarea>
+          </div>
+
+          <div class="flex flex-col">
+            <h4 class="font-bold text-gray-800 mb-2 uppercase tracking-wide text-sm flex items-center gap-2">
+              <span class="material-icons text-gray-400">fact_check</span> Recommendations
+            </h4>
+            <div id="cd-recommendations" class="flex-1 bg-white border border-gray-200 rounded-lg shadow-sm p-4 overflow-y-auto flex flex-col gap-3"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---------------------------------------------------------------------
+  // Mock data — mirrors src/app/core/services/*.ts
+  // ---------------------------------------------------------------------
+  var patients = [
+    { id: '1', lastActivityDate: '21 May, 2022 05:43 AM', patientName: 'Kojo Ampia-Addison' },
+    { id: '2', lastActivityDate: '19 May, 2022 08:20 PM', patientName: 'Kwabena Adda Frimpong' },
+    { id: '3', lastActivityDate: '14 Apr, 2022 07:12 AM', patientName: 'Nii Adjei Osae' },
+    { id: '4', lastActivityDate: '10 Apr, 2022 09:15 AM', patientName: 'Ama Serwaa' },
+    { id: '5', lastActivityDate: '02 Apr, 2022 11:30 AM', patientName: 'Yaa Asantewaa' }
+  ];
+
+  var cases = [
+    { id: 'c1', date: '21 May, 2022 05:43 AM', brief: 'Severe pain due to a fall.', status: 'urgent', patientId: '1' },
+    { id: 'c2', date: '19 May, 2022 08:20 PM', brief: 'High fever temperature recorded', status: 'urgent', patientId: '2' },
+    { id: 'c3', date: '18 May, 2022 10:00 AM', brief: 'Routine checkup required', status: 'open', patientId: '3' },
+    { id: 'c4', date: '17 May, 2022 02:15 PM', brief: 'Follow up on lab results', status: 'open', patientId: '4' },
+    { id: 'c5', date: '16 May, 2022 11:45 AM', brief: 'Medication refill request', status: 'open', patientId: '5' },
+    { id: 'c6', date: '15 May, 2022 09:30 AM', brief: 'Post-surgery review', status: 'closed', patientId: '1' },
+    { id: 'c7', date: '14 May, 2022 04:20 PM', brief: 'Annual physical exam', status: 'closed', patientId: '2' }
+  ];
+
+  var demographicCards = [
+    { id: 'patients', label: 'PATIENTS', value: 116, variant: 'neutral' },
+    { id: 'female', label: 'FEMALE', value: 69, variant: 'neutral' },
+    { id: 'male', label: 'MALE', value: 47, variant: 'neutral' },
+    { id: 'kids', label: 'KIDS', value: 37, variant: 'neutral' }
+  ];
+
+  function statusCards(activeId) {
+    return [
+      { id: 'urgent', label: 'URGENT', value: cases.filter(function (c) { return c.status === 'urgent'; }).length, variant: 'urgent', clickable: true },
+      { id: 'open', label: 'OPEN', value: cases.filter(function (c) { return c.status === 'open'; }).length, variant: 'open', clickable: true },
+      { id: 'closed', label: 'CLOSED', value: cases.filter(function (c) { return c.status === 'closed'; }).length, variant: 'closed', clickable: true }
+    ];
+  }
+
+  function getCaseDetail(id) {
+    return {
+      id: id,
+      patientId: '1',
+      caseNumber: id.toUpperCase(),
+      status: 'open',
+      symptoms: 'Patient reports severe headache and nausea lasting over 48 hours.',
+      diagnosis: 'Acute migraine with aura. Need to monitor fluid intake.',
+      recommendations: [
+        { id: 'r1', label: 'HPV', checked: true },
+        { id: 'r2', label: 'Kidney stones', checked: false },
+        { id: 'r3', label: 'X-Ray', checked: false },
+        { id: 'r4', label: 'Prostate diagnosis test', checked: false }
+      ]
+    };
+  }
+
+  function getPatientDetail(id) {
+    return {
+      id: id,
+      name: 'Kojo Ampia-Addison',
+      dateOfBirth: '19th April, 1976',
+      phone: '0242286304',
+      email: 'kojo@jac.net',
+      angel: 'Ophelia Gaisie',
+      angelPhone: '0502286304'
+    };
+  }
+
+  // ---------------------------------------------------------------------
+  // Shared render helpers — mirror the shared/components/* templates
+  // ---------------------------------------------------------------------
+  function badgeClasses(variant) {
+    switch (variant) {
+      case 'urgent': return 'text-rose-500 bg-rose-50';
+      case 'open': return 'text-indigo-500 bg-indigo-50';
+      case 'closed': return 'text-emerald-500 bg-emerald-50';
+      default: return 'text-slate-500 bg-slate-100';
+    }
+  }
+
+  function barClasses(variant) {
+    switch (variant) {
+      case 'urgent': return 'bg-rose-500 w-[70%]';
+      case 'open': return 'bg-indigo-500 w-[50%]';
+      case 'closed': return 'bg-emerald-500 w-[90%]';
+      default: return 'bg-slate-400 w-[30%]';
+    }
+  }
+
+  function renderStatCardRow(container, cards, activeId, onClick) {
+    container.innerHTML = '';
+    cards.forEach(function (card) {
+      var clickable = !!card.clickable;
+      var active = activeId === card.id;
+      var el = document.createElement('div');
+      el.className = [
+        'relative bg-white rounded-2xl p-5 shadow-sm border border-slate-100 transition-all duration-200 overflow-hidden',
+        clickable ? 'cursor-pointer hover:shadow-md hover:-translate-y-0.5' : '',
+        active ? 'ring-2 ring-offset-2 ring-indigo-500' : ''
+      ].join(' ');
+      if (clickable) el.tabIndex = 0;
+      el.innerHTML =
+        '<p class="text-xs font-semibold tracking-wide uppercase text-slate-500">' + card.label + '</p>' +
+        '<div class="flex items-end justify-between mt-2">' +
+          '<h3 class="text-2xl font-bold text-slate-900">' + card.value + '</h3>' +
+          '<span class="text-xs font-bold px-2 py-0.5 rounded-full ' + badgeClasses(card.variant) + '">' + card.variant.toUpperCase() + '</span>' +
+        '</div>' +
+        '<div class="w-full bg-slate-100 h-1 mt-4 rounded-full overflow-hidden">' +
+          '<div class="h-full transition-all duration-500 ' + barClasses(card.variant) + '"></div>' +
+        '</div>';
+      if (clickable) {
+        el.addEventListener('click', function () { onClick(card); });
+        el.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(card); }
+        });
+      }
+      container.appendChild(el);
+    });
+  }
+
+  function headerVariantClasses(variant) {
+    switch (variant) {
+      case 'urgent': return 'bg-[var(--color-warning-row)]';
+      case 'open': return 'bg-[var(--color-open-row)]';
+      case 'closed': return 'bg-[var(--color-closed-row)]';
+      default: return 'bg-gray-50';
+    }
+  }
+
+  function renderDataTable(container, opts) {
+    var data = opts.data, columns = opts.columns, headerVariant = opts.headerVariant || 'neutral';
+    var showActions = opts.showActions !== false;
+
+    var headHtml = columns.map(function (c) {
+      return '<th scope="col" class="px-6 py-4 font-bold text-gray-700">' + c.header + '</th>';
+    }).join('');
+    if (showActions) {
+      headHtml += '<th scope="col" class="px-6 py-4 font-bold text-gray-700 text-right">Action</th>';
+    }
+
+    var bodyHtml;
+    if (data.length === 0) {
+      bodyHtml =
+        '<tr><td colspan="' + (columns.length + (showActions ? 1 : 0)) + '" class="px-6 py-12 text-center text-gray-400">' +
+          '<span class="material-icons text-4xl mb-2 opacity-50">inbox</span><p>No records found.</p>' +
+        '</td></tr>';
+    } else {
+      bodyHtml = data.map(function (row) {
+        var cells = columns.map(function (c) {
+          return '<td class="px-6 py-4">' + row[c.key] + '</td>';
+        }).join('');
+        var actionCell = '';
+        if (showActions) {
+          actionCell =
+            '<td class="px-6 py-4 text-right">' +
+              '<button data-action="view" data-id="' + row.id + '" class="text-gray-400 hover:text-[var(--color-primary-blue)] transition-colors inline-flex items-center justify-center p-1 rounded-full hover:bg-gray-100">' +
+                '<span class="material-icons text-xl">visibility</span>' +
+              '</button>' +
+              (row.status === 'closed' ? '<span class="material-icons text-[var(--color-success)] ml-2 text-xl">check_circle</span>' : '') +
+            '</td>';
+        }
+        return '<tr class="bg-white hover:bg-gray-50 transition-colors">' + cells + actionCell + '</tr>';
+      }).join('');
+    }
+
+    container.innerHTML =
+      '<div class="overflow-x-auto rounded-lg border border-gray-200">' +
+        '<table class="w-full text-sm text-left text-gray-600">' +
+          '<thead class="text-xs uppercase ' + headerVariantClasses(headerVariant) + '"><tr>' + headHtml + '</tr></thead>' +
+          '<tbody class="divide-y divide-gray-100">' + bodyHtml + '</tbody>' +
+        '</table>' +
+      '</div>';
+
+    if (showActions) {
+      container.querySelectorAll('[data-action="view"]').forEach(function (btn) {
+        btn.addEventListener('click', function () { opts.onAction(btn.getAttribute('data-id')); });
+      });
+    }
+  }
+
+  // ---------------------------------------------------------------------
+  // Charts — mirror features/dashboard/charts/*.ts (ng2-charts config)
+  // ---------------------------------------------------------------------
+  var charts = {};
+
+  function initCharts() {
+    var timeSeries = [
+      { x: 'Jan', y: 12 }, { x: 'Feb', y: 19 }, { x: 'Mar', y: 15 },
+      { x: 'Apr', y: 22 }, { x: 'May', y: 18 }, { x: 'Jun', y: 25 }
+    ];
+    // color values inlined from the --color-accent-teal / --color-accent-blue-chart
+    // theme tokens: Chart.js draws to <canvas>, whose fillStyle can't resolve CSS var()
+    var distributionSegments = [
+      { label: 'Routine', value: 50, color: '#818cf8' },
+      { label: 'Follow-up', value: 30, color: '#4A8BCA' },
+      { label: 'Emergency', value: 20, color: '#1B3A57' }
+    ];
+    var patientGroups = [
+      { label: 'Kids', bars: [{ value: 15, color: '#6366f1' }, { value: 10, color: '#0E7C6B' }] },
+      { label: 'Adults', bars: [{ value: 35, color: '#6366f1' }, { value: 25, color: '#0E7C6B' }] },
+      { label: 'Seniors', bars: [{ value: 20, color: '#6366f1' }, { value: 15, color: '#0E7C6B' }] }
+    ];
+
+    function resolve(color) { return color; }
+
+    charts.line = new Chart(document.getElementById('lineChart'), {
+      type: 'line',
+      data: {
+        labels: timeSeries.map(function (s) { return s.x; }),
+        datasets: [{
+          data: timeSeries.map(function (s) { return s.y; }),
+          label: 'Cases over time',
+          borderColor: '#1FBE9C',
+          backgroundColor: 'rgba(31, 190, 156, 0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { display: true, grid: { display: false } },
+          y: { display: true, grid: { color: 'rgba(0,0,0,0.05)' } }
+        }
+      }
+    });
+
+    charts.pie = new Chart(document.getElementById('pieChart'), {
+      type: 'doughnut',
+      data: {
+        labels: distributionSegments.map(function (s) { return s.label; }),
+        datasets: [{
+          data: distributionSegments.map(function (s) { return s.value; }),
+          backgroundColor: distributionSegments.map(function (s) { return resolve(s.color); }),
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '70%',
+        plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } } }
+      }
+    });
+
+    charts.bar = new Chart(document.getElementById('barChart'), {
+      type: 'bar',
+      data: {
+        labels: patientGroups.map(function (g) { return g.label; }),
+        datasets: [
+          {
+            label: 'New',
+            data: patientGroups.map(function (g) { return g.bars[0].value; }),
+            backgroundColor: patientGroups.map(function (g) { return resolve(g.bars[0].color); }),
+            borderRadius: 4
+          },
+          {
+            label: 'Returning',
+            data: patientGroups.map(function (g) { return g.bars[1].value; }),
+            backgroundColor: patientGroups.map(function (g) { return resolve(g.bars[1].color); }),
+            borderRadius: 4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } } },
+        scales: {
+          x: { grid: { display: false } },
+          y: { grid: { color: 'rgba(0,0,0,0.05)' } }
+        }
+      }
+    });
+  }
+
+  function resizeCharts() {
+    requestAnimationFrame(function () {
+      Object.keys(charts).forEach(function (k) { charts[k].resize(); });
+    });
+  }
+
+  // ---------------------------------------------------------------------
+  // Page renderers
+  // ---------------------------------------------------------------------
+  function renderDashboard() {
+    renderStatCardRow(document.getElementById('dashboard-demographic-cards'), demographicCards, null, function () {});
+    renderStatCardRow(document.getElementById('dashboard-status-cards'), statusCards(), null, function (card) {
+      navigate('/cases', { status: card.id });
+    });
+  }
+
+  var patientSearchTerm = '';
+  var patientSearchTimeout;
+
+  function renderPatients() {
+    renderStatCardRow(document.getElementById('patients-demographic-cards'), demographicCards, null, function () {});
+
+    var term = patientSearchTerm.toLowerCase();
+    var filtered = term
+      ? patients.filter(function (p) { return p.patientName.toLowerCase().indexOf(term) !== -1; })
+      : patients;
+
+    renderDataTable(document.getElementById('patients-table'), {
+      data: filtered,
+      columns: [
+        { key: 'lastActivityDate', header: 'Date' },
+        { key: 'patientName', header: 'Patient' }
+      ],
+      onAction: function (id) { navigate('/patients/' + id); }
+    });
+
+    var input = document.getElementById('patient-search');
+    input.value = patientSearchTerm;
+    input.oninput = function (e) {
+      var val = e.target.value;
+      clearTimeout(patientSearchTimeout);
+      patientSearchTimeout = setTimeout(function () {
+        patientSearchTerm = val;
+        renderPatients();
+      }, 300);
+    };
+  }
+
+  var currentCaseStatus = 'open';
+
+  function renderCases() {
+    renderStatCardRow(document.getElementById('cases-status-cards'), statusCards(currentCaseStatus), currentCaseStatus, function (card) {
+      navigate('/cases', { status: card.id });
+    });
+
+    document.getElementById('cases-table-title').textContent = currentCaseStatus + ' Cases';
+
+    renderDataTable(document.getElementById('cases-table'), {
+      data: cases.filter(function (c) { return c.status === currentCaseStatus; }),
+      columns: [
+        { key: 'date', header: 'Date' },
+        { key: 'brief', header: 'Brief' }
+      ],
+      headerVariant: currentCaseStatus,
+      onAction: function (id) {
+        var row = cases.filter(function (c) { return c.id === id; })[0];
+        navigate('/patients/' + row.patientId + '/cases/' + row.id);
+      }
+    });
+  }
+
+  function renderPatientDetailModal(id) {
+    var p = getPatientDetail(id);
+    document.getElementById('pd-name').textContent = p.name;
+    document.getElementById('pd-name-2').textContent = p.name;
+    document.getElementById('pd-dob').textContent = p.dateOfBirth;
+    document.getElementById('pd-phone').textContent = p.phone;
+    document.getElementById('pd-email').textContent = p.email;
+    document.getElementById('pd-angel').textContent = p.angel;
+    document.getElementById('pd-angel-phone').textContent = p.angelPhone;
+  }
+
+  function renderCaseDetailModal(id) {
+    var c = getCaseDetail(id);
+    document.getElementById('cd-patient-name').textContent = 'Kojo Ampia-Addison';
+    document.getElementById('cd-case-number').textContent = c.caseNumber;
+    document.getElementById('cd-symptoms').value = c.symptoms;
+    document.getElementById('cd-diagnosis').value = c.diagnosis;
+
+    var recEl = document.getElementById('cd-recommendations');
+    recEl.innerHTML = c.recommendations.map(function (rec) {
+      return (
+        '<label class="flex items-center gap-3 cursor-pointer group">' +
+          '<input type="checkbox" ' + (rec.checked ? 'checked' : '') + ' class="peer h-5 w-5 rounded border-gray-300 text-[var(--color-primary-blue)] focus:ring-[var(--color-primary-blue)] focus:ring-offset-0 transition-all cursor-pointer"/>' +
+          '<span class="text-gray-700 font-medium select-none group-hover:text-black transition-colors">' + rec.label + '</span>' +
+        '</label>'
+      );
+    }).join('');
+  }
+
+  // ---------------------------------------------------------------------
+  // Router — mirrors src/app/app.routes.ts
+  // ---------------------------------------------------------------------
+  function navigate(path, query) {
+    var hash = '#' + path;
+    if (query) {
+      var qs = Object.keys(query).map(function (k) { return k + '=' + encodeURIComponent(query[k]); }).join('&');
+      if (qs) hash += '?' + qs;
+    }
+    window.location.hash = hash;
+  }
+
+  function parseHash() {
+    var raw = window.location.hash.replace(/^#/, '');
+    var qIndex = raw.indexOf('?');
+    var path = qIndex === -1 ? raw : raw.slice(0, qIndex);
+    var query = {};
+    if (qIndex !== -1) {
+      raw.slice(qIndex + 1).split('&').forEach(function (pair) {
+        if (!pair) return;
+        var kv = pair.split('=');
+        query[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1] || '');
+      });
+    }
+    path = path.replace(/^\/+|\/+$/g, '');
+    return { segments: path ? path.split('/') : [], query: query };
+  }
+
+  function setActiveNav(name) {
+    document.querySelectorAll('#main-nav a').forEach(function (a) {
+      var active = a.getAttribute('data-nav') === name;
+      a.className = 'px-4 py-2 rounded-xl text-sm font-medium transition-colors ' +
+        (active ? 'bg-slate-100 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-900');
+    });
+  }
+
+  function showPage(id) {
+    ['page-dashboard', 'page-patients', 'page-cases'].forEach(function (pid) {
+      document.getElementById(pid).classList.toggle('hidden', pid !== id);
+    });
+  }
+
+  function showModal(id) {
+    ['modal-patient-detail', 'modal-case-detail'].forEach(function (mid) {
+      document.getElementById(mid).classList.toggle('hidden', mid !== id);
+    });
+  }
+
+  function hideModals() {
+    document.getElementById('modal-patient-detail').classList.add('hidden');
+    document.getElementById('modal-case-detail').classList.add('hidden');
+  }
+
+  function router() {
+    var route = parseHash();
+    var segs = route.segments;
+
+    if (segs.length === 0 || segs[0] === 'dashboard') {
+      setActiveNav('dashboard');
+      showPage('page-dashboard');
+      hideModals();
+      renderDashboard();
+      resizeCharts();
+      return;
+    }
+
+    if (segs[0] === 'patients' && segs.length === 1) {
+      setActiveNav('patients');
+      showPage('page-patients');
+      hideModals();
+      renderPatients();
+      return;
+    }
+
+    if (segs[0] === 'patients' && segs.length === 2) {
+      // /patients/:id
+      setActiveNav('patients');
+      showPage('page-patients');
+      renderPatients();
+      renderPatientDetailModal(segs[1]);
+      showModal('modal-patient-detail');
+      return;
+    }
+
+    if (segs[0] === 'patients' && segs.length === 4 && segs[2] === 'cases') {
+      // /patients/:id/cases/:caseId
+      setActiveNav('cases');
+      showPage('page-cases');
+      currentCaseStatus = route.query.status && ['urgent', 'open', 'closed'].indexOf(route.query.status) !== -1
+        ? route.query.status : currentCaseStatus;
+      renderCases();
+      renderCaseDetailModal(segs[3]);
+      showModal('modal-case-detail');
+      return;
+    }
+
+    if (segs[0] === 'cases' && segs.length === 1) {
+      setActiveNav('cases');
+      showPage('page-cases');
+      hideModals();
+      if (route.query.status && ['urgent', 'open', 'closed'].indexOf(route.query.status) !== -1) {
+        currentCaseStatus = route.query.status;
+      }
+      renderCases();
+      return;
+    }
+
+    if (segs[0] === 'cases' && segs.length === 2) {
+      // /cases/:caseId
+      setActiveNav('cases');
+      showPage('page-cases');
+      renderCases();
+      renderCaseDetailModal(segs[1]);
+      showModal('modal-case-detail');
+      return;
+    }
+
+    // fallback
+    navigate('/dashboard');
+  }
+
+  // ---------------------------------------------------------------------
+  // Modal close/save actions
+  // ---------------------------------------------------------------------
+  document.addEventListener('click', function (e) {
+    var target = e.target.closest('[data-action]');
+    if (!target) return;
+    var action = target.getAttribute('data-action');
+
+    if (action === 'close-patient') {
+      navigate('/patients');
+    } else if (action === 'close-case' || action === 'save-case') {
+      var segs = parseHash().segments;
+      if (segs[0] === 'patients' && segs.length === 4) {
+        navigate('/patients/' + segs[1]);
+      } else {
+        navigate('/cases');
+      }
+    }
+  });
+
+  window.addEventListener('hashchange', router);
+  window.addEventListener('resize', resizeCharts);
+
+  document.addEventListener('DOMContentLoaded', function () {
+    initCharts();
+    if (!window.location.hash) {
+      window.location.hash = '#/dashboard';
+    }
+    router();
+  });
+})();
+</script>
+</body>
+</html>
