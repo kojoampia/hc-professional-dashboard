@@ -2,16 +2,23 @@ import { Component, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { TranslateService } from '@ngx-translate/core';
-import { Alert, AlertService } from 'app/core/util/alert.service';
+import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Alert, AlertService, AlertType } from 'app/core/util/alert.service';
 import { EventManager, EventWithContent } from 'app/core/util/event-manager.service';
 import { AlertError } from './alert-error.model';
+
+const ALERT_TYPE_CLASSES: Record<AlertType, string> = {
+  success: 'border-emerald-200 bg-emerald-50 text-emerald-800',
+  danger: 'border-rose-200 bg-rose-50 text-rose-800',
+  warning: 'border-amber-200 bg-amber-50 text-amber-800',
+  info: 'border-indigo-200 bg-indigo-50 text-indigo-800',
+};
 
 @Component({
   selector: 'hpd-alert-error',
   templateUrl: './alert-error.component.html',
-  imports: [CommonModule, NgbModule],
+  imports: [CommonModule, MatIconModule, TranslateModule],
 })
 export class AlertErrorComponent implements OnDestroy {
   alerts: Alert[] = [];
@@ -99,6 +106,10 @@ export class AlertErrorComponent implements OnDestroy {
       return { ...classes, [alert.position]: true };
     }
     return classes;
+  }
+
+  alertTypeClasses(type: AlertType): string {
+    return ALERT_TYPE_CLASSES[type];
   }
 
   ngOnDestroy(): void {

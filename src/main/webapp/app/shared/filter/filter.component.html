@@ -1,17 +1,27 @@
 @if (filters.hasAnyFilterSet()) {
-  <div class="filter-display">
+  <div class="filter-display flex flex-wrap items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-600">
     <span jhiTranslate="entity.filters.set">Following filters are set</span>
-    <fa-icon icon="times" (click)="clearAllFilters()" title="{{ 'entity.filters.clearAll' | translate }}"></fa-icon>
-    <ul>
+    <button
+      class="hpd-focusable inline-flex items-center rounded-full p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-600"
+      type="button"
+      (click)="clearAllFilters()"
+      [title]="'entity.filters.clearAll' | translate"
+    >
+      <mat-icon aria-hidden="true" class="!text-base">close</mat-icon>
+    </button>
+    <ul class="flex flex-wrap items-center gap-2">
       @for (filterOption of filters.filterOptions; track filterOption.name) {
         @for (value of filterOption.values; track value) {
-          <li>
+          <li class="flex items-center gap-1 rounded-full bg-white px-2 py-1 shadow-sm">
             <span>{{ filterOption.name }}:</span> {{ value }}
-            <fa-icon
-              icon="times"
+            <button
+              class="hpd-focusable inline-flex items-center rounded-full p-0.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+              type="button"
               (click)="clearFilter(filterOption.name, value)"
-              title="{{ 'entity.filters.clear' | translate }}"
-            ></fa-icon>
+              [title]="'entity.filters.clear' | translate"
+            >
+              <mat-icon aria-hidden="true" class="!text-sm">close</mat-icon>
+            </button>
           </li>
         }
       }

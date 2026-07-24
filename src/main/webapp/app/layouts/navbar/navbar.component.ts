@@ -1,5 +1,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule } from '@angular/material/button';
 import { TranslateService } from '@ngx-translate/core';
 
 import { StateStorageService } from 'app/core/auth/state-storage.service';
@@ -11,9 +14,7 @@ import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
 import { LoginService } from 'app/login/login.service';
 import { ProfileService } from 'app/layouts/profiles/profile.service';
-import { EntityNavbarItems } from 'app/entities/entity-navbar-items';
 import ActiveMenuDirective from './active-menu.directive';
-import NavbarItem from './navbar-item.model';
 import { resolveAuthorityRole } from 'app/health-connect/authority-role';
 import { HEALTH_CONNECT_REPOSITORY, HealthConnectRepository } from 'app/health-connect/health-connect.repository';
 import { ShiftLabel } from 'app/health-connect/health-connect.models';
@@ -22,7 +23,7 @@ import { ShiftLabel } from 'app/health-connect/health-connect.models';
   selector: 'hpd-navbar',
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
-  imports: [RouterModule, SharedModule, HasAnyAuthorityDirective, ActiveMenuDirective],
+  imports: [RouterModule, SharedModule, HasAnyAuthorityDirective, ActiveMenuDirective, MatIconModule, MatMenuModule, MatButtonModule],
 })
 export default class NavbarComponent implements OnInit {
   inProduction?: boolean;
@@ -31,7 +32,6 @@ export default class NavbarComponent implements OnInit {
   openAPIEnabled?: boolean;
   version = '';
   account: Account | null = null;
-  entitiesNavbarItems: NavbarItem[] = [];
 
   constructor(
     private loginService: LoginService,
@@ -48,7 +48,6 @@ export default class NavbarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.entitiesNavbarItems = EntityNavbarItems;
     this.profileService.getProfileInfo().subscribe(profileInfo => {
       this.inProduction = profileInfo.inProduction;
       this.openAPIEnabled = profileInfo.openAPIEnabled;

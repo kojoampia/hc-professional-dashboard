@@ -1,365 +1,206 @@
-<nav data-cy="navbar" class="navbar navbar-light navbar-expand-md bg-white text-info">
-  <div class="container-fluid">
-    <a class="navbar-brand logo" routerLink="/" (click)="collapseNavbar()">
-      <span class="logo-img"></span>
-      <span jhiTranslate="global.title" class="navbar-title text-info">professional Dashboard</span>
-      <span class="navbar-version">{{ version }}</span>
-    </a>
-    <a
-      class="navbar-toggler d-lg-none"
-      href="javascript:void(0);"
-      data-toggle="collapse"
-      data-target="#navbarResponsive"
-      aria-controls="navbarResponsive"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-      (click)="toggleNavbar()"
-    >
-      <fa-icon icon="bars"></fa-icon>
-    </a>
-    <div class="navbar-collapse collapse" id="navbarResponsive" [ngbCollapse]="isNavbarCollapsed">
-      <ul class="navbar-nav ms-auto text-info">
-        <li class="nav-item text-info" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <a class="nav-link text-info" routerLink="/" (click)="collapseNavbar()">
-            <span>
-              <fa-icon icon="home"></fa-icon>
-              <span jhiTranslate="global.menu.home">Home</span>
-            </span>
-          </a>
-        </li>
-        @if (roleBadgeTranslationKey; as roleBadgeTranslationKey) {
-          <li class="nav-item d-flex align-items-center">
-            <span class="badge text-bg-primary" data-cy="healthConnectRoleBadge" [jhiTranslate]="roleBadgeTranslationKey"></span>
-          </li>
-        }
-        @if (shiftLabel; as shiftLabel) {
-          <li class="nav-item d-flex align-items-center">
-            <span
-              class="nav-link py-0"
-              data-cy="healthConnectShiftLabel"
-              [jhiTranslate]="shiftLabel.translationKey"
-              [translateValues]="shiftLabel.translationParams"
-            ></span>
-          </li>
-        }
-        <!-- jhipster-needle-add-element-to-menu - JHipster will add new menu items here -->
+<header data-cy="navbar" class="border-b border-slate-200 bg-white shadow-sm">
+  <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-6">
+      <a
+        class="logo hpd-focusable flex items-center gap-2 text-lg font-bold tracking-tight text-slate-900"
+        routerLink="/"
+        (click)="collapseNavbar()"
+      >
+        <span class="logo-img"></span>
+        <span jhiTranslate="global.title" class="navbar-title">professional Dashboard</span>
+        <span class="navbar-version text-xs font-normal text-slate-400">{{ version }}</span>
+      </a>
+
+      <nav class="hidden items-center gap-1 border-l border-slate-200 pl-6 md:flex" aria-label="Primary">
+        <a
+          class="hpd-focusable rounded-xl px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900"
+          routerLink="/"
+          routerLinkActive="bg-slate-100 text-slate-900"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="collapseNavbar()"
+        >
+          <span jhiTranslate="global.menu.home">Home</span>
+        </a>
         @if (account !== null) {
-          <li
-            *jhiHasAnyAuthority="'ROLE_ADMIN'"
-            ngbDropdown
-            class="nav-item dropdown pointer text-info"
-            display="dynamic"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: true }"
-          >
-            <a class="nav-link dropdown-toggle text-info" ngbDropdownToggle href="javascript:void(0);" id="entity-menu" data-cy="entity">
-              <span>
-                <fa-icon icon="th-list"></fa-icon>
-                <span jhiTranslate="global.menu.entities.main">Entities</span>
-              </span>
-            </a>
-            <ul class="dropdown-menu text-info" ngbDropdownMenu aria-labelledby="entity-menu">
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/address"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-                  <span hpdTranslate="global.menu.entities.professionalServiceAddress">Address</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/medication"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-                  <span hpdTranslate="global.menu.entities.professionalServiceMedication">Medication</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/stat"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-                  <span hpdTranslate="global.menu.entities.professionalServiceStat">Stat</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/team"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-                  <span hpdTranslate="global.menu.entities.professionalServiceTeam">Team</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/task"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-                  <span hpdTranslate="global.menu.entities.professionalServiceTask">Task</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/membership"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-                  <span hpdTranslate="global.menu.entities.professionalServiceMembership">Membership</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/report"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-                  <span hpdTranslate="global.menu.entities.professionalServiceReport">Report</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/metadata"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-                  <span hpdTranslate="global.menu.entities.professionalServiceMetadata">Metadata</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/profile"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-                  <span hpdTranslate="global.menu.entities.professionalServiceProfile">Profile</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/hc-credential"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-                  <span hpdTranslate="global.menu.entities.professionalServiceHcCredential">HC Credential</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/hc-pay-option"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-                  <span hpdTranslate="global.menu.entities.professionalServiceHcPayOption">HC Pay Option</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/document"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-                  <span hpdTranslate="global.menu.entities.hcprofessionalServiceDocument">Document</span>
-                </a>
-              </li>
-              <!-- jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here -->
-            </ul>
-          </li>
-        }
-        <li
-          *jhiHasAnyAuthority="'ROLE_ADMIN'"
-          ngbDropdown
-          class="nav-item dropdown pointer text-info"
-          display="dynamic"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          <a class="nav-link dropdown-toggle text-info" ngbDropdownToggle href="javascript:void(0);" id="admin-menu" data-cy="adminMenu">
-            <span>
-              <fa-icon icon="users-cog"></fa-icon>
-              <span jhiTranslate="global.menu.admin.main">Administration</span>
-            </span>
-          </a>
-          <ul class="dropdown-menu text-info" ngbDropdownMenu aria-labelledby="admin-menu">
-            <li>
-              <a class="dropdown-item text-info" routerLink="/admin/gateway" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="road" [fixedWidth]="true"></fa-icon>
-                <span jhiTranslate="global.menu.admin.gateway">Gateway</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item text-info" routerLink="/admin/user-management" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="users" [fixedWidth]="true"></fa-icon>
-                <span jhiTranslate="global.menu.admin.userManagement">User management</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item text-info" routerLink="/admin/metrics" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="tachometer-alt" [fixedWidth]="true"></fa-icon>
-                <span jhiTranslate="global.menu.admin.metrics">Metrics</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item text-info" routerLink="/admin/health" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="heart" [fixedWidth]="true"></fa-icon>
-                <span jhiTranslate="global.menu.admin.health">Health</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item text-info" routerLink="/admin/configuration" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="cogs" [fixedWidth]="true"></fa-icon>
-                <span jhiTranslate="global.menu.admin.configuration">Configuration</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item text-info" routerLink="/admin/logs" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="tasks" [fixedWidth]="true"></fa-icon>
-                <span jhiTranslate="global.menu.admin.logs">Logs</span>
-              </a>
-            </li>
-            @if (openAPIEnabled) {
-              <li>
-                <a class="dropdown-item text-info" routerLink="/admin/docs" routerLinkActive="active" (click)="collapseNavbar()">
-                  <fa-icon icon="book" [fixedWidth]="true"></fa-icon>
-                  <span jhiTranslate="global.menu.admin.apidocs">API</span>
-                </a>
-              </li>
-            }
-            <!-- jhipster-needle-add-element-to-admin-menu - JHipster will add entities to the admin menu here -->
-          </ul>
-        </li>
-        @if (languages && languages.length > 1) {
-          <li ngbDropdown class="nav-item dropdown pointer text-info" display="dynamic">
-            <a class="nav-link dropdown-toggle text-info" ngbDropdownToggle href="javascript:void(0);" id="languagesnavBarDropdown">
-              <span>
-                <fa-icon icon="flag"></fa-icon>
-                <span jhiTranslate="global.menu.language">Language</span>
-              </span>
-            </a>
-            <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="languagesnavBarDropdown">
-              @for (language of languages; track $index) {
-                <li>
-                  <a
-                    class="dropdown-item"
-                    [jhiActiveMenu]="language"
-                    href="javascript:void(0);"
-                    (click)="changeLanguage(language); collapseNavbar()"
-                    >{{ language | findLanguageFromKey }}</a
-                  >
-                </li>
-              }
-            </ul>
-          </li>
-        }
-        <li
-          ngbDropdown
-          class="nav-item dropdown pointer text-info"
-          display="dynamic"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
           <a
-            class="nav-link dropdown-toggle text-info"
-            ngbDropdownToggle
-            href="javascript:void(0);"
-            id="account-menu"
-            data-cy="accountMenu"
+            class="hpd-focusable rounded-xl px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900"
+            routerLink="/patients"
+            routerLinkActive="bg-slate-100 text-slate-900"
+            (click)="collapseNavbar()"
           >
-            @if (!account?.imageUrl) {
-              <span>
-                <fa-icon icon="user"></fa-icon>
-                <span jhiTranslate="global.menu.account.main">Account</span>
-              </span>
-            } @else {
-              <span>
-                <img [src]="account!.imageUrl" class="profile-image rounded-circle" alt="Avatar" />
-              </span>
-            }
+            <span jhiTranslate="healthConnect.patient.directory">Patients</span>
           </a>
-          <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="account-menu">
-            @if (account !== null) {
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/account/settings"
-                  routerLinkActive="active"
-                  (click)="collapseNavbar()"
-                  data-cy="settings"
-                >
-                  <fa-icon icon="wrench" [fixedWidth]="true"></fa-icon>
-                  <span jhiTranslate="global.menu.account.settings">Settings</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/account/password"
-                  routerLinkActive="active"
-                  (click)="collapseNavbar()"
-                  data-cy="passwordItem"
-                >
-                  <fa-icon icon="lock" [fixedWidth]="true"></fa-icon>
-                  <span jhiTranslate="global.menu.account.password">Password</span>
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" (click)="logout()" id="logout" data-cy="logout">
-                  <fa-icon icon="sign-out-alt" [fixedWidth]="true"></fa-icon>
-                  <span jhiTranslate="global.menu.account.logout">Sign out</span>
-                </a>
-              </li>
-            } @else {
-              <li>
-                <a class="dropdown-item" (click)="login()" id="login" data-cy="login">
-                  <fa-icon icon="sign-in-alt" [fixedWidth]="true"></fa-icon>
-                  <span jhiTranslate="global.menu.account.login">Sign in</span>
-                </a>
-              </li>
-            }
-          </ul>
-        </li>
-      </ul>
+          <a
+            class="hpd-focusable rounded-xl px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900"
+            routerLink="/cases"
+            routerLinkActive="bg-slate-100 text-slate-900"
+            (click)="collapseNavbar()"
+          >
+            <span jhiTranslate="healthConnect.case.queue">Cases</span>
+          </a>
+          <a
+            class="hpd-focusable rounded-xl px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900"
+            routerLink="/duty-roster"
+            routerLinkActive="bg-slate-100 text-slate-900"
+            (click)="collapseNavbar()"
+          >
+            <span jhiTranslate="healthConnect.navigation.dutyRoster">Duty Roster</span>
+          </a>
+        }
+      </nav>
+    </div>
+
+    <div class="flex items-center gap-3">
+      @if (roleBadgeTranslationKey; as roleBadgeTranslationKey) {
+        <span
+          class="hidden items-center rounded-full border border-indigo-200 bg-indigo-100 px-2.5 py-0.5 text-xs font-medium uppercase tracking-wide text-indigo-800 shadow-sm sm:inline-flex"
+          data-cy="healthConnectRoleBadge"
+          [jhiTranslate]="roleBadgeTranslationKey"
+        ></span>
+      }
+      @if (shiftLabel; as shiftLabel) {
+        <span
+          class="hidden text-xs text-slate-500 md:inline"
+          data-cy="healthConnectShiftLabel"
+          [jhiTranslate]="shiftLabel.translationKey"
+          [translateValues]="shiftLabel.translationParams"
+        ></span>
+      }
+
+      @if (account !== null) {
+        <button
+          *jhiHasAnyAuthority="'ROLE_ADMIN'"
+          class="hpd-focusable hidden items-center gap-1 rounded-xl px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 md:flex"
+          type="button"
+          data-cy="adminMenu"
+          [matMenuTriggerFor]="adminMenu"
+        >
+          <mat-icon aria-hidden="true" class="!text-lg">admin_panel_settings</mat-icon>
+          <span jhiTranslate="global.menu.admin.main">Administration</span>
+        </button>
+      }
+      <mat-menu #adminMenu="matMenu">
+        <a mat-menu-item routerLink="/admin/metrics" routerLinkActive="active" (click)="collapseNavbar()">
+          <mat-icon aria-hidden="true">speed</mat-icon>
+          <span jhiTranslate="global.menu.admin.metrics">Metrics</span>
+        </a>
+        <a mat-menu-item routerLink="/admin/health" routerLinkActive="active" (click)="collapseNavbar()">
+          <mat-icon aria-hidden="true">favorite</mat-icon>
+          <span jhiTranslate="global.menu.admin.health">Health</span>
+        </a>
+        <a mat-menu-item routerLink="/admin/configuration" routerLinkActive="active" (click)="collapseNavbar()">
+          <mat-icon aria-hidden="true">settings</mat-icon>
+          <span jhiTranslate="global.menu.admin.configuration">Configuration</span>
+        </a>
+        @if (openAPIEnabled) {
+          <a mat-menu-item routerLink="/admin/docs" routerLinkActive="active" (click)="collapseNavbar()">
+            <mat-icon aria-hidden="true">menu_book</mat-icon>
+            <span jhiTranslate="global.menu.admin.apidocs">API</span>
+          </a>
+        }
+      </mat-menu>
+
+      @if (languages && languages.length > 1) {
+        <button
+          class="hpd-focusable hidden items-center rounded-xl p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 md:flex"
+          type="button"
+          [matMenuTriggerFor]="languageMenu"
+          [attr.aria-label]="'global.menu.language' | translate"
+        >
+          <mat-icon aria-hidden="true">translate</mat-icon>
+        </button>
+      }
+      <mat-menu #languageMenu="matMenu">
+        @for (language of languages; track language) {
+          <a mat-menu-item [jhiActiveMenu]="language" href="javascript:void(0);" (click)="changeLanguage(language); collapseNavbar()">{{
+            language | findLanguageFromKey
+          }}</a>
+        }
+      </mat-menu>
+
+      <button
+        class="hpd-focusable flex items-center gap-1 rounded-full p-1 text-slate-500 transition-colors hover:bg-slate-100"
+        type="button"
+        data-cy="accountMenu"
+        [matMenuTriggerFor]="accountMenu"
+        [attr.aria-label]="'global.menu.account.main' | translate"
+      >
+        @if (!account?.imageUrl) {
+          <span class="grid h-8 w-8 place-items-center rounded-full border border-slate-300 bg-slate-200 text-slate-500">
+            <mat-icon aria-hidden="true" class="!text-lg">person</mat-icon>
+          </span>
+        } @else {
+          <img [src]="account!.imageUrl" class="profile-image h-8 w-8 rounded-full object-cover" alt="Avatar" />
+        }
+      </button>
+      <mat-menu #accountMenu="matMenu">
+        @if (account !== null) {
+          <a mat-menu-item routerLink="/account/settings" routerLinkActive="active" (click)="collapseNavbar()" data-cy="settings">
+            <mat-icon aria-hidden="true">build</mat-icon>
+            <span jhiTranslate="global.menu.account.settings">Settings</span>
+          </a>
+          <a mat-menu-item routerLink="/account/password" routerLinkActive="active" (click)="collapseNavbar()" data-cy="passwordItem">
+            <mat-icon aria-hidden="true">lock</mat-icon>
+            <span jhiTranslate="global.menu.account.password">Password</span>
+          </a>
+          <button mat-menu-item type="button" (click)="logout()" id="logout" data-cy="logout">
+            <mat-icon aria-hidden="true">logout</mat-icon>
+            <span jhiTranslate="global.menu.account.logout">Sign out</span>
+          </button>
+        } @else {
+          <button mat-menu-item type="button" (click)="login()" id="login" data-cy="login">
+            <mat-icon aria-hidden="true">login</mat-icon>
+            <span jhiTranslate="global.menu.account.login">Sign in</span>
+          </button>
+        }
+      </mat-menu>
+
+      <button
+        class="hpd-focusable md:hidden"
+        mat-icon-button
+        type="button"
+        data-cy="navbarToggle"
+        [attr.aria-expanded]="!isNavbarCollapsed"
+        [attr.aria-label]="'global.menu.home' | translate"
+        (click)="toggleNavbar()"
+      >
+        <mat-icon aria-hidden="true">menu</mat-icon>
+      </button>
     </div>
   </div>
-</nav>
+
+  @if (!isNavbarCollapsed) {
+    <nav class="flex flex-col gap-1 border-t border-slate-100 bg-white px-4 py-3 md:hidden" aria-label="Primary">
+      <a
+        class="hpd-focusable rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+        routerLink="/"
+        (click)="collapseNavbar()"
+      >
+        <span jhiTranslate="global.menu.home">Home</span>
+      </a>
+      @if (account !== null) {
+        <a
+          class="hpd-focusable rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+          routerLink="/patients"
+          (click)="collapseNavbar()"
+        >
+          <span jhiTranslate="healthConnect.patient.directory">Patients</span>
+        </a>
+        <a
+          class="hpd-focusable rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+          routerLink="/cases"
+          (click)="collapseNavbar()"
+        >
+          <span jhiTranslate="healthConnect.case.queue">Cases</span>
+        </a>
+        <a
+          class="hpd-focusable rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+          routerLink="/duty-roster"
+          (click)="collapseNavbar()"
+        >
+          <span jhiTranslate="healthConnect.navigation.dutyRoster">Duty Roster</span>
+        </a>
+      }
+    </nav>
+  }
+</header>
