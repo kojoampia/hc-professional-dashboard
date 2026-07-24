@@ -20,7 +20,7 @@ import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
   selector: 'hpd-activity-log-dialog',
   imports: [ReactiveFormsModule, TranslateModule],
   template: `
-    <section class="hpd-activity-dialog" (click)="closeFromBackdrop($event)">
+    <section class="hpd-activity-dialog fixed inset-0 z-[1050] grid place-items-center bg-black/50 p-4" (click)="closeFromBackdrop($event)">
       <form
         #dialog
         [formGroup]="form"
@@ -28,48 +28,52 @@ import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
         aria-modal="true"
         aria-labelledby="hpd-activity-dialog-title"
         aria-describedby="hpd-activity-dialog-description"
+        class="grid w-full max-w-lg gap-4 rounded-2xl bg-white p-6 text-slate-900 shadow-2xl"
         (keydown.escape)="close()"
         (keydown.tab)="trapFocus($event)"
         (ngSubmit)="save()"
       >
-        <h2 id="hpd-activity-dialog-title">{{ 'healthConnect.activity.title' | translate }}</h2>
-        <p id="hpd-activity-dialog-description" class="visually-hidden">{{ 'healthConnect.activity.description' | translate }}</p>
-        <label for="hpd-activity-title"
+        <h2 id="hpd-activity-dialog-title" class="text-lg font-bold">{{ 'healthConnect.activity.title' | translate }}</h2>
+        <p id="hpd-activity-dialog-description" class="sr-only">{{ 'healthConnect.activity.description' | translate }}</p>
+        <label for="hpd-activity-title" class="grid gap-1 text-sm font-medium text-slate-700"
           >{{ 'healthConnect.activity.eventTitle' | translate
           }}<input
             #firstInput
             id="hpd-activity-title"
-            class="form-control hpd-focusable"
+            class="hpd-focusable rounded-lg border border-slate-300 px-3 py-2 text-sm font-normal shadow-sm"
             formControlName="title"
             [attr.aria-invalid]="submitted && form.controls.title.invalid"
           />
         </label>
-        <label for="hpd-activity-description"
+        <label for="hpd-activity-description" class="grid gap-1 text-sm font-medium text-slate-700"
           >{{ 'healthConnect.activity.description' | translate
           }}<textarea
             id="hpd-activity-description"
-            class="form-control hpd-focusable"
+            class="hpd-focusable h-28 resize-none rounded-lg border border-slate-300 px-3 py-2 text-sm font-normal shadow-sm"
             formControlName="description"
             [attr.aria-invalid]="submitted && form.controls.description.invalid"
           ></textarea>
         </label>
         @if (form.invalid && submitted) {
-          <p class="text-danger" role="alert">{{ 'healthConnect.validation.required' | translate }}</p>
+          <p class="text-sm text-rose-600" role="alert">{{ 'healthConnect.validation.required' | translate }}</p>
         }
-        <div class="hpd-activity-dialog__actions">
-          <button class="hpd-focusable btn btn-primary" type="submit">{{ 'healthConnect.actions.save' | translate }}</button>
-          <button class="hpd-focusable btn btn-outline-secondary" type="button" (click)="close()">
+        <div class="hpd-activity-dialog__actions flex flex-wrap justify-end gap-2">
+          <button
+            class="hpd-focusable rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200"
+            type="button"
+            (click)="close()"
+          >
             {{ 'healthConnect.actions.cancel' | translate }}
+          </button>
+          <button
+            class="hpd-focusable rounded-full bg-hpd-primary px-4 py-2 text-sm font-medium text-white hover:brightness-110"
+            type="submit"
+          >
+            {{ 'healthConnect.actions.save' | translate }}
           </button>
         </div>
       </form>
     </section>
-  `,
-  styles: `
-    .hpd-activity-dialog { position:fixed; z-index:1050; inset:0; display:grid; place-items:center; padding:1rem; background:rgb(0 0 0 / .5); }
-    form { width:min(100%, 32rem); display:grid; gap:1rem; padding:1.5rem; background:var(--hpd-color-surface); color:var(--hpd-color-text-primary); }
-    .hpd-activity-dialog__actions { display:flex; flex-wrap:wrap; gap:.5rem; }
-    @media (max-width:375px) { .hpd-activity-dialog { padding:.5rem; } form { padding:1rem; } .hpd-activity-dialog__actions > button { flex:1 1 100%; } }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

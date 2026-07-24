@@ -8,16 +8,25 @@ import { TranslateModule } from '@ngx-translate/core';
   template: `
     @if (totalPages > 1) {
       <nav [attr.aria-label]="'healthConnect.pagination.label' | translate">
-        <ul class="pagination">
+        <ul class="pagination mt-3 flex items-center justify-center gap-1 text-xs text-slate-500">
           <li class="page-item" [class.disabled]="currentPage() === 1">
-            <button class="page-link hpd-focusable" type="button" [disabled]="currentPage() === 1" (click)="goTo(currentPage() - 1)">
+            <button
+              class="page-link hpd-focusable rounded-md px-2 py-1 font-medium hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+              type="button"
+              [disabled]="currentPage() === 1"
+              (click)="goTo(currentPage() - 1)"
+            >
               {{ 'healthConnect.actions.previous' | translate }}
             </button>
           </li>
           @for (page of pages; track page) {
             <li class="page-item" [class.active]="page === currentPage()">
               <button
-                class="page-link hpd-focusable"
+                class="page-link hpd-focusable h-7 w-7 rounded-md font-medium"
+                [class.bg-hpd-primary]="page === currentPage()"
+                [class.text-white]="page === currentPage()"
+                [class.text-slate-500]="page !== currentPage()"
+                [class.hover:bg-slate-100]="page !== currentPage()"
                 type="button"
                 [attr.aria-current]="page === currentPage() ? 'page' : null"
                 [attr.aria-label]="'healthConnect.pagination.page' | translate: { page }"
@@ -29,7 +38,7 @@ import { TranslateModule } from '@ngx-translate/core';
           }
           <li class="page-item" [class.disabled]="currentPage() === totalPages">
             <button
-              class="page-link hpd-focusable"
+              class="page-link hpd-focusable rounded-md px-2 py-1 font-medium hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
               type="button"
               [disabled]="currentPage() === totalPages"
               (click)="goTo(currentPage() + 1)"

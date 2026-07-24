@@ -24,53 +24,62 @@ const isPatientSex = (value: string | null): value is PatientSex => value === 'f
   selector: 'hpd-patient-directory-page',
   imports: [AsyncStateComponent, DataTableComponent, FormsModule, PaginationComponent, SearchInputComponent, TranslateModule],
   template: `
-    <main class="hpd-container py-4">
-      <h1>{{ 'healthConnect.patient.directory' | translate }}</h1>
+    <main class="mx-auto max-w-7xl px-4 py-8 md:px-8">
+      <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+        <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+          <h1 class="text-xl font-bold text-slate-900">{{ 'healthConnect.patient.directory' | translate }}</h1>
 
-      <section class="hpd-directory-controls" [attr.aria-label]="'healthConnect.patient.filters' | translate">
-        <hpd-search-input labelKey="healthConnect.patient.search" [value]="query()" [debounceMs]="300" (searchChange)="setSearch($event)" />
+          <div
+            class="flex flex-1 flex-wrap items-end justify-end gap-3 sm:flex-nowrap"
+            [attr.aria-label]="'healthConnect.patient.filters' | translate"
+          >
+            <label class="text-sm">
+              <span class="mb-1 block font-medium text-slate-600">{{ 'healthConnect.patient.gender' | translate }}</span>
+              <select
+                class="hpd-focusable rounded-lg border border-slate-300 bg-white py-2 pl-3 pr-8 text-sm shadow-sm"
+                [ngModel]="gender() ?? ''"
+                (ngModelChange)="setGender($event)"
+              >
+                <option value="">{{ 'healthConnect.patient.allGenders' | translate }}</option>
+                <option value="female">{{ 'healthConnect.stats.female' | translate }}</option>
+                <option value="male">{{ 'healthConnect.stats.male' | translate }}</option>
+                <option value="unspecified">{{ 'healthConnect.stats.unspecified' | translate }}</option>
+              </select>
+            </label>
 
-        <label>
-          <span>{{ 'healthConnect.patient.gender' | translate }}</span>
-          <select class="form-select hpd-focusable" [ngModel]="gender() ?? ''" (ngModelChange)="setGender($event)">
-            <option value="">{{ 'healthConnect.patient.allGenders' | translate }}</option>
-            <option value="female">{{ 'healthConnect.stats.female' | translate }}</option>
-            <option value="male">{{ 'healthConnect.stats.male' | translate }}</option>
-            <option value="unspecified">{{ 'healthConnect.stats.unspecified' | translate }}</option>
-          </select>
-        </label>
+            <label class="form-check flex items-center gap-2 pb-2 text-sm text-slate-600">
+              <input
+                class="form-check-input hpd-focusable h-4 w-4 rounded accent-hpd-primary"
+                type="checkbox"
+                [checked]="childrenOnly()"
+                (change)="setChildrenOnly($any($event.target).checked)"
+              />
+              <span class="form-check-label">{{ 'healthConnect.patient.childrenOnly' | translate }}</span>
+            </label>
 
-        <label class="form-check">
-          <input
-            class="form-check-input hpd-focusable"
-            type="checkbox"
-            [checked]="childrenOnly()"
-            (change)="setChildrenOnly($any($event.target).checked)"
+            <div class="w-full max-w-xs">
+              <hpd-search-input
+                labelKey="healthConnect.patient.search"
+                [value]="query()"
+                [debounceMs]="300"
+                (searchChange)="setSearch($event)"
+              />
+            </div>
+          </div>
+        </div>
+
+        <hpd-async-state [status]="repository.asyncState().status" [empty]="directoryPage().totalItems === 0" (retry)="repository.reset()">
+          <hpd-data-table
+            [columns]="columns"
+            [rows]="directoryPage().items"
+            [actions]="actions"
+            [trackBy]="trackById"
+            (actionTriggered)="handleAction($event)"
           />
-          <span class="form-check-label">{{ 'healthConnect.patient.childrenOnly' | translate }}</span>
-        </label>
-      </section>
-
-      <hpd-async-state [status]="repository.asyncState().status" [empty]="directoryPage().totalItems === 0" (retry)="repository.reset()">
-        <hpd-data-table
-          [columns]="columns"
-          [rows]="directoryPage().items"
-          [actions]="actions"
-          [trackBy]="trackById"
-          (actionTriggered)="handleAction($event)"
-        />
-        <hpd-pagination [totalPages]="directoryPage().totalPages" [initialPage]="directoryPage().page" (pageChange)="setPage($event)" />
-      </hpd-async-state>
+          <hpd-pagination [totalPages]="directoryPage().totalPages" [initialPage]="directoryPage().page" (pageChange)="setPage($event)" />
+        </hpd-async-state>
+      </div>
     </main>
-  `,
-  styles: `
-    .hpd-directory-controls {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-      align-items: end;
-      gap: 1rem;
-      margin-block: 1.5rem;
-    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -111,7 +120,9 @@ export default class PatientDirectoryPageComponent {
     },
     { id: 'activity', labelKey: 'healthConnect.patient.lastActivity', value: patient => patient.lastActivityAt.slice(0, 10) },
   ];
-  readonly actions: readonly DataTableAction<PatientListRow>[] = [{ id: 'view', labelKey: 'healthConnect.actions.view', icon: '👁' }];
+  readonly actions: readonly DataTableAction<PatientListRow>[] = [
+    { id: 'view', labelKey: 'healthConnect.actions.view', icon: 'visibility' },
+  ];
   readonly trackById = (patient: PatientListRow): string => patient.id;
 
   setSearch(query: string): void {

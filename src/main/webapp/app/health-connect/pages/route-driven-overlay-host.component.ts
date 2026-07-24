@@ -10,17 +10,18 @@ import {
   inject,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
 
 @Component({
   standalone: true,
   selector: 'hpd-route-driven-overlay-host',
-  imports: [RouterOutlet, TranslateModule],
+  imports: [MatIconModule, RouterOutlet, TranslateModule],
   template: `
     <section
       #dialog
-      class="hpd-route-overlay"
+      class="hpd-route-overlay fixed inset-0 z-[1040] overflow-auto"
       role="dialog"
       aria-modal="true"
       aria-labelledby="hpd-route-overlay-title"
@@ -28,42 +29,39 @@ import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
       (keydown.escape)="close()"
       (keydown.tab)="trapFocus($event)"
     >
-      <div class="hpd-surface p-4">
-        <header class="d-flex justify-content-between align-items-center gap-2 mb-3">
-          <h1 id="hpd-route-overlay-title" class="h4 m-0">{{ resolvedTitleKey() | translate: titleParams() }}</h1>
-          <div class="hpd-route-overlay__actions hpd-no-print">
-            <button class="hpd-focusable btn btn-outline-secondary" type="button" (click)="print()">
+      <div class="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true"></div>
+      <div
+        class="hpd-surface relative mx-auto mt-4 flex max-w-6xl flex-col overflow-hidden rounded-2xl border border-black/10 bg-white shadow-2xl sm:mt-10"
+      >
+        <header class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 bg-slate-50/50 px-6 py-4">
+          <h1 id="hpd-route-overlay-title" class="m-0 text-lg font-bold text-slate-900">
+            {{ resolvedTitleKey() | translate: titleParams() }}
+          </h1>
+          <div class="hpd-route-overlay__actions hpd-no-print flex flex-wrap items-center gap-2">
+            <button
+              class="hpd-focusable flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200"
+              type="button"
+              (click)="print()"
+            >
+              <mat-icon aria-hidden="true" class="!text-base">print</mat-icon>
               {{ 'healthConnect.actions.print' | translate }}
             </button>
-            <button #closeButton class="hpd-focusable btn btn-outline-secondary" type="button" (click)="close()">
+            <button
+              #closeButton
+              class="hpd-focusable flex items-center gap-1 rounded-full bg-slate-700 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-slate-800"
+              type="button"
+              (click)="close()"
+            >
+              <mat-icon aria-hidden="true" class="!text-base">close</mat-icon>
               {{ 'healthConnect.actions.close' | translate }}
             </button>
           </div>
         </header>
-        <router-outlet />
+        <div class="flex-1 overflow-y-auto bg-slate-50/30 p-6">
+          <router-outlet />
+        </div>
       </div>
     </section>
-  `,
-  styles: `
-    .hpd-route-overlay {
-      position: fixed;
-      z-index: 1040;
-      inset: 0;
-      display: grid;
-      place-items: start center;
-      overflow: auto;
-      padding: 2rem 1rem;
-      background: rgb(11 15 26 / 60%);
-    }
-    .hpd-route-overlay > div {
-      width: min(100%, var(--hpd-content-max-width));
-    }
-    .hpd-route-overlay__actions { display:flex; flex-wrap:wrap; gap:.5rem; }
-    @media (max-width:375px) {
-      .hpd-route-overlay { padding:.5rem; }
-      .hpd-route-overlay > div { padding:1rem !important; }
-      .hpd-route-overlay header { align-items:flex-start !important; flex-direction:column; }
-    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

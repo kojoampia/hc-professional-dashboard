@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 
 export type DataTableStatusVariant = 'urgent' | 'open' | 'closed' | 'neutral';
@@ -22,49 +23,66 @@ export interface DataTableActionEvent<T> {
   row: T;
 }
 
+// professional-demo.html's renderDataTable only tints the header row by status (rows
+// stay plain white/hover-slate) — matched here. `hpd-data-table__header--<variant>` /
+// `hpd-data-table--<variant>` are kept as plain marker classes (no visual effect of
+// their own) purely so existing specs that assert on them as a status-applied hook
+// keep working; the actual tint comes from the Tailwind classes below.
+const HEADER_TINT_CLASSES: Record<DataTableStatusVariant, string> = {
+  neutral: 'bg-slate-50',
+  urgent: 'bg-hpd-row-urgent',
+  open: 'bg-hpd-row-open',
+  closed: 'bg-hpd-row-closed',
+};
+
 @Component({
   standalone: true,
   selector: 'hpd-data-table',
-  imports: [TranslateModule],
+  imports: [MatIconModule, TranslateModule],
   template: `
-    <div class="table-responsive hpd-data-table__scroll" role="region" tabindex="0" [attr.aria-label]="tableLabelKey | translate">
-      <table class="table hpd-data-table">
-        <caption class="visually-hidden">
+    <div
+      class="hpd-data-table__scroll overflow-x-auto rounded-lg border border-slate-200"
+      role="region"
+      tabindex="0"
+      [attr.aria-label]="tableLabelKey | translate"
+    >
+      <table class="hpd-data-table w-full text-left text-sm text-slate-600">
+        <caption class="sr-only">
           {{
             tableLabelKey | translate
           }}
         </caption>
-        <thead [class]="headerVariant === 'neutral' ? '' : 'hpd-data-table__header--' + headerVariant">
+        <thead class="text-xs uppercase" [class]="headerClasses">
           <tr>
             @for (column of columns; track column.id) {
-              <th scope="col">{{ column.labelKey | translate }}</th>
+              <th scope="col" class="px-6 py-4 font-bold text-slate-700">{{ column.labelKey | translate }}</th>
             }
             @if (actions.length) {
-              <th scope="col">
-                <span class="visually-hidden">{{ 'healthConnect.table.actions' | translate }}</span>
+              <th scope="col" class="px-6 py-4 text-right font-bold text-slate-700">
+                <span class="sr-only">{{ 'healthConnect.table.actions' | translate }}</span>
               </th>
             }
           </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-slate-100 bg-white">
           @for (row of rows; track trackBy(row)) {
-            <tr [class]="rowVariant(row)">
+            <tr class="transition-colors hover:bg-slate-50" [class]="rowVariant(row)">
               @for (column of columns; track column.id) {
-                <td [attr.data-label]="column.labelKey | translate">{{ column.value(row) }}</td>
+                <td class="px-6 py-4" [attr.data-label]="column.labelKey | translate">{{ column.value(row) }}</td>
               }
               @if (actions.length) {
-                <td class="hpd-data-table__actions">
+                <td class="hpd-data-table__actions flex items-center justify-end gap-1 px-6 py-4">
                   @for (action of actions; track action.id) {
                     @if (action.isAvailable?.(row) ?? true) {
                       <button
-                        class="hpd-focusable btn btn-sm btn-outline-primary"
+                        class="hpd-focusable inline-flex items-center justify-center rounded-full p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-hpd-primary"
                         type="button"
                         [attr.aria-label]="action.labelKey | translate"
                         (click)="actionTriggered.emit({ actionId: action.id, row })"
                       >
                         @if (action.icon) {
-                          <span aria-hidden="true">{{ action.icon }}</span>
-                          <span class="visually-hidden">{{ action.labelKey | translate }}</span>
+                          <mat-icon aria-hidden="true" class="!h-5 !w-5 !text-[20px]">{{ action.icon }}</mat-icon>
+                          <span class="sr-only">{{ action.labelKey | translate }}</span>
                         } @else {
                           {{ action.labelKey | translate }}
                         }
@@ -76,8 +94,9 @@ export interface DataTableActionEvent<T> {
             </tr>
           } @empty {
             <tr>
-              <td class="text-center" [attr.colspan]="columns.length + (actions.length ? 1 : 0)">
-                {{ emptyKey | translate }}
+              <td class="px-6 py-12 text-center text-slate-400" [attr.colspan]="columns.length + (actions.length ? 1 : 0)">
+                <mat-icon class="mb-2 !h-9 !w-9 !text-4xl opacity-50" aria-hidden="true">inbox</mat-icon>
+                <p>{{ emptyKey | translate }}</p>
               </td>
             </tr>
           }
@@ -86,14 +105,10 @@ export interface DataTableActionEvent<T> {
     </div>
   `,
   styles: `
-    .hpd-data-table tr.hpd-data-table--urgent > * { background: var(--hpd-color-row-urgent); }
-    .hpd-data-table tr.hpd-data-table--open > * { background: var(--hpd-color-row-open); }
-    .hpd-data-table tr.hpd-data-table--closed > * { background: var(--hpd-color-row-closed); }
-    .hpd-data-table thead.hpd-data-table__header--urgent th { background: var(--hpd-color-card-urgent); }
-    .hpd-data-table thead.hpd-data-table__header--open th { background: var(--hpd-color-card-open); }
-    .hpd-data-table thead.hpd-data-table__header--closed th { background: var(--hpd-color-card-closed); }
-    .hpd-data-table__actions { display: flex; gap: 0.5rem; }
-    .hpd-data-table__scroll:focus-visible { outline: none; box-shadow: var(--hpd-focus-ring); }
+    .hpd-data-table__scroll:focus-visible {
+      outline: none;
+      box-shadow: var(--hpd-focus-ring);
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -111,5 +126,10 @@ export default class DataTableComponent<T> {
   rowVariant(row: T): string {
     const variant = this.statusVariant?.(row) ?? 'neutral';
     return variant === 'neutral' ? '' : `hpd-data-table--${variant}`;
+  }
+
+  get headerClasses(): string {
+    const marker = this.headerVariant === 'neutral' ? '' : `hpd-data-table__header--${this.headerVariant} `;
+    return `${marker}${HEADER_TINT_CLASSES[this.headerVariant]}`;
   }
 }

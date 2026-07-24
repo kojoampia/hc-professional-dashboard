@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subject, debounce, distinctUntilChanged, takeUntil, timer } from 'rxjs';
@@ -6,12 +7,15 @@ import { Subject, debounce, distinctUntilChanged, takeUntil, timer } from 'rxjs'
 @Component({
   standalone: true,
   selector: 'hpd-search-input',
-  imports: [FormsModule, TranslateModule],
+  imports: [FormsModule, MatIconModule, TranslateModule],
   template: `
-    <label>
-      <span class="visually-hidden">{{ labelKey | translate }}</span>
+    <label class="relative block w-full">
+      <span class="sr-only">{{ labelKey | translate }}</span>
+      <mat-icon aria-hidden="true" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 !text-lg text-slate-400"
+        >search</mat-icon
+      >
       <input
-        class="form-control hpd-focusable"
+        class="hpd-focusable w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm shadow-sm focus:border-hpd-primary"
         type="search"
         [disabled]="disabled"
         [placeholder]="labelKey | translate"
