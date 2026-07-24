@@ -92,16 +92,6 @@
           <mat-icon aria-hidden="true">favorite</mat-icon>
           <span jhiTranslate="global.menu.admin.health">Health</span>
         </a>
-        <a mat-menu-item routerLink="/admin/configuration" routerLinkActive="active" (click)="collapseNavbar()">
-          <mat-icon aria-hidden="true">settings</mat-icon>
-          <span jhiTranslate="global.menu.admin.configuration">Configuration</span>
-        </a>
-        @if (openAPIEnabled) {
-          <a mat-menu-item routerLink="/admin/docs" routerLinkActive="active" (click)="collapseNavbar()">
-            <mat-icon aria-hidden="true">menu_book</mat-icon>
-            <span jhiTranslate="global.menu.admin.apidocs">API</span>
-          </a>
-        }
       </mat-menu>
 
       @if (languages && languages.length > 1) {

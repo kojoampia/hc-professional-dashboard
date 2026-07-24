@@ -15,7 +15,7 @@
       },
       "root": "",
       "sourceRoot": "src/main/webapp",
-      "prefix": "jhi",
+      "prefix": "hpd",
       "architect": {
         "build": {
           "builder": "@angular-builders/custom-webpack:browser",

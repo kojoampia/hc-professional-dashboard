@@ -29,7 +29,6 @@ export default class NavbarComponent implements OnInit {
   inProduction?: boolean;
   isNavbarCollapsed = true;
   languages = LANGUAGES;
-  openAPIEnabled?: boolean;
   version = '';
   account: Account | null = null;
 
@@ -50,7 +49,6 @@ export default class NavbarComponent implements OnInit {
   ngOnInit(): void {
     this.profileService.getProfileInfo().subscribe(profileInfo => {
       this.inProduction = profileInfo.inProduction;
-      this.openAPIEnabled = profileInfo.openAPIEnabled;
     });
 
     this.accountService.getAuthenticationState().subscribe(account => {
