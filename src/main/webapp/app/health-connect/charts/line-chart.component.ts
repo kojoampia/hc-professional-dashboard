@@ -1,45 +1,29 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { ChartConfiguration } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { LineChartPoint } from '../health-connect.models';
-import { toLineChartSeries } from './chart-transforms';
+import { toLineChartData } from './chart-transforms';
 
 @Component({
   standalone: true,
   selector: 'hpd-line-chart',
-  imports: [NgxChartsModule, TranslateModule],
+  imports: [BaseChartDirective, TranslateModule],
   template: `
-    <figure class="hpd-chart-card" [attr.aria-labelledby]="titleId" [attr.aria-describedby]="descriptionId">
-      <figcaption>
-        <h2 [id]="titleId">{{ titleKey() | translate }}</h2>
-        <p [id]="descriptionId">{{ descriptionKey() | translate }}</p>
+    <figure
+      class="hpd-focusable m-0 flex h-full min-w-0 flex-col rounded-2xl border border-slate-100 bg-white p-6 shadow-sm"
+      [attr.aria-labelledby]="titleId"
+      [attr.aria-describedby]="descriptionId"
+    >
+      <figcaption class="mb-4">
+        <h2 [id]="titleId" class="font-semibold text-slate-900">{{ titleKey() | translate }}</h2>
+        <p [id]="descriptionId" class="sr-only">{{ descriptionKey() | translate }}</p>
       </figcaption>
-      <div role="img" [attr.aria-labelledby]="titleId" [attr.aria-describedby]="descriptionId">
-        <ngx-charts-line-chart
-          [results]="results()"
-          [legend]="true"
-          [legendTitle]="legendKey() | translate"
-          [xAxis]="true"
-          [yAxis]="true"
-          [showXAxisLabel]="true"
-          [showYAxisLabel]="true"
-          [xAxisLabel]="xAxisKey() | translate"
-          [yAxisLabel]="yAxisKey() | translate"
-          [tooltipDisabled]="false"
-        />
+      <div role="img" [attr.aria-labelledby]="titleId" [attr.aria-describedby]="descriptionId" class="relative min-h-[16rem] flex-1">
+        <canvas baseChart type="line" [data]="data()" [options]="options()"></canvas>
       </div>
     </figure>
-  `,
-  styles: `
-    .hpd-chart-card {
-      min-width: 0;
-      margin: 0;
-      padding: 1rem;
-      border: 1px solid var(--hpd-color-shell-border);
-      border-radius: 0.75rem;
-      background: var(--hpd-color-surface);
-    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -54,5 +38,14 @@ export default class LineChartComponent {
   readonly descriptionId = 'hpd-case-timeline-description';
 
   private readonly translate = inject(TranslateService);
-  readonly results = computed(() => toLineChartSeries(this.points(), this.translate.instant(this.legendKey())));
+  readonly data = computed(() => toLineChartData(this.points(), this.translate.instant(this.legendKey())));
+  readonly options = computed<ChartConfiguration<'line'>['options']>(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: true, position: 'bottom' } },
+    scales: {
+      x: { title: { display: true, text: this.translate.instant(this.xAxisKey()) }, grid: { display: false } },
+      y: { title: { display: true, text: this.translate.instant(this.yAxisKey()) }, beginAtZero: true },
+    },
+  }));
 }

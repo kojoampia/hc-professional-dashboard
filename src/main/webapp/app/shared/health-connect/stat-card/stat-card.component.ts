@@ -1,67 +1,80 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 export type StatCardVariant = 'neutral' | 'urgent' | 'open' | 'closed';
 
+const BADGE_CLASSES: Record<StatCardVariant, string> = {
+  neutral: 'bg-slate-100 text-slate-500',
+  urgent: 'bg-rose-50 text-rose-500',
+  open: 'bg-indigo-50 text-indigo-500',
+  closed: 'bg-emerald-50 text-emerald-500',
+};
+
+// Decorative accent bar under the count — professional-demo.html hardcodes a fixed
+// width per status variant rather than deriving it from the count, so this mirrors
+// that rather than fabricating a percentage-of-count metric that doesn't exist.
+const BAR_CLASSES: Record<StatCardVariant, string> = {
+  neutral: 'w-[30%] bg-slate-400',
+  urgent: 'w-[70%] bg-rose-500',
+  open: 'w-[50%] bg-indigo-500',
+  closed: 'w-[90%] bg-emerald-500',
+};
+
 @Component({
   standalone: true,
   selector: 'hpd-stat-card',
-  imports: [RouterLink, TranslateModule],
+  imports: [NgTemplateOutlet, RouterLink, TranslateModule],
   template: `
-    @if (link) {
+    <ng-container *ngTemplateOutlet="link ? linkTpl : interactive ? buttonTpl : staticTpl"></ng-container>
+
+    <ng-template #cardBody>
+      <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">{{ labelKey | translate }}</p>
+      <div class="mt-2 flex items-end justify-between gap-2">
+        <h3 class="text-2xl font-bold text-slate-900">{{ count }}</h3>
+        <span class="rounded-full px-2 py-0.5 text-xs font-bold" [class]="badgeClass">{{ variant.toUpperCase() }}</span>
+      </div>
+      <div class="mt-4 h-1 w-full overflow-hidden rounded-full bg-slate-100">
+        <div class="h-full rounded-full transition-all duration-500" [class]="barClass"></div>
+      </div>
+    </ng-template>
+
+    <ng-template #linkTpl>
       <a
-        class="hpd-stat-card hpd-focusable"
-        [class]="'hpd-stat-card--' + variant"
+        class="hpd-focusable relative block overflow-hidden rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
         [class.hpd-stat-card--selected]="selected"
+        [class.ring-2]="selected"
+        [class.ring-offset-2]="selected"
+        [class.ring-indigo-500]="selected"
         [routerLink]="link"
         [attr.aria-current]="selected ? 'page' : null"
         (click)="activate.emit()"
       >
-        <span>{{ labelKey | translate }}</span>
-        <strong>{{ count }}</strong>
+        <ng-container *ngTemplateOutlet="cardBody"></ng-container>
       </a>
-    } @else if (interactive) {
+    </ng-template>
+
+    <ng-template #buttonTpl>
       <button
-        class="hpd-stat-card hpd-focusable"
-        [class]="'hpd-stat-card--' + variant"
+        class="hpd-focusable relative block w-full overflow-hidden rounded-2xl border border-slate-100 bg-white p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
         [class.hpd-stat-card--selected]="selected"
+        [class.ring-2]="selected"
+        [class.ring-offset-2]="selected"
+        [class.ring-indigo-500]="selected"
         type="button"
         [attr.aria-pressed]="selected"
         (click)="activate.emit()"
       >
-        <span>{{ labelKey | translate }}</span>
-        <strong>{{ count }}</strong>
+        <ng-container *ngTemplateOutlet="cardBody"></ng-container>
       </button>
-    } @else {
-      <div class="hpd-stat-card" [class]="'hpd-stat-card--' + variant" [class.hpd-stat-card--selected]="selected">
-        <span>{{ labelKey | translate }}</span>
-        <strong>{{ count }}</strong>
+    </ng-template>
+
+    <ng-template #staticTpl>
+      <div class="relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <ng-container *ngTemplateOutlet="cardBody"></ng-container>
       </div>
-    }
-  `,
-  styles: `
-    .hpd-stat-card {
-      display: flex;
-      min-height: 6.5rem;
-      flex-direction: column;
-      justify-content: space-between;
-      border: 2px solid transparent;
-      border-radius: 0.75rem;
-      padding: 1rem;
-      color: var(--hpd-color-text-primary);
-      text-align: start;
-      text-decoration: none;
-    }
-    button.hpd-stat-card {
-      width: 100%;
-    }
-    .hpd-stat-card--neutral { background: var(--hpd-color-card-neutral); color: var(--hpd-color-text-on-dark); }
-    .hpd-stat-card--urgent { background: var(--hpd-color-card-urgent); }
-    .hpd-stat-card--open { background: var(--hpd-color-card-open); }
-    .hpd-stat-card--closed { background: var(--hpd-color-card-closed); }
-    .hpd-stat-card--selected { border-color: var(--hpd-color-primary-blue); }
-    strong { font-size: 2rem; }
+    </ng-template>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -73,4 +86,12 @@ export default class StatCardComponent {
   @Input() interactive = true;
   @Input() link: string | string[] | null = null;
   @Output() readonly activate = new EventEmitter<void>();
+
+  get badgeClass(): string {
+    return BADGE_CLASSES[this.variant];
+  }
+
+  get barClass(): string {
+    return BAR_CLASSES[this.variant];
+  }
 }

@@ -15,7 +15,7 @@ export interface StatCard {
   selector: 'hpd-stat-card-row',
   imports: [StatCardComponent],
   template: `
-    <div class="hpd-stat-grid" role="list">
+    <div class="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-4" role="list">
       @for (card of cards; track card.id) {
         <div role="listitem">
           <hpd-stat-card

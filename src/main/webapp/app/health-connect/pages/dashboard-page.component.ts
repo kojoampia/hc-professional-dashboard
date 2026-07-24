@@ -15,21 +15,21 @@ import AsyncStateComponent from '../../shared/health-connect/async-state/async-s
   selector: 'hpd-dashboard-page',
   imports: [AsyncStateComponent, GroupedBarChartComponent, LineChartComponent, PieChartComponent, StatCardRowComponent, TranslateModule],
   template: `
-    <main class="hpd-container py-4">
-      <h1>{{ 'healthConnect.navigation.dashboard' | translate }}</h1>
+    <main class="mx-auto max-w-7xl space-y-6 px-4 py-8 md:px-8">
+      <h1 class="sr-only">{{ 'healthConnect.navigation.dashboard' | translate }}</h1>
 
       <section aria-labelledby="hpd-dashboard-demographics">
-        <h2 id="hpd-dashboard-demographics">{{ 'healthConnect.dashboard.demographics' | translate }}</h2>
+        <h2 id="hpd-dashboard-demographics" class="sr-only">{{ 'healthConnect.dashboard.demographics' | translate }}</h2>
         <hpd-stat-card-row [cards]="demographicCards()" (selected)="navigateDemographic($event)" />
       </section>
 
       <section aria-labelledby="hpd-dashboard-case-status">
-        <h2 id="hpd-dashboard-case-status">{{ 'healthConnect.dashboard.caseStatus' | translate }}</h2>
+        <h2 id="hpd-dashboard-case-status" class="sr-only">{{ 'healthConnect.dashboard.caseStatus' | translate }}</h2>
         <hpd-stat-card-row [cards]="caseCards()" (selected)="navigateCaseStatus($event)" />
       </section>
 
       <hpd-async-state [status]="repository.asyncState().status" [empty]="false" (retry)="repository.reset()">
-        <section class="hpd-dashboard-charts" [attr.aria-label]="'healthConnect.dashboard.charts.title' | translate">
+        <section class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3" [attr.aria-label]="'healthConnect.dashboard.charts.title' | translate">
           <hpd-line-chart
             [points]="repository.charts().caseTimeline"
             titleKey="healthConnect.dashboard.caseTime"
@@ -55,17 +55,6 @@ import AsyncStateComponent from '../../shared/health-connect/async-state/async-s
         </section>
       </hpd-async-state>
     </main>
-  `,
-  styles: `
-    section + section {
-      margin-top: 2rem;
-    }
-    .hpd-dashboard-charts {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-      gap: 1rem;
-      margin-top: 2rem;
-    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
