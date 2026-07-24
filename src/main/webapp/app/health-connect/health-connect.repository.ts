@@ -350,6 +350,15 @@ export class MockHealthConnectRepository implements HealthConnectRepository {
   }
 }
 
+/**
+ * Default provider stays the in-memory mock: no backend implements the
+ * Phase 1 REST contracts yet (see application-migration.md / work/phase-1.md).
+ * Once one exists, swap in the real implementation with a one-line DI override:
+ *
+ *   { provide: HEALTH_CONNECT_REPOSITORY, useClass: HttpHealthConnectRepository }
+ *
+ * (see ./http-health-connect.repository.ts).
+ */
 export const HEALTH_CONNECT_REPOSITORY = new InjectionToken<HealthConnectRepository>('HEALTH_CONNECT_REPOSITORY', {
   providedIn: 'root',
   factory: () => inject(MockHealthConnectRepository),
