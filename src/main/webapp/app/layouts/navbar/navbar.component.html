@@ -149,17 +149,19 @@
         }
       </mat-menu>
 
-      <button
-        class="hpd-focusable md:hidden"
-        mat-icon-button
-        type="button"
-        data-cy="navbarToggle"
-        [attr.aria-expanded]="!isNavbarCollapsed"
-        [attr.aria-label]="'global.menu.home' | translate"
-        (click)="toggleNavbar()"
-      >
-        <mat-icon aria-hidden="true">menu</mat-icon>
-      </button>
+      <span class="md:hidden">
+        <button
+          class="hpd-focusable"
+          mat-icon-button
+          type="button"
+          data-cy="navbarToggle"
+          [attr.aria-expanded]="!isNavbarCollapsed"
+          [attr.aria-label]="'global.menu.home' | translate"
+          (click)="toggleNavbar()"
+        >
+          <mat-icon aria-hidden="true">menu</mat-icon>
+        </button>
+      </span>
     </div>
   </div>
 

@@ -67,11 +67,32 @@ No component-level changes were needed — `StatCardComponent` and everything el
 
 - `CLAUDE.md`, `README.md`, `AGENTS.md` — each documents this as a standing convention: the whole application uses Inter uniformly, loaded via `index.html`, applied via `global.scss`'s `body` rule and Tailwind's `--font-sans` token, and no second font family should be introduced (use Tailwind's `font-*` weight utilities for emphasis instead).
 
+## Part 5 — Two follow-up bugs after the uniform-font change: menu-item font, and the mobile toggle showing on desktop
+
+### Context
+
+Reported after Part 4: the navbar's dropdown buttons (the account/admin/language `<mat-menu>` items) still rendered in a different font than the rest of the app, and the small-screen hamburger toggle button was showing up on normal/large viewports where it should be hidden. Reproduced and root-caused both live in the running dev app (`npm start`, inspected via computed styles and the CSSOM) rather than guessing from source alone.
+
+### Bug 1 — menu items rendering in Arial, not Inter
+
+Root cause: `content/css/tailwind.css` only imports `tailwindcss/theme` and `tailwindcss/utilities` — not `tailwindcss/preflight`. Preflight is what normally resets `button, input, select, textarea` to `font-family: inherit`; browsers otherwise give form controls (including `<button>`, which is what every `mat-menu-item` and `mat-icon-button` renders as) their own platform UI font instead of inheriting from the page. Confirmed live: every `<button>` on the page computed to `font-family: Arial`, while every other element correctly computed to `Inter`.
+
+**Fix:** `content/scss/global.scss` — added `button, input, select, textarea, optgroup { font-family: inherit; }` (the one Preflight rule actually needed here), right after the `body` font rule from Part 4. No change to `tailwind.css` — full Preflight wasn't imported and pulling it in now would reset margins/borders/appearance across every form control in the app, a much bigger blast radius than this bug warranted.
+
+### Bug 2 — mobile toggle button visible on desktop
+
+Root cause: the toggle `<button>` had `class="hpd-focusable md:hidden"` directly on the same element as Angular Material's `mat-icon-button` directive. Material injects its component CSS (`.mat-mdc-icon-button { display: inline-block; ... }`, unconditional, no media query) into `<head>` at runtime, as the component renders — which happens _after_ the page's statically-linked stylesheet has already been parsed. At a viewport ≥768px, Tailwind's `.md\:hidden { display: none; }` (compiled into a `@media (width >= 48rem)` block) and Material's rule are both single-class selectors with identical specificity; the tiebreaker is source order, and Material's runtime-injected `<style>` tag always lands after the static stylesheet — so Material's `display: inline-block` was winning regardless of viewport width, and the button never actually hid.
+
+**Fix:** `app/layouts/navbar/navbar.component.html` — moved `md:hidden` off the `<button>` itself and onto a wrapping `<span class="md:hidden">`, so the hide rule targets a plain element Material's injected styles never touch. Sidesteps the specificity race entirely rather than fighting it with `!important` or a more specific selector.
+
+Verified live in the browser at the default (wide) viewport: before the fix, `getComputedStyle(toggleButton).display` was `"block"`; after, the wrapping `<span>` computes to `display: none` and the button disappears from the DOM's visible layout, while the account/language `mat-menu` items now compute `font-family: "Inter"`. Also scanned every visible element on the page after the fix for any non-Inter computed font — none found (the only exception, `<html>` itself defaulting to the browser's serif UA font, is invisible since all real text lives inside `<body>`, which correctly cascades Inter).
+
 ## Verification
 
 - `npx tsc -p tsconfig.app.json --noEmit` — clean.
 - `npx ng build --configuration development` and `--configuration production` — both clean, no new warnings or bundle-budget issues.
-- `npx ng test` — full suite, 75/75 suites, 315/315 tests passing across all four changes (including `chart-components.spec.ts`, `chart-transforms.spec.ts`, and `dashboard-page.component.spec.ts`).
+- `npx ng test` — full suite, 75/75 suites, 315/315 tests passing across all five changes (including `navbar.component.spec.ts`, `chart-components.spec.ts`, `chart-transforms.spec.ts`, and `dashboard-page.component.spec.ts`).
 - `npm run lint` — clean.
 - `npx prettier --check`/`--write` — clean on all touched files, including the three documentation files.
 - Confirmed in the compiled dev bundle (`target/classes/static/styles.css`) that `body{font-family:var(--hpd-font-body)}` and the `--font-sans` override both made it into the final CSS, and that the Inter `<link>` is present in the compiled `index.html`.
+- Part 5's two fixes were verified live against the running dev server (`npm start`) via computed-style inspection and direct CSSOM traversal, not just a rebuild — both bugs were confirmed present before the fix and gone after.

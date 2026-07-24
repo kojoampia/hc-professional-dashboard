@@ -178,6 +178,22 @@ body {
   font-family: var(--hpd-font-body);
 }
 
+/*
+ * Browsers don't inherit font-family into form controls by default (they use
+ * a platform UI font instead) — Tailwind's Preflight reset normally handles
+ * this, but this project only imports tailwindcss/theme + tailwindcss/utilities,
+ * not tailwindcss/preflight (see content/css/tailwind.css), so it's done here
+ * instead. Without this, every <button> (e.g. mat-menu-item entries in the
+ * navbar dropdowns) renders in the browser's default UI font instead of Inter.
+ */
+button,
+input,
+select,
+textarea,
+optgroup {
+  font-family: inherit;
+}
+
 body,
 h1,
 h2,
