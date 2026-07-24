@@ -31,14 +31,20 @@ Scoped to this one chart only, since it's the one named in the request; the line
 
 ### Context
 
-The "Case Distribution" doughnut chart (`charts/pie-chart.component.ts`, data built by `chart-transforms.ts`'s `toDoughnutChartData`) colored its three slices (urgent/open/closed case counts) by picking sequentially from a generic indigo/slate `CHART_PALETTE` by array index, with no relationship between a slice's color and what it represents. Asked to use fixed, meaningful colors instead: orange for urgent, amber for open, green for closed.
+The "Case Distribution" doughnut chart (`charts/pie-chart.component.ts`, data built by `chart-transforms.ts`'s `toDoughnutChartData`) colored its three slices (urgent/open/closed case counts) by picking sequentially from a generic indigo/slate `CHART_PALETTE` by array index, with no relationship between a slice's color and what it represents. Asked to use fixed, meaningful colors instead.
+
+The first pass used a literal orange/amber/green reading of the request. A follow-up request asked for conformity instead: reuse the exact colors the case-status stat cards above the chart already use for these same three variants (`shared/health-connect/stat-card/stat-card.component.ts`'s `BADGE_CLASSES`/`BAR_CLASSES`), so the doughnut slices visually agree with the stat cards rather than introducing a second, different color language for the same three statuses.
 
 ### Change
 
-- `charts/chart-transforms.ts` — added a `CASE_STATUS_COLORS` lookup (`urgent: '#f97316'` orange, `open: '#f59e0b'` amber, `closed: '#22c55e'` green) and changed `toDoughnutChartData`'s `backgroundColor` mapping to look up each segment's color by its `label` field (which is always `'urgent'`/`'open'`/`'closed'` — see `health-connect.repository.ts`'s `charts()` computed and the `CaseDistributionSegmentDto` contract in `api/dashboard-api.model.ts`) instead of by array position. Falls back to the original `CHART_PALETTE`-by-index behavior for any unrecognized label, so this doesn't break if the backend ever adds a status this chart doesn't know about.
-- `charts/chart-transforms.spec.ts` — updated the `toDoughnutChartData` test to cover all three known statuses and their expected colors, plus a new case asserting the palette fallback for an unknown label.
+- `charts/chart-transforms.ts` — added a `CASE_STATUS_COLORS` lookup and changed `toDoughnutChartData`'s `backgroundColor` mapping to look up each segment's color by its `label` field (always `'urgent'`/`'open'`/`'closed'` — see `health-connect.repository.ts`'s `charts()` computed and the `CaseDistributionSegmentDto` contract in `api/dashboard-api.model.ts`) instead of by array position. Falls back to the original `CHART_PALETTE`-by-index behavior for any unrecognized label, so this doesn't break if the backend ever adds a status this chart doesn't know about.
+  - Final colors, matched to `StatCardComponent`'s `BADGE_CLASSES`/`BAR_CLASSES` for the same variants (Tailwind's `rose-500`/`indigo-500`/`emerald-500`, the exact hex values Tailwind resolves those utility classes to):
+    - `urgent`: `#f43f5e` (rose-500 — was briefly orange `#f97316` in the first pass, replaced for stat-card conformity)
+    - `open`: `#6366f1` (indigo-500 — was briefly amber `#f59e0b`)
+    - `closed`: `#10b981` (emerald-500 — was briefly green `#22c55e`)
+- `charts/chart-transforms.spec.ts` — updated the `toDoughnutChartData` test to cover all three known statuses and their (now stat-card-matching) colors, plus a case asserting the palette fallback for an unknown label.
 
-This only affects `toDoughnutChartData`/the case-distribution pie chart — `toGroupedBarChartData` (used by "Cases by Patient") still colors its series from the generic `CHART_PALETTE`, since that chart's series are per-patient groupings ("new"/"returning"), not case statuses, and weren't part of this request.
+This only affects `toDoughnutChartData`/the case-distribution pie chart — `toGroupedBarChartData` (used by "Cases by Patient") still colors its series from the generic `CHART_PALETTE`, since that chart's series are per-patient groupings ("new"/"returning"), not case statuses, and weren't part of either request.
 
 ## Verification
 

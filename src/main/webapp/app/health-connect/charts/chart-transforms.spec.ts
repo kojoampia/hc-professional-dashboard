@@ -37,7 +37,7 @@ describe('HealthConnect chart transforms', () => {
       ),
     ).toEqual({
       labels: ['Status: urgent', 'Status: open', 'Status: closed'],
-      datasets: [{ data: [2, 3, 5], backgroundColor: ['#f97316', '#f59e0b', '#22c55e'], borderWidth: 0 }],
+      datasets: [{ data: [2, 3, 5], backgroundColor: ['#f43f5e', '#6366f1', '#10b981'], borderWidth: 0 }],
     });
 
     expect(toDoughnutChartData([{ label: 'unknown', value: 1 }], segment => segment.label)).toEqual({

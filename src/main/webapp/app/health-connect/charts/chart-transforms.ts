@@ -5,11 +5,16 @@ import { GroupedBarChartGroup, LineChartPoint, PieChartSegment } from '../health
 /** Indigo/slate palette from professional-demo.html — see application-migration.md Phase 0. */
 const CHART_PALETTE = ['#6366f1', '#818cf8', '#1b3a57', '#0e7c6b', '#f59e0b'];
 
-/** Case-status colors for the case distribution chart: orange/amber/green for urgent/open/closed. */
+/**
+ * Case-status colors for the case distribution chart — matches
+ * shared/health-connect/stat-card/stat-card.component.ts's BADGE_CLASSES/
+ * BAR_CLASSES for the same variants (rose/indigo/emerald-500) so the
+ * doughnut chart's slice colors agree with the stat cards above it.
+ */
 const CASE_STATUS_COLORS: Record<string, string> = {
-  urgent: '#f97316',
-  open: '#f59e0b',
-  closed: '#22c55e',
+  urgent: '#f43f5e',
+  open: '#6366f1',
+  closed: '#10b981',
 };
 
 export type LineChartJsData = ChartData<'line', number[], string>;
