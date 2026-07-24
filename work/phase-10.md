@@ -27,10 +27,23 @@ The "Cases by Patient" chart (`charts/grouped-bar-chart.component.ts`) plots cas
 
 Scoped to this one chart only, since it's the one named in the request; the line chart's y-axis uses the same `caseCount` label but wasn't reported as showing decimals and was left untouched.
 
+## Part 3 — "Case Distribution": status-specific slice colors
+
+### Context
+
+The "Case Distribution" doughnut chart (`charts/pie-chart.component.ts`, data built by `chart-transforms.ts`'s `toDoughnutChartData`) colored its three slices (urgent/open/closed case counts) by picking sequentially from a generic indigo/slate `CHART_PALETTE` by array index, with no relationship between a slice's color and what it represents. Asked to use fixed, meaningful colors instead: orange for urgent, amber for open, green for closed.
+
+### Change
+
+- `charts/chart-transforms.ts` — added a `CASE_STATUS_COLORS` lookup (`urgent: '#f97316'` orange, `open: '#f59e0b'` amber, `closed: '#22c55e'` green) and changed `toDoughnutChartData`'s `backgroundColor` mapping to look up each segment's color by its `label` field (which is always `'urgent'`/`'open'`/`'closed'` — see `health-connect.repository.ts`'s `charts()` computed and the `CaseDistributionSegmentDto` contract in `api/dashboard-api.model.ts`) instead of by array position. Falls back to the original `CHART_PALETTE`-by-index behavior for any unrecognized label, so this doesn't break if the backend ever adds a status this chart doesn't know about.
+- `charts/chart-transforms.spec.ts` — updated the `toDoughnutChartData` test to cover all three known statuses and their expected colors, plus a new case asserting the palette fallback for an unknown label.
+
+This only affects `toDoughnutChartData`/the case-distribution pie chart — `toGroupedBarChartData` (used by "Cases by Patient") still colors its series from the generic `CHART_PALETTE`, since that chart's series are per-patient groupings ("new"/"returning"), not case statuses, and weren't part of this request.
+
 ## Verification
 
 - `npx tsc -p tsconfig.app.json --noEmit` — clean.
 - `npx ng build --configuration development` — clean, no new warnings.
-- `npx ng test` — full suite, 75/75 suites, 315/315 tests passing across both changes (including `chart-components.spec.ts` and `dashboard-page.component.spec.ts`, neither of which assert on the changed classes/options).
+- `npx ng test` — full suite, 75/75 suites, 315/315 tests passing across all three changes (including `chart-components.spec.ts`, `chart-transforms.spec.ts`, and `dashboard-page.component.spec.ts`).
 - `npm run lint` — clean.
 - `npx prettier --check` — clean on all touched files.

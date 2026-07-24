@@ -5,6 +5,13 @@ import { GroupedBarChartGroup, LineChartPoint, PieChartSegment } from '../health
 /** Indigo/slate palette from professional-demo.html — see application-migration.md Phase 0. */
 const CHART_PALETTE = ['#6366f1', '#818cf8', '#1b3a57', '#0e7c6b', '#f59e0b'];
 
+/** Case-status colors for the case distribution chart: orange/amber/green for urgent/open/closed. */
+const CASE_STATUS_COLORS: Record<string, string> = {
+  urgent: '#f97316',
+  open: '#f59e0b',
+  closed: '#22c55e',
+};
+
 export type LineChartJsData = ChartData<'line', number[], string>;
 export type DoughnutChartJsData = ChartData<'doughnut', number[], string>;
 export type BarChartJsData = ChartData<'bar', number[], string>;
@@ -31,7 +38,7 @@ export const toDoughnutChartData = (
   datasets: [
     {
       data: segments.map(segment => segment.value),
-      backgroundColor: segments.map((_, index) => CHART_PALETTE[index % CHART_PALETTE.length]),
+      backgroundColor: segments.map((segment, index) => CASE_STATUS_COLORS[segment.label] ?? CHART_PALETTE[index % CHART_PALETTE.length]),
       borderWidth: 0,
     },
   ],

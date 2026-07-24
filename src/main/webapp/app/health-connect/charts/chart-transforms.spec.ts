@@ -26,9 +26,23 @@ describe('HealthConnect chart transforms', () => {
   });
 
   it('maps pie segments and grouped bars to Chart.js data', () => {
-    expect(toDoughnutChartData([{ label: 'urgent', value: 2 }], segment => `Status: ${segment.label}`)).toEqual({
-      labels: ['Status: urgent'],
-      datasets: [{ data: [2], backgroundColor: ['#6366f1'], borderWidth: 0 }],
+    expect(
+      toDoughnutChartData(
+        [
+          { label: 'urgent', value: 2 },
+          { label: 'open', value: 3 },
+          { label: 'closed', value: 5 },
+        ],
+        segment => `Status: ${segment.label}`,
+      ),
+    ).toEqual({
+      labels: ['Status: urgent', 'Status: open', 'Status: closed'],
+      datasets: [{ data: [2, 3, 5], backgroundColor: ['#f97316', '#f59e0b', '#22c55e'], borderWidth: 0 }],
+    });
+
+    expect(toDoughnutChartData([{ label: 'unknown', value: 1 }], segment => segment.label)).toEqual({
+      labels: ['unknown'],
+      datasets: [{ data: [1], backgroundColor: ['#6366f1'], borderWidth: 0 }],
     });
 
     expect(
