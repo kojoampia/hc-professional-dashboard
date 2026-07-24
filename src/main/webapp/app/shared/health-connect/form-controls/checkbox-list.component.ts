@@ -14,17 +14,15 @@ export interface CheckboxListOption {
   template: `
     <div role="group" class="grid gap-3" [attr.aria-label]="labelKey | translate">
       @for (option of options; track option.id) {
-        <label class="form-check group flex cursor-pointer items-center gap-3">
+        <label class="group flex cursor-pointer items-center gap-3">
           <input
-            class="form-check-input hpd-focusable h-5 w-5 rounded border-slate-300 accent-hpd-primary"
+            class="hpd-focusable h-5 w-5 rounded border-slate-300 accent-hpd-primary"
             type="checkbox"
             [checked]="checkedIds.includes(option.id)"
             [disabled]="disabled || (option.disabled ?? false)"
             (change)="toggle(option.id, $any($event.target).checked)"
           />
-          <span class="form-check-label select-none font-medium text-slate-700 group-hover:text-slate-900">{{
-            option.labelKey | translate
-          }}</span>
+          <span class="select-none font-medium text-slate-700 group-hover:text-slate-900">{{ option.labelKey | translate }}</span>
         </label>
       }
     </div>

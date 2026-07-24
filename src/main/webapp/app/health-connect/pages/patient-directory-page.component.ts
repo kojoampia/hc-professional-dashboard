@@ -47,14 +47,14 @@ const isPatientSex = (value: string | null): value is PatientSex => value === 'f
               </select>
             </label>
 
-            <label class="form-check flex items-center gap-2 pb-2 text-sm text-slate-600">
+            <label class="flex items-center gap-2 pb-2 text-sm text-slate-600">
               <input
-                class="form-check-input hpd-focusable h-4 w-4 rounded accent-hpd-primary"
+                class="hpd-focusable h-4 w-4 rounded accent-hpd-primary"
                 type="checkbox"
                 [checked]="childrenOnly()"
                 (change)="setChildrenOnly($any($event.target).checked)"
               />
-              <span class="form-check-label">{{ 'healthConnect.patient.childrenOnly' | translate }}</span>
+              <span>{{ 'healthConnect.patient.childrenOnly' | translate }}</span>
             </label>
 
             <div class="w-full max-w-xs">

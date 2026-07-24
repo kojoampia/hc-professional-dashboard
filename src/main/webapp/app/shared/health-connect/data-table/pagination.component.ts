@@ -8,10 +8,10 @@ import { TranslateModule } from '@ngx-translate/core';
   template: `
     @if (totalPages > 1) {
       <nav [attr.aria-label]="'healthConnect.pagination.label' | translate">
-        <ul class="pagination mt-3 flex items-center justify-center gap-1 text-xs text-slate-500">
-          <li class="page-item" [class.disabled]="currentPage() === 1">
+        <ul class="mt-3 flex items-center justify-center gap-1 text-xs text-slate-500">
+          <li>
             <button
-              class="page-link hpd-focusable rounded-md px-2 py-1 font-medium hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+              class="hpd-focusable rounded-md px-2 py-1 font-medium hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
               type="button"
               [disabled]="currentPage() === 1"
               (click)="goTo(currentPage() - 1)"
@@ -20,9 +20,9 @@ import { TranslateModule } from '@ngx-translate/core';
             </button>
           </li>
           @for (page of pages; track page) {
-            <li class="page-item" [class.active]="page === currentPage()">
+            <li>
               <button
-                class="page-link hpd-focusable h-7 w-7 rounded-md font-medium"
+                class="hpd-focusable h-7 w-7 rounded-md font-medium"
                 [class.bg-hpd-primary]="page === currentPage()"
                 [class.text-white]="page === currentPage()"
                 [class.text-slate-500]="page !== currentPage()"
@@ -36,9 +36,9 @@ import { TranslateModule } from '@ngx-translate/core';
               </button>
             </li>
           }
-          <li class="page-item" [class.disabled]="currentPage() === totalPages">
+          <li>
             <button
-              class="page-link hpd-focusable rounded-md px-2 py-1 font-medium hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+              class="hpd-focusable rounded-md px-2 py-1 font-medium hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
               type="button"
               [disabled]="currentPage() === totalPages"
               (click)="goTo(currentPage() + 1)"

@@ -7,11 +7,11 @@ import { TranslateModule } from '@ngx-translate/core';
   selector: 'hpd-text-input',
   imports: [FormsModule, TranslateModule],
   template: `
-    <label>
+    <label class="grid gap-1 text-sm text-slate-700">
       <span>{{ labelKey | translate }}</span>
       @if (multiline) {
         <textarea
-          class="form-control hpd-focusable"
+          class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
           [disabled]="disabled"
           [readOnly]="readOnly"
           [value]="value"
@@ -19,7 +19,7 @@ import { TranslateModule } from '@ngx-translate/core';
         ></textarea>
       } @else {
         <input
-          class="form-control hpd-focusable"
+          class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
           [type]="type"
           [disabled]="disabled"
           [readOnly]="readOnly"

@@ -20,7 +20,7 @@ describe('PaginationComponent', () => {
     fixture.detectChanges();
 
     const pageTwo = fixture.nativeElement.querySelector('[aria-label="healthConnect.pagination.page"]') as HTMLButtonElement;
-    const pages = fixture.nativeElement.querySelectorAll('li.page-item button');
+    const pages = fixture.nativeElement.querySelectorAll('li button');
     (pages[2] as HTMLButtonElement).click();
     expect(component.currentPage()).toBe(2);
     expect(pageChange).toHaveBeenCalledWith(2);

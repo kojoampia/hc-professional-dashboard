@@ -7,7 +7,7 @@ import { TranslateModule } from '@ngx-translate/core';
   imports: [TranslateModule],
   template: `
     <div class="hpd-loading-skeleton" role="status">
-      <span class="visually-hidden">{{ labelKey | translate }}</span>
+      <span class="sr-only">{{ labelKey | translate }}</span>
       @for (item of items; track item) {
         <div class="hpd-loading-skeleton__line" aria-hidden="true"></div>
       }

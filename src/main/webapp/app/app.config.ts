@@ -6,15 +6,12 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
-import { NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
-
 import { DEBUG_INFO_ENABLED } from 'app/app.constants';
 import './config/dayjs';
 import { TranslationModule } from 'app/shared/language/translation.module';
 import { httpInterceptorProviders } from 'app/core/interceptor/index';
 import routes from './app.routes';
 // jhipster-needle-angular-add-module-import JHipster will add new module here
-import { NgbDateDayjsAdapter } from './config/datepicker-adapter';
 import { AppPageTitleStrategy } from './app-page-title-strategy';
 
 const routerFeatures: Array<RouterFeatures> = [withComponentInputBinding()];
@@ -34,7 +31,6 @@ export const appConfig: ApplicationConfig = {
     provideCharts(withDefaultRegisterables()),
     Title,
     { provide: LOCALE_ID, useValue: 'en' },
-    { provide: NgbDateAdapter, useClass: NgbDateDayjsAdapter },
     httpInterceptorProviders,
     { provide: TitleStrategy, useClass: AppPageTitleStrategy },
     // jhipster-needle-angular-add-module JHipster will add new module here

@@ -1,7 +1,3 @@
-@import 'bootstrap-variables';
-@import 'bootstrap/scss/functions';
-@import 'bootstrap/scss/variables';
-
 /* ==========================================================================
 HealthConnect design tokens and layout primitives
 
@@ -119,15 +115,6 @@ token to its current value and where it surfaces:
     gap: 0.75rem;
   }
 
-  .pagination {
-    flex-wrap: wrap;
-    gap: 0.25rem;
-  }
-
-  .pagination .page-link {
-    min-width: 2.5rem;
-  }
-
   .table-responsive {
     margin-inline: -0.25rem;
   }
@@ -139,7 +126,6 @@ token to its current value and where it surfaces:
   }
 
   .hpd-no-print,
-  .navbar,
   .footer {
     display: none !important;
   }
@@ -177,7 +163,7 @@ token to its current value and where it surfaces:
 }
 
 /* ==============================================================
-Bootstrap tweaks
+Typography
 ===============================================================*/
 
 body,
@@ -188,7 +174,7 @@ h4 {
   font-weight: 300;
 }
 
-/* Increase contrast of links to get 100% on Lighthouse Accessibility Audit. Override this color if you want to change the link color, or use a Bootswatch theme */
+/* Increase contrast of links to get 100% on Lighthouse Accessibility Audit. */
 a {
   color: #1b67e2;
   font-weight: bold;
@@ -196,35 +182,8 @@ a {
 
 a:hover {
   color: #1b67e2;
-}
-
-/* override hover color for dropdown-item forced by bootstrap to all a:not([href]):not([tabindex]) elements in _reboot.scss */
-a:not([href]):not([tabindex]):hover.dropdown-item {
-  color: $dropdown-link-hover-color;
-}
-
-/* override .dropdown-item.active background-color on hover */
-.dropdown-item.active:hover {
-  background-color: mix($dropdown-link-hover-bg, $dropdown-link-active-bg, 50%);
-}
-
-a:hover {
   /* make sure browsers use the pointer cursor for anchors, even with no href */
   cursor: pointer;
-}
-
-.dropdown-item:hover {
-  color: $dropdown-link-hover-color;
-}
-
-.text-info {
-  color: #1b67e2 !important;
-}
-
-.fa-bars {
-  color: #1b67e2;
-  background-color: #fff;
-  border-color: #1b67e2;
 }
 
 /* ==========================================================================
@@ -253,41 +212,9 @@ Generic styles
 
 /* other generic styles */
 
-.jh-card {
-  padding: 1.5%;
-  margin-top: 20px;
-  border: none;
-}
-
 .error {
   color: white;
   background-color: red;
-}
-
-.pad {
-  padding: 10px;
-}
-
-.w-40 {
-  width: 40% !important;
-}
-
-.w-60 {
-  width: 60% !important;
-}
-
-.break {
-  white-space: normal;
-  word-break: break-all;
-}
-
-.form-control {
-  background-color: #fff;
-}
-
-.readonly {
-  background-color: #eee;
-  opacity: 1;
 }
 
 .footer {
@@ -295,7 +222,6 @@ Generic styles
   font-size: small;
 }
 
-.hand,
 [jhisortby] {
   cursor: pointer;
 }
@@ -304,20 +230,6 @@ Generic styles
 Custom alerts for notification
 ========================================================================== */
 .alerts {
-  .alert {
-    text-overflow: ellipsis;
-    pre {
-      background: none;
-      border: none;
-      font: inherit;
-      color: inherit;
-      padding: 0;
-      margin: 0;
-    }
-    .popover pre {
-      font-size: 10px;
-    }
-  }
   .hpd-toast {
     position: fixed;
     width: 100%;
@@ -334,73 +246,12 @@ Custom alerts for notification
       bottom: 55px;
     }
   }
-  .alert-link {
-    color: #1b67e2;
-  }
 }
 
 @media screen and (min-width: 480px) {
   .alerts .hpd-toast {
     width: 50%;
   }
-}
-
-/* ==========================================================================
-entity list page css
-========================================================================== */
-
-.table-entities thead th .d-flex > * {
-  margin: auto 0;
-}
-
-/* ==========================================================================
-entity detail page css
-========================================================================== */
-.row-md.jh-entity-details {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  column-gap: 10px;
-  line-height: 1.5;
-}
-
-@media screen and (min-width: 768px) {
-  .row-md.jh-entity-details > {
-    dt {
-      float: left;
-      overflow: hidden;
-      clear: left;
-      text-align: right;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      padding: 0.5em 0;
-    }
-    dd {
-      border-bottom: 1px solid #eee;
-      padding: 0.5em 0;
-      margin-left: 0;
-    }
-  }
-}
-
-/* ==========================================================================
-ui bootstrap tweaks
-========================================================================== */
-.nav,
-.pagination,
-.carousel,
-.panel-title a {
-  cursor: pointer;
-}
-
-.thread-dump-modal-lock {
-  max-width: 450px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.dropdown-menu {
-  padding-left: 0px;
 }
 
 /* ==========================================================================
@@ -414,14 +265,5 @@ angular-cli removes postcss-rtl processed inline css, processed rules must be ad
   -o-transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
   transform: rotate(-45deg);
-}
-
-/* navbar.component.scss */
-.navbar {
-  ul.navbar-nav {
-    .nav-item {
-      margin-left: 0.5em;
-    }
-  }
 }
 /* jhipster-needle-scss-add-main JHipster will add new css style */

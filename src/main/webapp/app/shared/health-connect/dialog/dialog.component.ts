@@ -28,7 +28,12 @@ import { TranslateModule } from '@ngx-translate/core';
     >
       <header>
         <h2 [id]="dialogTitleId">{{ titleKey | translate }}</h2>
-        <button #closeButton class="hpd-focusable btn btn-outline-secondary" type="button" (click)="closed.emit()">
+        <button
+          #closeButton
+          class="hpd-focusable rounded-full border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100"
+          type="button"
+          (click)="closed.emit()"
+        >
           {{ 'healthConnect.actions.close' | translate }}
         </button>
       </header>
