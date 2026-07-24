@@ -1,0 +1,42 @@
+{
+  "annotations": {
+    "changelogDate": "20260724060700"
+  },
+  "clientRootFolder": "patientService",
+  "databaseType": "mongodb",
+  "dto": "no",
+  "entityTableName": "clinicalreport",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "patientId",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "occurredAt",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "label",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "reportType",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "url",
+      "fieldType": "String"
+    }
+  ],
+  "microserviceName": "patientService",
+  "name": "ClinicalReport",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

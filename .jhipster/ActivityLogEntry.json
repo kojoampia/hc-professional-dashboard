@@ -1,0 +1,46 @@
+{
+  "annotations": {
+    "changelogDate": "20260724060600"
+  },
+  "clientRootFolder": "patientService",
+  "databaseType": "mongodb",
+  "dto": "no",
+  "entityTableName": "activitylogentry",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "patientId",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "occurredAt",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "label",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "title",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "createdAt",
+      "fieldType": "Instant"
+    }
+  ],
+  "microserviceName": "patientService",
+  "name": "ActivityLogEntry",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

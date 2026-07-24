@@ -1,0 +1,42 @@
+{
+  "annotations": {
+    "changelogDate": "20260724060100"
+  },
+  "clientRootFolder": "professionalService",
+  "databaseType": "mongodb",
+  "dto": "no",
+  "entityTableName": "dutyshift",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "rosterId",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "professionalId",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "startsAt",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "endsAt",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "String"
+    }
+  ],
+  "microserviceName": "professionalService",
+  "name": "DutyShift",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

@@ -33,6 +33,22 @@
     {
       "fieldName": "modifiedBy",
       "fieldType": "String"
+    },
+    {
+      "fieldName": "patientId",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "assignedRosterId",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "brief",
+      "fieldType": "String"
     }
   ],
   "microserviceName": "hcPatientService",

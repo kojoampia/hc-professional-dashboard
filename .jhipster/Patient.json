@@ -1,8 +1,8 @@
 {
   "annotations": {
-    "changelogDate": "20260720211707"
+    "changelogDate": "20260724060800"
   },
-  "clientRootFolder": "professionalService",
+  "clientRootFolder": "patientService",
   "databaseType": "mongodb",
   "dto": "no",
   "entityTableName": "patient",
@@ -12,31 +12,27 @@
       "fieldType": "String"
     },
     {
-      "fieldName": "firstName",
+      "fieldName": "patientName",
       "fieldType": "String"
     },
     {
-      "fieldName": "middleNames",
-      "fieldType": "String"
-    },
-    {
-      "fieldName": "lastName",
-      "fieldType": "String"
-    },
-    {
-      "fieldName": "birthDate",
-      "fieldType": "LocalDate"
+      "fieldName": "lastActivityAt",
+      "fieldType": "Instant"
     },
     {
       "fieldName": "sex",
       "fieldType": "String"
     },
     {
-      "fieldName": "mobilePhone",
-      "fieldType": "String"
+      "fieldName": "isChild",
+      "fieldType": "Boolean"
     },
     {
-      "fieldName": "phoneNumber",
+      "fieldName": "dateOfBirth",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "phone",
       "fieldType": "String"
     },
     {
@@ -44,20 +40,20 @@
       "fieldType": "String"
     },
     {
-      "fieldName": "address",
+      "fieldName": "emergencyContactName",
       "fieldType": "String"
     },
     {
-      "fieldName": "rosterId",
+      "fieldName": "emergencyContactPhone",
       "fieldType": "String"
     },
     {
-      "fieldName": "teamId",
+      "fieldName": "avatarUrl",
       "fieldType": "String"
     }
   ],
-  "microserviceName": "professionalService",
-  "name": "Profile",
+  "microserviceName": "patientService",
+  "name": "Patient",
   "pagination": "pagination",
   "readOnly": false,
   "relationships": [],

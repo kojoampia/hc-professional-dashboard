@@ -1,0 +1,30 @@
+{
+  "annotations": {
+    "changelogDate": "20260724060000"
+  },
+  "clientRootFolder": "professionalService",
+  "databaseType": "mongodb",
+  "dto": "no",
+  "entityTableName": "dutyroster",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "subscribedProfessionalIds",
+      "fieldType": "String"
+    }
+  ],
+  "microserviceName": "professionalService",
+  "name": "DutyRoster",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

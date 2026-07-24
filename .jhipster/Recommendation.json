@@ -1,0 +1,30 @@
+{
+  "annotations": {
+    "changelogDate": "20260724060300"
+  },
+  "clientRootFolder": "patientService",
+  "databaseType": "mongodb",
+  "dto": "no",
+  "entityTableName": "recommendation",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "label",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "category",
+      "fieldType": "String"
+    }
+  ],
+  "microserviceName": "patientService",
+  "name": "Recommendation",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

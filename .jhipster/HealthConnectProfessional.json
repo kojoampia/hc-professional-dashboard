@@ -1,0 +1,38 @@
+{
+  "annotations": {
+    "changelogDate": "20260724060200"
+  },
+  "clientRootFolder": "professionalService",
+  "databaseType": "mongodb",
+  "dto": "no",
+  "entityTableName": "healthconnectprofessional",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "accountLogin",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "role",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "dutyRosterIds",
+      "fieldType": "String"
+    }
+  ],
+  "microserviceName": "professionalService",
+  "name": "HealthConnectProfessional",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}
