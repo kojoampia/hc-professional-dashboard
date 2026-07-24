@@ -104,6 +104,7 @@
       "description": "Description détaillée de l'événement."
     },
     "roster": {
+      "subtitle": "Abonnez-vous à des plannings pour acheminer leurs cas urgents et ouverts vers votre file « Mon planning ».",
       "allCases": "Tous les cas",
       "myRoster": "Mon planning",
       "subscribed": "Mes plannings abonnés",

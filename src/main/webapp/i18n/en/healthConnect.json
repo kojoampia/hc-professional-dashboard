@@ -104,6 +104,7 @@
       "description": "Detailed description of event."
     },
     "roster": {
+      "subtitle": "Subscribe to rosters to route their urgent and open cases to your \"My roster\" queue.",
       "allCases": "All cases",
       "myRoster": "My roster",
       "subscribed": "My subscribed rosters",

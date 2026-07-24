@@ -104,6 +104,7 @@
       "description": "Detaillierte Ereignisbeschreibung."
     },
     "roster": {
+      "subtitle": "Abonnieren Sie Dienstpläne, um deren dringende und offene Fälle an Ihre Warteschlange „Mein Dienstplan“ weiterzuleiten.",
       "allCases": "Alle Fälle",
       "myRoster": "Mein Dienstplan",
       "subscribed": "Meine abonnierten Dienstpläne",
