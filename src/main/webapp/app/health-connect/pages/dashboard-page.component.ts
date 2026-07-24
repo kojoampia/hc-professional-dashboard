@@ -29,7 +29,7 @@ import AsyncStateComponent from '../../shared/health-connect/async-state/async-s
       </section>
 
       <hpd-async-state [status]="repository.asyncState().status" [empty]="false" (retry)="repository.reset()">
-        <section class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3" [attr.aria-label]="'healthConnect.dashboard.charts.title' | translate">
+        <section class="mt-8 grid grid-cols-1 gap-6" [attr.aria-label]="'healthConnect.dashboard.charts.title' | translate">
           <hpd-line-chart
             [points]="repository.charts().caseTimeline"
             titleKey="healthConnect.dashboard.caseTime"

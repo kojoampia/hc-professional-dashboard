@@ -12,7 +12,7 @@ import { toDoughnutChartData } from './chart-transforms';
   imports: [BaseChartDirective, TranslateModule],
   template: `
     <figure
-      class="hpd-focusable m-0 flex h-full min-w-0 flex-col rounded-2xl border border-slate-100 bg-white p-6 shadow-sm"
+      class="hpd-focusable m-0 flex h-[600px] max-h-[600px] min-w-0 flex-col rounded-2xl border border-slate-100 bg-white p-6 shadow-sm"
       [attr.aria-labelledby]="titleId"
       [attr.aria-describedby]="descriptionId"
     >
