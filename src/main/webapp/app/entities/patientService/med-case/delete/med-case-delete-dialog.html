@@ -1,27 +1,41 @@
 @if (medCase) {
 <form name="deleteForm" (ngSubmit)="confirmDelete(medCase.id!)">
-  <div class="modal-header">
-    <h4 class="modal-title" data-cy="medCaseDeleteDialogHeading" hpdTranslate="entity.delete.title">Confirm delete operation</h4>
+  <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-4">
+    <h4 class="m-0 text-lg font-bold text-slate-900" data-cy="medCaseDeleteDialogHeading" jhiTranslate="entity.delete.title">
+      Confirm delete operation
+    </h4>
   </div>
 
-  <div class="modal-body">
+  <div class="px-6 py-5">
     <hpd-alert-error />
     <p
       id="hpd-delete-medCase-heading"
-      hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.delete.question"
+      class="m-0 text-sm text-slate-600"
+      jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.delete.question"
       [translateValues]="{ id: medCase.id }"
     >
       Are you sure you want to delete Med Case {{ medCase.id }}?
     </p>
   </div>
 
-  <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancel()">
-      <fa-icon icon="ban" />&nbsp;<span hpdTranslate="entity.action.cancel">Cancel</span>
+  <div class="flex justify-end gap-2 border-t border-slate-100 px-6 py-4">
+    <button
+      class="hpd-focusable flex items-center gap-1 rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200"
+      type="button"
+      (click)="cancel()"
+    >
+      <mat-icon aria-hidden="true" class="!text-base">close</mat-icon>
+      <span jhiTranslate="entity.action.cancel">Cancel</span>
     </button>
 
-    <button id="hpd-confirm-delete-medCase" data-cy="entityConfirmDeleteButton" type="submit" class="btn btn-danger">
-      <fa-icon icon="times" />&nbsp;<span hpdTranslate="entity.action.delete">Delete</span>
+    <button
+      id="hpd-confirm-delete-medCase"
+      class="hpd-focusable flex items-center gap-1 rounded-full bg-rose-600 px-4 py-2 text-sm font-medium text-white hover:bg-rose-700"
+      data-cy="entityConfirmDeleteButton"
+      type="submit"
+    >
+      <mat-icon aria-hidden="true" class="!text-base">delete</mat-icon>
+      <span jhiTranslate="entity.action.delete">Delete</span>
     </button>
   </div>
 </form>

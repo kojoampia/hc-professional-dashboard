@@ -7,13 +7,13 @@ import MedCaseResolve from './route/med-case-routing-resolve.service';
 const medCaseRoute: Routes = [
   {
     path: '',
-    loadComponent: () => import('./list/med-case').then(m => m.MedCase),
+    loadComponent: () => import('./list/med-case').then(m => m.MedCaseComponent),
     data: {},
     canActivate: [UserRouteAccessService],
   },
   {
     path: ':id/view',
-    loadComponent: () => import('./detail/med-case-detail').then(m => m.MedCaseDetail),
+    loadComponent: () => import('./detail/med-case-detail').then(m => m.MedCaseDetailComponent),
     resolve: {
       medCase: MedCaseResolve,
     },
@@ -21,7 +21,7 @@ const medCaseRoute: Routes = [
   },
   {
     path: 'new',
-    loadComponent: () => import('./update/med-case-update').then(m => m.MedCaseUpdate),
+    loadComponent: () => import('./update/med-case-update').then(m => m.MedCaseUpdateComponent),
     resolve: {
       medCase: MedCaseResolve,
     },
@@ -29,7 +29,7 @@ const medCaseRoute: Routes = [
   },
   {
     path: ':id/edit',
-    loadComponent: () => import('./update/med-case-update').then(m => m.MedCaseUpdate),
+    loadComponent: () => import('./update/med-case-update').then(m => m.MedCaseUpdateComponent),
     resolve: {
       medCase: MedCaseResolve,
     },

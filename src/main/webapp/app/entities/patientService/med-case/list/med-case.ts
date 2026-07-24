@@ -4,7 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Data, ParamMap, Router, RouterLink } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
+import { MatIconModule } from '@angular/material/icon';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { Subscription, combineLatest, filter, tap } from 'rxjs';
@@ -12,12 +13,12 @@ import { Subscription, combineLatest, filter, tap } from 'rxjs';
 import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
 import { ITEMS_PER_PAGE } from 'app/config/pagination.constants';
 import { ParseLinks } from 'app/core/util/parse-links.service';
-import { Alert } from 'app/shared/alert/alert';
-import { AlertError } from 'app/shared/alert/alert-error';
+import { AlertComponent } from 'app/shared/alert/alert.component';
+import { AlertErrorComponent } from 'app/shared/alert/alert-error.component';
 import { FormatMediumDatetimePipe } from 'app/shared/date';
 import { TranslateDirective } from 'app/shared/language';
 import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
-import { MedCaseDeleteDialog } from '../delete/med-case-delete-dialog';
+import { MedCaseDeleteDialogComponent } from '../delete/med-case-delete-dialog';
 import { IMedCase } from '../med-case.model';
 import { MedCaseService } from '../service/med-case.service';
 
@@ -29,8 +30,9 @@ import { MedCaseService } from '../service/med-case.service';
     RouterLink,
     FormsModule,
     FontAwesomeModule,
-    AlertError,
-    Alert,
+    MatIconModule,
+    AlertErrorComponent,
+    AlertComponent,
     SortDirective,
     SortByDirective,
     TranslateDirective,
@@ -39,7 +41,7 @@ import { MedCaseService } from '../service/med-case.service';
     InfiniteScrollDirective,
   ],
 })
-export class MedCase implements OnInit {
+export class MedCaseComponent implements OnInit {
   subscription: Subscription | null = null;
   readonly medCases = signal<IMedCase[]>([]);
 
@@ -92,7 +94,7 @@ export class MedCase implements OnInit {
   }
 
   delete(medCase: IMedCase): void {
-    const modalRef = this.modalService.open(MedCaseDeleteDialog, { size: 'lg', backdrop: 'static' });
+    const modalRef = this.modalService.open(MedCaseDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
     modalRef.componentInstance.medCase = medCase;
     // unsubscribe not needed because closed completes on modal close
     modalRef.closed

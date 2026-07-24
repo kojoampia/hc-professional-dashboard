@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, ActivatedRouteSnapshot, Router, convertToParamMap } from '@angular/router';
 
@@ -17,6 +17,8 @@ describe('MedCase routing resolve service', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -28,7 +30,7 @@ describe('MedCase routing resolve service', () => {
       ],
     });
     mockRouter = TestBed.inject(Router);
-    vitest.spyOn(mockRouter, 'navigate');
+    jest.spyOn(mockRouter, 'navigate');
     mockActivatedRouteSnapshot = TestBed.inject(ActivatedRoute).snapshot;
     service = TestBed.inject(MedCaseService);
   });
@@ -36,7 +38,7 @@ describe('MedCase routing resolve service', () => {
   describe('resolve', () => {
     it('should return IMedCase returned by find', async () => {
       // GIVEN
-      service.find = vitest.fn(id => of({ id }));
+      service.find = jest.fn(id => of({ id }));
       mockActivatedRouteSnapshot.params = { id: 'ABC' };
 
       // WHEN
@@ -56,7 +58,7 @@ describe('MedCase routing resolve service', () => {
 
     it('should return null if id is not provided', async () => {
       // GIVEN
-      service.find = vitest.fn();
+      service.find = jest.fn();
       mockActivatedRouteSnapshot.params = {};
 
       // WHEN
@@ -76,7 +78,7 @@ describe('MedCase routing resolve service', () => {
 
     it('should route to 404 page if data not found in server', async () => {
       // GIVEN
-      vitest.spyOn(service, 'find').mockReturnValue(throwError(() => new HttpErrorResponse({ status: 404, statusText: 'Not Found' })));
+      jest.spyOn(service, 'find').mockReturnValue(throwError(() => new HttpErrorResponse({ status: 404, statusText: 'Not Found' })));
       mockActivatedRouteSnapshot.params = { id: 'ABC' };
 
       // WHEN
@@ -90,7 +92,7 @@ describe('MedCase routing resolve service', () => {
 
     it('should route to error page if server returns an error other than 404', async () => {
       // GIVEN
-      vitest
+      jest
         .spyOn(service, 'find')
         .mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500, statusText: 'Internal Server Error' })));
       mockActivatedRouteSnapshot.params = { id: 'ABC' };

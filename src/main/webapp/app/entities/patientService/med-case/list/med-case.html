@@ -1,123 +1,150 @@
-<div>
-  <h2 id="page-heading" data-cy="MedCaseHeading">
-    <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.home.title">Med Cases</span>
+<div class="mx-auto max-w-7xl px-4 py-8 md:px-8">
+  <div class="mb-6 flex flex-wrap items-center justify-between gap-3" id="page-heading" data-cy="MedCaseHeading">
+    <h2 class="text-xl font-bold text-slate-900">
+      <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.home.title">Med Cases</span>
+    </h2>
 
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
-        <fa-icon icon="sync" [animation]="isLoading() ? 'spin' : undefined" />
-        <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.home.refreshListLabel">Refresh list</span>
+    <div class="flex flex-wrap items-center gap-2">
+      <button
+        class="hpd-focusable flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
+        type="button"
+        (click)="load()"
+        [disabled]="isLoading()"
+      >
+        <mat-icon aria-hidden="true" class="!text-base" [class.animate-spin]="isLoading()">sync</mat-icon>
+        <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.home.refreshListLabel">Refresh list</span>
       </button>
 
-      <button
+      <a
         id="jh-create-entity"
         data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-med-case"
+        class="hpd-focusable jh-create-entity create-med-case flex items-center gap-1.5 rounded-full bg-hpd-primary px-4 py-1.5 text-sm font-medium text-white transition-colors hover:brightness-110"
         [routerLink]="['/med-case/new']"
       >
-        <fa-icon icon="plus" />
-        <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.home.createLabel">Create a new Med Case</span>
-      </button>
+        <mat-icon aria-hidden="true" class="!text-base">add</mat-icon>
+        <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.home.createLabel">Create a new Med Case</span>
+      </a>
     </div>
-  </h2>
+  </div>
 
   <hpd-alert-error />
 
   <hpd-alert />
 
   @if (medCases().length === 0) {
-  <div class="alert alert-warning" id="no-result">
-    <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.home.notFound">No Med Cases found</span>
+  <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800" id="no-result">
+    <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.home.notFound">No Med Cases found</span>
   </div>
   } @else {
-  <div class="table-responsive table-entities" id="entities">
-    <table class="table table-striped" aria-describedby="page-heading">
-      <thead>
-        <tr hpdSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-          <th scope="col" hpdSortBy="id">
-            <div class="d-flex">
-              <span hpdTranslate="global.field.id">ID</span>
-
-              <fa-icon class="p-1" icon="sort" />
+  <div class="table-responsive table-entities overflow-x-auto rounded-lg border border-slate-200" id="entities">
+    <table class="w-full text-left text-sm text-slate-600" aria-describedby="page-heading">
+      <thead class="bg-slate-50 text-xs uppercase">
+        <tr
+          jhiSort
+          [predicate]="sortState().predicate"
+          [ascending]="sortState().ascending"
+          (sortChange)="navigateToWithComponentValues($event)"
+        >
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="id">
+            <div class="flex items-center gap-1">
+              <span jhiTranslate="global.field.id">ID</span>
+              <fa-icon class="text-slate-400" icon="sort" />
             </div>
           </th>
-          <th scope="col" hpdSortBy="symptoms">
-            <div class="d-flex">
-              <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.symptoms">Symptoms</span>
-
-              <fa-icon class="p-1" icon="sort" />
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="symptoms">
+            <div class="flex items-center gap-1">
+              <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.symptoms">Symptoms</span>
+              <fa-icon class="text-slate-400" icon="sort" />
             </div>
           </th>
-          <th scope="col" hpdSortBy="diagnoses">
-            <div class="d-flex">
-              <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.diagnoses">Diagnoses</span>
-
-              <fa-icon class="p-1" icon="sort" />
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="diagnoses">
+            <div class="flex items-center gap-1">
+              <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.diagnoses">Diagnoses</span>
+              <fa-icon class="text-slate-400" icon="sort" />
             </div>
           </th>
-          <th scope="col" hpdSortBy="recommendations">
-            <div class="d-flex">
-              <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.recommendations">Recommendations</span>
-
-              <fa-icon class="p-1" icon="sort" />
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="recommendations">
+            <div class="flex items-center gap-1">
+              <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.recommendations">Recommendations</span>
+              <fa-icon class="text-slate-400" icon="sort" />
             </div>
           </th>
-          <th scope="col" hpdSortBy="createdDate">
-            <div class="d-flex">
-              <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdDate">Created Date</span>
-
-              <fa-icon class="p-1" icon="sort" />
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="createdDate">
+            <div class="flex items-center gap-1">
+              <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdDate">Created Date</span>
+              <fa-icon class="text-slate-400" icon="sort" />
             </div>
           </th>
-          <th scope="col" hpdSortBy="createdBy">
-            <div class="d-flex">
-              <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdBy">Created By</span>
-
-              <fa-icon class="p-1" icon="sort" />
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="createdBy">
+            <div class="flex items-center gap-1">
+              <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdBy">Created By</span>
+              <fa-icon class="text-slate-400" icon="sort" />
             </div>
           </th>
-          <th scope="col" hpdSortBy="modifiedDate">
-            <div class="d-flex">
-              <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedDate">Modified Date</span>
-
-              <fa-icon class="p-1" icon="sort" />
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="modifiedDate">
+            <div class="flex items-center gap-1">
+              <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedDate">Modified Date</span>
+              <fa-icon class="text-slate-400" icon="sort" />
             </div>
           </th>
-          <th scope="col" hpdSortBy="modifiedBy">
-            <div class="d-flex">
-              <span hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedBy">Modified By</span>
-
-              <fa-icon class="p-1" icon="sort" />
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="modifiedBy">
+            <div class="flex items-center gap-1">
+              <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedBy">Modified By</span>
+              <fa-icon class="text-slate-400" icon="sort" />
             </div>
           </th>
-          <th scope="col"></th>
+          <th scope="col" class="px-4 py-3"></th>
         </tr>
       </thead>
-      <tbody infinite-scroll (scrolled)="loadNextPage()" [infiniteScrollDisabled]="!hasMorePage()" [infiniteScrollDistance]="0">
+      <tbody
+        class="divide-y divide-slate-100 bg-white"
+        infinite-scroll
+        (scrolled)="loadNextPage()"
+        [infiniteScrollDisabled]="!hasMorePage()"
+        [infiniteScrollDistance]="0"
+      >
         @for (medCase of medCases(); track trackId(medCase)) {
-        <tr data-cy="entityTable">
-          <td><a [routerLink]="['/med-case', medCase.id, 'view']">{{ medCase.id }}</a></td>
-          <td>{{ medCase.symptoms }}</td>
-          <td>{{ medCase.diagnoses }}</td>
-          <td>{{ medCase.recommendations }}</td>
-          <td>{{ medCase.createdDate | formatMediumDatetime }}</td>
-          <td>{{ medCase.createdBy }}</td>
-          <td>{{ medCase.modifiedDate | formatMediumDatetime }}</td>
-          <td>{{ medCase.modifiedBy }}</td>
-          <td class="text-end">
-            <div class="btn-group">
-              <a [routerLink]="['/med-case', medCase.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
-                <fa-icon icon="eye" />
-                <span class="d-none d-md-inline" hpdTranslate="entity.action.view">View</span>
+        <tr class="hover:bg-slate-50" data-cy="entityTable">
+          <td class="px-4 py-3">
+            <a class="hpd-focusable font-medium text-hpd-primary hover:underline" [routerLink]="['/med-case', medCase.id, 'view']"
+              >{{ medCase.id }}</a
+            >
+          </td>
+          <td class="px-4 py-3">{{ medCase.symptoms }}</td>
+          <td class="px-4 py-3">{{ medCase.diagnoses }}</td>
+          <td class="px-4 py-3">{{ medCase.recommendations }}</td>
+          <td class="px-4 py-3 whitespace-nowrap">{{ medCase.createdDate | formatMediumDatetime }}</td>
+          <td class="px-4 py-3">{{ medCase.createdBy }}</td>
+          <td class="px-4 py-3 whitespace-nowrap">{{ medCase.modifiedDate | formatMediumDatetime }}</td>
+          <td class="px-4 py-3">{{ medCase.modifiedBy }}</td>
+          <td class="px-4 py-3 text-right">
+            <div class="btn-group flex items-center justify-end gap-1">
+              <a
+                class="hpd-focusable inline-flex items-center gap-1 rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-hpd-primary"
+                [routerLink]="['/med-case', medCase.id, 'view']"
+                data-cy="entityDetailsButton"
+              >
+                <mat-icon aria-hidden="true" class="!text-lg">visibility</mat-icon>
+                <span class="sr-only" jhiTranslate="entity.action.view">View</span>
               </a>
 
-              <a [routerLink]="['/med-case', medCase.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
-                <fa-icon icon="pencil-alt" />
-                <span class="d-none d-md-inline" hpdTranslate="entity.action.edit">Edit</span>
+              <a
+                class="hpd-focusable inline-flex items-center gap-1 rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-hpd-primary"
+                [routerLink]="['/med-case', medCase.id, 'edit']"
+                data-cy="entityEditButton"
+              >
+                <mat-icon aria-hidden="true" class="!text-lg">edit</mat-icon>
+                <span class="sr-only" jhiTranslate="entity.action.edit">Edit</span>
               </a>
 
-              <button type="submit" (click)="delete(medCase)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                <fa-icon icon="times" />
-                <span class="d-none d-md-inline" hpdTranslate="entity.action.delete">Delete</span>
+              <button
+                class="hpd-focusable inline-flex items-center gap-1 rounded-full p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600"
+                type="submit"
+                (click)="delete(medCase)"
+                data-cy="entityDeleteButton"
+              >
+                <mat-icon aria-hidden="true" class="!text-lg">delete</mat-icon>
+                <span class="sr-only" jhiTranslate="entity.action.delete">Delete</span>
               </button>
             </div>
           </td>

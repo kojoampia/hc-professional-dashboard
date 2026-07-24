@@ -75,10 +75,9 @@ export class MedCaseFormService {
 
   resetForm(form: MedCaseFormGroup, medCase: MedCaseFormGroupInput): void {
     const medCaseRawValue = this.convertMedCaseToMedCaseRawValue({ ...this.getFormDefaults(), ...medCase });
-    form.reset({
-      ...medCaseRawValue,
-      id: { value: medCaseRawValue.id, disabled: true },
-    });
+    // `id` stays disabled from its initial FormControl construction in createMedCaseFormGroup();
+    // reset() without an explicit `disabled` flag preserves the current disabled state.
+    form.reset(medCaseRawValue);
   }
 
   private getFormDefaults(): MedCaseFormDefaults {

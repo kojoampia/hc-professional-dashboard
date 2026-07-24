@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -8,11 +7,11 @@ import { faArrowLeft, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 
-import { MedCaseDetail } from './med-case-detail';
+import { MedCaseDetailComponent } from './med-case-detail';
 
 describe('MedCase Management Detail Component', () => {
-  let comp: MedCaseDetail;
-  let fixture: ComponentFixture<MedCaseDetail>;
+  let comp: MedCaseDetailComponent;
+  let fixture: ComponentFixture<MedCaseDetailComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -22,7 +21,7 @@ describe('MedCase Management Detail Component', () => {
           [
             {
               path: '**',
-              loadComponent: () => import('./med-case-detail').then(m => m.MedCaseDetail),
+              loadComponent: () => import('./med-case-detail').then(m => m.MedCaseDetailComponent),
               resolve: { medCase: () => of({ id: 'f2ae14ac-93d1-47d4-a951-4a936fcd9292' }) },
             },
           ],
@@ -36,14 +35,14 @@ describe('MedCase Management Detail Component', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MedCaseDetail);
+    fixture = TestBed.createComponent(MedCaseDetailComponent);
     comp = fixture.componentInstance;
   });
 
   describe('OnInit', () => {
     it('should load medCase on init', async () => {
       const harness = await RouterTestingHarness.create();
-      const instance = await harness.navigateByUrl('/', MedCaseDetail);
+      const instance = await harness.navigateByUrl('/', MedCaseDetailComponent);
 
       // THEN
       expect(instance.medCase()).toEqual(expect.objectContaining({ id: 'f2ae14ac-93d1-47d4-a951-4a936fcd9292' }));
@@ -52,7 +51,7 @@ describe('MedCase Management Detail Component', () => {
 
   describe('PreviousState', () => {
     it('should navigate to previous state', () => {
-      vitest.spyOn(globalThis.history, 'back');
+      jest.spyOn(globalThis.history, 'back');
       comp.previousState();
       expect(globalThis.history.back).toHaveBeenCalled();
     });

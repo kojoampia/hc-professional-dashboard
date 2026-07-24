@@ -80,6 +80,10 @@
         </button>
       }
       <mat-menu #adminMenu="matMenu">
+        <a mat-menu-item routerLink="/med-case" routerLinkActive="active" (click)="collapseNavbar()">
+          <mat-icon aria-hidden="true">folder_shared</mat-icon>
+          <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.home.title">Med Cases</span>
+        </a>
         <a mat-menu-item routerLink="/admin/metrics" routerLinkActive="active" (click)="collapseNavbar()">
           <mat-icon aria-hidden="true">speed</mat-icon>
           <span jhiTranslate="global.menu.admin.metrics">Metrics</span>

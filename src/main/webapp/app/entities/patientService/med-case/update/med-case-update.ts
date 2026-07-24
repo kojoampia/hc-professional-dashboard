@@ -2,11 +2,11 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable, finalize } from 'rxjs';
 
-import { AlertError } from 'app/shared/alert/alert-error';
+import { AlertErrorComponent } from 'app/shared/alert/alert-error.component';
 import { TranslateDirective } from 'app/shared/language';
 import { IMedCase } from '../med-case.model';
 import { MedCaseService } from '../service/med-case.service';
@@ -17,9 +17,9 @@ import { MedCaseFormGroup, MedCaseFormService } from './med-case-form.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-med-case-update',
   templateUrl: './med-case-update.html',
-  imports: [TranslateDirective, TranslateModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, TranslateModule, MatIconModule, AlertErrorComponent, ReactiveFormsModule],
 })
-export class MedCaseUpdate implements OnInit {
+export class MedCaseUpdateComponent implements OnInit {
   readonly isSaving = signal(false);
   medCase: IMedCase | null = null;
 

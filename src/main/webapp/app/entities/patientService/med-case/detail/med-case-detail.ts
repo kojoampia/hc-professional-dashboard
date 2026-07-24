@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { Alert } from 'app/shared/alert/alert';
-import { AlertError } from 'app/shared/alert/alert-error';
+import { AlertComponent } from 'app/shared/alert/alert.component';
+import { AlertErrorComponent } from 'app/shared/alert/alert-error.component';
 import { FormatMediumDatetimePipe } from 'app/shared/date';
 import { TranslateDirective } from 'app/shared/language';
 import { IMedCase } from '../med-case.model';
@@ -14,9 +14,9 @@ import { IMedCase } from '../med-case.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-med-case-detail',
   templateUrl: './med-case-detail.html',
-  imports: [FontAwesomeModule, Alert, AlertError, TranslateDirective, TranslateModule, RouterLink, FormatMediumDatetimePipe],
+  imports: [MatIconModule, AlertComponent, AlertErrorComponent, TranslateDirective, TranslateModule, RouterLink, FormatMediumDatetimePipe],
 })
-export class MedCaseDetail {
+export class MedCaseDetailComponent {
   readonly medCase = input<IMedCase | null>(null);
 
   previousState(): void {

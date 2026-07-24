@@ -1,49 +1,77 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
+<div class="mx-auto max-w-2xl px-4 py-8">
+  <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
     <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
       <h2
         id="hpd-med-case-heading"
+        class="mb-6 text-lg font-bold text-slate-900"
         data-cy="MedCaseCreateUpdateHeading"
-        hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.home.createOrEditLabel"
+        jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.home.createOrEditLabel"
       >
         Create or edit a Med Case
       </h2>
 
-      <div>
+      <div class="grid gap-4">
         <hpd-alert-error />
 
         @if (editForm.controls.id.value !== null) {
-
-        <div class="mb-3">
-          <label class="form-label" for="field_id" hpdTranslate="global.field.id">ID</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700" for="field_id" jhiTranslate="global.field.id">ID</label>
+          <input
+            class="hpd-focusable w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-500"
+            type="text"
+            name="id"
+            id="field_id"
+            data-cy="id"
+            formControlName="id"
+            [readonly]="true"
+          />
         </div>
         }
 
-        <div class="mb-3">
-          <label class="form-label" for="field_symptoms" hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.symptoms"
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700"
+            for="field_symptoms"
+            jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.symptoms"
             >Symptoms</label
           >
-          <input type="text" class="form-control" name="symptoms" id="field_symptoms" data-cy="symptoms" formControlName="symptoms" />
+          <input
+            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            type="text"
+            name="symptoms"
+            id="field_symptoms"
+            data-cy="symptoms"
+            formControlName="symptoms"
+          />
         </div>
 
-        <div class="mb-3">
-          <label class="form-label" for="field_diagnoses" hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.diagnoses"
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700"
+            for="field_diagnoses"
+            jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.diagnoses"
             >Diagnoses</label
           >
-          <input type="text" class="form-control" name="diagnoses" id="field_diagnoses" data-cy="diagnoses" formControlName="diagnoses" />
+          <input
+            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            type="text"
+            name="diagnoses"
+            id="field_diagnoses"
+            data-cy="diagnoses"
+            formControlName="diagnoses"
+          />
         </div>
 
-        <div class="mb-3">
+        <div>
           <label
-            class="form-label"
+            class="mb-1 block text-sm font-medium text-slate-700"
             for="field_recommendations"
-            hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.recommendations"
+            jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.recommendations"
             >Recommendations</label
           >
           <input
+            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
             type="text"
-            class="form-control"
             name="recommendations"
             id="field_recommendations"
             data-cy="recommendations"
@@ -51,54 +79,69 @@
           />
         </div>
 
-        <div class="mb-3">
-          <label class="form-label" for="field_createdDate" hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdDate"
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700"
+            for="field_createdDate"
+            jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdDate"
             >Created Date</label
           >
-          <div class="d-flex">
-            <input
-              id="field_createdDate"
-              data-cy="createdDate"
-              type="datetime-local"
-              class="form-control"
-              name="createdDate"
-              formControlName="createdDate"
-              placeholder="YYYY-MM-DD HH:mm"
-            />
-          </div>
+          <input
+            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            id="field_createdDate"
+            data-cy="createdDate"
+            type="datetime-local"
+            name="createdDate"
+            formControlName="createdDate"
+            placeholder="YYYY-MM-DD HH:mm"
+          />
         </div>
 
-        <div class="mb-3">
-          <label class="form-label" for="field_createdBy" hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdBy"
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700"
+            for="field_createdBy"
+            jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdBy"
             >Created By</label
           >
-          <input type="text" class="form-control" name="createdBy" id="field_createdBy" data-cy="createdBy" formControlName="createdBy" />
+          <input
+            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            type="text"
+            name="createdBy"
+            id="field_createdBy"
+            data-cy="createdBy"
+            formControlName="createdBy"
+          />
         </div>
 
-        <div class="mb-3">
-          <label class="form-label" for="field_modifiedDate" hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedDate"
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700"
+            for="field_modifiedDate"
+            jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedDate"
             >Modified Date</label
           >
-          <div class="d-flex">
-            <input
-              id="field_modifiedDate"
-              data-cy="modifiedDate"
-              type="datetime-local"
-              class="form-control"
-              name="modifiedDate"
-              formControlName="modifiedDate"
-              placeholder="YYYY-MM-DD HH:mm"
-            />
-          </div>
+          <input
+            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            id="field_modifiedDate"
+            data-cy="modifiedDate"
+            type="datetime-local"
+            name="modifiedDate"
+            formControlName="modifiedDate"
+            placeholder="YYYY-MM-DD HH:mm"
+          />
         </div>
 
-        <div class="mb-3">
-          <label class="form-label" for="field_modifiedBy" hpdTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedBy"
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700"
+            for="field_modifiedBy"
+            jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedBy"
             >Modified By</label
           >
           <input
+            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
             type="text"
-            class="form-control"
             name="modifiedBy"
             id="field_modifiedBy"
             data-cy="modifiedBy"
@@ -107,19 +150,27 @@
         </div>
       </div>
 
-      <div>
-        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
-          <fa-icon icon="ban" />&nbsp;<span hpdTranslate="entity.action.cancel">Cancel</span>
+      <div class="mt-6 flex justify-end gap-2">
+        <button
+          class="hpd-focusable flex items-center gap-1 rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200"
+          type="button"
+          id="cancel-save"
+          data-cy="entityCreateCancelButton"
+          (click)="previousState()"
+        >
+          <mat-icon aria-hidden="true" class="!text-base">close</mat-icon>
+          <span jhiTranslate="entity.action.cancel">Cancel</span>
         </button>
 
         <button
+          class="hpd-focusable flex items-center gap-1 rounded-full bg-hpd-primary px-4 py-2 text-sm font-medium text-white hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
           type="submit"
           id="save-entity"
           data-cy="entityCreateSaveButton"
           [disabled]="editForm.invalid || isSaving()"
-          class="btn btn-primary"
         >
-          <fa-icon icon="save" />&nbsp;<span hpdTranslate="entity.action.save">Save</span>
+          <mat-icon aria-hidden="true" class="!text-base">save</mat-icon>
+          <span jhiTranslate="entity.action.save">Save</span>
         </button>
       </div>
     </form>

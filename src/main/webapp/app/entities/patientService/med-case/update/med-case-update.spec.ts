@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
@@ -10,11 +10,11 @@ import { IMedCase } from '../med-case.model';
 import { MedCaseService } from '../service/med-case.service';
 
 import { MedCaseFormService } from './med-case-form.service';
-import { MedCaseUpdate } from './med-case-update';
+import { MedCaseUpdateComponent } from './med-case-update';
 
 describe('MedCase Management Update Component', () => {
-  let comp: MedCaseUpdate;
-  let fixture: ComponentFixture<MedCaseUpdate>;
+  let comp: MedCaseUpdateComponent;
+  let fixture: ComponentFixture<MedCaseUpdateComponent>;
   let activatedRoute: ActivatedRoute;
   let medCaseFormService: MedCaseFormService;
   let medCaseService: MedCaseService;
@@ -23,6 +23,7 @@ describe('MedCase Management Update Component', () => {
     TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot()],
       providers: [
+        provideHttpClient(),
         provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
@@ -33,7 +34,7 @@ describe('MedCase Management Update Component', () => {
       ],
     });
 
-    fixture = TestBed.createComponent(MedCaseUpdate);
+    fixture = TestBed.createComponent(MedCaseUpdateComponent);
     activatedRoute = TestBed.inject(ActivatedRoute);
     medCaseFormService = TestBed.inject(MedCaseFormService);
     medCaseService = TestBed.inject(MedCaseService);
@@ -57,9 +58,9 @@ describe('MedCase Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<IMedCase>();
       const medCase = { id: 'f2ae14ac-93d1-47d4-a951-4a936fcd9292' };
-      vitest.spyOn(medCaseFormService, 'getMedCase').mockReturnValue(medCase);
-      vitest.spyOn(medCaseService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      jest.spyOn(medCaseFormService, 'getMedCase').mockReturnValue(medCase);
+      jest.spyOn(medCaseService, 'update').mockReturnValue(saveSubject);
+      jest.spyOn(comp, 'previousState');
       activatedRoute.data = of({ medCase });
       comp.ngOnInit();
 
@@ -80,9 +81,9 @@ describe('MedCase Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<IMedCase>();
       const medCase = { id: 'f2ae14ac-93d1-47d4-a951-4a936fcd9292' };
-      vitest.spyOn(medCaseFormService, 'getMedCase').mockReturnValue({ id: null });
-      vitest.spyOn(medCaseService, 'create').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      jest.spyOn(medCaseFormService, 'getMedCase').mockReturnValue({ id: null });
+      jest.spyOn(medCaseService, 'create').mockReturnValue(saveSubject);
+      jest.spyOn(comp, 'previousState');
       activatedRoute.data = of({ medCase: null });
       comp.ngOnInit();
 
@@ -103,8 +104,8 @@ describe('MedCase Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<IMedCase>();
       const medCase = { id: 'f2ae14ac-93d1-47d4-a951-4a936fcd9292' };
-      vitest.spyOn(medCaseService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      jest.spyOn(medCaseService, 'update').mockReturnValue(saveSubject);
+      jest.spyOn(comp, 'previousState');
       activatedRoute.data = of({ medCase });
       comp.ngOnInit();
 
