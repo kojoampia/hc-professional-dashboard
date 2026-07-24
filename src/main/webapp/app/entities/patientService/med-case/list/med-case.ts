@@ -3,9 +3,8 @@ import { ChangeDetectionStrategy, Component, OnInit, WritableSignal, computed, e
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Data, ParamMap, Router, RouterLink } from '@angular/router';
 
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { Subscription, combineLatest, filter, tap } from 'rxjs';
@@ -29,7 +28,6 @@ import { MedCaseService } from '../service/med-case.service';
   imports: [
     RouterLink,
     FormsModule,
-    FontAwesomeModule,
     MatIconModule,
     AlertErrorComponent,
     AlertComponent,
@@ -59,7 +57,7 @@ export class MedCaseComponent implements OnInit {
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly sortService = inject(SortService);
   protected parseLinks = inject(ParseLinks);
-  protected modalService = inject(NgbModal);
+  protected dialog = inject(MatDialog);
 
   constructor() {
     effect(() => {
@@ -94,10 +92,11 @@ export class MedCaseComponent implements OnInit {
   }
 
   delete(medCase: IMedCase): void {
-    const modalRef = this.modalService.open(MedCaseDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
-    modalRef.componentInstance.medCase = medCase;
-    // unsubscribe not needed because closed completes on modal close
-    modalRef.closed
+    const dialogRef = this.dialog.open(MedCaseDeleteDialogComponent, { width: '32rem', disableClose: true });
+    dialogRef.componentInstance.medCase = medCase;
+    // unsubscribe not needed because afterClosed completes on dialog close
+    dialogRef
+      .afterClosed()
       .pipe(
         filter(reason => reason === ITEM_DELETED_EVENT),
         tap(() => this.load()),

@@ -3,9 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed, inject } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 
-import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faEye, faPencilAlt, faPlus, faSort, faSortDown, faSortUp, faSync, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subject, of } from 'rxjs';
 
@@ -59,9 +57,6 @@ describe('MedCase Management Component', () => {
     comp = fixture.componentInstance;
     service = TestBed.inject(MedCaseService);
     routerNavigateSpy = jest.spyOn(comp.router, 'navigate');
-
-    const library = TestBed.inject(FaIconLibrary);
-    library.addIcons(faEye, faPencilAlt, faPlus, faSort, faSortDown, faSortUp, faSync, faTimes);
     httpMock = TestBed.inject(HttpTestingController);
   });
 
@@ -158,15 +153,17 @@ describe('MedCase Management Component', () => {
   });
 
   describe('delete', () => {
-    let ngbModal: NgbModal;
-    let deleteModalMock: any;
+    let matDialog: MatDialog;
+    let deleteDialogMock: any;
+    let closedSubject: Subject<string | undefined>;
 
     beforeEach(() => {
-      deleteModalMock = { componentInstance: {}, closed: new Subject() };
-      // NgbModal is not a singleton using TestBed.inject.
-      // ngbModal = TestBed.inject(NgbModal);
-      ngbModal = (comp as any).modalService;
-      jest.spyOn(ngbModal, 'open').mockReturnValue(deleteModalMock);
+      closedSubject = new Subject();
+      deleteDialogMock = { componentInstance: {}, afterClosed: () => closedSubject };
+      // MatDialog is not a singleton using TestBed.inject.
+      // matDialog = TestBed.inject(MatDialog);
+      matDialog = (comp as any).dialog;
+      jest.spyOn(matDialog, 'open').mockReturnValue(deleteDialogMock);
     });
 
     it('on confirm should call load', inject([], () => {
@@ -175,10 +172,10 @@ describe('MedCase Management Component', () => {
 
       // WHEN
       comp.delete(sampleWithRequiredData);
-      deleteModalMock.closed.next('deleted');
+      closedSubject.next('deleted');
 
       // THEN
-      expect(ngbModal.open).toHaveBeenCalled();
+      expect(matDialog.open).toHaveBeenCalled();
       expect(comp.load).toHaveBeenCalled();
     }));
 
@@ -188,10 +185,10 @@ describe('MedCase Management Component', () => {
 
       // WHEN
       comp.delete(sampleWithRequiredData);
-      deleteModalMock.closed.next();
+      closedSubject.next(undefined);
 
       // THEN
-      expect(ngbModal.open).toHaveBeenCalled();
+      expect(matDialog.open).toHaveBeenCalled();
       expect(comp.load).not.toHaveBeenCalled();
     }));
   });

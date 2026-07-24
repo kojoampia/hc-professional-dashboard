@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 
 import SharedModule from 'app/shared/shared.module';
 import { HealthKey, HealthDetails } from '../health.model';
@@ -7,12 +7,12 @@ import { HealthKey, HealthDetails } from '../health.model';
 @Component({
   selector: 'hpd-health-modal',
   templateUrl: './health-modal.component.html',
-  imports: [SharedModule],
+  imports: [SharedModule, MatDialogModule],
 })
 export default class HealthModalComponent {
   health?: { key: HealthKey; value: HealthDetails };
 
-  constructor(private activeModal: NgbActiveModal) {}
+  constructor(private dialogRef: MatDialogRef<HealthModalComponent>) {}
 
   readableValue(value: any): string {
     if (this.health?.key === 'diskSpace') {
@@ -31,6 +31,6 @@ export default class HealthModalComponent {
   }
 
   dismiss(): void {
-    this.activeModal.dismiss();
+    this.dialogRef.close();
   }
 }

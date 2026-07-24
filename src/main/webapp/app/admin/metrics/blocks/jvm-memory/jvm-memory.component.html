@@ -1,25 +1,25 @@
-<h4 jhiTranslate="metrics.jvm.memory.title">Memory</h4>
+<h4 class="text-sm font-semibold text-slate-700" jhiTranslate="metrics.jvm.memory.title">Memory</h4>
 
 @if (!updating && jvmMemoryMetrics) {
-  <div>
+  <div class="mt-2 grid gap-3">
     @for (entry of jvmMemoryMetrics | keyvalue; track $index) {
       <div>
         @if (entry.value.max !== -1) {
-          <span>
-            <span>{{ entry.key }}</span>
+          <span class="text-xs text-slate-600">
+            <span class="font-medium text-slate-700">{{ entry.key }}</span>
             ({{ entry.value.used / 1048576 | number: '1.0-0' }}M / {{ entry.value.max / 1048576 | number: '1.0-0' }}M)
           </span>
 
-          <div>Committed : {{ entry.value.committed / 1048576 | number: '1.0-0' }}M</div>
+          <div class="text-xs text-slate-500">Committed : {{ entry.value.committed / 1048576 | number: '1.0-0' }}M</div>
         } @else {
-          <span
-            ><span>{{ entry.key }}</span> {{ entry.value.used / 1048576 | number: '1.0-0' }}M</span
+          <span class="text-xs text-slate-600">
+            <span class="font-medium text-slate-700">{{ entry.key }}</span> {{ entry.value.used / 1048576 | number: '1.0-0' }}M</span
           >
         }
         @if (entry.value.max !== -1) {
-          <ngb-progressbar type="success" [value]="(100 * entry.value.used) / entry.value.max" [striped]="true" [animated]="false">
-            <span>{{ (entry.value.used * 100) / entry.value.max | number: '1.0-0' }}%</span>
-          </ngb-progressbar>
+          <hpd-progress-bar class="mt-1 block" [value]="(100 * entry.value.used) / entry.value.max" [variant]="'success'">
+            {{ (entry.value.used * 100) / entry.value.max | number: '1.0-0' }}%
+          </hpd-progress-bar>
         }
       </div>
     }

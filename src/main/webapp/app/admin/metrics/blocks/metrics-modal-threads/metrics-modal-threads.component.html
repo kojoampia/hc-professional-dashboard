@@ -1,104 +1,135 @@
-<div class="modal-header">
-  <h4 class="modal-title" jhiTranslate="metrics.jvm.threads.dump.title">Threads dump</h4>
+<h2 mat-dialog-title jhiTranslate="metrics.jvm.threads.dump.title">Threads dump</h2>
 
-  <button type="button" class="btn-close" (click)="dismiss()">&times;</button>
-</div>
-
-<div class="modal-body">
-  <div class="mb-3">
-    <span class="badge bg-primary hand" (click)="threadStateFilter = undefined">
+<mat-dialog-content>
+  <div class="mb-4 flex flex-wrap gap-2">
+    <button
+      class="hpd-focusable inline-flex items-center gap-1 rounded-full bg-hpd-primary px-3 py-1 text-xs font-medium text-white"
+      type="button"
+      (click)="threadStateFilter = undefined"
+    >
       @if (threadStateFilter === undefined) {
-        <fa-icon icon="check"></fa-icon>
+        <mat-icon aria-hidden="true" class="!text-sm">check</mat-icon>
       }
-      All&nbsp;<span class="badge rounded-pill bg-default">{{ threadDumpAll }}</span>
-    </span>
+      All <span class="rounded-full bg-white/20 px-1.5 py-0.5">{{ threadDumpAll }}</span>
+    </button>
 
-    <span class="badge bg-success hand" (click)="threadStateFilter = ThreadState.Runnable">
+    <button
+      class="hpd-focusable inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700"
+      type="button"
+      (click)="threadStateFilter = ThreadState.Runnable"
+    >
       @if (threadStateFilter === ThreadState.Runnable) {
-        <fa-icon icon="check"></fa-icon>
+        <mat-icon aria-hidden="true" class="!text-sm">check</mat-icon>
       }
-      Runnable&nbsp;<span class="badge rounded-pill bg-default">{{ threadDumpRunnable }}</span>
-    </span>
+      Runnable <span class="rounded-full bg-white/60 px-1.5 py-0.5">{{ threadDumpRunnable }}</span>
+    </button>
 
-    <span class="badge bg-info hand" (click)="threadStateFilter = ThreadState.Waiting">
+    <button
+      class="hpd-focusable inline-flex items-center gap-1 rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700"
+      type="button"
+      (click)="threadStateFilter = ThreadState.Waiting"
+    >
       @if (threadStateFilter === ThreadState.Waiting) {
-        <fa-icon icon="check"></fa-icon>
+        <mat-icon aria-hidden="true" class="!text-sm">check</mat-icon>
       }
-      Waiting&nbsp;<span class="badge rounded-pill bg-default">{{ threadDumpWaiting }}</span>
-    </span>
+      Waiting <span class="rounded-full bg-white/60 px-1.5 py-0.5">{{ threadDumpWaiting }}</span>
+    </button>
 
-    <span class="badge bg-warning hand" (click)="threadStateFilter = ThreadState.TimedWaiting">
+    <button
+      class="hpd-focusable inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700"
+      type="button"
+      (click)="threadStateFilter = ThreadState.TimedWaiting"
+    >
       @if (threadStateFilter === ThreadState.TimedWaiting) {
-        <fa-icon icon="check"></fa-icon>
+        <mat-icon aria-hidden="true" class="!text-sm">check</mat-icon>
       }
-      Timed Waiting&nbsp;<span class="badge rounded-pill bg-default">{{ threadDumpTimedWaiting }}</span>
-    </span>
+      Timed Waiting <span class="rounded-full bg-white/60 px-1.5 py-0.5">{{ threadDumpTimedWaiting }}</span>
+    </button>
 
-    <span class="badge bg-danger hand" (click)="threadStateFilter = ThreadState.Blocked">
+    <button
+      class="hpd-focusable inline-flex items-center gap-1 rounded-full bg-rose-100 px-3 py-1 text-xs font-medium text-rose-700"
+      type="button"
+      (click)="threadStateFilter = ThreadState.Blocked"
+    >
       @if (threadStateFilter === ThreadState.Blocked) {
-        <fa-icon icon="check"></fa-icon>
+        <mat-icon aria-hidden="true" class="!text-sm">check</mat-icon>
       }
-      Blocked&nbsp;<span class="badge rounded-pill bg-default">{{ threadDumpBlocked }}</span>
-    </span>
+      Blocked <span class="rounded-full bg-white/60 px-1.5 py-0.5">{{ threadDumpBlocked }}</span>
+    </button>
   </div>
 
   @for (thread of getThreads(); track $index) {
-    <div class="pad">
-      <h6>
-        <span class="badge" [ngClass]="getBadgeClass(thread.threadState)">{{ thread.threadState }}</span>
+    <div class="mb-4 rounded-lg border border-slate-200 p-3">
+      <h6 class="flex flex-wrap items-center gap-2 text-sm">
+        <span class="rounded-full px-2 py-0.5 text-xs font-medium" [ngClass]="getBadgeClass(thread.threadState)">{{
+          thread.threadState
+        }}</span>
 
-        &nbsp;{{ thread.threadName }} (ID {{ thread.threadId }})
+        <span class="text-slate-700">{{ thread.threadName }} (ID {{ thread.threadId }})</span>
 
-        <a (click)="thread.showThreadDump = !thread.showThreadDump" href="javascript:void(0);">
+        <button
+          class="hpd-focusable text-xs font-medium text-hpd-primary underline"
+          type="button"
+          (click)="thread.showThreadDump = !thread.showThreadDump"
+        >
           <span [hidden]="thread.showThreadDump" jhiTranslate="metrics.jvm.threads.dump.show">Show Stacktrace</span>
           <span [hidden]="!thread.showThreadDump" jhiTranslate="metrics.jvm.threads.dump.hide">Hide Stacktrace</span>
-        </a>
+        </button>
       </h6>
 
-      <div class="card" [hidden]="!thread.showThreadDump">
-        <div class="card-body">
+      @if (thread.showThreadDump) {
+        <div class="mt-2 max-h-64 overflow-y-auto rounded-lg bg-slate-50 p-3">
           @for (st of thread.stackTrace; track $index) {
-            <div class="break">
+            <div class="break-all font-mono text-xs text-slate-600">
               <samp
                 >{{ st.className }}.{{ st.methodName }}(<code>{{ st.fileName }}:{{ st.lineNumber }}</code
                 >)</samp
               >
-              <span class="mt-1"></span>
             </div>
           }
         </div>
+      }
+
+      <div class="mt-3 overflow-x-auto rounded-lg border border-slate-200">
+        <table class="w-full text-left text-sm text-slate-600">
+          <caption class="sr-only">
+            Threads dump:
+            {{
+              thread.threadName
+            }}
+          </caption>
+          <thead class="bg-slate-50 text-xs uppercase">
+            <tr>
+              <th scope="col" class="px-4 py-2 font-bold text-slate-700" jhiTranslate="metrics.jvm.threads.dump.blockedtime">
+                Blocked Time
+              </th>
+              <th scope="col" class="px-4 py-2 font-bold text-slate-700" jhiTranslate="metrics.jvm.threads.dump.blockedcount">
+                Blocked Count
+              </th>
+              <th scope="col" class="px-4 py-2 font-bold text-slate-700" jhiTranslate="metrics.jvm.threads.dump.waitedtime">Waited Time</th>
+              <th scope="col" class="px-4 py-2 font-bold text-slate-700" jhiTranslate="metrics.jvm.threads.dump.waitedcount">
+                Waited Count
+              </th>
+              <th scope="col" class="px-4 py-2 font-bold text-slate-700" jhiTranslate="metrics.jvm.threads.dump.lockname">Lock name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-t border-slate-100">
+              <td class="px-4 py-2">{{ thread.blockedTime }}</td>
+              <td class="px-4 py-2">{{ thread.blockedCount }}</td>
+              <td class="px-4 py-2">{{ thread.waitedTime }}</td>
+              <td class="px-4 py-2">{{ thread.waitedCount }}</td>
+              <td class="px-4 py-2" title="{{ thread.lockName }}">
+                <code>{{ thread.lockName }}</code>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <table class="table table-sm table-responsive">
-        <caption>
-          Threads dump:
-          {{
-            thread.threadName
-          }}
-        </caption>
-        <thead>
-          <tr>
-            <th scope="col" jhiTranslate="metrics.jvm.threads.dump.blockedtime">Blocked Time</th>
-            <th scope="col" jhiTranslate="metrics.jvm.threads.dump.blockedcount">Blocked Count</th>
-            <th scope="col" jhiTranslate="metrics.jvm.threads.dump.waitedtime">Waited Time</th>
-            <th scope="col" jhiTranslate="metrics.jvm.threads.dump.waitedcount">Waited Count</th>
-            <th scope="col" jhiTranslate="metrics.jvm.threads.dump.lockname">Lock name</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{{ thread.blockedTime }}</td>
-            <td>{{ thread.blockedCount }}</td>
-            <td>{{ thread.waitedTime }}</td>
-            <td>{{ thread.waitedCount }}</td>
-            <td class="thread-dump-modal-lock" title="{{ thread.lockName }}">
-              <code>{{ thread.lockName }}</code>
-            </td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   }
-</div>
-<div class="modal-footer">
-  <button type="button" class="btn btn-secondary float-start" data-dismiss="modal" (click)="dismiss()">Done</button>
-</div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button class="hpd-focusable" mat-button type="button" (click)="dismiss()">Done</button>
+</mat-dialog-actions>

@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 import SharedModule from 'app/shared/shared.module';
+import ProgressBarComponent from 'app/shared/progress-bar/progress-bar.component';
 import { ProcessMetrics } from 'app/admin/metrics/metrics.model';
 
 @Component({
   selector: 'hpd-metrics-system',
   templateUrl: './metrics-system.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SharedModule],
+  imports: [SharedModule, ProgressBarComponent],
 })
 export class MetricsSystemComponent {
   /**

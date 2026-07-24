@@ -45,52 +45,52 @@
           [ascending]="sortState().ascending"
           (sortChange)="navigateToWithComponentValues($event)"
         >
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="id">
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="id" #idSort="jhiSortBy">
             <div class="flex items-center gap-1">
               <span jhiTranslate="global.field.id">ID</span>
-              <fa-icon class="text-slate-400" icon="sort" />
+              <mat-icon aria-hidden="true" class="!text-base text-slate-400">{{ idSort.icon }}</mat-icon>
             </div>
           </th>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="symptoms">
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="symptoms" #symptomsSort="jhiSortBy">
             <div class="flex items-center gap-1">
               <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.symptoms">Symptoms</span>
-              <fa-icon class="text-slate-400" icon="sort" />
+              <mat-icon aria-hidden="true" class="!text-base text-slate-400">{{ symptomsSort.icon }}</mat-icon>
             </div>
           </th>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="diagnoses">
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="diagnoses" #diagnosesSort="jhiSortBy">
             <div class="flex items-center gap-1">
               <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.diagnoses">Diagnoses</span>
-              <fa-icon class="text-slate-400" icon="sort" />
+              <mat-icon aria-hidden="true" class="!text-base text-slate-400">{{ diagnosesSort.icon }}</mat-icon>
             </div>
           </th>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="recommendations">
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="recommendations" #recommendationsSort="jhiSortBy">
             <div class="flex items-center gap-1">
               <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.recommendations">Recommendations</span>
-              <fa-icon class="text-slate-400" icon="sort" />
+              <mat-icon aria-hidden="true" class="!text-base text-slate-400">{{ recommendationsSort.icon }}</mat-icon>
             </div>
           </th>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="createdDate">
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="createdDate" #createdDateSort="jhiSortBy">
             <div class="flex items-center gap-1">
               <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdDate">Created Date</span>
-              <fa-icon class="text-slate-400" icon="sort" />
+              <mat-icon aria-hidden="true" class="!text-base text-slate-400">{{ createdDateSort.icon }}</mat-icon>
             </div>
           </th>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="createdBy">
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="createdBy" #createdBySort="jhiSortBy">
             <div class="flex items-center gap-1">
               <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdBy">Created By</span>
-              <fa-icon class="text-slate-400" icon="sort" />
+              <mat-icon aria-hidden="true" class="!text-base text-slate-400">{{ createdBySort.icon }}</mat-icon>
             </div>
           </th>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="modifiedDate">
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="modifiedDate" #modifiedDateSort="jhiSortBy">
             <div class="flex items-center gap-1">
               <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedDate">Modified Date</span>
-              <fa-icon class="text-slate-400" icon="sort" />
+              <mat-icon aria-hidden="true" class="!text-base text-slate-400">{{ modifiedDateSort.icon }}</mat-icon>
             </div>
           </th>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="modifiedBy">
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="modifiedBy" #modifiedBySort="jhiSortBy">
             <div class="flex items-center gap-1">
               <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedBy">Modified By</span>
-              <fa-icon class="text-slate-400" icon="sort" />
+              <mat-icon aria-hidden="true" class="!text-base text-slate-400">{{ modifiedBySort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" class="px-4 py-3"></th>
@@ -118,7 +118,7 @@
           <td class="px-4 py-3 whitespace-nowrap">{{ medCase.modifiedDate | formatMediumDatetime }}</td>
           <td class="px-4 py-3">{{ medCase.modifiedBy }}</td>
           <td class="px-4 py-3 text-right">
-            <div class="btn-group flex items-center justify-end gap-1">
+            <div class="flex items-center justify-end gap-1">
               <a
                 class="hpd-focusable inline-flex items-center gap-1 rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-hpd-primary"
                 [routerLink]="['/med-case', medCase.id, 'view']"

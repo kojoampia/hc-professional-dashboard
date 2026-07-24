@@ -1,53 +1,53 @@
-<h4>System</h4>
+<h4 class="text-sm font-semibold text-slate-700">System</h4>
 
 @if (!updating && systemMetrics) {
-  <ng-container>
-    <div class="row">
-      <div class="col-md-4">Uptime</div>
-      <div class="col-md-8 text-end">{{ convertMillisecondsToDuration(systemMetrics['process.uptime']) }}</div>
+  <div class="mt-2 grid gap-2 text-xs text-slate-600">
+    <div class="flex items-center justify-between">
+      <span>Uptime</span>
+      <span class="font-medium text-slate-800">{{ convertMillisecondsToDuration(systemMetrics['process.uptime']) }}</span>
     </div>
 
-    <div class="row">
-      <div class="col-md-4">Start time</div>
-      <div class="col-md-8 text-end">{{ systemMetrics['process.start.time'] | date: 'full' }}</div>
+    <div class="flex items-center justify-between">
+      <span>Start time</span>
+      <span class="font-medium text-slate-800">{{ systemMetrics['process.start.time'] | date: 'full' }}</span>
     </div>
 
-    <div class="row">
-      <div class="col-md-9">Process CPU usage</div>
-      <div class="col-md-3 text-end">{{ 100 * systemMetrics['process.cpu.usage'] | number: '1.0-2' }} %</div>
+    <div class="flex items-center justify-between">
+      <span>Process CPU usage</span>
+      <span class="font-medium text-slate-800">{{ 100 * systemMetrics['process.cpu.usage'] | number: '1.0-2' }} %</span>
     </div>
 
-    <ngb-progressbar [value]="100 * systemMetrics['process.cpu.usage']" [striped]="true" [animated]="false" type="success">
-      <span>{{ 100 * systemMetrics['process.cpu.usage'] | number: '1.0-2' }} %</span>
-    </ngb-progressbar>
+    <hpd-progress-bar [value]="100 * systemMetrics['process.cpu.usage']" variant="success">
+      {{ 100 * systemMetrics['process.cpu.usage'] | number: '1.0-2' }} %
+    </hpd-progress-bar>
 
-    <div class="row">
-      <div class="col-md-9">System CPU usage</div>
-      <div class="col-md-3 text-end">{{ 100 * systemMetrics['system.cpu.usage'] | number: '1.0-2' }} %</div>
+    <div class="flex items-center justify-between">
+      <span>System CPU usage</span>
+      <span class="font-medium text-slate-800">{{ 100 * systemMetrics['system.cpu.usage'] | number: '1.0-2' }} %</span>
     </div>
 
-    <ngb-progressbar [value]="100 * systemMetrics['system.cpu.usage']" [striped]="true" [animated]="false" type="success">
-      <span>{{ 100 * systemMetrics['system.cpu.usage'] | number: '1.0-2' }} %</span>
-    </ngb-progressbar>
+    <hpd-progress-bar [value]="100 * systemMetrics['system.cpu.usage']" variant="success">
+      {{ 100 * systemMetrics['system.cpu.usage'] | number: '1.0-2' }} %
+    </hpd-progress-bar>
 
-    <div class="row">
-      <div class="col-md-9">System CPU count</div>
-      <div class="col-md-3 text-end">{{ systemMetrics['system.cpu.count'] }}</div>
+    <div class="flex items-center justify-between">
+      <span>System CPU count</span>
+      <span class="font-medium text-slate-800">{{ systemMetrics['system.cpu.count'] }}</span>
     </div>
 
-    <div class="row">
-      <div class="col-md-9">System 1m Load average</div>
-      <div class="col-md-3 text-end">{{ systemMetrics['system.load.average.1m'] | number: '1.0-2' }}</div>
+    <div class="flex items-center justify-between">
+      <span>System 1m Load average</span>
+      <span class="font-medium text-slate-800">{{ systemMetrics['system.load.average.1m'] | number: '1.0-2' }}</span>
     </div>
 
-    <div class="row">
-      <div class="col-md-9">Process files max</div>
-      <div class="col-md-3 text-end">{{ systemMetrics['process.files.max'] | number: '1.0-0' }}</div>
+    <div class="flex items-center justify-between">
+      <span>Process files max</span>
+      <span class="font-medium text-slate-800">{{ systemMetrics['process.files.max'] | number: '1.0-0' }}</span>
     </div>
 
-    <div class="row">
-      <div class="col-md-9">Process files open</div>
-      <div class="col-md-3 text-end">{{ systemMetrics['process.files.open'] | number: '1.0-0' }}</div>
+    <div class="flex items-center justify-between">
+      <span>Process files open</span>
+      <span class="font-medium text-slate-800">{{ systemMetrics['process.files.open'] | number: '1.0-0' }}</span>
     </div>
-  </ng-container>
+  </div>
 }

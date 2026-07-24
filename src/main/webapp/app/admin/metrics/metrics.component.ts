@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 import { combineLatest } from 'rxjs';
 
 import SharedModule from 'app/shared/shared.module';
@@ -10,7 +11,6 @@ import { MetricsCacheComponent } from './blocks/metrics-cache/metrics-cache.comp
 import { MetricsDatasourceComponent } from './blocks/metrics-datasource/metrics-datasource.component';
 import { MetricsEndpointsRequestsComponent } from './blocks/metrics-endpoints-requests/metrics-endpoints-requests.component';
 import { MetricsGarbageCollectorComponent } from './blocks/metrics-garbagecollector/metrics-garbagecollector.component';
-import { MetricsModalThreadsComponent } from './blocks/metrics-modal-threads/metrics-modal-threads.component';
 import { MetricsRequestComponent } from './blocks/metrics-request/metrics-request.component';
 import { MetricsSystemComponent } from './blocks/metrics-system/metrics-system.component';
 
@@ -20,13 +20,13 @@ import { MetricsSystemComponent } from './blocks/metrics-system/metrics-system.c
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     SharedModule,
+    MatIconModule,
     JvmMemoryComponent,
     JvmThreadsComponent,
     MetricsCacheComponent,
     MetricsDatasourceComponent,
     MetricsEndpointsRequestsComponent,
     MetricsGarbageCollectorComponent,
-    MetricsModalThreadsComponent,
     MetricsRequestComponent,
     MetricsSystemComponent,
   ],

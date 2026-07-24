@@ -1,24 +1,24 @@
-<h3 id="endpointsRequestsMetrics">Endpoints requests (time in millisecond)</h3>
+<h3 id="endpointsRequestsMetrics" class="text-sm font-semibold text-slate-700">Endpoints requests (time in millisecond)</h3>
 
 @if (!updating && endpointsRequestsMetrics) {
-  <div class="table-responsive">
-    <table class="table table-striped" aria-describedby="endpointsRequestsMetrics">
-      <thead>
+  <div class="mt-2 overflow-x-auto rounded-lg border border-slate-200">
+    <table class="w-full text-left text-sm text-slate-600" aria-describedby="endpointsRequestsMetrics">
+      <thead class="bg-slate-50 text-xs uppercase">
         <tr>
-          <th scope="col">Method</th>
-          <th scope="col">Endpoint url</th>
-          <th scope="col" class="text-end">Count</th>
-          <th scope="col" class="text-end">Mean</th>
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700">Method</th>
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700">Endpoint url</th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700">Count</th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700">Mean</th>
         </tr>
       </thead>
       <tbody>
         @for (entry of endpointsRequestsMetrics | keyvalue; track entry.key) {
           @for (method of entry.value | keyvalue; track method.key) {
-            <tr>
-              <td>{{ method.key }}</td>
-              <td>{{ entry.key }}</td>
-              <td class="text-end">{{ method.value!.count }}</td>
-              <td class="text-end">{{ method.value!.mean | number: '1.0-3' }}</td>
+            <tr class="border-t border-slate-100">
+              <td class="px-4 py-3">{{ method.key }}</td>
+              <td class="px-4 py-3">{{ entry.key }}</td>
+              <td class="px-4 py-3 text-right">{{ method.value!.count }}</td>
+              <td class="px-4 py-3 text-right">{{ method.value!.mean | number: '1.0-3' }}</td>
             </tr>
           }
         }

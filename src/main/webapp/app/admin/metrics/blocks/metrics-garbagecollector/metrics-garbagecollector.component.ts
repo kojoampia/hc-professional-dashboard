@@ -1,12 +1,13 @@
 import { Component, Input } from '@angular/core';
 
 import SharedModule from 'app/shared/shared.module';
+import ProgressBarComponent from 'app/shared/progress-bar/progress-bar.component';
 import { GarbageCollector } from 'app/admin/metrics/metrics.model';
 
 @Component({
   selector: 'hpd-metrics-garbagecollector',
   templateUrl: './metrics-garbagecollector.component.html',
-  imports: [SharedModule],
+  imports: [SharedModule, ProgressBarComponent],
 })
 export class MetricsGarbageCollectorComponent {
   /**

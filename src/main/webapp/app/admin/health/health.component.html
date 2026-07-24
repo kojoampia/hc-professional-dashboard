@@ -1,31 +1,37 @@
 <div>
-  <h2>
-    <span id="health-page-heading" jhiTranslate="health.title" data-cy="healthPageHeading">Health Checks</span>
+  <div class="flex items-center justify-between">
+    <span id="health-page-heading" class="text-xl font-bold text-slate-900" jhiTranslate="health.title" data-cy="healthPageHeading"
+      >Health Checks</span
+    >
 
-    <button class="btn btn-primary float-end" (click)="refresh()">
-      <fa-icon icon="sync"></fa-icon> <span jhiTranslate="health.refresh.button">Refresh</span>
+    <button
+      class="hpd-focusable inline-flex items-center gap-1 rounded-full bg-hpd-primary px-4 py-2 text-sm font-medium text-white hover:brightness-110"
+      type="button"
+      (click)="refresh()"
+    >
+      <mat-icon aria-hidden="true" class="!text-lg">sync</mat-icon> <span jhiTranslate="health.refresh.button">Refresh</span>
     </button>
-  </h2>
+  </div>
 
-  <div class="table-responsive">
-    <table id="healthCheck" class="table table-striped" aria-describedby="health-page-heading">
-      <thead>
+  <div class="mt-4 overflow-x-auto rounded-lg border border-slate-200">
+    <table id="healthCheck" class="w-full text-left text-sm text-slate-600" aria-describedby="health-page-heading">
+      <thead class="bg-slate-50 text-xs uppercase">
         <tr>
-          <th scope="col" jhiTranslate="health.table.service">Service name</th>
-          <th scope="col" class="text-center" jhiTranslate="health.table.status">Status</th>
-          <th scope="col" class="text-center" jhiTranslate="health.details.details">Details</th>
+          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiTranslate="health.table.service">Service name</th>
+          <th scope="col" class="px-4 py-3 text-center font-bold text-slate-700" jhiTranslate="health.table.status">Status</th>
+          <th scope="col" class="px-4 py-3 text-center font-bold text-slate-700" jhiTranslate="health.details.details">Details</th>
         </tr>
       </thead>
       @if (health) {
         <tbody>
           @for (componentHealth of health.components | keyvalue; track componentHealth.key) {
-            <tr>
-              <td>
+            <tr class="border-t border-slate-100">
+              <td class="px-4 py-3">
                 {{ 'health.indicator.' + componentHealth.key | translate }}
               </td>
-              <td class="text-center">
+              <td class="px-4 py-3 text-center">
                 <span
-                  class="badge"
+                  class="rounded-full px-2 py-0.5 text-xs font-medium"
                   [ngClass]="getBadgeClass(componentHealth.value!.status)"
                   jhiTranslate="{{ 'health.status.' + componentHealth.value!.status }}"
                 >
@@ -36,11 +42,15 @@
                   }}
                 </span>
               </td>
-              <td class="text-center">
+              <td class="px-4 py-3 text-center">
                 @if (componentHealth.value!.details) {
-                  <a class="hand" (click)="showHealth({ key: componentHealth.key, value: componentHealth.value! })">
-                    <fa-icon icon="eye"></fa-icon>
-                  </a>
+                  <button
+                    class="hpd-focusable text-hpd-primary"
+                    type="button"
+                    (click)="showHealth({ key: componentHealth.key, value: componentHealth.value! })"
+                  >
+                    <mat-icon aria-hidden="true" class="!text-lg">visibility</mat-icon>
+                  </button>
                 }
               </td>
             </tr>

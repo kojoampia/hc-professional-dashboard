@@ -1,14 +1,15 @@
 import { Component, Input } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { MatDialog } from '@angular/material/dialog';
 
 import SharedModule from 'app/shared/shared.module';
+import ProgressBarComponent from 'app/shared/progress-bar/progress-bar.component';
 import { Thread, ThreadState } from 'app/admin/metrics/metrics.model';
 import { MetricsModalThreadsComponent } from '../metrics-modal-threads/metrics-modal-threads.component';
 
 @Component({
   selector: 'hpd-jvm-threads',
   templateUrl: './jvm-threads.component.html',
-  imports: [SharedModule],
+  imports: [SharedModule, ProgressBarComponent],
 })
 export class JvmThreadsComponent {
   threadStats = {
@@ -48,10 +49,10 @@ export class JvmThreadsComponent {
 
   private _threads: Thread[] | undefined;
 
-  constructor(private modalService: NgbModal) {}
+  constructor(private dialog: MatDialog) {}
 
   open(): void {
-    const modalRef = this.modalService.open(MetricsModalThreadsComponent);
-    modalRef.componentInstance.threads = this.threads;
+    const dialogRef = this.dialog.open(MetricsModalThreadsComponent);
+    dialogRef.componentInstance.threads = this.threads;
   }
 }

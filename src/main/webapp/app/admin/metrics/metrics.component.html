@@ -1,51 +1,69 @@
 <div>
-  <h2>
-    <span id="metrics-page-heading" jhiTranslate="metrics.title" data-cy="metricsPageHeading">Application Metrics</span>
+  <div class="flex items-center justify-between">
+    <span id="metrics-page-heading" class="text-xl font-bold text-slate-900" jhiTranslate="metrics.title" data-cy="metricsPageHeading"
+      >Application Metrics</span
+    >
 
-    <button class="btn btn-primary float-end" (click)="refresh()">
-      <fa-icon icon="sync"></fa-icon> <span jhiTranslate="metrics.refresh.button">Refresh</span>
+    <button
+      class="hpd-focusable inline-flex items-center gap-1 rounded-full bg-hpd-primary px-4 py-2 text-sm font-medium text-white hover:brightness-110"
+      type="button"
+      (click)="refresh()"
+    >
+      <mat-icon aria-hidden="true" class="!text-lg">sync</mat-icon> <span jhiTranslate="metrics.refresh.button">Refresh</span>
     </button>
-  </h2>
+  </div>
 
-  <h3 jhiTranslate="metrics.jvm.title">JVM Metrics</h3>
+  <h3 class="mt-6 text-lg font-bold text-slate-900" jhiTranslate="metrics.jvm.title">JVM Metrics</h3>
 
   @if (metrics && !updatingMetrics) {
-    <div class="row">
-      <hpd-jvm-memory class="col-md-4" [updating]="updatingMetrics" [jvmMemoryMetrics]="metrics.jvm"></hpd-jvm-memory>
+    <div class="mt-4 grid gap-6 md:grid-cols-3">
+      <hpd-jvm-memory [updating]="updatingMetrics" [jvmMemoryMetrics]="metrics.jvm"></hpd-jvm-memory>
 
-      <hpd-jvm-threads class="col-md-4" [threads]="threads"></hpd-jvm-threads>
+      <hpd-jvm-threads [threads]="threads"></hpd-jvm-threads>
 
-      <hpd-metrics-system class="col-md-4" [updating]="updatingMetrics" [systemMetrics]="metrics.processMetrics"></hpd-metrics-system>
+      <hpd-metrics-system [updating]="updatingMetrics" [systemMetrics]="metrics.processMetrics"></hpd-metrics-system>
     </div>
   }
 
   @if (metrics && metricsKeyExists('garbageCollector')) {
-    <hpd-metrics-garbagecollector
-      [updating]="updatingMetrics"
-      [garbageCollectorMetrics]="metrics.garbageCollector"
-    ></hpd-metrics-garbagecollector>
+    <div class="mt-6">
+      <hpd-metrics-garbagecollector
+        [updating]="updatingMetrics"
+        [garbageCollectorMetrics]="metrics.garbageCollector"
+      ></hpd-metrics-garbagecollector>
+    </div>
   }
 
   @if (updatingMetrics) {
-    <div class="well well-lg" jhiTranslate="metrics.updating">Updating...</div>
+    <div class="mt-6 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600" jhiTranslate="metrics.updating">
+      Updating...
+    </div>
   }
 
   @if (metrics && metricsKeyExists('http.server.requests')) {
-    <hpd-metrics-request [updating]="updatingMetrics" [requestMetrics]="metrics['http.server.requests']"></hpd-metrics-request>
+    <div class="mt-6">
+      <hpd-metrics-request [updating]="updatingMetrics" [requestMetrics]="metrics['http.server.requests']"></hpd-metrics-request>
+    </div>
   }
 
   @if (metrics && metricsKeyExists('services')) {
-    <hpd-metrics-endpoints-requests
-      [updating]="updatingMetrics"
-      [endpointsRequestsMetrics]="metrics.services"
-    ></hpd-metrics-endpoints-requests>
+    <div class="mt-6">
+      <hpd-metrics-endpoints-requests
+        [updating]="updatingMetrics"
+        [endpointsRequestsMetrics]="metrics.services"
+      ></hpd-metrics-endpoints-requests>
+    </div>
   }
 
   @if (metrics && metricsKeyExists('cache')) {
-    <hpd-metrics-cache [updating]="updatingMetrics" [cacheMetrics]="metrics.cache"></hpd-metrics-cache>
+    <div class="mt-6">
+      <hpd-metrics-cache [updating]="updatingMetrics" [cacheMetrics]="metrics.cache"></hpd-metrics-cache>
+    </div>
   }
 
   @if (metrics && metricsKeyExistsAndObjectNotEmpty('databases')) {
-    <hpd-metrics-datasource [updating]="updatingMetrics" [datasourceMetrics]="metrics.databases"></hpd-metrics-datasource>
+    <div class="mt-6">
+      <hpd-metrics-datasource [updating]="updatingMetrics" [datasourceMetrics]="metrics.databases"></hpd-metrics-datasource>
+    </div>
   }
 </div>

@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
+import { MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { ITEM_DELETED_EVENT } from 'app/config/navigation.constants';
@@ -20,15 +20,15 @@ export class MedCaseDeleteDialogComponent {
   medCase?: IMedCase;
 
   protected readonly medCaseService = inject(MedCaseService);
-  protected readonly activeModal = inject(NgbActiveModal);
+  protected readonly dialogRef = inject(MatDialogRef<MedCaseDeleteDialogComponent>);
 
   cancel(): void {
-    this.activeModal.dismiss();
+    this.dialogRef.close();
   }
 
   confirmDelete(id: string): void {
     this.medCaseService.delete(id).subscribe(() => {
-      this.activeModal.close(ITEM_DELETED_EVENT);
+      this.dialogRef.close(ITEM_DELETED_EVENT);
     });
   }
 }

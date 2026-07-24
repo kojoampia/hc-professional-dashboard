@@ -1,30 +1,30 @@
 import { AfterContentInit, ContentChild, Directive, Host, HostListener, Input, OnDestroy } from '@angular/core';
+import { MatIcon } from '@angular/material/icon';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faSort, faSortDown, faSortUp, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 import SortDirective from './sort.directive';
+
+export type SortByIconName = 'arrow_upward' | 'arrow_downward' | 'unfold_more';
 
 @Directive({
   standalone: true,
   selector: '[jhiSortBy]',
+  exportAs: 'jhiSortBy',
 })
 export default class SortByDirective<T> implements AfterContentInit, OnDestroy {
   @Input() jhiSortBy!: T;
 
-  @ContentChild(FaIconComponent, { static: false })
-  iconComponent?: FaIconComponent;
+  @ContentChild(MatIcon, { static: false })
+  iconComponent?: MatIcon;
 
-  sortIcon = faSort;
-  sortAscIcon = faSortUp;
-  sortDescIcon = faSortDown;
+  icon: SortByIconName = 'unfold_more';
 
   private readonly destroy$ = new Subject<void>();
 
   constructor(@Host() private sort: SortDirective<T>) {
-    sort.predicateChange.pipe(takeUntil(this.destroy$)).subscribe(() => this.updateIconDefinition());
-    sort.ascendingChange.pipe(takeUntil(this.destroy$)).subscribe(() => this.updateIconDefinition());
+    sort.predicateChange.pipe(takeUntil(this.destroy$)).subscribe(() => this.updateIcon());
+    sort.ascendingChange.pipe(takeUntil(this.destroy$)).subscribe(() => this.updateIcon());
   }
 
   @HostListener('click')
@@ -35,7 +35,7 @@ export default class SortByDirective<T> implements AfterContentInit, OnDestroy {
   }
 
   ngAfterContentInit(): void {
-    this.updateIconDefinition();
+    this.updateIcon();
   }
 
   ngOnDestroy(): void {
@@ -43,14 +43,11 @@ export default class SortByDirective<T> implements AfterContentInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private updateIconDefinition(): void {
-    if (this.iconComponent) {
-      let icon: IconDefinition = this.sortIcon;
-      if (this.sort.predicate === this.jhiSortBy) {
-        icon = this.sort.ascending ? this.sortAscIcon : this.sortDescIcon;
-      }
-      this.iconComponent.icon = icon.iconName;
-      this.iconComponent.render();
+  private updateIcon(): void {
+    if (this.sort.predicate !== this.jhiSortBy) {
+      this.icon = 'unfold_more';
+    } else {
+      this.icon = this.sort.ascending ? 'arrow_upward' : 'arrow_downward';
     }
   }
 }
