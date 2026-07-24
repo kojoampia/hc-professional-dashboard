@@ -1,6 +1,16 @@
 @import 'tailwindcss/theme';
 @import 'tailwindcss/utilities';
 
+/*
+ * Tailwind v4's automatic content detection doesn't reliably reach
+ * src/main/webapp/app under Angular's custom webpack/postcss-loader
+ * pipeline (non-standard project layout vs. its Vite-oriented defaults) —
+ * verified via a live-render check: utility classes were present in the
+ * DOM but their rules were entirely absent from the built stylesheet.
+ * Point it at the app source explicitly.
+ */
+@source '../../app';
+
 @theme {
   --color-hpd-primary: var(--hpd-color-primary-blue);
   --color-hpd-surface: var(--hpd-color-surface);

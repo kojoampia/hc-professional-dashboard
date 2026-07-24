@@ -31,7 +31,16 @@ describe('HealthConnect feature routes', () => {
       expect(route).toBeDefined();
       expect(route.loadComponent).toBeDefined();
       expect(route.canActivate).toEqual([UserRouteAccessService, healthConnectRoleGuard]);
-      expect(route.data?.['authorities']).toEqual([Authority.USER]);
+      expect(route.data?.['authorities']).toEqual([
+        Authority.ADMIN,
+        Authority.DOCTOR,
+        Authority.USER,
+        Authority.NURSE,
+        Authority.PARAMEDIC,
+        Authority.PHARMACIST,
+        Authority.THERAPIST,
+        Authority.CARER,
+      ]);
     }
   });
 

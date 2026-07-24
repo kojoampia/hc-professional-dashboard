@@ -138,5 +138,58 @@ module.exports = async (config, options, targetOptions) => {
     // jhipster-needle-add-webpack-config - JHipster will add custom config
   );
 
+  injectTailwindPostcssPlugin(config);
+
   return config;
 };
+
+/**
+ * @angular-devkit/build-angular's built-in Tailwind support (see
+ * node_modules/@angular-devkit/build-angular/src/tools/webpack/configs/styles.js)
+ * only wires up a Tailwind postcss plugin when a tailwind.config.js file exists,
+ * and even then calls `require('tailwindcss')({ config })` — the Tailwind v3
+ * postcss-plugin-factory API, which the installed Tailwind v4 (`tailwindcss@^4`)
+ * no longer exposes (v4's postcss integration lives in the separate
+ * `@tailwindcss/postcss` package). It also sets postcss-loader's `config: false`,
+ * so the project's own `.postcssrc.json` (which correctly declares
+ * `@tailwindcss/postcss`) is never read either. Net effect: Tailwind's `@theme`
+ * custom properties came through, but no utility classes were ever generated —
+ * confirmed by inspecting the built stylesheet, which contained the literal,
+ * unprocessed `@tailwind utilities;` directive.
+ *
+ * Fix: reach into the global-styles postcss-loader rule (identified by
+ * `resourceQuery: /\?ngGlobalStyle/`, per the same styles.js) and prepend the
+ * real `@tailwindcss/postcss` plugin to whatever plugins Angular already set up
+ * (PostcssCliResources + autoprefixer), leaving everything else untouched.
+ */
+function injectTailwindPostcssPlugin(config) {
+  const postcssLoaderPath = require.resolve('postcss-loader');
+
+  const visit = rules => {
+    for (const rule of rules || []) {
+      if (Array.isArray(rule.rules)) {
+        visit(rule.rules);
+      }
+      if (Array.isArray(rule.oneOf)) {
+        for (const subRule of rule.oneOf) {
+          const isGlobalStyleRule = subRule.resourceQuery && subRule.resourceQuery.toString().includes('ngGlobalStyle');
+          if (!isGlobalStyleRule || !Array.isArray(subRule.use)) {
+            continue;
+          }
+          for (const useEntry of subRule.use) {
+            if (useEntry && useEntry.loader === postcssLoaderPath && typeof useEntry.options?.postcssOptions === 'function') {
+              const originalPostcssOptions = useEntry.options.postcssOptions;
+              useEntry.options.postcssOptions = loaderContext => {
+                const options = originalPostcssOptions(loaderContext);
+                options.plugins = [require('@tailwindcss/postcss')(), ...(options.plugins || [])];
+                return options;
+              };
+            }
+          }
+        }
+      }
+    }
+  };
+
+  visit(config.module?.rules);
+}

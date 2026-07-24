@@ -41,16 +41,16 @@ Each phase branch: implement → run `npm run lint` / relevant `npx jest` specs 
 
 ## Phase index
 
-| Phase | Branch | Scope | Depends on |
-|---|---|---|---|
-| 0 | `phase-0` | Design tokens (`--hpd-color-*`), Tailwind `@theme` remap, Material Icons font, real Material M3 theme replacing the `azure-blue` M2 prebuilt theme | `main` |
-| 1 | `phase-1` | Dashboard/patient/case/roster REST contracts as TS types + services; `HttpHealthConnectRepository` written (inactive) | `phase-0` |
-| 2 | `phase-2` | Stat card restyle, `ngx-charts` → Chart.js (`ng2-charts`) for the 3 dashboard charts, retire `app/dashboard/` + clean `HomeComponent` | `phase-1` |
-| 3 | `phase-3` | Patient Directory + Patient Record page/panel restyle, overlay host as Material-flavored modal | `phase-2` |
-| 4 | `phase-4` | Case Queue, Case Detail, Duty Roster restyle | `phase-3` |
-| 5 | `phase-5` | Navbar/footer/main → Material M3 + Tailwind, remove dead entity/admin links, alert/sort/filter icon swap | `phase-4` |
-| 6 | `phase-6` | `med-case` list/update/detail/delete-dialog restyle; delete dialog moves to the existing Material confirm-dialog | `phase-5` |
-| 7 | `phase-7` | Remove Bootstrap/ng-bootstrap/FontAwesome, run full lint/test/prettier, final verification, gap summary | `phase-6` (final; contains all) |
+| Phase | Branch    | Scope                                                                                                                                              | Depends on                      |
+| ----- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| 0     | `phase-0` | Design tokens (`--hpd-color-*`), Tailwind `@theme` remap, Material Icons font, real Material M3 theme replacing the `azure-blue` M2 prebuilt theme | `main`                          |
+| 1     | `phase-1` | Dashboard/patient/case/roster REST contracts as TS types + services; `HttpHealthConnectRepository` written (inactive)                              | `phase-0`                       |
+| 2     | `phase-2` | Stat card restyle, `ngx-charts` → Chart.js (`ng2-charts`) for the 3 dashboard charts, retire `app/dashboard/` + clean `HomeComponent`              | `phase-1`                       |
+| 3     | `phase-3` | Patient Directory + Patient Record page/panel restyle, overlay host as Material-flavored modal                                                     | `phase-2`                       |
+| 4     | `phase-4` | Case Queue, Case Detail, Duty Roster restyle                                                                                                       | `phase-3`                       |
+| 5     | `phase-5` | Navbar/footer/main → Material M3 + Tailwind, remove dead entity/admin links, alert/sort/filter icon swap                                           | `phase-4`                       |
+| 6     | `phase-6` | `med-case` list/update/detail/delete-dialog restyle; delete dialog moves to the existing Material confirm-dialog                                   | `phase-5`                       |
+| 7     | `phase-7` | Remove Bootstrap/ng-bootstrap/FontAwesome, run full lint/test/prettier, final verification, gap summary                                            | `phase-6` (final; contains all) |
 
 ## Work log convention
 
