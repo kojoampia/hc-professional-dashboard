@@ -1,0 +1,29 @@
+@use '@angular/material' as mat;
+
+// Angular Material 3 (M3) theme, replacing the old M2 `azure-blue` prebuilt
+// theme (previously loaded straight from node_modules in angular.json).
+//
+// `mat.$violet-palette` is the closest bundled M3 tonal palette to this
+// design system's indigo primary (#6366f1 — see --hpd-color-primary-blue in
+// global.scss). Angular Material doesn't ship an "indigo" M3 palette by
+// name; getting an exact tonal palette from that seed color requires
+// generating one via the Material Theme Builder and pasting its output here
+// — a reasonable follow-up, not required for this migration.
+html {
+  color-scheme: light;
+
+  @include mat.theme(
+    (
+      color: (
+        theme-type: light,
+        primary: mat.$violet-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: (
+        brand-family: 'Inter',
+        plain-family: 'Inter',
+      ),
+      density: 0,
+    )
+  );
+}

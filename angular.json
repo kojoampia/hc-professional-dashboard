@@ -37,9 +37,9 @@
             ],
             "styles": [
               "src/main/webapp/content/scss/vendor.scss",
+              "src/main/webapp/content/scss/material-theme.scss",
               "src/main/webapp/content/scss/global.scss",
-              "src/main/webapp/content/css/tailwind.css",
-              "node_modules/@angular/material/prebuilt-themes/azure-blue.css"
+              "src/main/webapp/content/css/tailwind.css"
             ],
             "scripts": [],
             "allowedCommonJsDependencies": ["hammerjs", "sockjs-client", "webstomp-client"]

@@ -4,39 +4,55 @@
 
 /* ==========================================================================
 HealthConnect design tokens and layout primitives
+
+Token contract (professional-demo.html is the source of truth). Old values
+were ported from the earlier navy/teal demo iteration; this table maps each
+token to its current value and where it surfaces:
+
+| Token                          | Value      | Tailwind class(es)         | Notes                                  |
+|---------------------------------|------------|-----------------------------|-----------------------------------------|
+| --hpd-color-primary(-blue)      | #6366f1    | bg-hpd-primary, text-hpd-primary | indigo-500, M3 theme primary seed |
+| --hpd-color-surface             | #f8fafc    | bg-hpd-surface              | slate-50 page background               |
+| --hpd-color-text-primary        | #0f172a    | text-hpd-primary-dark       | slate-900                              |
+| --hpd-color-text-muted          | #64748b    | text-hpd-muted              | slate-500                              |
+| --hpd-color-card-neutral/urgent/open/closed | #ffffff | bg-white | demo cards are white; status conveyed by badge, not card bg |
+| --hpd-color-row-urgent/open/closed | rose-50/indigo-50/emerald-50 | bg-hpd-row-* | table header tint per case status |
+| --hpd-color-action-edit/copy    | amber-200/teal-200 | bg-hpd-edit / bg-hpd-copy | patient-record Edit/Copy buttons |
+| --hpd-color-success             | #10b981    | text-hpd-success            | emerald-500                            |
+| --hpd-color-chart-blue/navy      | #818cf8 / #1b3a57 | n/a (Chart.js config) | dashboard doughnut/bar series colors |
 ========================================================================== */
 
 :root {
-  --hpd-color-primary-blue: #3e7cb1;
-  --hpd-color-primary: #3e7cb1;
-  --hpd-color-border: #bac5d1;
-  --hpd-color-shell-border: #3e7cb1;
-  --hpd-color-shell-background: #0b0f1a;
-  --hpd-color-shell-background-end: #1b2a45;
-  --hpd-color-surface: #fff;
-  --hpd-color-card-neutral: #7c8792;
-  --hpd-color-card-urgent: #fbe2e1;
-  --hpd-color-card-open: #e7f0fb;
-  --hpd-color-card-closed: #dff2e1;
-  --hpd-color-text-on-dark: #fff;
-  --hpd-color-text-primary: #2b2b2b;
-  --hpd-color-text-muted: #6b7280;
-  --hpd-color-accent-teal: #1fbe9c;
-  --hpd-color-accent-teal-dark: #0e7c6b;
-  --hpd-color-chart-blue: #5b9bd5;
+  --hpd-color-primary-blue: #6366f1;
+  --hpd-color-primary: #6366f1;
+  --hpd-color-border: #e2e8f0;
+  --hpd-color-shell-border: #0f172a;
+  --hpd-color-shell-background: #0f172a;
+  --hpd-color-shell-background-end: #0f172a;
+  --hpd-color-surface: #f8fafc;
+  --hpd-color-card-neutral: #ffffff;
+  --hpd-color-card-urgent: #ffffff;
+  --hpd-color-card-open: #ffffff;
+  --hpd-color-card-closed: #ffffff;
+  --hpd-color-text-on-dark: #ffffff;
+  --hpd-color-text-primary: #0f172a;
+  --hpd-color-text-muted: #64748b;
+  --hpd-color-accent-teal: #6366f1;
+  --hpd-color-accent-teal-dark: #4f46e5;
+  --hpd-color-chart-blue: #818cf8;
   --hpd-color-chart-navy: #1b3a57;
-  --hpd-color-success: #3eae5b;
-  --hpd-color-row-urgent: #fbe9e7;
-  --hpd-color-row-open: #eaf2fb;
-  --hpd-color-row-closed: #e6f6e9;
-  --hpd-color-action-edit: #fbe7b8;
-  --hpd-color-action-copy: #d9f2dc;
-  --hpd-color-action-close: #5a5a5a;
-  --hpd-font-display: 'Trebuchet MS', 'Arial Rounded MT Bold', sans-serif;
-  --hpd-font-body: Inter, Arial, sans-serif;
-  --hpd-content-max-width: 1160px;
-  --hpd-shell-border-width: 8px;
-  --hpd-focus-ring: 0 0 0 3px rgb(62 124 177 / 45%);
+  --hpd-color-success: #10b981;
+  --hpd-color-row-urgent: #fff1f2;
+  --hpd-color-row-open: #eef2ff;
+  --hpd-color-row-closed: #ecfdf5;
+  --hpd-color-action-edit: #fde68a;
+  --hpd-color-action-copy: #99f6e4;
+  --hpd-color-action-close: #334155;
+  --hpd-font-display: Inter, ui-sans-serif, system-ui, sans-serif;
+  --hpd-font-body: Inter, ui-sans-serif, system-ui, sans-serif;
+  --hpd-content-max-width: 1280px;
+  --hpd-shell-border-width: 0;
+  --hpd-focus-ring: 0 0 0 3px rgb(99 102 241 / 45%);
 }
 
 .hpd-shell {

@@ -10,4 +10,13 @@
   --color-hpd-open: var(--hpd-color-card-open);
   --color-hpd-closed: var(--hpd-color-card-closed);
   --color-hpd-success: var(--hpd-color-success);
+  --color-hpd-muted: var(--hpd-color-text-muted);
+  --color-hpd-primary-dark: var(--hpd-color-text-primary);
+  --color-hpd-border: var(--hpd-color-border);
+  --color-hpd-row-urgent: var(--hpd-color-row-urgent);
+  --color-hpd-row-open: var(--hpd-color-row-open);
+  --color-hpd-row-closed: var(--hpd-color-row-closed);
+  --color-hpd-edit: var(--hpd-color-action-edit);
+  --color-hpd-copy: var(--hpd-color-action-copy);
+  --color-hpd-close: var(--hpd-color-action-close);
 }
