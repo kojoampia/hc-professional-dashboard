@@ -74,6 +74,7 @@ npx cypress run --spec src/test/javascript/cypress/e2e/<file>.spec.ts
 - Component selector prefix `hpd` kebab-case; directive selector prefix `hpd` camelCase (`.eslintrc.json`).
 - Follow existing RxJS/Observable patterns in services and auth state management.
 - JHipster generator markers (`// jhipster-needle-*` / `/* jhipster-needle-* */`) denote where the generator inserts code — preserve them.
+- **Uniform font:** the whole application renders in Inter — the same face used (via inheritance, no per-component override) by the health-connect stat cards (`app/shared/health-connect/stat-card/stat-card.component.ts`). It's loaded via the Google Fonts `<link>` in `src/main/webapp/index.html`, applied globally via `body { font-family: var(--hpd-font-body); }` in `content/scss/global.scss` (token defined in that same file's `:root` block), and also set as Tailwind's `--font-sans` in `content/css/tailwind.css` so the `font-sans` utility class agrees with it. Angular Material's M3 theme (`content/scss/material-theme.scss`) already specified `brand-family`/`plain-family: 'Inter'` — this is what makes that config actually render correctly instead of silently falling back to the browser default. Don't introduce a second font anywhere; if a component needs a different weight, use Tailwind's `font-*` weight utilities (`font-medium`, `font-semibold`, `font-bold`, …), not a different family.
 
 ## Docker / infrastructure
 

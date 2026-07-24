@@ -53,6 +53,17 @@
 - Regularly profile the application to identify and address performance bottlenecks, especially in critical paths such as the matching service and Kafka consumer.
 - Ensure that the application can scale horizontally by designing stateless services and using appropriate load balancing strategies to handle increased traffic and workload effectively.
 
+## Frontend UI Conventions
+
+- The Angular frontend (this repo) uses a single uniform font family, Inter,
+  across the entire application — the same face the health-connect stat cards
+  render in via inheritance. It's loaded via a Google Fonts `<link>` in
+  `src/main/webapp/index.html` and applied globally on `body` in
+  `src/main/webapp/content/scss/global.scss` (and mirrored as Tailwind's
+  `--font-sans` token in `src/main/webapp/content/css/tailwind.css`). Do not
+  introduce a second font family anywhere in the frontend; use Tailwind's
+  `font-*` weight utilities for emphasis instead.
+
 ## Technology Stack
 
 - Java 26

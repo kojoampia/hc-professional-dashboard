@@ -12,6 +12,11 @@
 @source '../../app';
 
 @theme {
+  /* Uniform application-wide font — see content/scss/global.scss's Typography
+     section. Overriding Tailwind's default here too keeps the `font-sans`
+     utility itself consistent with the rest of the app for the handful of
+     places that apply it explicitly (e.g. shared/alert's <pre> blocks). */
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
   --color-hpd-primary: var(--hpd-color-primary-blue);
   --color-hpd-surface: var(--hpd-color-surface);
   --color-hpd-hero: var(--hpd-color-shell-background);

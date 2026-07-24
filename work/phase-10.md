@@ -46,10 +46,32 @@ The first pass used a literal orange/amber/green reading of the request. A follo
 
 This only affects `toDoughnutChartData`/the case-distribution pie chart — `toGroupedBarChartData` (used by "Cases by Patient") still colors its series from the generic `CHART_PALETTE`, since that chart's series are per-patient groupings ("new"/"returning"), not case statuses, and weren't part of either request.
 
+## Part 4 — Uniform application-wide font (Inter, matched to the stat cards)
+
+### Context
+
+Asked to use a single, uniform font style for the entire application, taken from the health-connect stat cards. Investigating turned up a real, pre-existing inconsistency rather than a simple "copy this font-family value" job:
+
+- `stat-card.component.ts` sets no font-family at all — its text (`text-2xl font-bold`, etc.) just inherits whatever the ambient/cascaded font happens to be. So "the font style used in stat cards" is whatever the rest of the Tailwind-styled app was already inheriting, which — absent any explicit rule — is the browser's own default sans-serif, **not** Inter.
+- Yet Inter was already the clearly _intended_ font in two places that had never been fully wired up: `content/scss/global.scss`'s `:root` block already defined `--hpd-font-display`/`--hpd-font-body: Inter, ui-sans-serif, system-ui, sans-serif` but nothing ever applied either token to an element; and `content/scss/material-theme.scss`'s Angular Material M3 theme config already set `brand-family`/`plain-family: 'Inter'` for Material components. Neither `index.html` nor any stylesheet actually **loaded** the Inter font file — only Material Icons was linked, despite `index.html` already carrying `preconnect` hints for `fonts.googleapis.com`/`fonts.gstatic.com` seemingly left over from an unfinished Inter setup. Without the font file loaded, Material's `font-family: Inter` declarations were silently falling back to the browser default, likely a _different_ fallback than the Tailwind-styled bulk of the app was rendering in.
+
+So the fix wasn't "copy stat cards' font onto everything" (there was nothing to copy) — it was "finish wiring up the Inter font that was already declared as the intended design token everywhere, and apply it globally," which makes the stat cards (and everything else that inherits rather than overrides) consistent with Material's chrome for the first time.
+
+### Changes
+
+- `src/main/webapp/index.html` — added the actual Inter font `<link>` (`fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap`), using the `preconnect` hints that were already present.
+- `src/main/webapp/content/scss/global.scss` — added `body { font-family: var(--hpd-font-body); }` in the Typography section, finally applying the already-declared `--hpd-font-body` token globally.
+- `src/main/webapp/content/css/tailwind.css` — added `--font-sans: Inter, ui-sans-serif, system-ui, sans-serif;` to the `@theme` block, so Tailwind's own `font-sans` utility class (used explicitly in a couple of places, e.g. `shared/alert/alert.component.html`'s `<pre>` blocks) also resolves to Inter instead of Tailwind's generic default sans stack.
+
+No component-level changes were needed — `StatCardComponent` and everything else that doesn't set an explicit font-family now inherit Inter from `body`, and Material components (which already asked for Inter) finally render it correctly now that the font file loads.
+
+- `CLAUDE.md`, `README.md`, `AGENTS.md` — each documents this as a standing convention: the whole application uses Inter uniformly, loaded via `index.html`, applied via `global.scss`'s `body` rule and Tailwind's `--font-sans` token, and no second font family should be introduced (use Tailwind's `font-*` weight utilities for emphasis instead).
+
 ## Verification
 
 - `npx tsc -p tsconfig.app.json --noEmit` — clean.
-- `npx ng build --configuration development` — clean, no new warnings.
-- `npx ng test` — full suite, 75/75 suites, 315/315 tests passing across all three changes (including `chart-components.spec.ts`, `chart-transforms.spec.ts`, and `dashboard-page.component.spec.ts`).
+- `npx ng build --configuration development` and `--configuration production` — both clean, no new warnings or bundle-budget issues.
+- `npx ng test` — full suite, 75/75 suites, 315/315 tests passing across all four changes (including `chart-components.spec.ts`, `chart-transforms.spec.ts`, and `dashboard-page.component.spec.ts`).
 - `npm run lint` — clean.
-- `npx prettier --check` — clean on all touched files.
+- `npx prettier --check`/`--write` — clean on all touched files, including the three documentation files.
+- Confirmed in the compiled dev bundle (`target/classes/static/styles.css`) that `body{font-family:var(--hpd-font-body)}` and the `--font-sans` override both made it into the final CSS, and that the Inter `<link>` is present in the compiled `index.html`.

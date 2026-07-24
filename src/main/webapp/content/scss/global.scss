@@ -164,7 +164,19 @@ token to its current value and where it surfaces:
 
 /* ==============================================================
 Typography
+
+Uniform application-wide font: Inter (the same face already declared
+for the stat cards' ambient/inherited text via --hpd-font-body/-display
+in the :root block above, and for Angular Material's M3 typography in
+material-theme.scss's brand-family/plain-family) applied here to body
+so every element in the app — not just the ones that happen to sit
+under a Material component — actually renders in it. Loaded via the
+Google Fonts <link> in index.html.
 ===============================================================*/
+
+body {
+  font-family: var(--hpd-font-body);
+}
 
 body,
 h1,

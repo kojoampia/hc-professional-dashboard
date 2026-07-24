@@ -67,6 +67,20 @@ Entities are grouped under two namespaces that mirror the backend microservices:
 When adding entities, preserve the `/* jhipster-needle-add-entity-route */` marker —
 that is where the JHipster generator inserts new routes.
 
+### Fonts
+
+The application uses a single uniform font family, **Inter**, across the entire
+UI — the same face the health-connect stat cards render in (they don't set an
+explicit font, so they inherit it). It's loaded via a Google Fonts `<link>` in
+`src/main/webapp/index.html`, applied globally on `body` in
+`src/main/webapp/content/scss/global.scss`, and mirrored as Tailwind's
+`--font-sans` token in `src/main/webapp/content/css/tailwind.css` (so the
+`font-sans` utility class matches it too). Angular Material's M3 theme
+(`src/main/webapp/content/scss/material-theme.scss`) already asked for Inter;
+loading the actual font file is what makes that render correctly instead of
+silently falling back to the browser default. Don't add a second font — use
+Tailwind's `font-*` weight utilities for emphasis instead.
+
 ### API URLs and the dev proxy
 
 - Build every API URL through `ApplicationConfigService.getEndpointFor(api, microservice?)`
