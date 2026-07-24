@@ -47,7 +47,7 @@ export default class GroupedBarChartComponent {
     plugins: { legend: { display: true, position: 'bottom', title: { display: true, text: this.translate.instant(this.legendKey()) } } },
     scales: {
       x: { title: { display: true, text: this.translate.instant(this.xAxisKey()) }, grid: { display: false } },
-      y: { title: { display: true, text: this.translate.instant(this.yAxisKey()) }, beginAtZero: true },
+      y: { title: { display: true, text: this.translate.instant(this.yAxisKey()) }, beginAtZero: true, ticks: { precision: 0 } },
     },
   }));
 }
