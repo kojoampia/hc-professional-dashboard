@@ -4,7 +4,13 @@
       "dashboard": "Dashboard",
       "patients": "Patients",
       "cases": "Cases",
-      "dutyRoster": "Duty roster"
+      "dutyRoster": "Duty roster",
+      "care": "Care",
+      "overview": "Overview",
+      "session": "Session",
+      "menu": "Menu",
+      "messages": "Messages",
+      "about": "Why Abofonsa"
     },
     "roles": {
       "admin": "Admin",
@@ -42,7 +48,9 @@
       "unsubscribe": "Unsubscribe",
       "previous": "Previous",
       "next": "Next",
-      "confirm": "Confirm"
+      "confirm": "Confirm",
+      "newPatient": "New patient",
+      "markAllRead": "Mark all as read"
     },
     "dashboard": {
       "demographics": "Patient demographics",
@@ -133,6 +141,29 @@
     "validation": {
       "invalidFile": "Select a supported file within the allowed size.",
       "required": "Complete all required fields."
+    },
+    "brand": {
+      "name": "Abofonsa",
+      "product": "Professional",
+      "tagline": "Clinician workspace",
+      "description": "The clinician-facing side of BridgeCare — patient records, triage, and duty rosters in one place.",
+      "signInHint": "Sign in to your clinician account."
+    },
+    "messages": {
+      "title": "Messages",
+      "empty": "No new messages from patients right now.",
+      "backendPending": "Messaging will activate once the messaging service is connected."
+    },
+    "about": {
+      "title": "Why Abofonsa BridgeCare — Professional",
+      "body": "One platform, two sides: families book and track care through the BridgeCare family portal, while clinicians manage patients, triage, and duty rosters here — sharing the same patient records in real time."
+    },
+    "toast": {
+      "caseSaved": "Case saved",
+      "activityLogged": "Activity logged",
+      "reportUploaded": "Report uploaded",
+      "rosterUpdated": "Duty roster updated",
+      "markedRead": "Marked as read"
     }
   }
 }

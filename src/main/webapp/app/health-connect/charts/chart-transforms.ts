@@ -2,19 +2,20 @@ import { ChartData } from 'chart.js';
 
 import { GroupedBarChartGroup, LineChartPoint, PieChartSegment } from '../health-connect.models';
 
-/** Indigo/slate palette from professional-demo.html — see application-migration.md Phase 0. */
-const CHART_PALETTE = ['#6366f1', '#818cf8', '#1b3a57', '#0e7c6b', '#f59e0b'];
+/** BridgeCare series palette (navy/gold/steel-blue + status accents) — see global.scss chart tokens. */
+const CHART_PALETTE = ['#0d3058', '#c59437', '#8ba9c4', '#2e7d5b', '#b4741a'];
 
 /**
  * Case-status colors for the case distribution chart — matches
  * shared/health-connect/stat-card/stat-card.component.ts's BADGE_CLASSES/
- * BAR_CLASSES for the same variants (rose/indigo/emerald-500) so the
- * doughnut chart's slice colors agree with the stat cards above it.
+ * BAR_CLASSES for the same variants (--hpd-color-danger/warning-accent/
+ * success-accent) so the doughnut chart's slice colors agree with the stat
+ * cards above it.
  */
 const CASE_STATUS_COLORS: Record<string, string> = {
-  urgent: '#f43f5e',
-  open: '#6366f1',
-  closed: '#10b981',
+  urgent: '#b3402f',
+  open: '#b4741a',
+  closed: '#2e7d5b',
 };
 
 export type LineChartJsData = ChartData<'line', number[], string>;
@@ -27,8 +28,8 @@ export const toLineChartData = (points: readonly LineChartPoint[], seriesLabel: 
     {
       label: seriesLabel,
       data: points.map(point => point.y),
-      borderColor: '#1fbe9c',
-      backgroundColor: 'rgba(31, 190, 156, 0.12)',
+      borderColor: '#0d3058',
+      backgroundColor: 'rgba(13, 48, 88, 0.10)',
       tension: 0.4,
       fill: true,
     },

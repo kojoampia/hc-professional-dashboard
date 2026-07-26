@@ -1,14 +1,15 @@
 @use '@angular/material' as mat;
+@use 'theme-colors' as bridgecare;
 
-// Angular Material 3 (M3) theme, replacing the old M2 `azure-blue` prebuilt
-// theme (previously loaded straight from node_modules in angular.json).
+// Angular Material 3 (M3) theme for the BridgeCare design system.
 //
-// `mat.$violet-palette` is the closest bundled M3 tonal palette to this
-// design system's indigo primary (#6366f1 — see --hpd-color-primary-blue in
-// global.scss). Angular Material doesn't ship an "indigo" M3 palette by
-// name; getting an exact tonal palette from that seed color requires
-// generating one via the Material Theme Builder and pasting its output here
-// — a reasonable follow-up, not required for this migration.
+// _theme-colors.scss was generated with
+//   ng generate @angular/material:theme-color \
+//     --primary-color="#0D3058" --tertiary-color="#C59437"
+// (BridgeCare navy primary, gold tertiary — see --hpd-color-primary /
+// --hpd-color-gold in global.scss and web-layout-plan.md Phase 0.4).
+// Regenerate that file with the same command if the brand seeds change;
+// don't hand-edit the palette stops.
 html {
   color-scheme: light;
 
@@ -16,8 +17,8 @@ html {
     (
       color: (
         theme-type: light,
-        primary: mat.$violet-palette,
-        tertiary: mat.$blue-palette,
+        primary: bridgecare.$primary-palette,
+        tertiary: bridgecare.$tertiary-palette,
       ),
       typography: (
         brand-family: 'Inter',

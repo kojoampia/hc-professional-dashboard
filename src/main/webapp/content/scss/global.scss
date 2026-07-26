@@ -1,66 +1,98 @@
 /* ==========================================================================
-HealthConnect design tokens and layout primitives
+HealthConnect / Abofonsa BridgeCare design tokens and layout primitives
 
-Token contract (professional-demo.html is the source of truth). Old values
-were ported from the earlier navy/teal demo iteration; this table maps each
-token to its current value and where it surfaces:
+Token contract — ../../../../../Abofonsa_BridgeCare_Professional_Demo.html
+(workspace root) is the source of truth; see web-layout-plan.md Phase 0/1.
+The previous indigo/slate values (from professional-demo.html) were replaced
+by the BridgeCare navy/gold/cream palette in Phase 1. Two text tones were
+darkened from the demo values to reach WCAG AA 4.5:1 on their tint
+backgrounds (measured): success text #2E7D5B→#2A7554 (4.39→4.89 on #E7F3ED),
+warning text #B4741A→#96600F (3.50→4.80 on #FDF3E2). The demo's original
+hues remain available as the *-accent tokens for non-text uses (borders,
+bars, chart fills).
 
-| Token                          | Value      | Tailwind class(es)         | Notes                                  |
-|---------------------------------|------------|-----------------------------|-----------------------------------------|
-| --hpd-color-primary(-blue)      | #6366f1    | bg-hpd-primary, text-hpd-primary | indigo-500, M3 theme primary seed |
-| --hpd-color-surface             | #f8fafc    | bg-hpd-surface              | slate-50 page background               |
-| --hpd-color-text-primary        | #0f172a    | text-hpd-primary-dark       | slate-900                              |
-| --hpd-color-text-muted          | #64748b    | text-hpd-muted              | slate-500                              |
-| --hpd-color-card-neutral/urgent/open/closed | #ffffff | bg-white | demo cards are white; status conveyed by badge, not card bg |
-| --hpd-color-row-urgent/open/closed | rose-50/indigo-50/emerald-50 | bg-hpd-row-* | table header tint per case status |
-| --hpd-color-action-edit/copy    | amber-200/teal-200 | bg-hpd-edit / bg-hpd-copy | patient-record Edit/Copy buttons |
-| --hpd-color-success             | #10b981    | text-hpd-success            | emerald-500                            |
-| --hpd-color-chart-blue/navy      | #818cf8 / #1b3a57 | n/a (Chart.js config) | dashboard doughnut/bar series colors |
+| Token                          | Value      | Tailwind class(es)          | Notes                                   |
+|---------------------------------|------------|------------------------------|------------------------------------------|
+| --hpd-color-primary(-blue)      | #0d3058    | bg/text-hpd-primary          | BridgeCare navy; M3 theme primary seed   |
+| --hpd-color-primary-hover       | #12406f    | bg-hpd-primary-hover         | demo --navy-700 (button hover)           |
+| --hpd-color-primary-deep        | #092239    | bg-hpd-primary-deep          | demo --navy-900 (dark chrome)            |
+| --hpd-color-gold(-bright/-tint) | #c59437 / #ddb868 / #fbf4e6 | bg-hpd-gold* | demo --gold / --gold-300 / --gold-050 |
+| --hpd-color-cream               | #f7f4ee    | bg-hpd-cream                 | demo --cream (topbar, panel heads)       |
+| --hpd-color-surface             | #f2f0ea    | bg-hpd-surface               | demo --bg page background                |
+| --hpd-color-border              | #e6e2d9    | border-hpd-border            | demo --line                              |
+| --hpd-color-text-primary        | #16202c    | text-hpd-primary-dark        | demo --ink                               |
+| --hpd-color-text-muted          | #5b6470    | text-hpd-muted               | demo --grey                              |
+| --hpd-color-text-subtle         | #8b939e    | text-hpd-subtle              | demo --grey-400                          |
+| --hpd-color-success(-accent/-tint) | #2a7554 / #2e7d5b / #e7f3ed | *-hpd-success* | demo --ok / --ok-bg (AA-adjusted text) |
+| --hpd-color-warning(-accent/-tint) | #96600f / #b4741a / #fdf3e2 | *-hpd-warning* | demo --warn / --warn-bg (AA-adjusted text) |
+| --hpd-color-danger(-tint)       | #b3402f / #fbeae7 | *-hpd-danger*         | demo --danger / --danger-bg              |
+| --hpd-color-card-urgent/open/closed | status tints | bg-hpd-urgent/open/closed  | demo stat cards tint by status           |
+| --hpd-color-row-urgent/open/closed | status tints | bg-hpd-row-*            | table header tint per case status        |
+| --hpd-color-chart-navy/gold/blue | #0d3058 / #c59437 / #8ba9c4 | n/a (Chart.js) | demo chart series colors           |
+| --hpd-r-sm/r/r-lg/r-xl          | 8/14/20/28px | rounded-hpd-sm etc.        | demo radius scale                        |
+| --hpd-sh-sm/sh/sh-lg            | navy-tinted  | shadow-hpd-sm etc.         | demo shadow scale                        |
 ========================================================================== */
 
 :root {
-  --hpd-color-primary-blue: #6366f1;
-  --hpd-color-primary: #6366f1;
-  --hpd-color-border: #e2e8f0;
-  --hpd-color-shell-border: #0f172a;
-  --hpd-color-shell-background: #0f172a;
-  --hpd-color-shell-background-end: #0f172a;
-  --hpd-color-surface: #f8fafc;
-  --hpd-color-card-neutral: #ffffff;
-  --hpd-color-card-urgent: #ffffff;
-  --hpd-color-card-open: #ffffff;
-  --hpd-color-card-closed: #ffffff;
+  --hpd-color-primary-blue: #0d3058;
+  --hpd-color-primary: #0d3058;
+  --hpd-color-primary-hover: #12406f;
+  --hpd-color-primary-deep: #092239;
+  --hpd-color-gold: #c59437;
+  --hpd-color-gold-bright: #ddb868;
+  --hpd-color-gold-tint: #fbf4e6;
+  --hpd-color-cream: #f7f4ee;
+  --hpd-color-border: #e6e2d9;
+  --hpd-color-surface: #f2f0ea;
+  --hpd-color-card-urgent: #fbeae7;
+  --hpd-color-card-open: #fdf3e2;
+  --hpd-color-card-closed: #e7f3ed;
   --hpd-color-text-on-dark: #ffffff;
-  --hpd-color-text-primary: #0f172a;
-  --hpd-color-text-muted: #64748b;
-  --hpd-color-accent-teal: #6366f1;
-  --hpd-color-accent-teal-dark: #4f46e5;
-  --hpd-color-chart-blue: #818cf8;
-  --hpd-color-chart-navy: #1b3a57;
-  --hpd-color-success: #10b981;
-  --hpd-color-row-urgent: #fff1f2;
-  --hpd-color-row-open: #eef2ff;
-  --hpd-color-row-closed: #ecfdf5;
-  --hpd-color-action-edit: #fde68a;
-  --hpd-color-action-copy: #99f6e4;
-  --hpd-color-action-close: #334155;
-  --hpd-font-display: Inter, ui-sans-serif, system-ui, sans-serif;
+  --hpd-color-text-primary: #16202c;
+  --hpd-color-text-muted: #5b6470;
+  --hpd-color-text-subtle: #8b939e;
+  --hpd-color-on-navy-muted: #cbd9e9; /* demo sidebar nav links (9.3:1 on navy) */
+  --hpd-color-on-navy-soft: #9db2cb; /* demo sidebar sub-labels */
+  --hpd-color-on-navy-faint: #93aac6; /* demo sidebar group labels — lightened from #7e96b2 (4.36) to pass AA on navy (5.57, measured) */
+  --hpd-color-chart-blue: #8ba9c4;
+  --hpd-color-chart-navy: #0d3058;
+  --hpd-color-chart-gold: #c59437;
+  --hpd-color-success: #2a7554;
+  --hpd-color-success-accent: #2e7d5b;
+  --hpd-color-success-tint: #e7f3ed;
+  --hpd-color-warning: #96600f;
+  --hpd-color-warning-accent: #b4741a;
+  --hpd-color-warning-tint: #fdf3e2;
+  --hpd-color-danger: #b3402f;
+  --hpd-color-danger-tint: #fbeae7;
+  --hpd-color-row-urgent: #fbeae7;
+  --hpd-color-row-open: #fdf3e2;
+  --hpd-color-row-closed: #e7f3ed;
   --hpd-font-body: Inter, ui-sans-serif, system-ui, sans-serif;
-  --hpd-content-max-width: 1280px;
-  --hpd-shell-border-width: 0;
-  --hpd-focus-ring: 0 0 0 3px rgb(99 102 241 / 45%);
+  --hpd-focus-ring: 0 0 0 3px rgb(13 48 88 / 45%);
+  --hpd-r-sm: 8px;
+  --hpd-r: 14px;
+  --hpd-r-lg: 20px;
+  --hpd-r-xl: 28px;
+  --hpd-sh-sm: 0 1px 2px rgb(13 48 88 / 6%), 0 1px 3px rgb(13 48 88 / 5%);
+  --hpd-sh: 0 2px 6px rgb(13 48 88 / 6%), 0 8px 24px rgb(13 48 88 / 7%);
+  --hpd-sh-lg: 0 12px 40px rgb(13 48 88 / 16%);
 }
 
-.hpd-shell {
-  min-height: 100vh;
-  border: var(--hpd-shell-border-width) solid var(--hpd-color-shell-border);
-  background: radial-gradient(circle at top, var(--hpd-color-shell-background-end), var(--hpd-color-shell-background));
-  color: var(--hpd-color-text-on-dark);
+/* BridgeCare scrollbar chrome (from the demo) — WebKit browsers only. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
 }
 
-.hpd-container {
-  width: min(100% - 2rem, var(--hpd-content-max-width));
-  margin-inline: auto;
+::-webkit-scrollbar-thumb {
+  background: #d5d1c6;
+  border-radius: 10px;
+  border: 3px solid var(--hpd-color-surface);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .hpd-surface {
@@ -79,42 +111,7 @@ token to its current value and where it surfaces:
   box-shadow: var(--hpd-focus-ring);
 }
 
-.hpd-stat-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.hpd-panel-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-@media screen and (max-width: 767px) {
-  :root {
-    --hpd-shell-border-width: 0;
-  }
-
-  .hpd-container {
-    width: min(100% - 1rem, var(--hpd-content-max-width));
-  }
-
-  .hpd-stat-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .hpd-panel-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 @media screen and (max-width: 375px) {
-  .hpd-stat-grid {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-
   .table-responsive {
     margin-inline: -0.25rem;
   }
@@ -128,13 +125,6 @@ token to its current value and where it surfaces:
   .hpd-no-print,
   .footer {
     display: none !important;
-  }
-
-  .hpd-shell {
-    min-height: auto;
-    border: 0;
-    background: var(--hpd-color-surface);
-    color: var(--hpd-color-text-primary);
   }
 
   .hpd-route-overlay,
@@ -165,9 +155,8 @@ token to its current value and where it surfaces:
 /* ==============================================================
 Typography
 
-Uniform application-wide font: Inter (the same face already declared
-for the stat cards' ambient/inherited text via --hpd-font-body/-display
-in the :root block above, and for Angular Material's M3 typography in
+Uniform application-wide font: Inter (declared via --hpd-font-body in
+the :root block above, and for Angular Material's M3 typography in
 material-theme.scss's brand-family/plain-family) applied here to body
 so every element in the app — not just the ones that happen to sit
 under a Material component — actually renders in it. Loaded via the
@@ -194,24 +183,139 @@ optgroup {
   font-family: inherit;
 }
 
+/* BridgeCare's demo relies on this global button reset (no Tailwind preflight
+   here — see the note above). Every interactive button in the app carries its
+   own explicit classes; Material buttons restyle themselves on top of this. */
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+/* BridgeCare body copy is regular weight (the demo's base is 15px/1.5 at
+   weight 400); headings get their weight from per-component utilities. The
+   previous global 300 made everything render lighter than the target design. */
 body,
 h1,
 h2,
 h3,
 h4 {
-  font-weight: 300;
+  font-weight: 400;
 }
 
-/* Increase contrast of links to get 100% on Lighthouse Accessibility Audit. */
+/* Link color rides the primary token (navy, 13.3:1 on white — passes AA). */
 a {
-  color: #1b67e2;
+  color: var(--hpd-color-primary);
   font-weight: bold;
 }
 
 a:hover {
-  color: #1b67e2;
+  color: var(--hpd-color-primary-hover);
   /* make sure browsers use the pointer cursor for anchors, even with no href */
   cursor: pointer;
+}
+
+/* ==========================================================================
+BridgeCare component classes (demo .btn / .field patterns) — shared across
+auth, account, and feature pages. Prefer these over ad-hoc per-page button
+styling; variants match the demo: primary (navy), gold, ghost, danger.
+Never put white text on gold — use the inherited dark tone (see Appendix A
+of web-layout-plan.md).
+========================================================================== */
+.hpd-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: var(--hpd-r-sm);
+  font-weight: 700;
+  font-size: 14.5px;
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.hpd-btn:active {
+  transform: translateY(1px);
+}
+
+.hpd-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.hpd-btn-primary {
+  background: var(--hpd-color-primary);
+  color: #fff;
+  box-shadow: 0 2px 10px rgb(13 48 88 / 22%);
+}
+
+.hpd-btn-primary:hover {
+  background: var(--hpd-color-primary-hover);
+  color: #fff;
+}
+
+.hpd-btn-gold {
+  background: var(--hpd-color-gold);
+  color: #3a2a08;
+  box-shadow: 0 2px 10px rgb(197 148 55 / 30%);
+}
+
+.hpd-btn-gold:hover {
+  background: var(--hpd-color-gold-bright);
+  color: #3a2a08;
+}
+
+.hpd-btn-ghost {
+  background: #fff;
+  border: 1.5px solid var(--hpd-color-border);
+  color: var(--hpd-color-text-primary);
+}
+
+.hpd-btn-ghost:hover {
+  border-color: var(--hpd-color-primary);
+  color: var(--hpd-color-text-primary);
+}
+
+.hpd-btn-danger {
+  background: var(--hpd-color-danger);
+  color: #fff;
+}
+
+.hpd-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--hpd-color-text-muted);
+}
+
+.hpd-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--hpd-color-border);
+  border-radius: var(--hpd-r-sm);
+  background: #fff;
+  font-size: 15px;
+}
+
+.hpd-input:focus {
+  outline: none;
+  border-color: var(--hpd-color-primary);
+  box-shadow: 0 0 0 3.5px rgb(13 48 88 / 10%);
+}
+
+/* Split-screen auth brand panel (demo .auth-brand radial glows). */
+.hpd-auth-brand {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(900px 520px at 12% 8%, rgb(197 148 55 / 20%), transparent 62%),
+    radial-gradient(700px 500px at 92% 96%, rgb(18 64 111 / 85%), transparent 60%), var(--hpd-color-primary);
 }
 
 /* ==========================================================================
@@ -228,14 +332,16 @@ Browser Upgrade Prompt
 Generic styles
 ========================================================================== */
 
-/* Error highlight on input fields */
-.ng-valid[required],
-.ng-valid.required {
-  border-left: 5px solid green;
+/* Error highlight on input fields — only once the user has interacted with
+   the field (a pristine required form shouldn't open covered in red), and
+   using the BridgeCare status tokens instead of raw red/green. */
+.ng-valid.ng-dirty[required],
+.ng-valid.ng-dirty.required {
+  border-left: 5px solid var(--hpd-color-success-accent);
 }
 
-.ng-invalid:not(form) {
-  border-left: 5px solid red;
+.ng-invalid.ng-touched:not(form) {
+  border-left: 5px solid var(--hpd-color-danger);
 }
 
 /* other generic styles */
@@ -252,34 +358,6 @@ Generic styles
 
 [jhisortby] {
   cursor: pointer;
-}
-
-/* ==========================================================================
-Custom alerts for notification
-========================================================================== */
-.alerts {
-  .hpd-toast {
-    position: fixed;
-    width: 100%;
-    &.left {
-      left: 5px;
-    }
-    &.right {
-      right: 5px;
-    }
-    &.top {
-      top: 55px;
-    }
-    &.bottom {
-      bottom: 55px;
-    }
-  }
-}
-
-@media screen and (min-width: 480px) {
-  .alerts .hpd-toast {
-    width: 50%;
-  }
 }
 
 /* ==========================================================================

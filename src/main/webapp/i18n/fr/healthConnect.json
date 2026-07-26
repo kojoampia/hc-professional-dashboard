@@ -4,7 +4,13 @@
       "dashboard": "Tableau de bord",
       "patients": "Patients",
       "cases": "Cas",
-      "dutyRoster": "Planning de garde"
+      "dutyRoster": "Planning de garde",
+      "care": "Soins",
+      "overview": "Aperçu",
+      "session": "Session",
+      "menu": "Menu",
+      "messages": "Messages",
+      "about": "Pourquoi Abofonsa"
     },
     "roles": {
       "admin": "Administrateur",
@@ -42,7 +48,9 @@
       "unsubscribe": "Se désabonner",
       "previous": "Précédent",
       "next": "Suivant",
-      "confirm": "Confirmer"
+      "confirm": "Confirmer",
+      "newPatient": "Nouveau patient",
+      "markAllRead": "Tout marquer comme lu"
     },
     "dashboard": {
       "demographics": "Démographie des patients",
@@ -133,6 +141,29 @@
     "validation": {
       "invalidFile": "Sélectionnez un fichier pris en charge dont la taille est autorisée.",
       "required": "Remplissez tous les champs obligatoires."
+    },
+    "brand": {
+      "name": "Abofonsa",
+      "product": "Professional",
+      "tagline": "Espace clinicien",
+      "description": "Le volet clinicien de BridgeCare — dossiers patients, triage et plannings de garde réunis au même endroit.",
+      "signInHint": "Connectez-vous à votre compte clinicien."
+    },
+    "messages": {
+      "title": "Messages",
+      "empty": "Aucun nouveau message de patients pour le moment.",
+      "backendPending": "La messagerie sera activée dès que le service de messagerie sera connecté."
+    },
+    "about": {
+      "title": "Pourquoi Abofonsa BridgeCare — Professional",
+      "body": "Une plateforme, deux volets : les familles réservent et suivent les soins via le portail famille BridgeCare, tandis que les cliniciens gèrent ici les patients, le triage et les plannings de garde — en partageant les mêmes dossiers patients en temps réel."
+    },
+    "toast": {
+      "caseSaved": "Cas enregistré",
+      "activityLogged": "Activité consignée",
+      "reportUploaded": "Rapport téléversé",
+      "rosterUpdated": "Planning de garde mis à jour",
+      "markedRead": "Marqué comme lu"
     }
   }
 }

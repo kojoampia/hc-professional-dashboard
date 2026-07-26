@@ -4,7 +4,13 @@
       "dashboard": "Dashboard",
       "patients": "Patienten",
       "cases": "Fälle",
-      "dutyRoster": "Dienstplan"
+      "dutyRoster": "Dienstplan",
+      "care": "Versorgung",
+      "overview": "Übersicht",
+      "session": "Sitzung",
+      "menu": "Menü",
+      "messages": "Nachrichten",
+      "about": "Warum Abofonsa"
     },
     "roles": {
       "admin": "Administrator",
@@ -42,7 +48,9 @@
       "unsubscribe": "Abbestellen",
       "previous": "Zurück",
       "next": "Weiter",
-      "confirm": "Bestätigen"
+      "confirm": "Bestätigen",
+      "newPatient": "Neuer Patient",
+      "markAllRead": "Alle als gelesen markieren"
     },
     "dashboard": {
       "demographics": "Patientendemografie",
@@ -133,6 +141,29 @@
     "validation": {
       "invalidFile": "Wählen Sie eine unterstützte Datei innerhalb der zulässigen Größe aus.",
       "required": "Füllen Sie alle Pflichtfelder aus."
+    },
+    "brand": {
+      "name": "Abofonsa",
+      "product": "Professional",
+      "tagline": "Arbeitsbereich für Fachkräfte",
+      "description": "Die Fachkräfte-Seite von BridgeCare — Patientenakten, Triage und Dienstpläne an einem Ort.",
+      "signInHint": "Melden Sie sich bei Ihrem Fachkräfte-Konto an."
+    },
+    "messages": {
+      "title": "Nachrichten",
+      "empty": "Derzeit keine neuen Nachrichten von Patienten.",
+      "backendPending": "Die Nachrichtenfunktion wird aktiviert, sobald der Messaging-Dienst verbunden ist."
+    },
+    "about": {
+      "title": "Warum Abofonsa BridgeCare — Professional",
+      "body": "Eine Plattform, zwei Seiten: Familien buchen und verfolgen Pflege über das BridgeCare-Familienportal, während Fachkräfte hier Patienten, Triage und Dienstpläne verwalten — mit denselben Patientenakten in Echtzeit."
+    },
+    "toast": {
+      "caseSaved": "Fall gespeichert",
+      "activityLogged": "Aktivität protokolliert",
+      "reportUploaded": "Bericht hochgeladen",
+      "rosterUpdated": "Dienstplan aktualisiert",
+      "markedRead": "Als gelesen markiert"
     }
   }
 }

@@ -16,8 +16,8 @@ describe('HealthConnect chart transforms', () => {
         {
           label: 'Cases',
           data: [1, 3],
-          borderColor: '#1fbe9c',
-          backgroundColor: 'rgba(31, 190, 156, 0.12)',
+          borderColor: '#0d3058',
+          backgroundColor: 'rgba(13, 48, 88, 0.10)',
           tension: 0.4,
           fill: true,
         },
@@ -37,12 +37,12 @@ describe('HealthConnect chart transforms', () => {
       ),
     ).toEqual({
       labels: ['Status: urgent', 'Status: open', 'Status: closed'],
-      datasets: [{ data: [2, 3, 5], backgroundColor: ['#f43f5e', '#6366f1', '#10b981'], borderWidth: 0 }],
+      datasets: [{ data: [2, 3, 5], backgroundColor: ['#b3402f', '#b4741a', '#2e7d5b'], borderWidth: 0 }],
     });
 
     expect(toDoughnutChartData([{ label: 'unknown', value: 1 }], segment => segment.label)).toEqual({
       labels: ['unknown'],
-      datasets: [{ data: [1], backgroundColor: ['#6366f1'], borderWidth: 0 }],
+      datasets: [{ data: [1], backgroundColor: ['#0d3058'], borderWidth: 0 }],
     });
 
     expect(
@@ -68,8 +68,8 @@ describe('HealthConnect chart transforms', () => {
     ).toEqual({
       labels: ['Ada', 'Bea'],
       datasets: [
-        { label: 'NEW', data: [4, 1], backgroundColor: '#6366f1', borderRadius: 4 },
-        { label: 'RETURNING', data: [2, 5], backgroundColor: '#818cf8', borderRadius: 4 },
+        { label: 'NEW', data: [4, 1], backgroundColor: '#0d3058', borderRadius: 4 },
+        { label: 'RETURNING', data: [2, 5], backgroundColor: '#c59437', borderRadius: 4 },
       ],
     });
   });
