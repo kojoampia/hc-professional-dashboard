@@ -1,8 +1,8 @@
 <div class="mx-auto flex min-h-[60vh] max-w-xl flex-col justify-center px-4 py-12">
-  <div class="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
+  <div class="rounded-hpd-lg border border-hpd-border bg-white p-8 shadow-hpd-sm">
     @if (settingsForm.value.firstName && settingsForm.value.lastName) {
       <h2
-        class="mb-6 text-lg font-bold text-slate-900"
+        class="mb-6 text-lg font-extrabold tracking-tight text-hpd-primary-dark"
         jhiTranslate="settings.title"
         [translateValues]="{ username: settingsForm.value.login }"
       >
@@ -13,7 +13,7 @@
 
     @if (success) {
       <div
-        class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+        class="mb-4 rounded-hpd-sm border border-hpd-success-accent/25 bg-hpd-success-tint px-4 py-3 text-sm text-hpd-success"
         jhiTranslate="settings.messages.success"
       >
         <strong>Settings saved!</strong>
@@ -25,11 +25,9 @@
     @if (settingsForm.value.login) {
       <form class="grid gap-4" name="form" role="form" (ngSubmit)="save()" [formGroup]="settingsForm" novalidate>
         <div>
-          <label class="mb-1 block text-sm font-medium text-slate-700" for="firstName" jhiTranslate="settings.form.firstname"
-            >First Name</label
-          >
+          <label class="hpd-label" for="firstName" jhiTranslate="settings.form.firstname">First Name</label>
           <input
-            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            class="hpd-focusable hpd-input"
             type="text"
             id="firstName"
             name="firstName"
@@ -41,19 +39,19 @@
           @if (settingsForm.get('firstName')!.invalid && (settingsForm.get('firstName')!.dirty || settingsForm.get('firstName')!.touched)) {
             <div>
               @if (settingsForm.get('firstName')?.errors?.required) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="settings.messages.validate.firstname.required"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="settings.messages.validate.firstname.required"
                   >Your first name is required.</small
                 >
               }
 
               @if (settingsForm.get('firstName')?.errors?.minlength) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="settings.messages.validate.firstname.minlength"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="settings.messages.validate.firstname.minlength"
                   >Your first name is required to be at least 1 character</small
                 >
               }
 
               @if (settingsForm.get('firstName')?.errors?.maxlength) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="settings.messages.validate.firstname.maxlength"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="settings.messages.validate.firstname.maxlength"
                   >Your first name cannot be longer than 50 characters</small
                 >
               }
@@ -62,11 +60,9 @@
         </div>
 
         <div>
-          <label class="mb-1 block text-sm font-medium text-slate-700" for="lastName" jhiTranslate="settings.form.lastname"
-            >Last Name</label
-          >
+          <label class="hpd-label" for="lastName" jhiTranslate="settings.form.lastname">Last Name</label>
           <input
-            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            class="hpd-focusable hpd-input"
             type="text"
             id="lastName"
             name="lastName"
@@ -78,19 +74,19 @@
           @if (settingsForm.get('lastName')!.invalid && (settingsForm.get('lastName')!.dirty || settingsForm.get('lastName')!.touched)) {
             <div>
               @if (settingsForm.get('lastName')?.errors?.required) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="settings.messages.validate.lastname.required"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="settings.messages.validate.lastname.required"
                   >Your last name is required.</small
                 >
               }
 
               @if (settingsForm.get('lastName')?.errors?.minlength) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="settings.messages.validate.lastname.minlength"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="settings.messages.validate.lastname.minlength"
                   >Your last name is required to be at least 1 character</small
                 >
               }
 
               @if (settingsForm.get('lastName')?.errors?.maxlength) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="settings.messages.validate.lastname.maxlength"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="settings.messages.validate.lastname.maxlength"
                   >Your last name cannot be longer than 50 characters</small
                 >
               }
@@ -99,9 +95,9 @@
         </div>
 
         <div>
-          <label class="mb-1 block text-sm font-medium text-slate-700" for="email" jhiTranslate="global.form.email.label">Email</label>
+          <label class="hpd-label" for="email" jhiTranslate="global.form.email.label">Email</label>
           <input
-            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            class="hpd-focusable hpd-input"
             type="email"
             id="email"
             name="email"
@@ -113,25 +109,25 @@
           @if (settingsForm.get('email')!.invalid && (settingsForm.get('email')!.dirty || settingsForm.get('email')!.touched)) {
             <div>
               @if (settingsForm.get('email')?.errors?.required) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="global.messages.validate.email.required"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="global.messages.validate.email.required"
                   >Your email is required.</small
                 >
               }
 
               @if (settingsForm.get('email')?.errors?.email) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="global.messages.validate.email.invalid"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="global.messages.validate.email.invalid"
                   >Your email is invalid.</small
                 >
               }
 
               @if (settingsForm.get('email')?.errors?.minlength) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="global.messages.validate.email.minlength"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="global.messages.validate.email.minlength"
                   >Your email is required to be at least 5 characters.</small
                 >
               }
 
               @if (settingsForm.get('email')?.errors?.maxlength) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="global.messages.validate.email.maxlength"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="global.messages.validate.email.maxlength"
                   >Your email cannot be longer than 50 characters.</small
                 >
               }
@@ -141,16 +137,8 @@
 
         @if (languages && languages.length > 0) {
           <div>
-            <label class="mb-1 block text-sm font-medium text-slate-700" for="langKey" jhiTranslate="settings.form.language"
-              >Language</label
-            >
-            <select
-              class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
-              id="langKey"
-              name="langKey"
-              formControlName="langKey"
-              data-cy="langKey"
-            >
+            <label class="hpd-label" for="langKey" jhiTranslate="settings.form.language">Language</label>
+            <select class="hpd-focusable hpd-input" id="langKey" name="langKey" formControlName="langKey" data-cy="langKey">
               @for (language of languages; track $index) {
                 <option [value]="language">{{ language | findLanguageFromKey }}</option>
               }
@@ -159,7 +147,7 @@
         }
 
         <button
-          class="hpd-focusable rounded-full bg-hpd-primary px-4 py-2 text-sm font-medium text-white hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+          class="hpd-focusable hpd-btn hpd-btn-primary"
           type="submit"
           [disabled]="settingsForm.invalid"
           jhiTranslate="settings.form.button"

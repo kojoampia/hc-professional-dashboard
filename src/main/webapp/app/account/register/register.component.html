@@ -1,10 +1,12 @@
 <div class="mx-auto flex min-h-[60vh] max-w-2xl flex-col justify-center px-4 py-12">
-  <div class="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
-    <h1 class="mb-6 text-xl font-bold text-slate-900" jhiTranslate="register.title" data-cy="registerTitle">Registration</h1>
+  <div class="rounded-hpd-lg border border-hpd-border bg-white p-8 shadow-hpd-sm">
+    <h1 class="mb-6 text-xl font-extrabold tracking-tight text-hpd-primary-dark" jhiTranslate="register.title" data-cy="registerTitle">
+      Registration
+    </h1>
 
     @if (success) {
       <div
-        class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+        class="mb-4 rounded-hpd-sm border border-hpd-success-accent/25 bg-hpd-success-tint px-4 py-3 text-sm text-hpd-success"
         jhiTranslate="register.messages.success"
       >
         <strong>Registration saved!</strong> Please check your email for confirmation.
@@ -13,7 +15,7 @@
 
     @if (error) {
       <div
-        class="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800"
+        class="mb-4 rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger"
         jhiTranslate="register.messages.error.fail"
       >
         <strong>Registration failed!</strong> Please try again later.
@@ -22,7 +24,7 @@
 
     @if (errorUserExists) {
       <div
-        class="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800"
+        class="mb-4 rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger"
         jhiTranslate="register.messages.error.userexists"
       >
         <strong>Login name already registered!</strong> Please choose another one.
@@ -31,7 +33,7 @@
 
     @if (errorEmailExists) {
       <div
-        class="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800"
+        class="mb-4 rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger"
         jhiTranslate="register.messages.error.emailexists"
       >
         <strong>Email is already in use!</strong> Please choose another one.
@@ -40,7 +42,7 @@
 
     @if (doNotMatch) {
       <div
-        class="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800"
+        class="mb-4 rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger"
         jhiTranslate="global.messages.error.dontmatch"
       >
         The password and its confirmation do not match!
@@ -50,11 +52,9 @@
     @if (!success) {
       <form class="grid gap-4" name="form" role="form" (ngSubmit)="register()" [formGroup]="registerForm">
         <div>
-          <label class="mb-1 block text-sm font-medium text-slate-700" for="login" jhiTranslate="global.form.username.label"
-            >Username</label
-          >
+          <label class="hpd-label" for="login" jhiTranslate="global.form.username.label">Username</label>
           <input
-            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            class="hpd-focusable hpd-input"
             type="text"
             id="login"
             name="login"
@@ -67,25 +67,25 @@
           @if (registerForm.get('login')!.invalid && (registerForm.get('login')!.dirty || registerForm.get('login')!.touched)) {
             <div>
               @if (registerForm.get('login')?.errors?.required) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="register.messages.validate.login.required"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="register.messages.validate.login.required"
                   >Your username is required.</small
                 >
               }
 
               @if (registerForm.get('login')?.errors?.minlength) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="register.messages.validate.login.minlength"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="register.messages.validate.login.minlength"
                   >Your username is required to be at least 1 character.</small
                 >
               }
 
               @if (registerForm.get('login')?.errors?.maxlength) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="register.messages.validate.login.maxlength"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="register.messages.validate.login.maxlength"
                   >Your username cannot be longer than 50 characters.</small
                 >
               }
 
               @if (registerForm.get('login')?.errors?.pattern) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="register.messages.validate.login.pattern"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="register.messages.validate.login.pattern"
                   >Your username is invalid.</small
                 >
               }
@@ -94,9 +94,9 @@
         </div>
 
         <div>
-          <label class="mb-1 block text-sm font-medium text-slate-700" for="email" jhiTranslate="global.form.email.label">Email</label>
+          <label class="hpd-label" for="email" jhiTranslate="global.form.email.label">Email</label>
           <input
-            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            class="hpd-focusable hpd-input"
             type="email"
             id="email"
             name="email"
@@ -108,25 +108,25 @@
           @if (registerForm.get('email')!.invalid && (registerForm.get('email')!.dirty || registerForm.get('email')!.touched)) {
             <div>
               @if (registerForm.get('email')?.errors?.required) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="global.messages.validate.email.required"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="global.messages.validate.email.required"
                   >Your email is required.</small
                 >
               }
 
               @if (registerForm.get('email')?.errors?.invalid) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="global.messages.validate.email.invalid"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="global.messages.validate.email.invalid"
                   >Your email is invalid.</small
                 >
               }
 
               @if (registerForm.get('email')?.errors?.minlength) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="global.messages.validate.email.minlength"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="global.messages.validate.email.minlength"
                   >Your email is required to be at least 5 characters.</small
                 >
               }
 
               @if (registerForm.get('email')?.errors?.maxlength) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="global.messages.validate.email.maxlength"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="global.messages.validate.email.maxlength"
                   >Your email cannot be longer than 50 characters.</small
                 >
               }
@@ -135,11 +135,9 @@
         </div>
 
         <div>
-          <label class="mb-1 block text-sm font-medium text-slate-700" for="password" jhiTranslate="global.form.newpassword.label"
-            >New password</label
-          >
+          <label class="hpd-label" for="password" jhiTranslate="global.form.newpassword.label">New password</label>
           <input
-            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            class="hpd-focusable hpd-input"
             type="password"
             id="password"
             name="password"
@@ -152,19 +150,19 @@
           @if (registerForm.get('password')!.invalid && (registerForm.get('password')!.dirty || registerForm.get('password')!.touched)) {
             <div>
               @if (registerForm.get('password')?.errors?.required) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="global.messages.validate.newpassword.required"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="global.messages.validate.newpassword.required"
                   >Your password is required.</small
                 >
               }
 
               @if (registerForm.get('password')?.errors?.minlength) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="global.messages.validate.newpassword.minlength"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="global.messages.validate.newpassword.minlength"
                   >Your password is required to be at least 4 characters.</small
                 >
               }
 
               @if (registerForm.get('password')?.errors?.maxlength) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="global.messages.validate.newpassword.maxlength"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="global.messages.validate.newpassword.maxlength"
                   >Your password cannot be longer than 50 characters.</small
                 >
               }
@@ -175,14 +173,9 @@
         </div>
 
         <div>
-          <label
-            class="mb-1 block text-sm font-medium text-slate-700"
-            for="confirmPassword"
-            jhiTranslate="global.form.confirmpassword.label"
-            >New password confirmation</label
-          >
+          <label class="hpd-label" for="confirmPassword" jhiTranslate="global.form.confirmpassword.label">New password confirmation</label>
           <input
-            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            class="hpd-focusable hpd-input"
             type="password"
             id="confirmPassword"
             name="confirmPassword"
@@ -198,19 +191,19 @@
           ) {
             <div>
               @if (registerForm.get('confirmPassword')?.errors?.required) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="global.messages.validate.confirmpassword.required"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="global.messages.validate.confirmpassword.required"
                   >Your confirmation password is required.</small
                 >
               }
 
               @if (registerForm.get('confirmPassword')?.errors?.minlength) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="global.messages.validate.confirmpassword.minlength"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="global.messages.validate.confirmpassword.minlength"
                   >Your confirmation password is required to be at least 4 characters.</small
                 >
               }
 
               @if (registerForm.get('confirmPassword')?.errors?.maxlength) {
-                <small class="mt-1 block text-xs text-rose-600" jhiTranslate="global.messages.validate.confirmpassword.maxlength"
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="global.messages.validate.confirmpassword.maxlength"
                   >Your confirmation password cannot be longer than 50 characters.</small
                 >
               }
@@ -219,7 +212,7 @@
         </div>
 
         <button
-          class="hpd-focusable rounded-full bg-hpd-primary px-4 py-2 text-sm font-medium text-white hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+          class="hpd-focusable hpd-btn hpd-btn-primary"
           type="submit"
           [disabled]="registerForm.invalid"
           jhiTranslate="register.form.button"
