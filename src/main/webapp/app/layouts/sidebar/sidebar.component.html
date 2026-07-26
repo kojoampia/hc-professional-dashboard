@@ -1,0 +1,137 @@
+<div
+  class="fixed inset-0 z-40 bg-hpd-primary-deep/50 lg:hidden"
+  [class.hidden]="!open"
+  aria-hidden="true"
+  data-cy="sidebarScrim"
+  (click)="requestClose()"
+></div>
+
+<aside
+  data-cy="navbar"
+  class="fixed inset-y-0 left-0 z-50 flex w-[248px] flex-col bg-hpd-primary px-3.5 py-5 text-white shadow-hpd-lg transition-transform duration-200 lg:visible lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shadow-none"
+  [class.-translate-x-full]="!open"
+  [class.invisible]="!open"
+  [class.translate-x-0]="open"
+>
+  <a class="hpd-focusable flex items-center gap-2.5 rounded-[10px] px-2 pb-5 pt-1.5 no-underline" routerLink="/" (click)="requestClose()">
+    <span
+      class="grid h-[38px] w-[38px] flex-none place-items-center rounded-[10px] bg-hpd-gold-bright text-[15px] font-extrabold text-hpd-primary-deep"
+      aria-hidden="true"
+      >AB</span
+    >
+    <span class="min-w-0">
+      <span class="block truncate text-[15px] font-extrabold leading-tight">
+        <span jhiTranslate="healthConnect.brand.name">Abofonsa</span>&nbsp;<span class="text-hpd-gold-bright">BridgeCare</span>
+      </span>
+      <span class="block text-[11px] uppercase tracking-wider text-hpd-on-navy-soft">
+        <span jhiTranslate="healthConnect.brand.product">Professional</span>
+        <span class="navbar-version normal-case tracking-normal">{{ version }}</span>
+      </span>
+    </span>
+  </a>
+
+  <nav class="flex-1 overflow-y-auto" [attr.aria-label]="'healthConnect.navigation.menu' | translate">
+    @for (group of navGroups; track group.labelKey) {
+      @if (groupVisible(group)) {
+        <div
+          class="mb-1.5 mt-4 px-2.5 text-[10.5px] font-bold uppercase tracking-wider text-hpd-on-navy-faint"
+          [attr.data-cy]="group.dataCy ?? null"
+          [jhiTranslate]="group.labelKey"
+        ></div>
+        @for (item of visibleItems(group); track item.path + item.labelKey) {
+          <a
+            class="hpd-focusable relative flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-sm font-semibold no-underline text-hpd-on-navy-muted hover:bg-white/5 hover:text-white [&.active]:bg-hpd-gold/20 [&.active]:text-white [&.active_mat-icon]:text-hpd-gold-bright"
+            [routerLink]="item.path"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+            [attr.data-cy]="item.dataCy ?? null"
+            (click)="requestClose()"
+          >
+            <mat-icon aria-hidden="true" class="!h-[18px] !w-[18px] !text-[18px]">{{ item.icon }}</mat-icon>
+            <span [jhiTranslate]="item.labelKey"></span>
+            @if (badgeCount(item); as count) {
+              <span class="ml-auto rounded-full bg-hpd-gold px-1.5 py-px text-[10.5px] font-extrabold text-[#3a2a08]">{{ count }}</span>
+            }
+          </a>
+        }
+      }
+    }
+
+    <div
+      class="mb-1.5 mt-4 px-2.5 text-[10.5px] font-bold uppercase tracking-wider text-hpd-on-navy-faint"
+      jhiTranslate="healthConnect.navigation.session"
+    ></div>
+    @if (languages && languages.length > 1) {
+      <div class="flex items-center gap-1 px-2.5 py-1" role="group" [attr.aria-label]="'global.menu.language' | translate">
+        <mat-icon aria-hidden="true" class="!h-[18px] !w-[18px] !text-[18px] text-hpd-on-navy-muted">translate</mat-icon>
+        @for (language of languages; track language) {
+          <button
+            class="hpd-focusable cursor-pointer rounded-lg border-0 bg-transparent px-2 py-1 text-xs font-bold uppercase text-hpd-on-navy-muted hover:bg-white/5 hover:text-white [&.active]:bg-hpd-gold/20 [&.active]:text-hpd-gold-bright"
+            type="button"
+            [jhiActiveMenu]="language"
+            (click)="changeLanguage(language); requestClose()"
+          >
+            {{ language }}
+          </button>
+        }
+      </div>
+    }
+    @if (account !== null) {
+      <button
+        class="hpd-focusable flex w-full cursor-pointer items-center gap-2.5 rounded-[10px] border-0 bg-transparent px-2.5 py-2 text-left text-sm font-semibold text-hpd-on-navy-muted hover:bg-white/5 hover:text-white"
+        type="button"
+        id="logout"
+        data-cy="logout"
+        (click)="logout()"
+      >
+        <mat-icon aria-hidden="true" class="!h-[18px] !w-[18px] !text-[18px]">logout</mat-icon>
+        <span jhiTranslate="global.menu.account.logout">Sign out</span>
+      </button>
+    } @else {
+      <button
+        class="hpd-focusable flex w-full cursor-pointer items-center gap-2.5 rounded-[10px] border-0 bg-transparent px-2.5 py-2 text-left text-sm font-semibold text-hpd-on-navy-muted hover:bg-white/5 hover:text-white"
+        type="button"
+        id="login"
+        data-cy="login"
+        (click)="login()"
+      >
+        <mat-icon aria-hidden="true" class="!h-[18px] !w-[18px] !text-[18px]">login</mat-icon>
+        <span jhiTranslate="global.menu.account.login">Sign in</span>
+      </button>
+    }
+  </nav>
+
+  @if (account !== null) {
+    <div class="mt-auto border-t border-white/10 pt-3.5">
+      <a
+        class="hpd-focusable flex w-full items-center gap-2.5 rounded-[10px] p-2 no-underline hover:bg-white/5"
+        routerLink="/account/settings"
+        data-cy="accountMenu"
+        (click)="requestClose()"
+      >
+        @if (!account.imageUrl) {
+          <span
+            class="grid h-[34px] w-[34px] flex-none place-items-center rounded-full bg-hpd-gold-bright text-xs font-extrabold text-hpd-primary-deep"
+            aria-hidden="true"
+            >{{ userInitials }}</span
+          >
+        } @else {
+          <img [src]="account.imageUrl" class="profile-image h-[34px] w-[34px] flex-none rounded-full object-cover" alt="" />
+        }
+        <span class="min-w-0">
+          <span class="block truncate text-[13.5px] font-bold text-white">{{ userDisplayName }}</span>
+          <span class="block truncate text-[11px] text-hpd-on-navy-soft">
+            @if (roleBadgeTranslationKey; as roleKey) {
+              <span data-cy="healthConnectRoleBadge" [jhiTranslate]="roleKey"></span>
+            }
+            @if (shiftLabel; as shift) {
+              <span data-cy="healthConnectShiftLabel">
+                · <span [jhiTranslate]="shift.translationKey" [translateValues]="shift.translationParams"></span>
+              </span>
+            }
+          </span>
+        </span>
+      </a>
+    </div>
+  }
+</aside>

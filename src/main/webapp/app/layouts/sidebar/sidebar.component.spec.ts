@@ -13,12 +13,13 @@ import { ProfileService } from 'app/layouts/profiles/profile.service';
 import { LoginService } from 'app/login/login.service';
 import { MockHealthConnectRepository } from 'app/health-connect/health-connect.repository';
 
-import NavbarComponent from './navbar.component';
+import SidebarComponent from './sidebar.component';
+import { SHELL_NAV_GROUPS } from './shell-navigation';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
-describe('Navbar Component', () => {
-  let comp: NavbarComponent;
-  let fixture: ComponentFixture<NavbarComponent>;
+describe('Sidebar Component', () => {
+  let comp: SidebarComponent;
+  let fixture: ComponentFixture<SidebarComponent>;
   let accountService: AccountService;
   let profileService: ProfileService;
   const account: Account = {
@@ -32,17 +33,19 @@ describe('Navbar Component', () => {
     imageUrl: '',
   };
 
+  const groupByLabel = (labelKey: string) => SHELL_NAV_GROUPS.find(group => group.labelKey === labelKey)!;
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [NavbarComponent, RouterTestingModule.withRoutes([]), TranslateModule.forRoot()],
+      imports: [SidebarComponent, RouterTestingModule.withRoutes([]), TranslateModule.forRoot()],
       providers: [LoginService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     })
-      .overrideTemplate(NavbarComponent, '')
+      .overrideTemplate(SidebarComponent, '')
       .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(NavbarComponent);
+    fixture = TestBed.createComponent(SidebarComponent);
     comp = fixture.componentInstance;
     accountService = TestBed.inject(AccountService);
     profileService = TestBed.inject(ProfileService);
@@ -116,10 +119,57 @@ describe('Navbar Component', () => {
     });
   });
 
-  it('should not resolve clinical navbar context for a logged-out account', () => {
+  it('should not resolve clinical shell context for a logged-out account', () => {
     comp.ngOnInit();
 
     expect(comp.roleBadgeTranslationKey).toBeNull();
     expect(comp.shiftLabel).toBeNull();
+  });
+
+  it('should only offer the care Home entry and sign-in when logged out', () => {
+    comp.ngOnInit();
+
+    const care = groupByLabel('healthConnect.navigation.care');
+    expect(comp.groupVisible(care)).toBe(true);
+    expect(comp.visibleItems(care).map(item => item.labelKey)).toEqual(['global.menu.home']);
+    expect(comp.groupVisible(groupByLabel('global.menu.account.main'))).toBe(false);
+    expect(comp.groupVisible(groupByLabel('global.menu.admin.main'))).toBe(false);
+  });
+
+  it('should expose care and account groups to an authenticated clinician but hide administration', () => {
+    accountService.authenticate({ ...account, authorities: ['ROLE_DOCTOR'] });
+
+    comp.ngOnInit();
+
+    const care = groupByLabel('healthConnect.navigation.care');
+    expect(comp.visibleItems(care).map(item => item.labelKey)).toEqual([
+      'healthConnect.navigation.dashboard',
+      'healthConnect.patient.directory',
+      'healthConnect.case.queue',
+      'healthConnect.navigation.dutyRoster',
+    ]);
+    expect(comp.groupVisible(groupByLabel('global.menu.account.main'))).toBe(true);
+    expect(comp.groupVisible(groupByLabel('global.menu.admin.main'))).toBe(false);
+  });
+
+  it('should expose the administration group to ROLE_ADMIN', () => {
+    accountService.authenticate({ ...account, authorities: ['ROLE_ADMIN'] });
+
+    comp.ngOnInit();
+
+    expect(comp.groupVisible(groupByLabel('global.menu.admin.main'))).toBe(true);
+  });
+
+  it('should derive user initials and display name from the account', () => {
+    accountService.authenticate(account);
+
+    comp.ngOnInit();
+
+    expect(comp.userInitials).toBe('JD');
+    expect(comp.userDisplayName).toBe('John Doe');
+
+    accountService.authenticate({ ...account, firstName: null, lastName: null });
+    expect(comp.userInitials).toBe('JO');
+    expect(comp.userDisplayName).toBe('john.doe');
   });
 });

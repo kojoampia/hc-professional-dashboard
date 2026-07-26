@@ -1,13 +1,15 @@
 <div class="mx-auto grid max-w-4xl gap-8 px-4 py-8 md:grid-cols-3">
   <div>
-    <span class="hipster rounded-2xl"></span>
+    <span class="hipster rounded-hpd-lg"></span>
   </div>
 
   <div class="md:col-span-2">
-    <h1 class="text-2xl font-bold text-slate-900" jhiTranslate="error.title">Error page!</h1>
+    <h1 class="text-2xl font-bold text-hpd-primary-dark" jhiTranslate="error.title">Error page!</h1>
 
     @if (errorMessage) {
-      <div class="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{{ errorMessage }}</div>
+      <div class="mt-4 rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger">
+        {{ errorMessage }}
+      </div>
     }
   </div>
 </div>
