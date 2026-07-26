@@ -1,8 +1,8 @@
 @if (filters.hasAnyFilterSet()) {
-  <div class="filter-display flex flex-wrap items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-600">
+  <div class="filter-display flex flex-wrap items-center gap-2 rounded-hpd-sm bg-hpd-cream px-3 py-2 text-sm text-hpd-muted">
     <span jhiTranslate="entity.filters.set">Following filters are set</span>
     <button
-      class="hpd-focusable inline-flex items-center rounded-full p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-600"
+      class="hpd-focusable inline-flex items-center rounded-full p-1 text-hpd-subtle hover:bg-hpd-cream hover:text-hpd-muted"
       type="button"
       (click)="clearAllFilters()"
       [title]="'entity.filters.clearAll' | translate"
@@ -15,7 +15,7 @@
           <li class="flex items-center gap-1 rounded-full bg-white px-2 py-1 shadow-sm">
             <span>{{ filterOption.name }}:</span> {{ value }}
             <button
-              class="hpd-focusable inline-flex items-center rounded-full p-0.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+              class="hpd-focusable inline-flex items-center rounded-full p-0.5 text-hpd-subtle hover:bg-hpd-cream hover:text-hpd-muted"
               type="button"
               (click)="clearFilter(filterOption.name, value)"
               [title]="'entity.filters.clear' | translate"

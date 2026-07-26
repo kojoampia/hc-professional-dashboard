@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { AccountService } from 'app/core/auth/account.service';
+import { AlertService } from 'app/core/util/alert.service';
 
 import { hasHealthConnectPermission } from '../authority-role';
 import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
@@ -18,40 +19,40 @@ import CheckboxListComponent from '../../shared/health-connect/form-controls/che
   template: `
     @if (clinicalCase(); as caseItem) {
       <form [formGroup]="form" (ngSubmit)="save()">
-        <p class="mb-4 text-sm text-slate-500">{{ parentName() }}</p>
+        <p class="mb-4 text-sm text-hpd-muted">{{ parentName() }}</p>
         <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
           <div class="flex flex-col">
-            <h2 class="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-800">
-              <mat-icon aria-hidden="true" class="!text-lg text-slate-400">sick</mat-icon>
+            <h2 class="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-hpd-primary-dark">
+              <mat-icon aria-hidden="true" class="!text-lg text-hpd-subtle">sick</mat-icon>
               {{ 'healthConnect.case.symptoms' | translate }}
             </h2>
             <label for="hpd-case-symptoms" class="sr-only">{{ 'healthConnect.case.symptoms' | translate }}</label>
             <textarea
               id="hpd-case-symptoms"
-              class="hpd-focusable h-52 flex-1 resize-none rounded-lg border border-slate-200 bg-white p-3 text-sm shadow-sm"
+              class="hpd-focusable h-52 flex-1 resize-none rounded-hpd-sm border border-hpd-border bg-white p-3 text-sm shadow-hpd-sm"
               formControlName="symptoms"
               [readOnly]="!canManageCases()"
             ></textarea>
           </div>
           <div class="flex flex-col">
-            <h2 class="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-800">
-              <mat-icon aria-hidden="true" class="!text-lg text-slate-400">medical_services</mat-icon>
+            <h2 class="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-hpd-primary-dark">
+              <mat-icon aria-hidden="true" class="!text-lg text-hpd-subtle">medical_services</mat-icon>
               {{ 'healthConnect.case.diagnosis' | translate }}
             </h2>
             <label for="hpd-case-diagnosis" class="sr-only">{{ 'healthConnect.case.diagnosis' | translate }}</label>
             <textarea
               id="hpd-case-diagnosis"
-              class="hpd-focusable h-52 flex-1 resize-none rounded-lg border border-slate-200 bg-white p-3 text-sm shadow-sm"
+              class="hpd-focusable h-52 flex-1 resize-none rounded-hpd-sm border border-hpd-border bg-white p-3 text-sm shadow-hpd-sm"
               formControlName="diagnosis"
               [readOnly]="!canManageCases()"
             ></textarea>
           </div>
           <div class="flex flex-col">
-            <h2 class="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-800">
-              <mat-icon aria-hidden="true" class="!text-lg text-slate-400">fact_check</mat-icon>
+            <h2 class="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-hpd-primary-dark">
+              <mat-icon aria-hidden="true" class="!text-lg text-hpd-subtle">fact_check</mat-icon>
               {{ 'healthConnect.case.recommendations' | translate }}
             </h2>
-            <div class="flex-1 overflow-y-auto rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="flex-1 overflow-y-auto rounded-hpd-sm border border-hpd-border bg-white p-4 shadow-hpd-sm">
               <hpd-checkbox-list
                 [labelKey]="'healthConnect.case.recommendations'"
                 [options]="recommendations()"
@@ -67,7 +68,7 @@ import CheckboxListComponent from '../../shared/health-connect/form-controls/che
         }
         <div class="hpd-case-detail__actions hpd-no-print mt-6 flex flex-wrap justify-end gap-2">
           <button
-            class="hpd-focusable flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-200"
+            class="hpd-focusable flex cursor-pointer items-center gap-1 rounded-hpd-sm border-[1.5px] border-hpd-border bg-white px-3 py-1.5 text-sm font-bold text-hpd-primary-dark hover:border-hpd-primary"
             type="button"
             (click)="print()"
           >
@@ -75,14 +76,14 @@ import CheckboxListComponent from '../../shared/health-connect/form-controls/che
             {{ 'healthConnect.actions.print' | translate }}
           </button>
           <button
-            class="hpd-focusable rounded-full bg-slate-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-slate-800"
+            class="hpd-focusable cursor-pointer rounded-hpd-sm border-[1.5px] border-hpd-border bg-white px-4 py-1.5 text-sm font-bold text-hpd-primary-dark hover:border-hpd-primary"
             type="button"
             (click)="cancel()"
           >
             {{ 'healthConnect.actions.cancel' | translate }}
           </button>
           <button
-            class="hpd-focusable flex items-center gap-1 rounded-full bg-hpd-primary px-4 py-1.5 text-sm font-medium text-white hover:brightness-110"
+            class="hpd-focusable flex cursor-pointer items-center gap-1 rounded-hpd-sm bg-hpd-gold px-4 py-1.5 text-sm font-bold text-[#3a2a08] shadow-hpd-sm hover:bg-hpd-gold-bright"
             type="submit"
             [disabled]="!canManageCases()"
           >
@@ -102,6 +103,7 @@ export default class CaseDetailPageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly account = inject(AccountService);
+  private readonly alertService = inject(AlertService);
   private readonly currentAccount = toSignal(this.account.getAuthenticationState(), { initialValue: null });
   readonly caseId = this.route.snapshot.paramMap.get('caseId') ?? this.route.parent?.snapshot.paramMap.get('caseId') ?? '';
   readonly clinicalCase = computed(() => this.repository.findCase(this.caseId));
@@ -123,6 +125,7 @@ export default class CaseDetailPageComponent {
     if (this.clinicalCase() && this.canManageCases()) {
       const value = this.form.getRawValue();
       this.repository.updateCase(this.caseId, { ...value, recommendationIds: [...value.recommendationIds] });
+      this.alertService.showToast('healthConnect.toast.caseSaved');
       this.cancel();
     }
   }

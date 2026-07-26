@@ -7,9 +7,17 @@ import { TranslateModule } from '@ngx-translate/core';
   selector: 'hpd-file-upload-trigger',
   imports: [MatIconModule, TranslateModule],
   template: `
-    <input #fileInput class="sr-only" type="file" [accept]="acceptedTypes.join(',')" [disabled]="disabled" (change)="onFiles($event)" />
+    <input
+      #fileInput
+      class="sr-only"
+      type="file"
+      [accept]="acceptedTypes.join(',')"
+      [disabled]="disabled"
+      [attr.aria-label]="labelKey | translate"
+      (change)="onFiles($event)"
+    />
     <button
-      class="hpd-focusable mb-2 flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
+      class="hpd-focusable mb-2 flex items-center gap-1.5 rounded-full bg-hpd-cream px-3 py-1.5 text-xs font-medium text-hpd-muted transition-colors hover:bg-hpd-cream disabled:cursor-not-allowed disabled:opacity-50"
       type="button"
       [disabled]="disabled"
       (click)="fileInput.click()"
@@ -18,7 +26,7 @@ import { TranslateModule } from '@ngx-translate/core';
       {{ labelKey | translate }}
     </button>
     @if (validationError) {
-      <p class="text-sm text-rose-600" role="alert">{{ validationError | translate }}</p>
+      <p class="text-sm text-hpd-danger" role="alert">{{ validationError | translate }}</p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

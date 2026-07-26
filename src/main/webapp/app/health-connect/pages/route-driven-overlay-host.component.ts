@@ -30,16 +30,14 @@ import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
       (keydown.tab)="trapFocus($event)"
     >
       <div class="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true"></div>
-      <div
-        class="hpd-surface relative mx-auto mt-4 flex max-w-6xl flex-col overflow-hidden rounded-2xl border border-black/10 bg-white shadow-2xl sm:mt-10"
-      >
-        <header class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 bg-slate-50/50 px-6 py-4">
-          <h1 id="hpd-route-overlay-title" class="m-0 text-lg font-bold text-slate-900">
+      <div class="hpd-surface relative mx-auto mt-4 flex max-w-6xl flex-col overflow-hidden rounded-hpd-lg bg-white shadow-hpd-lg sm:mt-10">
+        <header class="flex flex-wrap items-center justify-between gap-2 bg-hpd-primary px-5 py-4 text-white">
+          <h1 id="hpd-route-overlay-title" class="m-0 text-[15px] font-extrabold tracking-tight text-white">
             {{ resolvedTitleKey() | translate: titleParams() }}
           </h1>
           <div class="hpd-route-overlay__actions hpd-no-print flex flex-wrap items-center gap-2">
             <button
-              class="hpd-focusable flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200"
+              class="hpd-focusable flex cursor-pointer items-center gap-1 rounded-hpd-sm border-[1.5px] border-white/30 bg-transparent px-3 py-1.5 text-sm font-bold text-white transition-colors hover:bg-white/10"
               type="button"
               (click)="print()"
             >
@@ -48,7 +46,7 @@ import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
             </button>
             <button
               #closeButton
-              class="hpd-focusable flex items-center gap-1 rounded-full bg-slate-700 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-slate-800"
+              class="hpd-focusable flex cursor-pointer items-center gap-1 rounded-hpd-sm border-[1.5px] border-white/30 bg-transparent px-3 py-1.5 text-sm font-bold text-white transition-colors hover:bg-white/10"
               type="button"
               (click)="close()"
             >
@@ -57,7 +55,7 @@ import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
             </button>
           </div>
         </header>
-        <div class="flex-1 overflow-y-auto bg-slate-50/30 p-6">
+        <div class="flex-1 overflow-y-auto bg-white p-6">
           <router-outlet />
         </div>
       </div>

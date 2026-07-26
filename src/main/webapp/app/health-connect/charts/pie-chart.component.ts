@@ -12,15 +12,15 @@ import { toDoughnutChartData } from './chart-transforms';
   imports: [BaseChartDirective, TranslateModule],
   template: `
     <figure
-      class="hpd-focusable m-0 flex h-[600px] max-h-[600px] min-w-0 flex-col rounded-2xl border border-slate-100 bg-white p-6 shadow-sm"
+      class="hpd-focusable m-0 flex h-[600px] max-h-[600px] w-full min-w-0 flex-col rounded-hpd border border-hpd-border bg-white p-[18px] shadow-hpd-sm"
       [attr.aria-labelledby]="titleId"
       [attr.aria-describedby]="descriptionId"
     >
-      <figcaption class="mb-4">
-        <h2 [id]="titleId" class="font-semibold text-slate-900">{{ titleKey() | translate }}</h2>
+      <figcaption class="mb-2.5">
+        <h2 [id]="titleId" class="m-0 text-xs font-bold uppercase tracking-wider text-hpd-muted">{{ titleKey() | translate }}</h2>
         <p [id]="descriptionId" class="sr-only">{{ descriptionKey() | translate }}</p>
       </figcaption>
-      <div role="img" [attr.aria-labelledby]="titleId" [attr.aria-describedby]="descriptionId" class="relative min-h-[16rem] flex-1">
+      <div role="img" [attr.aria-labelledby]="titleId" [attr.aria-describedby]="descriptionId" class="relative min-h-0 flex-1">
         <canvas baseChart type="doughnut" [data]="data()" [options]="options()"></canvas>
       </div>
     </figure>

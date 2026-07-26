@@ -13,6 +13,7 @@ import {
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { AlertService } from 'app/core/util/alert.service';
 import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
 
 @Component({
@@ -28,45 +29,45 @@ import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
         aria-modal="true"
         aria-labelledby="hpd-activity-dialog-title"
         aria-describedby="hpd-activity-dialog-description"
-        class="grid w-full max-w-lg gap-4 rounded-2xl bg-white p-6 text-slate-900 shadow-2xl"
+        class="grid w-full max-w-lg gap-4 rounded-hpd-lg bg-white p-6 text-hpd-primary-dark shadow-2xl"
         (keydown.escape)="close()"
         (keydown.tab)="trapFocus($event)"
         (ngSubmit)="save()"
       >
         <h2 id="hpd-activity-dialog-title" class="text-lg font-bold">{{ 'healthConnect.activity.title' | translate }}</h2>
         <p id="hpd-activity-dialog-description" class="sr-only">{{ 'healthConnect.activity.description' | translate }}</p>
-        <label for="hpd-activity-title" class="grid gap-1 text-sm font-medium text-slate-700"
+        <label for="hpd-activity-title" class="grid gap-1 text-sm font-medium text-hpd-primary-dark"
           >{{ 'healthConnect.activity.eventTitle' | translate
           }}<input
             #firstInput
             id="hpd-activity-title"
-            class="hpd-focusable rounded-lg border border-slate-300 px-3 py-2 text-sm font-normal shadow-sm"
+            class="hpd-focusable rounded-hpd-sm border border-hpd-border px-3 py-2 text-sm font-normal shadow-hpd-sm"
             formControlName="title"
             [attr.aria-invalid]="submitted && form.controls.title.invalid"
           />
         </label>
-        <label for="hpd-activity-description" class="grid gap-1 text-sm font-medium text-slate-700"
+        <label for="hpd-activity-description" class="grid gap-1 text-sm font-medium text-hpd-primary-dark"
           >{{ 'healthConnect.activity.description' | translate
           }}<textarea
             id="hpd-activity-description"
-            class="hpd-focusable h-28 resize-none rounded-lg border border-slate-300 px-3 py-2 text-sm font-normal shadow-sm"
+            class="hpd-focusable h-28 resize-none rounded-hpd-sm border border-hpd-border px-3 py-2 text-sm font-normal shadow-hpd-sm"
             formControlName="description"
             [attr.aria-invalid]="submitted && form.controls.description.invalid"
           ></textarea>
         </label>
         @if (form.invalid && submitted) {
-          <p class="text-sm text-rose-600" role="alert">{{ 'healthConnect.validation.required' | translate }}</p>
+          <p class="text-sm text-hpd-danger" role="alert">{{ 'healthConnect.validation.required' | translate }}</p>
         }
         <div class="hpd-activity-dialog__actions flex flex-wrap justify-end gap-2">
           <button
-            class="hpd-focusable rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200"
+            class="hpd-focusable cursor-pointer rounded-hpd-sm border-[1.5px] border-hpd-border bg-white px-4 py-2 text-sm font-bold text-hpd-primary-dark hover:border-hpd-primary"
             type="button"
             (click)="close()"
           >
             {{ 'healthConnect.actions.cancel' | translate }}
           </button>
           <button
-            class="hpd-focusable rounded-full bg-hpd-primary px-4 py-2 text-sm font-medium text-white hover:brightness-110"
+            class="hpd-focusable cursor-pointer rounded-hpd-sm bg-hpd-gold px-4 py-2 text-sm font-bold text-[#3a2a08] shadow-hpd-sm hover:bg-hpd-gold-bright"
             type="submit"
           >
             {{ 'healthConnect.actions.save' | translate }}
@@ -83,6 +84,7 @@ export default class ActivityLogDialogComponent implements AfterViewInit, OnDest
   @Input({ required: true }) patientId!: string;
   @Output() readonly closed = new EventEmitter<void>();
   readonly repository = inject(HEALTH_CONNECT_REPOSITORY);
+  private readonly alertService = inject(AlertService);
   readonly form = new FormGroup({
     title: new FormControl('', { nonNullable: true, validators: Validators.required }),
     description: new FormControl('', { nonNullable: true, validators: Validators.required }),
@@ -106,6 +108,7 @@ export default class ActivityLogDialogComponent implements AfterViewInit, OnDest
     }
     const timestamp = new Date().toISOString();
     this.repository.appendActivity(this.patientId, { ...this.form.getRawValue(), createdAt: timestamp });
+    this.alertService.showToast('healthConnect.toast.activityLogged');
     this.close();
   }
 

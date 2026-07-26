@@ -25,11 +25,11 @@ import AsyncStateComponent from '../../shared/health-connect/async-state/async-s
 
       <section aria-labelledby="hpd-dashboard-case-status">
         <h2 id="hpd-dashboard-case-status" class="sr-only">{{ 'healthConnect.dashboard.caseStatus' | translate }}</h2>
-        <hpd-stat-card-row [cards]="caseCards()" (selected)="navigateCaseStatus($event)" />
+        <hpd-stat-card-row [cards]="caseCards()" [columns]="3" (selected)="navigateCaseStatus($event)" />
       </section>
 
       <hpd-async-state [status]="repository.asyncState().status" [empty]="false" (retry)="repository.reset()">
-        <section class="mt-8 grid grid-cols-1 gap-6" [attr.aria-label]="'healthConnect.dashboard.charts.title' | translate">
+        <section class="mt-4 grid grid-cols-1 gap-3.5" [attr.aria-label]="'healthConnect.dashboard.charts.title' | translate">
           <hpd-line-chart
             [points]="repository.charts().caseTimeline"
             titleKey="healthConnect.dashboard.caseTime"

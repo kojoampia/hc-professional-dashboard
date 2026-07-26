@@ -7,7 +7,7 @@ import { TranslateModule } from '@ngx-translate/core';
   imports: [TranslateModule],
   template: `
     <button
-      class="hpd-focusable rounded-full border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+      class="hpd-focusable rounded-full border border-hpd-border px-3 py-1.5 text-sm font-medium text-hpd-primary-dark hover:bg-hpd-cream disabled:cursor-not-allowed disabled:opacity-50"
       type="button"
       [disabled]="disabled"
       [attr.aria-label]="labelKey | translate"

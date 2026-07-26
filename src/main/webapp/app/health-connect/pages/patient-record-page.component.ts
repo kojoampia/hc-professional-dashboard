@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { AccountService } from 'app/core/auth/account.service';
+import { AlertService } from 'app/core/util/alert.service';
 
 import { hasHealthConnectPermission } from '../authority-role';
 import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
@@ -38,32 +39,40 @@ const PAGE_SIZE = 3;
             >
           }
           <div>
-            <h2 id="hpd-patient-identity-heading" class="text-lg font-bold text-slate-900">{{ patientRecord.patient.patientName }}</h2>
+            <h2 id="hpd-patient-identity-heading" class="text-lg font-bold text-hpd-primary-dark">
+              {{ patientRecord.patient.patientName }}
+            </h2>
             <dl class="mt-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
-              <dt class="text-slate-500">{{ 'healthConnect.patient.dateOfBirth' | translate }}</dt>
-              <dd class="text-slate-700">{{ patientRecord.patient.dateOfBirth }}</dd>
-              <dt class="text-slate-500">{{ 'healthConnect.patient.phone' | translate }}</dt>
-              <dd class="text-slate-700">{{ patientRecord.patient.phone }}</dd>
-              <dt class="text-slate-500">{{ 'healthConnect.patient.email' | translate }}</dt>
-              <dd class="text-slate-700">{{ patientRecord.patient.email }}</dd>
+              <dt class="text-hpd-muted">{{ 'healthConnect.patient.dateOfBirth' | translate }}</dt>
+              <dd class="text-hpd-primary-dark">{{ patientRecord.patient.dateOfBirth }}</dd>
+              <dt class="text-hpd-muted">{{ 'healthConnect.patient.phone' | translate }}</dt>
+              <dd class="text-hpd-primary-dark">{{ patientRecord.patient.phone }}</dd>
+              <dt class="text-hpd-muted">{{ 'healthConnect.patient.email' | translate }}</dt>
+              <dd class="text-hpd-primary-dark">{{ patientRecord.patient.email }}</dd>
               @if (patientRecord.patient.emergencyContact; as contact) {
-                <dt class="text-slate-500">{{ 'healthConnect.patient.emergencyContact' | translate }}</dt>
-                <dd class="text-slate-700">{{ contact.name }} · {{ contact.phone }}</dd>
+                <dt class="text-hpd-muted">{{ 'healthConnect.patient.emergencyContact' | translate }}</dt>
+                <dd class="text-hpd-primary-dark">{{ contact.name }} · {{ contact.phone }}</dd>
               }
             </dl>
           </div>
         </section>
         <div class="hpd-record-grid grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <section class="hpd-panel rounded-xl border border-slate-100 bg-white p-5 shadow-sm" aria-labelledby="hpd-patient-cases-heading">
-            <h2 id="hpd-patient-cases-heading" class="mb-3 flex items-center gap-2 font-bold text-slate-800">
-              <mat-icon aria-hidden="true" class="!text-lg text-slate-400">folder_shared</mat-icon>
+          <section
+            class="hpd-panel overflow-hidden rounded-hpd border border-hpd-border bg-white p-5 shadow-hpd-sm"
+            aria-labelledby="hpd-patient-cases-heading"
+          >
+            <h2
+              id="hpd-patient-cases-heading"
+              class="-mx-5 -mt-5 mb-3 flex items-center gap-2 rounded-t-hpd border-b border-hpd-border bg-hpd-cream px-5 py-2.5 text-[11.5px] font-bold uppercase tracking-wider text-hpd-muted"
+            >
+              <mat-icon aria-hidden="true" class="!text-lg text-hpd-subtle">folder_shared</mat-icon>
               {{ 'healthConnect.patient.cases' | translate }}
             </h2>
-            <ul class="divide-y divide-slate-50 text-sm">
+            <ul class="m-0 list-none divide-y divide-hpd-border/60 p-0 text-sm">
               @for (item of casePage().items; track item.id) {
                 <li>
                   <button
-                    class="hpd-focusable w-full rounded px-1 py-2 text-left text-slate-700 hover:bg-slate-50"
+                    class="hpd-focusable w-full rounded px-1 py-2 text-left text-hpd-primary-dark hover:bg-hpd-cream/70"
                     type="button"
                     (click)="openCase(item.id)"
                   >
@@ -71,7 +80,7 @@ const PAGE_SIZE = 3;
                   </button>
                 </li>
               } @empty {
-                <li class="py-4 text-center text-slate-400">{{ 'healthConnect.states.empty' | translate }}</li>
+                <li class="py-4 text-center text-hpd-subtle">{{ 'healthConnect.states.empty' | translate }}</li>
               }
             </ul>
             <hpd-pagination
@@ -81,11 +90,14 @@ const PAGE_SIZE = 3;
             />
           </section>
           <section
-            class="hpd-panel rounded-xl border border-slate-100 bg-white p-5 shadow-sm"
+            class="hpd-panel overflow-hidden rounded-hpd border border-hpd-border bg-white p-5 shadow-hpd-sm"
             aria-labelledby="hpd-patient-visitations-heading"
           >
-            <h2 id="hpd-patient-visitations-heading" class="mb-3 flex items-center gap-2 font-bold text-slate-800">
-              <mat-icon aria-hidden="true" class="!text-lg text-slate-400">event</mat-icon>
+            <h2
+              id="hpd-patient-visitations-heading"
+              class="-mx-5 -mt-5 mb-3 flex items-center gap-2 rounded-t-hpd border-b border-hpd-border bg-hpd-cream px-5 py-2.5 text-[11.5px] font-bold uppercase tracking-wider text-hpd-muted"
+            >
+              <mat-icon aria-hidden="true" class="!text-lg text-hpd-subtle">event</mat-icon>
               {{ 'healthConnect.patient.visitations' | translate }}
             </h2>
             <ng-container
@@ -94,16 +106,19 @@ const PAGE_SIZE = 3;
             />
           </section>
           <section
-            class="hpd-panel rounded-xl border border-slate-100 bg-white p-5 shadow-sm"
+            class="hpd-panel overflow-hidden rounded-hpd border border-hpd-border bg-white p-5 shadow-hpd-sm"
             aria-labelledby="hpd-patient-activity-heading"
           >
-            <h2 id="hpd-patient-activity-heading" class="mb-3 flex items-center gap-2 font-bold text-slate-800">
-              <mat-icon aria-hidden="true" class="!text-lg text-slate-400">timeline</mat-icon>
+            <h2
+              id="hpd-patient-activity-heading"
+              class="-mx-5 -mt-5 mb-3 flex items-center gap-2 rounded-t-hpd border-b border-hpd-border bg-hpd-cream px-5 py-2.5 text-[11.5px] font-bold uppercase tracking-wider text-hpd-muted"
+            >
+              <mat-icon aria-hidden="true" class="!text-lg text-hpd-subtle">timeline</mat-icon>
               {{ 'healthConnect.patient.activityTrail' | translate }}
             </h2>
             @if (canMutate()) {
               <button
-                class="hpd-focusable hpd-no-print mb-2 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-200"
+                class="hpd-focusable hpd-no-print mb-2 cursor-pointer rounded-hpd-sm border-[1.5px] border-hpd-border bg-white px-3 py-1.5 text-xs font-bold text-hpd-primary-dark hover:border-hpd-primary"
                 type="button"
                 aria-haspopup="dialog"
                 (click)="activityOpen.set(true)"
@@ -114,11 +129,14 @@ const PAGE_SIZE = 3;
             <ng-container [ngTemplateOutlet]="entries" [ngTemplateOutletContext]="{ page: activityPage(), change: activityPageNumber }" />
           </section>
           <section
-            class="hpd-panel rounded-xl border border-slate-100 bg-white p-5 shadow-sm"
+            class="hpd-panel overflow-hidden rounded-hpd border border-hpd-border bg-white p-5 shadow-hpd-sm"
             aria-labelledby="hpd-patient-medications-heading"
           >
-            <h2 id="hpd-patient-medications-heading" class="mb-3 flex items-center gap-2 font-bold text-slate-800">
-              <mat-icon aria-hidden="true" class="!text-lg text-slate-400">medication</mat-icon>
+            <h2
+              id="hpd-patient-medications-heading"
+              class="-mx-5 -mt-5 mb-3 flex items-center gap-2 rounded-t-hpd border-b border-hpd-border bg-hpd-cream px-5 py-2.5 text-[11.5px] font-bold uppercase tracking-wider text-hpd-muted"
+            >
+              <mat-icon aria-hidden="true" class="!text-lg text-hpd-subtle">medication</mat-icon>
               {{ 'healthConnect.patient.medications' | translate }}
             </h2>
             <ng-container
@@ -127,11 +145,14 @@ const PAGE_SIZE = 3;
             />
           </section>
           <section
-            class="hpd-panel rounded-xl border border-slate-100 bg-white p-5 shadow-sm"
+            class="hpd-panel overflow-hidden rounded-hpd border border-hpd-border bg-white p-5 shadow-hpd-sm"
             aria-labelledby="hpd-patient-reports-heading"
           >
-            <h2 id="hpd-patient-reports-heading" class="mb-3 flex items-center gap-2 font-bold text-slate-800">
-              <mat-icon aria-hidden="true" class="!text-lg text-slate-400">summarize</mat-icon>
+            <h2
+              id="hpd-patient-reports-heading"
+              class="-mx-5 -mt-5 mb-3 flex items-center gap-2 rounded-t-hpd border-b border-hpd-border bg-hpd-cream px-5 py-2.5 text-[11.5px] font-bold uppercase tracking-wider text-hpd-muted"
+            >
+              <mat-icon aria-hidden="true" class="!text-lg text-hpd-subtle">summarize</mat-icon>
               {{ 'healthConnect.patient.reports' | translate }}
             </h2>
             <hpd-file-upload-trigger
@@ -140,11 +161,11 @@ const PAGE_SIZE = 3;
               [acceptedTypes]="['application/pdf', 'image/png', 'image/jpeg']"
               (filesSelected)="upload($event)"
             />
-            <ul class="mt-2 divide-y divide-slate-50 text-sm">
+            <ul class="m-0 mt-2 list-none divide-y divide-hpd-border/60 p-0 text-sm">
               @for (report of reportPage().items; track report.id) {
-                <li class="py-2 text-slate-700">{{ report.label }}</li>
+                <li class="py-2 text-hpd-primary-dark">{{ report.label }}</li>
               } @empty {
-                <li class="py-4 text-center text-slate-400">{{ 'healthConnect.states.empty' | translate }}</li>
+                <li class="py-4 text-center text-hpd-subtle">{{ 'healthConnect.states.empty' | translate }}</li>
               }
             </ul>
             <hpd-pagination
@@ -162,11 +183,11 @@ const PAGE_SIZE = 3;
       <p role="alert">{{ 'healthConnect.states.empty' | translate }}</p>
     }
     <ng-template #entries let-page="page" let-change="change">
-      <ul class="divide-y divide-slate-50 text-sm">
+      <ul class="m-0 list-none divide-y divide-hpd-border/60 p-0 text-sm">
         @for (entry of page.items; track entry.id) {
-          <li class="py-2 text-slate-700">{{ entry.label }}</li>
+          <li class="py-2 text-hpd-primary-dark">{{ entry.label }}</li>
         } @empty {
-          <li class="py-4 text-center text-slate-400">{{ 'healthConnect.states.empty' | translate }}</li>
+          <li class="py-4 text-center text-hpd-subtle">{{ 'healthConnect.states.empty' | translate }}</li>
         }
       </ul>
       <hpd-pagination [totalPages]="page.totalPages" [initialPage]="page.page" (pageChange)="change.set($event)" />
@@ -179,6 +200,7 @@ export default class PatientRecordPageComponent {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly account = inject(AccountService);
+  private readonly alertService = inject(AlertService);
   readonly patientId = this.route.parent?.snapshot.paramMap.get('patientId') ?? '';
   readonly record = computed(() => this.repository.findPatient(this.patientId));
   private readonly currentAccount = toSignal(this.account.getAuthenticationState(), { initialValue: null });
@@ -210,6 +232,7 @@ export default class PatientRecordPageComponent {
     const file = files[0];
     if (file && this.canManageReports()) {
       this.repository.appendReport(this.patientId, { reportType: file.type, url: file.name });
+      this.alertService.showToast('healthConnect.toast.reportUploaded');
     }
   }
   private page<T>(items: readonly T[], page: number): Page<T> {

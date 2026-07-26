@@ -26,37 +26,33 @@ const isRosterScope = (value: string | null): value is RosterScope => value === 
   imports: [AsyncStateComponent, DataTableComponent, MatIconModule, StatCardRowComponent, TranslateModule],
   template: `
     <main class="mx-auto max-w-7xl px-4 py-8 md:px-8">
-      <h1 class="mb-6 text-2xl font-bold text-slate-900">{{ 'healthConnect.case.queue' | translate }}</h1>
+      <h1 class="sr-only">{{ 'healthConnect.case.queue' | translate }}</h1>
 
-      <hpd-stat-card-row [cards]="statusCards()" [selectedId]="statusFilter() ?? null" (selected)="setStatus($event)" />
+      <hpd-stat-card-row [cards]="statusCards()" [columns]="3" [selectedId]="statusFilter() ?? null" (selected)="setStatus($event)" />
 
-      <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+      <div class="mt-4 rounded-hpd border border-hpd-border bg-white p-6 shadow-hpd-sm">
         <section
-          class="hpd-case-queue__scope mb-4 flex flex-wrap items-center gap-1 rounded-full bg-slate-100 p-1 text-sm"
-          role="tablist"
+          class="hpd-case-queue__scope mb-4 flex flex-wrap items-center gap-2 text-sm"
+          role="group"
           [attr.aria-label]="'healthConnect.case.scope' | translate"
         >
           <button
-            class="hpd-focusable rounded-full px-3 py-1 font-medium transition-colors"
-            [class.bg-white]="rosterScope() === 'all'"
-            [class.shadow]="rosterScope() === 'all'"
-            [class.text-slate-900]="rosterScope() === 'all'"
-            [class.text-slate-500]="rosterScope() !== 'all'"
+            class="hpd-focusable cursor-pointer rounded-full border-[1.5px] px-4 py-1.5 text-[12.5px] font-bold transition-colors"
+            [class]="
+              rosterScope() === 'all' ? 'border-hpd-primary bg-[#e7eef6] text-hpd-primary' : 'border-hpd-border bg-white text-hpd-muted'
+            "
             type="button"
-            role="tab"
             [attr.aria-pressed]="rosterScope() === 'all'"
             (click)="setScope('all')"
           >
             {{ 'healthConnect.roster.allCases' | translate }}
           </button>
           <button
-            class="hpd-focusable rounded-full px-3 py-1 font-medium transition-colors"
-            [class.bg-white]="rosterScope() === 'mine'"
-            [class.shadow]="rosterScope() === 'mine'"
-            [class.text-slate-900]="rosterScope() === 'mine'"
-            [class.text-slate-500]="rosterScope() !== 'mine'"
+            class="hpd-focusable cursor-pointer rounded-full border-[1.5px] px-4 py-1.5 text-[12.5px] font-bold transition-colors"
+            [class]="
+              rosterScope() === 'mine' ? 'border-hpd-primary bg-[#e7eef6] text-hpd-primary' : 'border-hpd-border bg-white text-hpd-muted'
+            "
             type="button"
-            role="tab"
             [attr.aria-pressed]="rosterScope() === 'mine'"
             (click)="setScope('mine')"
           >

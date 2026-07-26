@@ -5,22 +5,26 @@ import { TranslateModule } from '@ngx-translate/core';
 
 export type StatCardVariant = 'neutral' | 'urgent' | 'open' | 'closed';
 
-const BADGE_CLASSES: Record<StatCardVariant, string> = {
-  neutral: 'bg-slate-100 text-slate-500',
-  urgent: 'bg-rose-50 text-rose-500',
-  open: 'bg-indigo-50 text-indigo-500',
-  closed: 'bg-emerald-50 text-emerald-500',
+// BridgeCare stat cards (demo .stat-card): status variants get a tinted card
+// background and a colored value; status is no longer conveyed by a badge/bar.
+// Colors must stay in agreement with health-connect/charts/chart-transforms.ts's
+// CASE_STATUS_COLORS (danger/warning-accent/success-accent tokens).
+const CARD_CLASSES: Record<StatCardVariant, string> = {
+  neutral: 'bg-white',
+  urgent: 'bg-hpd-urgent',
+  open: 'bg-hpd-open',
+  closed: 'bg-hpd-closed',
 };
 
-// Decorative accent bar under the count — professional-demo.html hardcodes a fixed
-// width per status variant rather than deriving it from the count, so this mirrors
-// that rather than fabricating a percentage-of-count metric that doesn't exist.
-const BAR_CLASSES: Record<StatCardVariant, string> = {
-  neutral: 'w-[30%] bg-slate-400',
-  urgent: 'w-[70%] bg-rose-500',
-  open: 'w-[50%] bg-indigo-500',
-  closed: 'w-[90%] bg-emerald-500',
+const VALUE_CLASSES: Record<StatCardVariant, string> = {
+  neutral: 'text-hpd-primary-dark',
+  urgent: 'text-hpd-danger',
+  open: 'text-hpd-warning',
+  closed: 'text-hpd-success',
 };
+
+const BASE_CARD_CLASS =
+  'hpd-focusable relative block w-full overflow-hidden rounded-hpd border border-hpd-border p-4 text-left no-underline transition-shadow duration-150';
 
 @Component({
   standalone: true,
@@ -30,48 +34,24 @@ const BAR_CLASSES: Record<StatCardVariant, string> = {
     <ng-container *ngTemplateOutlet="link ? linkTpl : interactive ? buttonTpl : staticTpl"></ng-container>
 
     <ng-template #cardBody>
-      <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">{{ labelKey | translate }}</p>
-      <div class="mt-2 flex items-end justify-between gap-2">
-        <h3 class="text-2xl font-bold text-slate-900">{{ count }}</h3>
-        <span class="rounded-full px-2 py-0.5 text-xs font-bold" [class]="badgeClass">{{ variant.toUpperCase() }}</span>
-      </div>
-      <div class="mt-4 h-1 w-full overflow-hidden rounded-full bg-slate-100">
-        <div class="h-full rounded-full transition-all duration-500" [class]="barClass"></div>
-      </div>
+      <p class="m-0 text-[11px] font-bold uppercase tracking-wider text-hpd-muted">{{ labelKey | translate }}</p>
+      <h3 class="m-0 mt-1 text-[26px] font-extrabold leading-none tracking-tight" [class]="valueClass">{{ count }}</h3>
     </ng-template>
 
     <ng-template #linkTpl>
-      <a
-        class="hpd-focusable relative block overflow-hidden rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-        [class.hpd-stat-card--selected]="selected"
-        [class.ring-2]="selected"
-        [class.ring-offset-2]="selected"
-        [class.ring-indigo-500]="selected"
-        [routerLink]="link"
-        [attr.aria-current]="selected ? 'page' : null"
-        (click)="activate.emit()"
-      >
+      <a [class]="interactiveCardClass" [routerLink]="link" [attr.aria-current]="selected ? 'page' : null" (click)="activate.emit()">
         <ng-container *ngTemplateOutlet="cardBody"></ng-container>
       </a>
     </ng-template>
 
     <ng-template #buttonTpl>
-      <button
-        class="hpd-focusable relative block w-full overflow-hidden rounded-2xl border border-slate-100 bg-white p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-        [class.hpd-stat-card--selected]="selected"
-        [class.ring-2]="selected"
-        [class.ring-offset-2]="selected"
-        [class.ring-indigo-500]="selected"
-        type="button"
-        [attr.aria-pressed]="selected"
-        (click)="activate.emit()"
-      >
+      <button [class]="interactiveCardClass" type="button" [attr.aria-pressed]="selected" (click)="activate.emit()">
         <ng-container *ngTemplateOutlet="cardBody"></ng-container>
       </button>
     </ng-template>
 
     <ng-template #staticTpl>
-      <div class="relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <div [class]="cardClass">
         <ng-container *ngTemplateOutlet="cardBody"></ng-container>
       </div>
     </ng-template>
@@ -87,11 +67,17 @@ export default class StatCardComponent {
   @Input() link: string | string[] | null = null;
   @Output() readonly activate = new EventEmitter<void>();
 
-  get badgeClass(): string {
-    return BADGE_CLASSES[this.variant];
+  get cardClass(): string {
+    return `${BASE_CARD_CLASS} ${CARD_CLASSES[this.variant]}`;
   }
 
-  get barClass(): string {
-    return BAR_CLASSES[this.variant];
+  get interactiveCardClass(): string {
+    // Demo .stat-card.active: navy border + soft navy ring.
+    const selectedClass = this.selected ? ' hpd-stat-card--selected border-hpd-primary ring-2 ring-hpd-primary/15' : '';
+    return `${this.cardClass} cursor-pointer hover:shadow-hpd${selectedClass}`;
+  }
+
+  get valueClass(): string {
+    return VALUE_CLASSES[this.variant];
   }
 }

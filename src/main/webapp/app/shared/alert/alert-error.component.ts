@@ -9,10 +9,10 @@ import { EventManager, EventWithContent } from 'app/core/util/event-manager.serv
 import { AlertError } from './alert-error.model';
 
 const ALERT_TYPE_CLASSES: Record<AlertType, string> = {
-  success: 'border-emerald-200 bg-emerald-50 text-emerald-800',
-  danger: 'border-rose-200 bg-rose-50 text-rose-800',
-  warning: 'border-amber-200 bg-amber-50 text-amber-800',
-  info: 'border-indigo-200 bg-indigo-50 text-indigo-800',
+  success: 'border-hpd-success-accent/25 bg-hpd-success-tint text-hpd-success',
+  danger: 'border-hpd-danger/25 bg-hpd-danger-tint text-hpd-danger',
+  warning: 'border-hpd-warning-accent/25 bg-hpd-warning-tint text-hpd-warning',
+  info: 'border-hpd-primary/20 bg-[#e7eef6] text-hpd-primary',
 };
 
 @Component({

@@ -25,18 +25,18 @@ const isPatientSex = (value: string | null): value is PatientSex => value === 'f
   imports: [AsyncStateComponent, DataTableComponent, FormsModule, PaginationComponent, SearchInputComponent, TranslateModule],
   template: `
     <main class="mx-auto max-w-7xl px-4 py-8 md:px-8">
-      <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+      <div class="rounded-hpd border border-hpd-border bg-white p-6 shadow-hpd-sm">
         <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
-          <h1 class="text-xl font-bold text-slate-900">{{ 'healthConnect.patient.directory' | translate }}</h1>
+          <h1 class="sr-only">{{ 'healthConnect.patient.directory' | translate }}</h1>
 
           <div
             class="flex flex-1 flex-wrap items-end justify-end gap-3 sm:flex-nowrap"
             [attr.aria-label]="'healthConnect.patient.filters' | translate"
           >
             <label class="text-sm">
-              <span class="mb-1 block font-medium text-slate-600">{{ 'healthConnect.patient.gender' | translate }}</span>
+              <span class="mb-1 block font-medium text-hpd-muted">{{ 'healthConnect.patient.gender' | translate }}</span>
               <select
-                class="hpd-focusable rounded-lg border border-slate-300 bg-white py-2 pl-3 pr-8 text-sm shadow-sm"
+                class="hpd-focusable rounded-hpd-sm border border-hpd-border bg-white py-2 pl-3 pr-8 text-sm shadow-hpd-sm"
                 [ngModel]="gender() ?? ''"
                 (ngModelChange)="setGender($event)"
               >
@@ -47,7 +47,7 @@ const isPatientSex = (value: string | null): value is PatientSex => value === 'f
               </select>
             </label>
 
-            <label class="flex items-center gap-2 pb-2 text-sm text-slate-600">
+            <label class="flex items-center gap-2 pb-2 text-sm text-hpd-muted">
               <input
                 class="hpd-focusable h-4 w-4 rounded accent-hpd-primary"
                 type="checkbox"

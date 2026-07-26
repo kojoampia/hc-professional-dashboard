@@ -40,6 +40,14 @@ export class AlertService {
     this.alerts = [];
   }
 
+  /**
+   * BridgeCare success toast (demo #toast): bottom-center navy pill, auto-dismissed.
+   * Rendered by shared/alert/toast-outlet.component.ts (mounted once in the main layout).
+   */
+  showToast(translationKey: string, translationParams?: { [key: string]: unknown }): Alert {
+    return this.addAlert({ type: 'success', translationKey, translationParams, toast: true, timeout: 2600 });
+  }
+
   get(): Alert[] {
     return this.alerts;
   }

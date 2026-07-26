@@ -14,7 +14,7 @@ export interface ContextMenuAction {
   template: `
     <div class="relative inline-block">
       <button
-        class="hpd-focusable rounded-full border border-slate-300 px-2 py-1 text-sm font-medium text-slate-700 hover:bg-slate-100"
+        class="hpd-focusable rounded-full border border-hpd-border px-2 py-1 text-sm font-medium text-hpd-primary-dark hover:bg-hpd-cream"
         type="button"
         [attr.aria-label]="labelKey | translate"
         [attr.aria-expanded]="open()"
@@ -25,11 +25,11 @@ export interface ContextMenuAction {
         <span aria-hidden="true">⋮</span>
       </button>
       @if (open()) {
-        <ul class="absolute right-0 z-10 mt-1 min-w-[10rem] rounded-lg border border-slate-200 bg-white py-1 shadow-md" role="menu">
+        <ul class="absolute right-0 z-10 mt-1 min-w-[10rem] rounded-hpd-sm border border-hpd-border bg-white py-1 shadow-md" role="menu">
           @for (action of actions; track action.id) {
             <li role="none">
               <button
-                class="hpd-focusable block w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                class="hpd-focusable block w-full px-3 py-2 text-left text-sm text-hpd-primary-dark hover:bg-hpd-cream disabled:cursor-not-allowed disabled:opacity-50"
                 type="button"
                 role="menuitem"
                 [disabled]="action.disabled ?? false"

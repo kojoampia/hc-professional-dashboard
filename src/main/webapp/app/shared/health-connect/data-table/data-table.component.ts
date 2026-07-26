@@ -29,7 +29,7 @@ export interface DataTableActionEvent<T> {
 // their own) purely so existing specs that assert on them as a status-applied hook
 // keep working; the actual tint comes from the Tailwind classes below.
 const HEADER_TINT_CLASSES: Record<DataTableStatusVariant, string> = {
-  neutral: 'bg-slate-50',
+  neutral: 'bg-hpd-cream',
   urgent: 'bg-hpd-row-urgent',
   open: 'bg-hpd-row-open',
   closed: 'bg-hpd-row-closed',
@@ -41,12 +41,12 @@ const HEADER_TINT_CLASSES: Record<DataTableStatusVariant, string> = {
   imports: [MatIconModule, TranslateModule],
   template: `
     <div
-      class="hpd-data-table__scroll overflow-x-auto rounded-lg border border-slate-200"
+      class="hpd-data-table__scroll overflow-x-auto rounded-hpd-sm border border-hpd-border"
       role="region"
       tabindex="0"
       [attr.aria-label]="tableLabelKey | translate"
     >
-      <table class="hpd-data-table w-full text-left text-sm text-slate-600">
+      <table class="hpd-data-table w-full text-left text-sm text-hpd-muted">
         <caption class="sr-only">
           {{
             tableLabelKey | translate
@@ -55,18 +55,18 @@ const HEADER_TINT_CLASSES: Record<DataTableStatusVariant, string> = {
         <thead class="text-xs uppercase" [class]="headerClasses">
           <tr>
             @for (column of columns; track column.id) {
-              <th scope="col" class="px-6 py-4 font-bold text-slate-700">{{ column.labelKey | translate }}</th>
+              <th scope="col" class="px-6 py-4 font-bold text-hpd-primary-dark">{{ column.labelKey | translate }}</th>
             }
             @if (actions.length) {
-              <th scope="col" class="px-6 py-4 text-right font-bold text-slate-700">
+              <th scope="col" class="px-6 py-4 text-right font-bold text-hpd-primary-dark">
                 <span class="sr-only">{{ 'healthConnect.table.actions' | translate }}</span>
               </th>
             }
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100 bg-white">
+        <tbody class="divide-y divide-hpd-border/70 bg-white">
           @for (row of rows; track trackBy(row)) {
-            <tr class="transition-colors hover:bg-slate-50" [class]="rowVariant(row)">
+            <tr class="transition-colors hover:bg-hpd-cream/70" [class]="rowVariant(row)">
               @for (column of columns; track column.id) {
                 <td class="px-6 py-4" [attr.data-label]="column.labelKey | translate">{{ column.value(row) }}</td>
               }
@@ -75,7 +75,7 @@ const HEADER_TINT_CLASSES: Record<DataTableStatusVariant, string> = {
                   @for (action of actions; track action.id) {
                     @if (action.isAvailable?.(row) ?? true) {
                       <button
-                        class="hpd-focusable inline-flex items-center justify-center rounded-full p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-hpd-primary"
+                        class="hpd-focusable inline-flex items-center justify-center rounded-full p-1.5 text-hpd-subtle transition-colors hover:bg-hpd-cream hover:text-hpd-primary"
                         type="button"
                         [attr.aria-label]="action.labelKey | translate"
                         (click)="actionTriggered.emit({ actionId: action.id, row })"
@@ -94,7 +94,7 @@ const HEADER_TINT_CLASSES: Record<DataTableStatusVariant, string> = {
             </tr>
           } @empty {
             <tr>
-              <td class="px-6 py-12 text-center text-slate-400" [attr.colspan]="columns.length + (actions.length ? 1 : 0)">
+              <td class="px-6 py-12 text-center text-hpd-subtle" [attr.colspan]="columns.length + (actions.length ? 1 : 0)">
                 <mat-icon class="mb-2 !h-9 !w-9 !text-4xl opacity-50" aria-hidden="true">inbox</mat-icon>
                 <p>{{ emptyKey | translate }}</p>
               </td>
@@ -108,6 +108,20 @@ const HEADER_TINT_CLASSES: Record<DataTableStatusVariant, string> = {
     .hpd-data-table__scroll:focus-visible {
       outline: none;
       box-shadow: var(--hpd-focus-ring);
+    }
+
+    /* Demo .ticket left-border status accents — inset shadow so it renders
+       regardless of the table's border-collapse mode. */
+    tr.hpd-data-table--urgent td:first-child {
+      box-shadow: inset 4px 0 0 var(--hpd-color-danger);
+    }
+
+    tr.hpd-data-table--open td:first-child {
+      box-shadow: inset 4px 0 0 var(--hpd-color-warning-accent);
+    }
+
+    tr.hpd-data-table--closed td:first-child {
+      box-shadow: inset 4px 0 0 var(--hpd-color-success-accent);
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

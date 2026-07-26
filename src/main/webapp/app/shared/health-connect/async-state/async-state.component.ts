@@ -15,11 +15,11 @@ import LoadingSkeletonComponent from './loading-skeleton.component';
       @if (status === 'loading') {
         <hpd-loading-skeleton [labelKey]="loadingKey" />
       } @else if (status === 'error') {
-        <section role="alert" class="flex flex-col items-center gap-3 py-12 text-center text-slate-500">
-          <mat-icon aria-hidden="true" class="!h-9 !w-9 !text-4xl text-rose-400">error_outline</mat-icon>
+        <section role="alert" class="flex flex-col items-center gap-3 py-12 text-center text-hpd-muted">
+          <mat-icon aria-hidden="true" class="!h-9 !w-9 !text-4xl text-hpd-danger">error_outline</mat-icon>
           <p>{{ errorKey | translate }}</p>
           <button
-            class="hpd-focusable rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200"
+            class="hpd-focusable rounded-full bg-hpd-cream px-4 py-2 text-sm font-medium text-hpd-primary-dark transition-colors hover:bg-hpd-cream"
             type="button"
             (click)="retry.emit()"
           >
@@ -27,7 +27,7 @@ import LoadingSkeletonComponent from './loading-skeleton.component';
           </button>
         </section>
       } @else if (status === 'ready' && empty) {
-        <div class="flex flex-col items-center gap-2 py-12 text-center text-slate-400">
+        <div class="flex flex-col items-center gap-2 py-12 text-center text-hpd-subtle">
           <mat-icon aria-hidden="true" class="!h-9 !w-9 !text-4xl opacity-50">inbox</mat-icon>
           <p>{{ emptyKey | translate }}</p>
         </div>

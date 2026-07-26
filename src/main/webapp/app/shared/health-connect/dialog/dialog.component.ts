@@ -18,7 +18,7 @@ import { TranslateModule } from '@ngx-translate/core';
   template: `
     <section
       #dialog
-      class="hpd-dialog hpd-surface"
+      class="hpd-dialog"
       role="dialog"
       aria-modal="true"
       [attr.aria-labelledby]="dialogTitleId"
@@ -30,19 +30,45 @@ import { TranslateModule } from '@ngx-translate/core';
         <h2 [id]="dialogTitleId">{{ titleKey | translate }}</h2>
         <button
           #closeButton
-          class="hpd-focusable rounded-full border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100"
+          class="hpd-focusable cursor-pointer rounded-hpd-sm border-[1.5px] border-white/30 bg-transparent px-3 py-1.5 text-sm font-bold text-white hover:bg-white/10"
           type="button"
           (click)="closed.emit()"
         >
           {{ 'healthConnect.actions.close' | translate }}
         </button>
       </header>
-      <ng-content />
+      <div class="hpd-dialog__body"><ng-content /></div>
     </section>
   `,
   styles: `
-    .hpd-dialog { max-width: 36rem; padding: 1.5rem; }
-    header { display: flex; align-items: start; justify-content: space-between; gap: 1rem; }
+    .hpd-dialog {
+      max-width: 36rem;
+      overflow: hidden;
+      border-radius: var(--hpd-r-lg);
+      background: #fff;
+      color: var(--hpd-color-text-primary);
+      box-shadow: var(--hpd-sh-lg);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.375rem;
+      background: var(--hpd-color-primary);
+      color: #fff;
+    }
+
+    header h2 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .hpd-dialog__body {
+      padding: 1.25rem;
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

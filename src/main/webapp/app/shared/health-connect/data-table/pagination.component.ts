@@ -8,10 +8,10 @@ import { TranslateModule } from '@ngx-translate/core';
   template: `
     @if (totalPages > 1) {
       <nav [attr.aria-label]="'healthConnect.pagination.label' | translate">
-        <ul class="mt-3 flex items-center justify-center gap-1 text-xs text-slate-500">
+        <ul class="mt-3 flex items-center justify-center gap-1 text-xs text-hpd-muted">
           <li>
             <button
-              class="hpd-focusable rounded-md px-2 py-1 font-medium hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+              class="hpd-focusable rounded-md px-2 py-1 font-medium hover:bg-hpd-cream disabled:cursor-not-allowed disabled:opacity-40"
               type="button"
               [disabled]="currentPage() === 1"
               (click)="goTo(currentPage() - 1)"
@@ -25,8 +25,8 @@ import { TranslateModule } from '@ngx-translate/core';
                 class="hpd-focusable h-7 w-7 rounded-md font-medium"
                 [class.bg-hpd-primary]="page === currentPage()"
                 [class.text-white]="page === currentPage()"
-                [class.text-slate-500]="page !== currentPage()"
-                [class.hover:bg-slate-100]="page !== currentPage()"
+                [class.text-hpd-muted]="page !== currentPage()"
+                [class.hover:bg-hpd-cream]="page !== currentPage()"
                 type="button"
                 [attr.aria-current]="page === currentPage() ? 'page' : null"
                 [attr.aria-label]="'healthConnect.pagination.page' | translate: { page }"
@@ -38,7 +38,7 @@ import { TranslateModule } from '@ngx-translate/core';
           }
           <li>
             <button
-              class="hpd-focusable rounded-md px-2 py-1 font-medium hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+              class="hpd-focusable rounded-md px-2 py-1 font-medium hover:bg-hpd-cream disabled:cursor-not-allowed disabled:opacity-40"
               type="button"
               [disabled]="currentPage() === totalPages"
               (click)="goTo(currentPage() + 1)"

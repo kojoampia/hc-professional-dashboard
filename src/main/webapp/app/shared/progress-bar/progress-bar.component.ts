@@ -3,9 +3,9 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 export type ProgressBarVariant = 'success' | 'warning' | 'info';
 
 const BAR_COLOR_CLASSES: Record<ProgressBarVariant, string> = {
-  success: 'bg-emerald-500',
-  warning: 'bg-amber-500',
-  info: 'bg-indigo-500',
+  success: 'bg-hpd-success-accent',
+  warning: 'bg-hpd-warning-accent',
+  info: 'bg-hpd-primary',
 };
 
 @Component({
@@ -13,10 +13,10 @@ const BAR_COLOR_CLASSES: Record<ProgressBarVariant, string> = {
   selector: 'hpd-progress-bar',
   template: `
     <div class="flex items-center gap-3">
-      <div class="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
+      <div class="h-2 flex-1 overflow-hidden rounded-full bg-hpd-cream">
         <div class="h-full rounded-full transition-all duration-500" [class]="barColorClass" [style.width.%]="percentage"></div>
       </div>
-      <span class="shrink-0 text-xs font-medium text-slate-600"><ng-content></ng-content></span>
+      <span class="shrink-0 text-xs font-medium text-hpd-muted"><ng-content></ng-content></span>
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

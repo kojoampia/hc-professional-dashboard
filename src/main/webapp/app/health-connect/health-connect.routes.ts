@@ -31,6 +31,8 @@ const patientRecordPage = (): Promise<typeof import('./pages/patient-record-page
 const caseDetailPage = (): Promise<typeof import('./pages/case-detail-page.component')> => import('./pages/case-detail-page.component');
 const caseQueuePage = (): Promise<typeof import('./pages/case-queue-page.component')> => import('./pages/case-queue-page.component');
 const dutyRosterPage = (): Promise<typeof import('./pages/duty-roster-page.component')> => import('./pages/duty-roster-page.component');
+const messagesPage = (): Promise<typeof import('./pages/messages-page.component')> => import('./pages/messages-page.component');
+const aboutPage = (): Promise<typeof import('./pages/about-page.component')> => import('./pages/about-page.component');
 
 const routes: Routes = [
   {
@@ -89,6 +91,18 @@ const routes: Routes = [
     ...protectedFeatureRoute,
     loadComponent: dutyRosterPage,
     data: { ...protectedFeatureRoute.data, titleKey: 'healthConnect.navigation.dutyRoster' },
+  },
+  {
+    path: 'messages',
+    ...protectedFeatureRoute,
+    loadComponent: messagesPage,
+    data: { ...protectedFeatureRoute.data, titleKey: 'healthConnect.navigation.messages' },
+  },
+  {
+    path: 'about',
+    ...protectedFeatureRoute,
+    loadComponent: aboutPage,
+    data: { ...protectedFeatureRoute.data, titleKey: 'healthConnect.navigation.about' },
   },
 ];
 

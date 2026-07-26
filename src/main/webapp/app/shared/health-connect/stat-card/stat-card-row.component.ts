@@ -15,7 +15,7 @@ export interface StatCard {
   selector: 'hpd-stat-card-row',
   imports: [StatCardComponent],
   template: `
-    <div class="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-4" role="list">
+    <div class="grid grid-cols-2 gap-3 sm:gap-4" [class.md:grid-cols-4]="columns === 4" [class.md:grid-cols-3]="columns === 3" role="list">
       @for (card of cards; track card.id) {
         <div role="listitem">
           <hpd-stat-card
@@ -34,6 +34,8 @@ export interface StatCard {
 })
 export default class StatCardRowComponent {
   @Input({ required: true }) cards: readonly StatCard[] = [];
+  /** Desktop column count — the demo uses 4 for demographics, 3 for case status. */
+  @Input() columns: 3 | 4 = 4;
   @Input() selectedId: string | null = null;
   @Output() readonly selected = new EventEmitter<string>();
 

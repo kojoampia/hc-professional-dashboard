@@ -11,11 +11,11 @@ import { Subject, debounce, distinctUntilChanged, takeUntil, timer } from 'rxjs'
   template: `
     <label class="relative block w-full">
       <span class="sr-only">{{ labelKey | translate }}</span>
-      <mat-icon aria-hidden="true" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 !text-lg text-slate-400"
+      <mat-icon aria-hidden="true" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 !text-lg text-hpd-subtle"
         >search</mat-icon
       >
       <input
-        class="hpd-focusable w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm shadow-sm focus:border-hpd-primary"
+        class="hpd-focusable w-full rounded-hpd-sm border border-hpd-border bg-white py-2.5 pl-10 pr-3 text-sm shadow-hpd-sm focus:border-hpd-primary"
         type="search"
         [disabled]="disabled"
         [placeholder]="labelKey | translate"
