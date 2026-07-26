@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repository actually is
 
-A JHipster 8.1.0–generated **Angular frontend gateway** (`hc-professional-dashboard`, npm package `hc-professional-dashboard`) for a healthcare microservice architecture. The app groups entity CRUD UI under two microservice namespaces — `professionalService` and `patientMS`.
+A JHipster-generated **Angular 19 frontend** (`hc-professional-dashboard`) for the Health Connect / Abofonsa BridgeCare platform, restyled to the BridgeCare design system (see `web-layout-plan.md`). Hand-built clinician screens live under `app/health-connect/`; generated entity CRUD lives under `app/entities/`.
 
-**Important reality check:** `pom.xml`, `AGENTS.md`, and `README.md` describe a full Spring Boot 4 / Java 26 backend (Controllers/Services/Repositories, Kafka, MinIO, Liquibase, etc.), but **there is no Java source in this repo** (`src/main/java` and `src/main/resources` do not exist; `.yo-rc.json` sets `"skipServer": true`). The backend microservices live in separate repositories. `pom.xml` is retained from the JHipster generator and is used primarily by the `frontend-maven-plugin` to build the Angular app. Do not assume Java/Spring code exists here — verify before referencing it.
+**Important reality check:** `pom.xml` and `README.md` describe a full Spring Boot / Java backend (Controllers/Services/Repositories, Kafka, MinIO, Liquibase, etc.), but **there is no Java source in this repo** (`src/main/java` and `src/main/resources` do not exist; `.yo-rc.json` sets `"skipServer": true`). The backend microservices live in separate repositories. `pom.xml` is retained from the JHipster generator and is used primarily by the `frontend-maven-plugin` to build the Angular app. Do not assume Java/Spring code exists here — verify before referencing it.
 
 ## Commands
 
@@ -37,7 +37,7 @@ npm run backend:unit:test                  # maven verify skipping npm (runs any
 Jest (Angular spec):
 
 ```bash
-npx jest --config jest.conf.js src/main/webapp/app/entities/professionalService/address/service/address.service.spec.ts
+npx jest --config jest.conf.js src/main/webapp/app/health-connect/charts/chart-transforms.spec.ts
 npx ng test --include="**/address.service.spec.ts"   # via Angular CLI
 ```
 
@@ -62,10 +62,10 @@ npx cypress run --spec src/test/javascript/cypress/e2e/<file>.spec.ts
   - `core/` — authentication, HTTP interceptors, app config, low-level request/util helpers (singletons).
   - `shared/` — reusable UI helpers, pipes, sort/pagination/filter/date/language/alert utilities.
   - `entities/` — entity modules, split by microservice namespace:
-    - `entities/professionalService/` and `entities/patientMS/` — parallel sets of the same domain entities (address, team, task, membership, report, metadata, profile, hc-credential, hc-pay-option, stat, medication; `patientMS` also has `condition`). Each entity has `list`, `detail`, `update`, `delete`, `service`, `route`, plus `<entity>.model.ts` and `<entity>.routes.ts`.
-    - `entities/entity.routes.ts` aggregates lazy-loaded entity routes — **currently only `professionalService` routes are registered**; `patientMS` code is present but not wired in (it targets a separate patient microservice). The `/* jhipster-needle-add-entity-route */` comment is the JHipster generator's insertion point.
-  - `layouts/` — shell/navbar/footer/error/profiles.
-  - `admin/`, `account/`, `home/`, `login/`, `dashboard/`, `pages/`, `widgets/` (histogram, piechart, treemap, slides, chatbot, filter).
+    - `entities/entity.routes.ts` currently registers only `patientService/med-case`; `entities/professionalService/` components exist but are not routed. The `/* jhipster-needle-add-entity-route */` comment is the JHipster generator's insertion point.
+  - `layouts/` — BridgeCare shell: `sidebar/` (navy sidebar; nav model in `shell-navigation.ts` drives sidebar groups, mobile tabbar, and topbar crumb/title), `main/` (cream topbar + content column), `tabbar/` (mobile bottom tabs), plus footer/error/profiles. There is no horizontal navbar.
+  - `health-connect/` — clinician feature pages (dashboard, patients, case queue, duty roster, messages, about), charts, and API adapters.
+  - `admin/` (health, metrics), `account/`, `home/`, `login/`, `config/`.
 - Routing is standalone (`app.routes.ts`) with lazy `loadChildren` per area; route guards via `UserRouteAccessService` with `Authority` constants (`app/config/authority.constants.ts`). i18n is enabled (en/fr/de).
 
 ## Conventions
@@ -74,6 +74,7 @@ npx cypress run --spec src/test/javascript/cypress/e2e/<file>.spec.ts
 - Component selector prefix `hpd` kebab-case; directive selector prefix `hpd` camelCase (`.eslintrc.json`).
 - Follow existing RxJS/Observable patterns in services and auth state management.
 - JHipster generator markers (`// jhipster-needle-*` / `/* jhipster-needle-* */`) denote where the generator inserts code — preserve them.
+- **BridgeCare design system:** all colors come from the `--hpd-*` tokens in `content/scss/global.scss`, mapped to Tailwind utilities in `content/css/tailwind.css` (`text-hpd-muted`, `bg-hpd-danger-tint`, `rounded-hpd`, `shadow-hpd-sm`, …). Do not hardcode hex values or raw Tailwind palette classes (`slate-*`, `indigo-*`, …) in components. Shared component classes: `.hpd-btn{-primary,-gold,-ghost,-danger}`, `.hpd-label`, `.hpd-input`. Success toasts via `AlertService.showToast()`. Full background and phase log: `web-layout-plan.md`.
 - **Uniform font:** the whole application renders in Inter — the same face used (via inheritance, no per-component override) by the health-connect stat cards (`app/shared/health-connect/stat-card/stat-card.component.ts`). It's loaded via the Google Fonts `<link>` in `src/main/webapp/index.html`, applied globally via `body { font-family: var(--hpd-font-body); }` in `content/scss/global.scss` (token defined in that same file's `:root` block), and also set as Tailwind's `--font-sans` in `content/css/tailwind.css` so the `font-sans` utility class agrees with it. Angular Material's M3 theme (`content/scss/material-theme.scss`) already specified `brand-family`/`plain-family: 'Inter'` — this is what makes that config actually render correctly instead of silently falling back to the browser default. Don't introduce a second font anywhere; if a component needs a different weight, use Tailwind's `font-*` weight utilities (`font-medium`, `font-semibold`, `font-bold`, …), not a different family.
 
 ## Docker / infrastructure
