@@ -1,10 +1,12 @@
-<h3 id="garbageCollectorMetrics" class="text-sm font-semibold text-slate-700" jhiTranslate="metrics.jvm.gc.title">Garbage collections</h3>
+<h3 id="garbageCollectorMetrics" class="text-sm font-semibold text-hpd-primary-dark" jhiTranslate="metrics.jvm.gc.title">
+  Garbage collections
+</h3>
 
 <div class="mt-2 grid gap-4 md:grid-cols-3">
   <div>
     @if (garbageCollectorMetrics) {
       <div>
-        <span class="text-xs text-slate-600">
+        <span class="text-xs text-hpd-muted">
           GC Live Data Size/GC Max Data Size ({{ garbageCollectorMetrics['jvm.gc.live.data.size'] / 1048576 | number: '1.0-0' }}M /
           {{ garbageCollectorMetrics['jvm.gc.max.data.size'] / 1048576 | number: '1.0-0' }}M)
         </span>
@@ -26,7 +28,7 @@
   <div>
     @if (garbageCollectorMetrics) {
       <div>
-        <span class="text-xs text-slate-600">
+        <span class="text-xs text-hpd-muted">
           GC Memory Promoted/GC Memory Allocated ({{ garbageCollectorMetrics['jvm.gc.memory.promoted'] / 1048576 | number: '1.0-0' }}M /
           {{ garbageCollectorMetrics['jvm.gc.memory.allocated'] / 1048576 | number: '1.0-0' }}M)
         </span>
@@ -48,39 +50,53 @@
 
   <div id="garbageCollectorMetrics">
     @if (garbageCollectorMetrics) {
-      <div class="grid gap-2 text-xs text-slate-600">
+      <div class="grid gap-2 text-xs text-hpd-muted">
         <div class="flex items-center justify-between">
           <span>Classes loaded</span>
-          <span class="font-medium text-slate-800">{{ garbageCollectorMetrics.classesLoaded }}</span>
+          <span class="font-medium text-hpd-primary-dark">{{ garbageCollectorMetrics.classesLoaded }}</span>
         </div>
         <div class="flex items-center justify-between">
           <span>Classes unloaded</span>
-          <span class="font-medium text-slate-800">{{ garbageCollectorMetrics.classesUnloaded }}</span>
+          <span class="font-medium text-hpd-primary-dark">{{ garbageCollectorMetrics.classesUnloaded }}</span>
         </div>
       </div>
     }
   </div>
 
   @if (!updating && garbageCollectorMetrics) {
-    <div class="overflow-x-auto rounded-lg border border-slate-200 md:col-span-3">
-      <table class="w-full text-left text-sm text-slate-600" aria-describedby="garbageCollectorMetrics">
-        <thead class="bg-slate-50 text-xs uppercase">
+    <div class="overflow-x-auto rounded-hpd-sm border border-hpd-border md:col-span-3">
+      <table class="w-full text-left text-sm text-hpd-muted" aria-describedby="garbageCollectorMetrics">
+        <thead class="bg-hpd-cream text-xs uppercase">
           <tr>
-            <th scope="col" class="px-4 py-3 font-bold text-slate-700"></th>
-            <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.servicesstats.table.count">
+            <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark"></th>
+            <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.servicesstats.table.count">
               Count
             </th>
-            <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.servicesstats.table.mean">Mean</th>
-            <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.servicesstats.table.min">Min</th>
-            <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.servicesstats.table.p50">p50</th>
-            <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.servicesstats.table.p75">p75</th>
-            <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.servicesstats.table.p95">p95</th>
-            <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.servicesstats.table.p99">p99</th>
-            <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.servicesstats.table.max">Max</th>
+            <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.servicesstats.table.mean">
+              Mean
+            </th>
+            <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.servicesstats.table.min">
+              Min
+            </th>
+            <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.servicesstats.table.p50">
+              p50
+            </th>
+            <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.servicesstats.table.p75">
+              p75
+            </th>
+            <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.servicesstats.table.p95">
+              p95
+            </th>
+            <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.servicesstats.table.p99">
+              p99
+            </th>
+            <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.servicesstats.table.max">
+              Max
+            </th>
           </tr>
         </thead>
         <tbody>
-          <tr class="border-t border-slate-100">
+          <tr class="border-t border-hpd-border">
             <td class="px-4 py-3">jvm.gc.pause</td>
             <td class="px-4 py-3 text-right">{{ garbageCollectorMetrics['jvm.gc.pause'].count }}</td>
             <td class="px-4 py-3 text-right">{{ garbageCollectorMetrics['jvm.gc.pause'].mean | number: '1.0-3' }}</td>

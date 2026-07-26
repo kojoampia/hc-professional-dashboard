@@ -1,28 +1,38 @@
-<h3 id="datasourceMetrics" class="text-sm font-semibold text-slate-700" jhiTranslate="metrics.datasource.title">
+<h3 id="datasourceMetrics" class="text-sm font-semibold text-hpd-primary-dark" jhiTranslate="metrics.datasource.title">
   DataSource statistics (time in millisecond)
 </h3>
 
 @if (!updating && datasourceMetrics) {
-  <div class="mt-2 overflow-x-auto rounded-lg border border-slate-200">
-    <table class="w-full text-left text-sm text-slate-600" aria-describedby="datasourceMetrics">
-      <thead class="bg-slate-50 text-xs uppercase">
+  <div class="mt-2 overflow-x-auto rounded-hpd-sm border border-hpd-border">
+    <table class="w-full text-left text-sm text-hpd-muted" aria-describedby="datasourceMetrics">
+      <thead class="bg-hpd-cream text-xs uppercase">
         <tr>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700">
+          <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark">
             <span jhiTranslate="metrics.datasource.usage">Connection Pool Usage</span> (active: {{ datasourceMetrics.active.value }}, min:
             {{ datasourceMetrics.min.value }}, max: {{ datasourceMetrics.max.value }}, idle: {{ datasourceMetrics.idle.value }})
           </th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.datasource.count">Count</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.datasource.mean">Mean</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.servicesstats.table.min">Min</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.servicesstats.table.p50">p50</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.servicesstats.table.p75">p75</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.servicesstats.table.p95">p95</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.servicesstats.table.p99">p99</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.datasource.max">Max</th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.datasource.count">Count</th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.datasource.mean">Mean</th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.servicesstats.table.min">
+            Min
+          </th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.servicesstats.table.p50">
+            p50
+          </th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.servicesstats.table.p75">
+            p75
+          </th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.servicesstats.table.p95">
+            p95
+          </th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.servicesstats.table.p99">
+            p99
+          </th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.datasource.max">Max</th>
         </tr>
       </thead>
       <tbody>
-        <tr class="border-t border-slate-100">
+        <tr class="border-t border-hpd-border">
           <td class="px-4 py-3">Acquire</td>
           <td class="px-4 py-3 text-right">{{ datasourceMetrics.acquire.count }}</td>
           <td class="px-4 py-3 text-right">{{ filterNaN(datasourceMetrics.acquire.mean) | number: '1.0-2' }}</td>
@@ -33,7 +43,7 @@
           <td class="px-4 py-3 text-right">{{ datasourceMetrics.acquire['0.99'] | number: '1.0-3' }}</td>
           <td class="px-4 py-3 text-right">{{ filterNaN(datasourceMetrics.acquire.max) | number: '1.0-2' }}</td>
         </tr>
-        <tr class="border-t border-slate-100">
+        <tr class="border-t border-hpd-border">
           <td class="px-4 py-3">Creation</td>
           <td class="px-4 py-3 text-right">{{ datasourceMetrics.creation.count }}</td>
           <td class="px-4 py-3 text-right">{{ filterNaN(datasourceMetrics.creation.mean) | number: '1.0-2' }}</td>
@@ -44,7 +54,7 @@
           <td class="px-4 py-3 text-right">{{ datasourceMetrics.creation['0.99'] | number: '1.0-3' }}</td>
           <td class="px-4 py-3 text-right">{{ filterNaN(datasourceMetrics.creation.max) | number: '1.0-2' }}</td>
         </tr>
-        <tr class="border-t border-slate-100">
+        <tr class="border-t border-hpd-border">
           <td class="px-4 py-3">Usage</td>
           <td class="px-4 py-3 text-right">{{ datasourceMetrics.usage.count }}</td>
           <td class="px-4 py-3 text-right">{{ filterNaN(datasourceMetrics.usage.mean) | number: '1.0-2' }}</td>

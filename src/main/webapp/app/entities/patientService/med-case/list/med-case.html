@@ -1,12 +1,12 @@
 <div class="mx-auto max-w-7xl px-4 py-8 md:px-8">
   <div class="mb-6 flex flex-wrap items-center justify-between gap-3" id="page-heading" data-cy="MedCaseHeading">
-    <h2 class="text-xl font-bold text-slate-900">
+    <h2 class="text-xl font-bold text-hpd-primary-dark">
       <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.home.title">Med Cases</span>
     </h2>
 
     <div class="flex flex-wrap items-center gap-2">
       <button
-        class="hpd-focusable flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
+        class="hpd-focusable flex items-center gap-1.5 rounded-full bg-hpd-cream px-3 py-1.5 text-sm font-medium text-hpd-primary-dark transition-colors hover:bg-hpd-cream disabled:cursor-not-allowed disabled:opacity-50"
         type="button"
         (click)="load()"
         [disabled]="isLoading()"
@@ -32,79 +32,79 @@
   <hpd-alert />
 
   @if (medCases().length === 0) {
-  <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800" id="no-result">
+  <div class="rounded-hpd-sm border border-[#eedfb9] bg-hpd-gold-tint px-4 py-3 text-sm text-hpd-muted" id="no-result">
     <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.home.notFound">No Med Cases found</span>
   </div>
   } @else {
-  <div class="table-responsive table-entities overflow-x-auto rounded-lg border border-slate-200" id="entities">
-    <table class="w-full text-left text-sm text-slate-600" aria-describedby="page-heading">
-      <thead class="bg-slate-50 text-xs uppercase">
+  <div class="table-responsive table-entities overflow-x-auto rounded-hpd-sm border border-hpd-border" id="entities">
+    <table class="w-full text-left text-sm text-hpd-muted" aria-describedby="page-heading">
+      <thead class="bg-hpd-cream text-xs uppercase">
         <tr
           jhiSort
           [predicate]="sortState().predicate"
           [ascending]="sortState().ascending"
           (sortChange)="navigateToWithComponentValues($event)"
         >
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="id" #idSort="jhiSortBy">
+          <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark" jhiSortBy="id" #idSort="jhiSortBy">
             <div class="flex items-center gap-1">
               <span jhiTranslate="global.field.id">ID</span>
-              <mat-icon aria-hidden="true" class="!text-base text-slate-400">{{ idSort.icon }}</mat-icon>
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ idSort.icon }}</mat-icon>
             </div>
           </th>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="symptoms" #symptomsSort="jhiSortBy">
+          <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark" jhiSortBy="symptoms" #symptomsSort="jhiSortBy">
             <div class="flex items-center gap-1">
               <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.symptoms">Symptoms</span>
-              <mat-icon aria-hidden="true" class="!text-base text-slate-400">{{ symptomsSort.icon }}</mat-icon>
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ symptomsSort.icon }}</mat-icon>
             </div>
           </th>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="diagnoses" #diagnosesSort="jhiSortBy">
+          <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark" jhiSortBy="diagnoses" #diagnosesSort="jhiSortBy">
             <div class="flex items-center gap-1">
               <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.diagnoses">Diagnoses</span>
-              <mat-icon aria-hidden="true" class="!text-base text-slate-400">{{ diagnosesSort.icon }}</mat-icon>
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ diagnosesSort.icon }}</mat-icon>
             </div>
           </th>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="recommendations" #recommendationsSort="jhiSortBy">
+          <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark" jhiSortBy="recommendations" #recommendationsSort="jhiSortBy">
             <div class="flex items-center gap-1">
               <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.recommendations">Recommendations</span>
-              <mat-icon aria-hidden="true" class="!text-base text-slate-400">{{ recommendationsSort.icon }}</mat-icon>
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ recommendationsSort.icon }}</mat-icon>
             </div>
           </th>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="createdDate" #createdDateSort="jhiSortBy">
+          <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark" jhiSortBy="createdDate" #createdDateSort="jhiSortBy">
             <div class="flex items-center gap-1">
               <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdDate">Created Date</span>
-              <mat-icon aria-hidden="true" class="!text-base text-slate-400">{{ createdDateSort.icon }}</mat-icon>
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ createdDateSort.icon }}</mat-icon>
             </div>
           </th>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="createdBy" #createdBySort="jhiSortBy">
+          <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark" jhiSortBy="createdBy" #createdBySort="jhiSortBy">
             <div class="flex items-center gap-1">
               <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdBy">Created By</span>
-              <mat-icon aria-hidden="true" class="!text-base text-slate-400">{{ createdBySort.icon }}</mat-icon>
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ createdBySort.icon }}</mat-icon>
             </div>
           </th>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="modifiedDate" #modifiedDateSort="jhiSortBy">
+          <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark" jhiSortBy="modifiedDate" #modifiedDateSort="jhiSortBy">
             <div class="flex items-center gap-1">
               <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedDate">Modified Date</span>
-              <mat-icon aria-hidden="true" class="!text-base text-slate-400">{{ modifiedDateSort.icon }}</mat-icon>
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ modifiedDateSort.icon }}</mat-icon>
             </div>
           </th>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiSortBy="modifiedBy" #modifiedBySort="jhiSortBy">
+          <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark" jhiSortBy="modifiedBy" #modifiedBySort="jhiSortBy">
             <div class="flex items-center gap-1">
               <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedBy">Modified By</span>
-              <mat-icon aria-hidden="true" class="!text-base text-slate-400">{{ modifiedBySort.icon }}</mat-icon>
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ modifiedBySort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" class="px-4 py-3"></th>
         </tr>
       </thead>
       <tbody
-        class="divide-y divide-slate-100 bg-white"
+        class="divide-y divide-hpd-border/70 bg-white"
         infinite-scroll
         (scrolled)="loadNextPage()"
         [infiniteScrollDisabled]="!hasMorePage()"
         [infiniteScrollDistance]="0"
       >
         @for (medCase of medCases(); track trackId(medCase)) {
-        <tr class="hover:bg-slate-50" data-cy="entityTable">
+        <tr class="hover:bg-hpd-cream/70" data-cy="entityTable">
           <td class="px-4 py-3">
             <a class="hpd-focusable font-medium text-hpd-primary hover:underline" [routerLink]="['/med-case', medCase.id, 'view']"
               >{{ medCase.id }}</a
@@ -120,7 +120,7 @@
           <td class="px-4 py-3 text-right">
             <div class="flex items-center justify-end gap-1">
               <a
-                class="hpd-focusable inline-flex items-center gap-1 rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-hpd-primary"
+                class="hpd-focusable inline-flex items-center gap-1 rounded-full p-1.5 text-hpd-subtle hover:bg-hpd-cream hover:text-hpd-primary"
                 [routerLink]="['/med-case', medCase.id, 'view']"
                 data-cy="entityDetailsButton"
               >
@@ -129,7 +129,7 @@
               </a>
 
               <a
-                class="hpd-focusable inline-flex items-center gap-1 rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-hpd-primary"
+                class="hpd-focusable inline-flex items-center gap-1 rounded-full p-1.5 text-hpd-subtle hover:bg-hpd-cream hover:text-hpd-primary"
                 [routerLink]="['/med-case', medCase.id, 'edit']"
                 data-cy="entityEditButton"
               >
@@ -138,7 +138,7 @@
               </a>
 
               <button
-                class="hpd-focusable inline-flex items-center gap-1 rounded-full p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600"
+                class="hpd-focusable inline-flex items-center gap-1 rounded-full p-1.5 text-hpd-subtle hover:bg-hpd-danger-tint hover:text-hpd-danger"
                 type="submit"
                 (click)="delete(medCase)"
                 data-cy="entityDeleteButton"

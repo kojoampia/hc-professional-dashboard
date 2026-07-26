@@ -1,9 +1,9 @@
 <div class="mx-auto max-w-2xl px-4 py-8">
-  <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+  <div class="rounded-hpd border border-hpd-border bg-white p-6 shadow-hpd-sm">
     <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
       <h2
         id="hpd-med-case-heading"
-        class="mb-6 text-lg font-bold text-slate-900"
+        class="mb-6 text-lg font-bold text-hpd-primary-dark"
         data-cy="MedCaseCreateUpdateHeading"
         jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.home.createOrEditLabel"
       >
@@ -15,9 +15,9 @@
 
         @if (editForm.controls.id.value !== null) {
         <div>
-          <label class="mb-1 block text-sm font-medium text-slate-700" for="field_id" jhiTranslate="global.field.id">ID</label>
+          <label class="hpd-label" for="field_id" jhiTranslate="global.field.id">ID</label>
           <input
-            class="hpd-focusable w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-500"
+            class="hpd-focusable w-full rounded-hpd-sm border border-hpd-border bg-hpd-cream px-3 py-2 text-sm text-hpd-muted"
             type="text"
             name="id"
             id="field_id"
@@ -29,14 +29,11 @@
         }
 
         <div>
-          <label
-            class="mb-1 block text-sm font-medium text-slate-700"
-            for="field_symptoms"
-            jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.symptoms"
+          <label class="hpd-label" for="field_symptoms" jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.symptoms"
             >Symptoms</label
           >
           <input
-            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            class="hpd-focusable hpd-input"
             type="text"
             name="symptoms"
             id="field_symptoms"
@@ -46,14 +43,11 @@
         </div>
 
         <div>
-          <label
-            class="mb-1 block text-sm font-medium text-slate-700"
-            for="field_diagnoses"
-            jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.diagnoses"
+          <label class="hpd-label" for="field_diagnoses" jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.diagnoses"
             >Diagnoses</label
           >
           <input
-            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            class="hpd-focusable hpd-input"
             type="text"
             name="diagnoses"
             id="field_diagnoses"
@@ -64,13 +58,13 @@
 
         <div>
           <label
-            class="mb-1 block text-sm font-medium text-slate-700"
+            class="hpd-label"
             for="field_recommendations"
             jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.recommendations"
             >Recommendations</label
           >
           <input
-            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            class="hpd-focusable hpd-input"
             type="text"
             name="recommendations"
             id="field_recommendations"
@@ -80,14 +74,11 @@
         </div>
 
         <div>
-          <label
-            class="mb-1 block text-sm font-medium text-slate-700"
-            for="field_createdDate"
-            jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdDate"
+          <label class="hpd-label" for="field_createdDate" jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdDate"
             >Created Date</label
           >
           <input
-            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            class="hpd-focusable hpd-input"
             id="field_createdDate"
             data-cy="createdDate"
             type="datetime-local"
@@ -98,14 +89,11 @@
         </div>
 
         <div>
-          <label
-            class="mb-1 block text-sm font-medium text-slate-700"
-            for="field_createdBy"
-            jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdBy"
+          <label class="hpd-label" for="field_createdBy" jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdBy"
             >Created By</label
           >
           <input
-            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            class="hpd-focusable hpd-input"
             type="text"
             name="createdBy"
             id="field_createdBy"
@@ -115,14 +103,11 @@
         </div>
 
         <div>
-          <label
-            class="mb-1 block text-sm font-medium text-slate-700"
-            for="field_modifiedDate"
-            jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedDate"
+          <label class="hpd-label" for="field_modifiedDate" jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedDate"
             >Modified Date</label
           >
           <input
-            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            class="hpd-focusable hpd-input"
             id="field_modifiedDate"
             data-cy="modifiedDate"
             type="datetime-local"
@@ -133,14 +118,11 @@
         </div>
 
         <div>
-          <label
-            class="mb-1 block text-sm font-medium text-slate-700"
-            for="field_modifiedBy"
-            jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedBy"
+          <label class="hpd-label" for="field_modifiedBy" jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedBy"
             >Modified By</label
           >
           <input
-            class="hpd-focusable w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm"
+            class="hpd-focusable hpd-input"
             type="text"
             name="modifiedBy"
             id="field_modifiedBy"
@@ -152,7 +134,7 @@
 
       <div class="mt-6 flex justify-end gap-2">
         <button
-          class="hpd-focusable flex items-center gap-1 rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200"
+          class="hpd-focusable flex items-center gap-1 rounded-full bg-hpd-cream px-4 py-2 text-sm font-medium text-hpd-primary-dark hover:bg-hpd-cream"
           type="button"
           id="cancel-save"
           data-cy="entityCreateCancelButton"
@@ -163,7 +145,7 @@
         </button>
 
         <button
-          class="hpd-focusable flex items-center gap-1 rounded-full bg-hpd-primary px-4 py-2 text-sm font-medium text-white hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+          class="hpd-focusable flex items-center gap-1 hpd-btn hpd-btn-primary"
           type="submit"
           id="save-entity"
           data-cy="entityCreateSaveButton"

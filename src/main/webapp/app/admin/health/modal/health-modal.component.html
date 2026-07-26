@@ -7,19 +7,19 @@
 <mat-dialog-content>
   @if (health) {
     <div>
-      <h3 class="mb-2 text-sm font-semibold text-slate-700" jhiTranslate="health.details.properties">Properties</h3>
+      <h3 class="mb-2 text-sm font-semibold text-hpd-primary-dark" jhiTranslate="health.details.properties">Properties</h3>
 
-      <div class="overflow-x-auto rounded-lg border border-slate-200">
-        <table class="w-full text-left text-sm text-slate-600" aria-describedby="showHealthLabel">
-          <thead class="bg-slate-50 text-xs uppercase">
+      <div class="overflow-x-auto rounded-hpd-sm border border-hpd-border">
+        <table class="w-full text-left text-sm text-hpd-muted" aria-describedby="showHealthLabel">
+          <thead class="bg-hpd-cream text-xs uppercase">
             <tr>
-              <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiTranslate="health.details.name">Name</th>
-              <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiTranslate="health.details.value">Value</th>
+              <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark" jhiTranslate="health.details.name">Name</th>
+              <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark" jhiTranslate="health.details.value">Value</th>
             </tr>
           </thead>
           <tbody>
             @for (healthDetail of health.value.details! | keyvalue; track healthDetail.key) {
-              <tr class="border-t border-slate-100">
+              <tr class="border-t border-hpd-border">
                 <td class="px-4 py-3">{{ healthDetail.key }}</td>
                 <td class="px-4 py-3">{{ readableValue(healthDetail.value) }}</td>
               </tr>

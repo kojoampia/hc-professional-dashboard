@@ -1,24 +1,32 @@
-<h3 id="cacheMetrics" class="text-sm font-semibold text-slate-700" jhiTranslate="metrics.cache.title">Cache statistics</h3>
+<h3 id="cacheMetrics" class="text-sm font-semibold text-hpd-primary-dark" jhiTranslate="metrics.cache.title">Cache statistics</h3>
 
 @if (!updating && cacheMetrics) {
-  <div class="mt-2 overflow-x-auto rounded-lg border border-slate-200">
-    <table class="w-full text-left text-sm text-slate-600" aria-describedby="cacheMetrics">
-      <thead class="bg-slate-50 text-xs uppercase">
+  <div class="mt-2 overflow-x-auto rounded-hpd-sm border border-hpd-border">
+    <table class="w-full text-left text-sm text-hpd-muted" aria-describedby="cacheMetrics">
+      <thead class="bg-hpd-cream text-xs uppercase">
         <tr>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiTranslate="metrics.cache.cachename">Cache name</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.cache.hits">Cache Hits</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.cache.misses">Cache Misses</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.cache.gets">Cache Gets</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.cache.puts">Cache Puts</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.cache.removals">Cache Removals</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.cache.evictions">Cache Evictions</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.cache.hitPercent">Cache Hit %</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.cache.missPercent">Cache Miss %</th>
+          <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark" jhiTranslate="metrics.cache.cachename">Cache name</th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.cache.hits">Cache Hits</th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.cache.misses">Cache Misses</th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.cache.gets">Cache Gets</th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.cache.puts">Cache Puts</th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.cache.removals">
+            Cache Removals
+          </th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.cache.evictions">
+            Cache Evictions
+          </th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.cache.hitPercent">
+            Cache Hit %
+          </th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.cache.missPercent">
+            Cache Miss %
+          </th>
         </tr>
       </thead>
       <tbody>
         @for (entry of cacheMetrics | keyvalue; track entry.key) {
-          <tr class="border-t border-slate-100">
+          <tr class="border-t border-hpd-border">
             <td class="px-4 py-3">{{ entry.key }}</td>
             <td class="px-4 py-3 text-right">{{ entry.value['cache.gets.hit'] }}</td>
             <td class="px-4 py-3 text-right">{{ entry.value['cache.gets.miss'] }}</td>

@@ -1,21 +1,21 @@
-<h3 id="requestMetrics" class="text-sm font-semibold text-slate-700" jhiTranslate="metrics.jvm.http.title">
+<h3 id="requestMetrics" class="text-sm font-semibold text-hpd-primary-dark" jhiTranslate="metrics.jvm.http.title">
   HTTP requests (time in millisecond)
 </h3>
 
 @if (!updating && requestMetrics) {
-  <div class="mt-2 overflow-x-auto rounded-lg border border-slate-200">
-    <table class="w-full text-left text-sm text-slate-600" aria-describedby="requestMetrics">
-      <thead class="bg-slate-50 text-xs uppercase">
+  <div class="mt-2 overflow-x-auto rounded-hpd-sm border border-hpd-border">
+    <table class="w-full text-left text-sm text-hpd-muted" aria-describedby="requestMetrics">
+      <thead class="bg-hpd-cream text-xs uppercase">
         <tr>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiTranslate="metrics.jvm.http.table.code">Code</th>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700" jhiTranslate="metrics.jvm.http.table.count">Count</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.jvm.http.table.mean">Mean</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700" jhiTranslate="metrics.jvm.http.table.max">Max</th>
+          <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark" jhiTranslate="metrics.jvm.http.table.code">Code</th>
+          <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark" jhiTranslate="metrics.jvm.http.table.count">Count</th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.jvm.http.table.mean">Mean</th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.jvm.http.table.max">Max</th>
         </tr>
       </thead>
       <tbody>
         @for (entry of requestMetrics['percode'] | keyvalue; track entry.key) {
-          <tr class="border-t border-slate-100">
+          <tr class="border-t border-hpd-border">
             <td class="px-4 py-3">{{ entry.key }}</td>
             <td class="px-4 py-3">
               <hpd-progress-bar [max]="requestMetrics['all'].count" [value]="entry.value.count" variant="success">

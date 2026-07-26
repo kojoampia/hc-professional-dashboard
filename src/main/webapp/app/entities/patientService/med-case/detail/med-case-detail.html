@@ -1,7 +1,7 @@
 <div class="mx-auto max-w-2xl px-4 py-8">
   @if (medCase(); as medCaseRef) {
-  <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-    <h2 class="mb-4 text-lg font-bold text-slate-900" data-cy="medCaseDetailsHeading">
+  <div class="rounded-hpd border border-hpd-border bg-white p-6 shadow-hpd-sm">
+    <h2 class="mb-4 text-lg font-bold text-hpd-primary-dark" data-cy="medCaseDetailsHeading">
       <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.detail.title">Med Case</span>
     </h2>
 
@@ -10,51 +10,51 @@
     <hpd-alert />
 
     <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-      <dt class="text-slate-500"><span jhiTranslate="global.field.id">ID</span></dt>
-      <dd class="m-0 text-slate-800">
+      <dt class="text-hpd-muted"><span jhiTranslate="global.field.id">ID</span></dt>
+      <dd class="m-0 text-hpd-primary-dark">
         <span>{{ medCaseRef.id }}</span>
       </dd>
-      <dt class="text-slate-500"><span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.symptoms">Symptoms</span></dt>
-      <dd class="m-0 text-slate-800">
+      <dt class="text-hpd-muted"><span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.symptoms">Symptoms</span></dt>
+      <dd class="m-0 text-hpd-primary-dark">
         <span>{{ medCaseRef.symptoms }}</span>
       </dd>
-      <dt class="text-slate-500"><span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.diagnoses">Diagnoses</span></dt>
-      <dd class="m-0 text-slate-800">
+      <dt class="text-hpd-muted"><span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.diagnoses">Diagnoses</span></dt>
+      <dd class="m-0 text-hpd-primary-dark">
         <span>{{ medCaseRef.diagnoses }}</span>
       </dd>
-      <dt class="text-slate-500">
+      <dt class="text-hpd-muted">
         <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.recommendations">Recommendations</span>
       </dt>
-      <dd class="m-0 text-slate-800">
+      <dd class="m-0 text-hpd-primary-dark">
         <span>{{ medCaseRef.recommendations }}</span>
       </dd>
-      <dt class="text-slate-500">
+      <dt class="text-hpd-muted">
         <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdDate">Created Date</span>
       </dt>
-      <dd class="m-0 text-slate-800">
+      <dd class="m-0 text-hpd-primary-dark">
         <span>{{ medCaseRef.createdDate | formatMediumDatetime }}</span>
       </dd>
-      <dt class="text-slate-500"><span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdBy">Created By</span></dt>
-      <dd class="m-0 text-slate-800">
+      <dt class="text-hpd-muted"><span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.createdBy">Created By</span></dt>
+      <dd class="m-0 text-hpd-primary-dark">
         <span>{{ medCaseRef.createdBy }}</span>
       </dd>
-      <dt class="text-slate-500">
+      <dt class="text-hpd-muted">
         <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedDate">Modified Date</span>
       </dt>
-      <dd class="m-0 text-slate-800">
+      <dd class="m-0 text-hpd-primary-dark">
         <span>{{ medCaseRef.modifiedDate | formatMediumDatetime }}</span>
       </dd>
-      <dt class="text-slate-500">
+      <dt class="text-hpd-muted">
         <span jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.modifiedBy">Modified By</span>
       </dt>
-      <dd class="m-0 text-slate-800">
+      <dd class="m-0 text-hpd-primary-dark">
         <span>{{ medCaseRef.modifiedBy }}</span>
       </dd>
     </dl>
 
     <div class="mt-6 flex justify-end gap-2">
       <button
-        class="hpd-focusable flex items-center gap-1 rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200"
+        class="hpd-focusable flex items-center gap-1 rounded-full bg-hpd-cream px-4 py-2 text-sm font-medium text-hpd-primary-dark hover:bg-hpd-cream"
         type="submit"
         (click)="previousState()"
         data-cy="entityDetailsBackButton"
@@ -64,7 +64,7 @@
       </button>
 
       <button
-        class="hpd-focusable flex items-center gap-1 rounded-full bg-hpd-primary px-4 py-2 text-sm font-medium text-white hover:brightness-110"
+        class="hpd-focusable flex items-center gap-1 hpd-btn hpd-btn-primary"
         type="button"
         [routerLink]="['/med-case', medCaseRef.id, 'edit']"
       >

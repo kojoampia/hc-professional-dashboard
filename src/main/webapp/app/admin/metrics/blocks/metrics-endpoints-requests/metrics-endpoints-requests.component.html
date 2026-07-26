@@ -1,20 +1,20 @@
-<h3 id="endpointsRequestsMetrics" class="text-sm font-semibold text-slate-700">Endpoints requests (time in millisecond)</h3>
+<h3 id="endpointsRequestsMetrics" class="text-sm font-semibold text-hpd-primary-dark">Endpoints requests (time in millisecond)</h3>
 
 @if (!updating && endpointsRequestsMetrics) {
-  <div class="mt-2 overflow-x-auto rounded-lg border border-slate-200">
-    <table class="w-full text-left text-sm text-slate-600" aria-describedby="endpointsRequestsMetrics">
-      <thead class="bg-slate-50 text-xs uppercase">
+  <div class="mt-2 overflow-x-auto rounded-hpd-sm border border-hpd-border">
+    <table class="w-full text-left text-sm text-hpd-muted" aria-describedby="endpointsRequestsMetrics">
+      <thead class="bg-hpd-cream text-xs uppercase">
         <tr>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700">Method</th>
-          <th scope="col" class="px-4 py-3 font-bold text-slate-700">Endpoint url</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700">Count</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-slate-700">Mean</th>
+          <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark">Method</th>
+          <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark">Endpoint url</th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark">Count</th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark">Mean</th>
         </tr>
       </thead>
       <tbody>
         @for (entry of endpointsRequestsMetrics | keyvalue; track entry.key) {
           @for (method of entry.value | keyvalue; track method.key) {
-            <tr class="border-t border-slate-100">
+            <tr class="border-t border-hpd-border">
               <td class="px-4 py-3">{{ method.key }}</td>
               <td class="px-4 py-3">{{ entry.key }}</td>
               <td class="px-4 py-3 text-right">{{ method.value!.count }}</td>

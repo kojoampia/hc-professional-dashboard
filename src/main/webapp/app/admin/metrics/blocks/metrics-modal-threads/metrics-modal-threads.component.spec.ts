@@ -137,7 +137,7 @@ describe('MetricsModalThreadsComponent', () => {
       const badgeClass = comp.getBadgeClass(threadState);
 
       // THEN
-      expect(badgeClass).toEqual('bg-emerald-100 text-emerald-700');
+      expect(badgeClass).toEqual('bg-hpd-success-tint text-hpd-success');
     });
 
     it('should return an info badge class for waiting thread state', () => {
@@ -148,7 +148,7 @@ describe('MetricsModalThreadsComponent', () => {
       const badgeClass = comp.getBadgeClass(threadState);
 
       // THEN
-      expect(badgeClass).toEqual('bg-indigo-100 text-indigo-700');
+      expect(badgeClass).toEqual('bg-[#e7eef6] text-hpd-primary');
     });
 
     it('should return a warning badge class for time waiting thread state', () => {
@@ -159,7 +159,7 @@ describe('MetricsModalThreadsComponent', () => {
       const badgeClass = comp.getBadgeClass(threadState);
 
       // THEN
-      expect(badgeClass).toEqual('bg-amber-100 text-amber-700');
+      expect(badgeClass).toEqual('bg-hpd-warning-tint text-hpd-warning');
     });
 
     it('should return a danger badge class for blocked thread state', () => {
@@ -170,7 +170,7 @@ describe('MetricsModalThreadsComponent', () => {
       const badgeClass = comp.getBadgeClass(threadState);
 
       // THEN
-      expect(badgeClass).toEqual('bg-rose-100 text-rose-700');
+      expect(badgeClass).toEqual('bg-hpd-danger-tint text-hpd-danger');
     });
 
     it('should return an empty string for others threads', () => {

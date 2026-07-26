@@ -27,9 +27,9 @@ export default class HealthComponent implements OnInit {
 
   getBadgeClass(statusState: HealthStatus): string {
     if (statusState === 'UP') {
-      return 'bg-emerald-100 text-emerald-700';
+      return 'bg-hpd-success-tint text-hpd-success';
     }
-    return 'bg-rose-100 text-rose-700';
+    return 'bg-hpd-danger-tint text-hpd-danger';
   }
 
   refresh(): void {

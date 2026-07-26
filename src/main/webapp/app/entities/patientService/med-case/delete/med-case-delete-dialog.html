@@ -1,7 +1,7 @@
 @if (medCase) {
 <form name="deleteForm" (ngSubmit)="confirmDelete(medCase.id!)">
-  <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-4">
-    <h4 class="m-0 text-lg font-bold text-slate-900" data-cy="medCaseDeleteDialogHeading" jhiTranslate="entity.delete.title">
+  <div class="border-b border-hpd-border bg-hpd-cream/50 px-6 py-4">
+    <h4 class="m-0 text-lg font-bold text-hpd-primary-dark" data-cy="medCaseDeleteDialogHeading" jhiTranslate="entity.delete.title">
       Confirm delete operation
     </h4>
   </div>
@@ -10,7 +10,7 @@
     <hpd-alert-error />
     <p
       id="hpd-delete-medCase-heading"
-      class="m-0 text-sm text-slate-600"
+      class="m-0 text-sm text-hpd-muted"
       jhiTranslate="professionalDashboardApp.hcPatientServiceMedCase.delete.question"
       [translateValues]="{ id: medCase.id }"
     >
@@ -18,9 +18,9 @@
     </p>
   </div>
 
-  <div class="flex justify-end gap-2 border-t border-slate-100 px-6 py-4">
+  <div class="flex justify-end gap-2 border-t border-hpd-border px-6 py-4">
     <button
-      class="hpd-focusable flex items-center gap-1 rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200"
+      class="hpd-focusable flex items-center gap-1 rounded-full bg-hpd-cream px-4 py-2 text-sm font-medium text-hpd-primary-dark hover:bg-hpd-cream"
       type="button"
       (click)="cancel()"
     >
@@ -30,7 +30,7 @@
 
     <button
       id="hpd-confirm-delete-medCase"
-      class="hpd-focusable flex items-center gap-1 rounded-full bg-rose-600 px-4 py-2 text-sm font-medium text-white hover:bg-rose-700"
+      class="hpd-focusable flex items-center gap-1 rounded-full bg-hpd-danger px-4 py-2 text-sm font-medium text-white hover:brightness-95"
       data-cy="entityConfirmDeleteButton"
       type="submit"
     >

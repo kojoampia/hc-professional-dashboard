@@ -1,19 +1,19 @@
 <div>
   <div class="flex items-center justify-between">
-    <span id="metrics-page-heading" class="text-xl font-bold text-slate-900" jhiTranslate="metrics.title" data-cy="metricsPageHeading"
+    <span
+      id="metrics-page-heading"
+      class="text-xl font-bold text-hpd-primary-dark"
+      jhiTranslate="metrics.title"
+      data-cy="metricsPageHeading"
       >Application Metrics</span
     >
 
-    <button
-      class="hpd-focusable inline-flex items-center gap-1 rounded-full bg-hpd-primary px-4 py-2 text-sm font-medium text-white hover:brightness-110"
-      type="button"
-      (click)="refresh()"
-    >
+    <button class="hpd-focusable inline-flex items-center gap-1 hpd-btn hpd-btn-primary" type="button" (click)="refresh()">
       <mat-icon aria-hidden="true" class="!text-lg">sync</mat-icon> <span jhiTranslate="metrics.refresh.button">Refresh</span>
     </button>
   </div>
 
-  <h3 class="mt-6 text-lg font-bold text-slate-900" jhiTranslate="metrics.jvm.title">JVM Metrics</h3>
+  <h3 class="mt-6 text-lg font-bold text-hpd-primary-dark" jhiTranslate="metrics.jvm.title">JVM Metrics</h3>
 
   @if (metrics && !updatingMetrics) {
     <div class="mt-4 grid gap-6 md:grid-cols-3">
@@ -35,7 +35,7 @@
   }
 
   @if (updatingMetrics) {
-    <div class="mt-6 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600" jhiTranslate="metrics.updating">
+    <div class="mt-6 rounded-hpd-sm border border-hpd-border bg-hpd-cream px-4 py-3 text-sm text-hpd-muted" jhiTranslate="metrics.updating">
       Updating...
     </div>
   }
