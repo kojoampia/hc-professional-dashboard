@@ -20,7 +20,10 @@
       "pharmacist": "Apotheker",
       "therapist": "Therapeut",
       "carer": "Betreuungskraft",
-      "user": "Benutzer"
+      "user": "Benutzer",
+      "angel": "Betreuungsengel",
+      "chemist": "Apotheker",
+      "technician": "Techniker"
     },
     "stats": {
       "patients": "Patienten",
