@@ -10,6 +10,9 @@ const ROLE_AUTHORITIES: Readonly<Record<AuthorityRole, string>> = {
   [AuthorityRole.PHARMACIST]: 'ROLE_PHARMACIST',
   [AuthorityRole.THERAPIST]: 'ROLE_THERAPIST',
   [AuthorityRole.CARER]: 'ROLE_CARER',
+  [AuthorityRole.ANGEL]: 'ROLE_ANGEL',
+  [AuthorityRole.CHEMIST]: 'ROLE_CHEMIST',
+  [AuthorityRole.TECHNICIAN]: 'ROLE_TECHNICIAN',
   [AuthorityRole.USER]: 'ROLE_USER',
 };
 
@@ -21,9 +24,14 @@ const ROLE_PRECEDENCE: readonly AuthorityRole[] = [
   AuthorityRole.PHARMACIST,
   AuthorityRole.THERAPIST,
   AuthorityRole.CARER,
+  AuthorityRole.CHEMIST,
+  AuthorityRole.TECHNICIAN,
+  AuthorityRole.ANGEL,
   AuthorityRole.USER,
 ];
 
+// Carer, Angel, Chemist, and Technician are read-only in v1 — keep this
+// aligned with the api's AuthoritiesConstants.CLINICAL_MUTATION matrix.
 const CLINICAL_MUTATION_ROLES = new Set<AuthorityRole>([
   AuthorityRole.NURSE,
   AuthorityRole.PARAMEDIC,
