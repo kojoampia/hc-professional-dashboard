@@ -5,7 +5,7 @@
   "clientRootFolder": "professionalService",
   "databaseType": "mongodb",
   "dto": "no",
-  "entityTableName": "jhi_document",
+  "entityTableName": "personal_document",
   "fields": [
     {
       "fieldName": "name",
@@ -42,8 +42,8 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "hcProfessionalService",
-  "name": "Document",
+  "microserviceName": "professionalService",
+  "name": "PersonalDocument",
   "pagination": "no",
   "readOnly": false,
   "relationships": [],

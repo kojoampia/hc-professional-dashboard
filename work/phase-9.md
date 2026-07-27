@@ -73,7 +73,7 @@ Found via a repo-wide regex sweep for Bootstrap component-class tokens (`btn-out
 ## What was deliberately not touched
 
 - `@ngu/carousel` and `@swimlane/ngx-charts` — unrelated third-party packages, not in scope for a Bootstrap/FontAwesome removal pass even though a quick check suggests `@ngu/carousel` may itself be unused (zero `carousel` usages found in `app/`). Flagging for a future dependency-audit pass, not fixing here.
-- The pre-existing, unrelated `.jhipster/Document.json` → `IDocument.json` rename and the `browser-sync`/`browser-sync-webpack-plugin` peer-dependency conflict (both predate this phase) — left as-is; the latter is why `npm install` needed `--legacy-peer-deps`.
+- The pre-existing, unrelated `.jhipster/Document.json` → `PersonalDocument.json` rename and the `browser-sync`/`browser-sync-webpack-plugin` peer-dependency conflict (both predate this phase) — left as-is; the latter is why `npm install` needed `--legacy-peer-deps`.
 - `.text-small` in `footer.component.html` and the duplicate `a:hover` rule in `global.scss` — harmless, pre-existing dead/redundant CSS unrelated to Bootstrap, out of scope.
 
 ## Verification
