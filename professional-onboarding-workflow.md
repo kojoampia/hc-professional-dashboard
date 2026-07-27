@@ -157,6 +157,25 @@ One branch per work package in each repo it touches, named `onboarding/wp<N>-<sl
 
 Merge discipline: a WP merges to its repo's base branch only when its gate (§ Implementation work packages) is green; cross-repo WPs (1, 3, 5, 6, 7) merge together or not at all.
 
+### WP status log
+
+**WP2 — done (2026-07-28), pending merge review** (`api` branch `onboarding/wp2-data-contracts`, based on WP1).
+
+- `Profile` extended: `title`, embedded `EmergencyContact {name, relationship, phone}`, `specialtyCategoryId`, `teamIds`; unique **sparse** index on `account_id` (created at startup by a new `ApplicationRunner` in `DatabaseConfiguration` — auto-index-creation is off).
+- `PersonalDocument` extended: `sha256Checksum`, `sizeBytes`, `otherLabel`, `expiryDate`, `verificationStatus (PENDING|VERIFIED|REJECTED)` + `verifiedBy/verifiedAt/rejectionReason` (new `VerificationStatus` enum).
+- `Team.members` normalized from a free string to a list of profile ids.
+- New collections: `ProfessionalApplication` (unique per account, `findByAccountId`) and append-only `OnboardingEvent` (`findByApplicationIdOrderByAtAsc`), with the new `OnboardingStatus` enum covering the § Status model states.
+- Gate: `OnboardingContractsIT` (REST round-trip of the Profile extensions, unique-index enforcement for Profile and application, document verification metadata, chronological event trail) + updated `TeamResourceIT`/`TeamTestSamples`. Full `./mvnw verify` green.
+- Notes: `.jhipster/*.json` intentionally not updated — JDL cannot express embedded objects or `List<String>`; the domain classes remain the contract source of truth (needles preserved). Spring Framework 7 test quirk found: `jsonPath().value(List)` maps arrays through Jackson 3 and yields null — use Hamcrest `contains`/`hasItem` for array assertions.
+
+**WP1 — done (2026-07-27), pending merge review.**
+
+- `gateway/`: `ROLE_THERAPIST` added; `InitialSetupMigration` now seeds all nine clinical authorities with demo professionals (pharmacist, therapist, chemist, technician added). 26/26 tests green.
+- `api/`: all nine clinical constants added (extending the owner's PATIENT/ANGEL work); route-level mutation matrix in `SecurityConfiguration` — GET `/api/**` for any authenticated role, POST/PUT/PATCH/DELETE restricted to `CLINICAL_MUTATION` (admin, doctor, nurse, paramedic, pharmacist, therapist; carer/angel/chemist/technician read-only in v1). New `ClinicalAuthorityMatrixIT` proves the split per role. Generated ITs now run as `ROLE_DOCTOR`.
+- `api/` test harness: **first green integration-test run on the Spring Boot 4 line — 178/178.** Five upgrade breakages fixed along the way (commons-io, stale `spring.jackson` keys, missing Jackson 2 mapper for generated ITs, `spring.mongodb.uri` rename, and the missing `spring-boot-security-test` module that made `@WithMockUser` a no-op → universal 401s).
+- `web/`: Angel/Chemist/Technician added to `Authority`, `AuthorityRole`, precedence, role badges (i18n en/fr/de), and the clinician route guard; mutation matrix unchanged (new roles read-only, matching the api). 324/324 tests green.
+- Gate: enforced server-side and covered by `ClinicalAuthorityMatrixIT` (api), seeder + constants (gateway), and role-resolution specs (web). A live token round-trip through all three services awaits the next dev-stack restart — worth a manual smoke before merging.
+
 ## Superseded questions (kept for the record)
 
 The former "Required decisions before implementation" list is fully resolved: enrollment mode, role set, document storage, and roster policy by owner decision (§ Decisions); contact representation, Category/Team/supervisor semantics, account/profile linkage, and the duty-roster API by the code-grounded contracts (§ Data contracts); document matrix, verification provider, MFA/SSO/consent, and Membership scope by the adopted defaults.
