@@ -28,3 +28,19 @@ describe('HealthConnect authority resolution', () => {
     expect(hasHealthConnectPermission(['ROLE_USER'], 'manageReport')).toBe(false);
   });
 });
+
+describe('WP1 role-set extension (Angel, Chemist, Technician)', () => {
+  it('resolves the three new backend roles and keeps them read-only in the mutation matrix', () => {
+    expect(resolveAuthorityRole(['ROLE_ANGEL']).primaryRole).toBe(AuthorityRole.ANGEL);
+    expect(resolveAuthorityRole(['ROLE_CHEMIST']).primaryRole).toBe(AuthorityRole.CHEMIST);
+    expect(resolveAuthorityRole(['ROLE_TECHNICIAN']).primaryRole).toBe(AuthorityRole.TECHNICIAN);
+    // clinical roles outrank the support roles when both are present
+    expect(resolveAuthorityRole(['ROLE_TECHNICIAN', 'ROLE_NURSE']).primaryRole).toBe(AuthorityRole.NURSE);
+    // read-only in v1 — aligned with api AuthoritiesConstants.CLINICAL_MUTATION
+    for (const authority of ['ROLE_ANGEL', 'ROLE_CHEMIST', 'ROLE_TECHNICIAN']) {
+      expect(hasHealthConnectPermission([authority], 'manageCase')).toBe(false);
+      expect(hasHealthConnectPermission([authority], 'managePatient')).toBe(false);
+    }
+    expect(hasHealthConnectPermission(['ROLE_NURSE'], 'manageCase')).toBe(true);
+  });
+});

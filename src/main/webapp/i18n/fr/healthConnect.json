@@ -20,7 +20,10 @@
       "pharmacist": "Pharmacien",
       "therapist": "Thérapeute",
       "carer": "Aidant",
-      "user": "Utilisateur"
+      "user": "Utilisateur",
+      "angel": "Ange gardien",
+      "chemist": "Chimiste",
+      "technician": "Technicien"
     },
     "stats": {
       "patients": "Patients",

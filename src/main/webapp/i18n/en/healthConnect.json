@@ -20,7 +20,10 @@
       "pharmacist": "Pharmacist",
       "therapist": "Therapist",
       "carer": "Carer",
-      "user": "User"
+      "user": "User",
+      "angel": "Angel",
+      "chemist": "Chemist",
+      "technician": "Technician"
     },
     "stats": {
       "patients": "Patients",
