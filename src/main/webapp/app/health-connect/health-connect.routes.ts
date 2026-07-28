@@ -34,6 +34,7 @@ const patientRecordPage = (): Promise<typeof import('./pages/patient-record-page
 const caseDetailPage = (): Promise<typeof import('./pages/case-detail-page.component')> => import('./pages/case-detail-page.component');
 const caseQueuePage = (): Promise<typeof import('./pages/case-queue-page.component')> => import('./pages/case-queue-page.component');
 const dutyRosterPage = (): Promise<typeof import('./pages/duty-roster-page.component')> => import('./pages/duty-roster-page.component');
+const onboardingPage = (): Promise<typeof import('./pages/onboarding-page.component')> => import('./pages/onboarding-page.component');
 const messagesPage = (): Promise<typeof import('./pages/messages-page.component')> => import('./pages/messages-page.component');
 const aboutPage = (): Promise<typeof import('./pages/about-page.component')> => import('./pages/about-page.component');
 
@@ -94,6 +95,14 @@ const routes: Routes = [
     ...protectedFeatureRoute,
     loadComponent: dutyRosterPage,
     data: { ...protectedFeatureRoute.data, titleKey: 'healthConnect.navigation.dutyRoster' },
+  },
+  {
+    // Applicants may hold only ROLE_USER, so this route requires authentication
+    // but no clinical role (unlike the other clinician surfaces).
+    path: 'onboarding',
+    canActivate: [UserRouteAccessService],
+    loadComponent: onboardingPage,
+    data: { titleKey: 'healthConnect.onboarding.title' },
   },
   {
     path: 'messages',
