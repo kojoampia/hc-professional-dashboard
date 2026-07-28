@@ -159,6 +159,14 @@ Merge discipline: a WP merges to its repo's base branch only when its gate (§ I
 
 ### WP status log
 
+**WP4 — done (2026-07-29), pending merge review** (`web` branch `onboarding/wp4-applicant-flow`, based on WP1; consumes the WP3 api surface).
+
+- Status-driven applicant wizard at `/onboarding` (authenticated-only route — no clinical role, since applicants hold `ROLE_USER`): consent + requested role (all nine) → profile → address & emergency contact → documents → review/submit → status timeline from the audit events. Corrections re-open editable steps with the reviewer's notes; the wizard locks during review.
+- Documents step computes the mandatory checklist (certificate / license-with-expiry / government ID / passport photo) from actual uploads and gates review on completeness; uploads go through the shared `file-upload-trigger` with the same limits the server enforces.
+- `OnboardingApiService` wraps the WP3 surface; sidebar Account entry, BridgeCare components, i18n en/fr/de, toasts.
+- **WP3 addenda this forced on `api/`** (committed on the wp3 branch): `PUT/GET /api/onboarding/profile` (applicants can't pass the WP1 mutation matrix to reach `/api/profiles`; upsert forces `accountId` to the caller and the GET enables prefill since upsert overwrites all fields) and `GET /api/onboarding/documents` (own uploads, bytes stripped). `OnboardingFlowIT` extended to 8/8.
+- Gate: service HTTP-contract spec + page spec covering the status→step mapping (7 statuses), consent guard, profile persistence + complete-profile transition, checklist computation, upload metadata, and submit flow. Web suite 347/347, lint + prod build green.
+
 **WP3 — done (2026-07-28), pending merge review** (`api` + `gateway` branches `onboarding/wp3-state-machine-events`, based on WP2 / WP1 respectively).
 
 - **State machine (`api/`):** `OnboardingService` enforces the § Status model transition map server-side; every transition appends an `OnboardingEvent`; illegal transitions → 409. Applicant endpoints under `/api/onboarding` (start with consent guard, complete-profile, submit gated on the mandatory document set) plus admin-only decide/organization/authority-assigned/roster-configured/activate/suspend/deactivate. Approval requires every uploaded document `VERIFIED`; rejection/correction requires a reviewer reason. `/api/onboarding/**` is open to authenticated users (applicants hold only ROLE_USER pre-assignment); decisions use method security.
