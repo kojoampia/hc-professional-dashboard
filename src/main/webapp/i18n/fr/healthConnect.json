@@ -10,7 +10,8 @@
       "session": "Session",
       "menu": "Menu",
       "messages": "Messages",
-      "about": "Pourquoi Abofonsa"
+      "about": "Pourquoi Abofonsa",
+      "onboarding": "Intégration"
     },
     "roles": {
       "admin": "Administrateur",
@@ -53,7 +54,8 @@
       "next": "Suivant",
       "confirm": "Confirmer",
       "newPatient": "Nouveau patient",
-      "markAllRead": "Tout marquer comme lu"
+      "markAllRead": "Tout marquer comme lu",
+      "back": "Retour"
     },
     "dashboard": {
       "demographics": "Démographie des patients",
@@ -167,6 +169,98 @@
       "reportUploaded": "Rapport téléversé",
       "rosterUpdated": "Planning de garde mis à jour",
       "markedRead": "Marqué comme lu"
+    },
+    "onboarding": {
+      "title": "Intégration professionnelle",
+      "nav": "Intégration",
+      "consentIntro": "Demandez un accès professionnel vérifié. Votre demande est examinée par l'équipe d'accréditation avant toute attribution d'autorité clinique.",
+      "consentText": "Je consens au traitement de mes informations d'identité, de qualification et d'enregistrement à des fins d'accréditation, et je confirme l'exactitude des informations fournies.",
+      "requestedRole": "Rôle clinique demandé",
+      "emergencyContact": "Contact d'urgence / proche",
+      "correctionRequired": "Votre demande a été renvoyée pour correction",
+      "reviewIntro": "Vérifiez vos informations, puis soumettez votre demande pour examen.",
+      "steps": {
+        "consent": "Consentement et rôle",
+        "profile": "Profil",
+        "contact": "Adresse et contact",
+        "documents": "Documents",
+        "review": "Vérifier et soumettre",
+        "status": "Statut"
+      },
+      "fields": {
+        "firstName": "Prénom",
+        "middleNames": "Deuxièmes prénoms",
+        "lastName": "Nom",
+        "birthDate": "Date de naissance",
+        "sex": "Sexe",
+        "title": "Titre / fonction",
+        "mobilePhone": "Téléphone mobile",
+        "email": "E-mail",
+        "cardType": "Type de pièce d'identité",
+        "cardNumber": "Numéro d'identité",
+        "digitalAddress": "Adresse numérique",
+        "streetAddress": "Adresse",
+        "town": "Ville (localité)",
+        "city": "Ville",
+        "district": "District",
+        "region": "Région",
+        "country": "Pays",
+        "contactName": "Nom du contact",
+        "contactRelationship": "Lien",
+        "contactPhone": "Téléphone du contact",
+        "documentType": "Type de document",
+        "otherLabel": "Libellé",
+        "expiryDate": "Date d'expiration"
+      },
+      "actions": {
+        "start": "Commencer la demande",
+        "saveContinue": "Enregistrer et continuer",
+        "review": "Vérifier et soumettre",
+        "submit": "Soumettre pour examen"
+      },
+      "statuses": {
+        "APPLICATION_STARTED": "Demande commencée",
+        "PROFILE_COMPLETED": "Profil complété",
+        "CREDENTIAL_REVIEW": "En cours de vérification",
+        "RETURNED_FOR_CORRECTION": "Renvoyée pour correction",
+        "REJECTED": "Rejetée",
+        "APPROVED": "Approuvée",
+        "ORGANIZATION_ASSIGNED": "Organisation attribuée",
+        "AUTHORITY_ASSIGNED": "Autorité attribuée",
+        "ROSTER_CONFIGURED": "Planning de garde configuré",
+        "ACTIVE": "Active",
+        "SUSPENDED": "Suspendue",
+        "EXPIRED": "Expirée",
+        "DEACTIVATED": "Désactivée"
+      },
+      "documentTypes": {
+        "CERTIFICATE": "Certificat professionnel",
+        "LICENSE": "Licence",
+        "PASSPORT": "Passeport",
+        "GHANACARD": "Carte Ghana",
+        "DRIVERLICENSE": "Permis de conduire",
+        "VOTERCARD": "Carte d'électeur",
+        "PASSPHOTO": "Photo d'identité",
+        "NHIS": "Carte NHIS",
+        "OTHER": "Autre"
+      },
+      "mandatory": {
+        "certificate": "Certificat professionnel téléversé",
+        "license": "Licence avec date d'expiration téléversée",
+        "identity": "Pièce d'identité officielle téléversée",
+        "photo": "Photo d'identité téléversée"
+      },
+      "verification": {
+        "PENDING": "En attente",
+        "VERIFIED": "Vérifié",
+        "REJECTED": "Rejeté"
+      },
+      "toast": {
+        "started": "Demande commencée",
+        "saved": "Progression enregistrée",
+        "documentUploaded": "Document téléversé",
+        "submitted": "Soumise pour examen"
+      }
     }
   }
 }
