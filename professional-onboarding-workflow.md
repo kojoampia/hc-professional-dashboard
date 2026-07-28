@@ -159,6 +159,14 @@ Merge discipline: a WP merges to its repo's base branch only when its gate (§ I
 
 ### WP status log
 
+**WP3 — done (2026-07-28), pending merge review** (`api` + `gateway` branches `onboarding/wp3-state-machine-events`, based on WP2 / WP1 respectively).
+
+- **State machine (`api/`):** `OnboardingService` enforces the § Status model transition map server-side; every transition appends an `OnboardingEvent`; illegal transitions → 409. Applicant endpoints under `/api/onboarding` (start with consent guard, complete-profile, submit gated on the mandatory document set) plus admin-only decide/organization/authority-assigned/roster-configured/activate/suspend/deactivate. Approval requires every uploaded document `VERIFIED`; rejection/correction requires a reviewer reason. `/api/onboarding/**` is open to authenticated users (applicants hold only ROLE_USER pre-assignment); decisions use method security.
+- **Documents (`api/`):** multipart upload with the § Documents validation (pdf/png/jpeg allowlist, 5 MB, magic-byte check, `OTHER` label rule, license-expiry rule), sha256/size/PENDING recorded, bytes never echoed; authorized streaming (owner or admin). `LICENSE` added to `DocumentType`.
+- **Domain events:** api `DomainEventPublisher` → `hc.professional.entity` wired into all ten generated create endpoints + onboarding creates; gateway `RegistrationEventPublisher` → `hc.professional.registration` fired from self-service registration and admin (invitation) user creation. Both keyed per contract; failures logged, never propagated. ArchUnit forced a clean shape: broker classes take primitives and the caller supplies the actor (no domain/security access from the broker layer).
+- **Gates:** `OnboardingFlowIT` (legal path end-to-end, illegal-transition 409s, all guards, audit trail) and `DomainEventsKafkaIT` (Testcontainers Kafka: documented envelope on the real topic, keyed by entityId, PII-free payload) — api full verify **190/190**. Gateway: `RegistrationEventPublisherTest` (envelope, origins, key, failure isolation) — 29/29.
+- Deviations recorded: no separate invitation endpoint (JHipster admin user creation _is_ the invitation flow — pre-activated user + emailed activation link, publishing `origin=invitation`); the scaffold Kafka `Supplier`/`Consumer` classes were left dormant rather than deleted (their function bindings were already commented out); `accountId` carries the gateway login until a uid claim is added to the JWT (noted in WP2 contracts as well).
+
 **WP2 — done (2026-07-28), pending merge review** (`api` branch `onboarding/wp2-data-contracts`, based on WP1).
 
 - `Profile` extended: `title`, embedded `EmergencyContact {name, relationship, phone}`, `specialtyCategoryId`, `teamIds`; unique **sparse** index on `account_id` (created at startup by a new `ApplicationRunner` in `DatabaseConfiguration` — auto-index-creation is off).
