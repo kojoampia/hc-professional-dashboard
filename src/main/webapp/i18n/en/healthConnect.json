@@ -10,7 +10,8 @@
       "session": "Session",
       "menu": "Menu",
       "messages": "Messages",
-      "about": "Why Abofonsa"
+      "about": "Why Abofonsa",
+      "onboarding": "Onboarding"
     },
     "roles": {
       "admin": "Admin",
@@ -53,7 +54,8 @@
       "next": "Next",
       "confirm": "Confirm",
       "newPatient": "New patient",
-      "markAllRead": "Mark all as read"
+      "markAllRead": "Mark all as read",
+      "back": "Back"
     },
     "dashboard": {
       "demographics": "Patient demographics",
@@ -167,6 +169,98 @@
       "reportUploaded": "Report uploaded",
       "rosterUpdated": "Duty roster updated",
       "markedRead": "Marked as read"
+    },
+    "onboarding": {
+      "title": "Professional onboarding",
+      "nav": "Onboarding",
+      "consentIntro": "Apply for verified professional access. Your application is reviewed by the credentialing team before any clinical authority is granted.",
+      "consentText": "I consent to the processing of my identity, qualification, and registration information for credentialing, and confirm the information I provide is accurate.",
+      "requestedRole": "Requested clinical role",
+      "emergencyContact": "Emergency contact / next of kin",
+      "correctionRequired": "Your application was returned for correction",
+      "reviewIntro": "Check your details, then submit your application for credential review.",
+      "steps": {
+        "consent": "Consent & role",
+        "profile": "Profile",
+        "contact": "Address & contact",
+        "documents": "Documents",
+        "review": "Review & submit",
+        "status": "Status"
+      },
+      "fields": {
+        "firstName": "First name",
+        "middleNames": "Middle names",
+        "lastName": "Last name",
+        "birthDate": "Date of birth",
+        "sex": "Sex",
+        "title": "Title / designation",
+        "mobilePhone": "Mobile phone",
+        "email": "Email",
+        "cardType": "Identity document type",
+        "cardNumber": "Identity number",
+        "digitalAddress": "Digital address",
+        "streetAddress": "Street address",
+        "town": "Town",
+        "city": "City",
+        "district": "District",
+        "region": "Region",
+        "country": "Country",
+        "contactName": "Contact name",
+        "contactRelationship": "Relationship",
+        "contactPhone": "Contact phone",
+        "documentType": "Document type",
+        "otherLabel": "Label",
+        "expiryDate": "Expiry date"
+      },
+      "actions": {
+        "start": "Start application",
+        "saveContinue": "Save & continue",
+        "review": "Review & submit",
+        "submit": "Submit for review"
+      },
+      "statuses": {
+        "APPLICATION_STARTED": "Application started",
+        "PROFILE_COMPLETED": "Profile completed",
+        "CREDENTIAL_REVIEW": "In credential review",
+        "RETURNED_FOR_CORRECTION": "Returned for correction",
+        "REJECTED": "Rejected",
+        "APPROVED": "Approved",
+        "ORGANIZATION_ASSIGNED": "Organization assigned",
+        "AUTHORITY_ASSIGNED": "Authority assigned",
+        "ROSTER_CONFIGURED": "Duty roster configured",
+        "ACTIVE": "Active",
+        "SUSPENDED": "Suspended",
+        "EXPIRED": "Expired",
+        "DEACTIVATED": "Deactivated"
+      },
+      "documentTypes": {
+        "CERTIFICATE": "Professional certificate",
+        "LICENSE": "License",
+        "PASSPORT": "Passport",
+        "GHANACARD": "Ghana Card",
+        "DRIVERLICENSE": "Driver's license",
+        "VOTERCARD": "Voter card",
+        "PASSPHOTO": "Passport photo",
+        "NHIS": "NHIS card",
+        "OTHER": "Other"
+      },
+      "mandatory": {
+        "certificate": "Professional certificate uploaded",
+        "license": "License with expiry date uploaded",
+        "identity": "Government identity document uploaded",
+        "photo": "Passport photo uploaded"
+      },
+      "verification": {
+        "PENDING": "Pending review",
+        "VERIFIED": "Verified",
+        "REJECTED": "Rejected"
+      },
+      "toast": {
+        "started": "Application started",
+        "saved": "Progress saved",
+        "documentUploaded": "Document uploaded",
+        "submitted": "Submitted for review"
+      }
     }
   }
 }

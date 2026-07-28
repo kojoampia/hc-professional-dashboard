@@ -10,7 +10,8 @@
       "session": "Sitzung",
       "menu": "Menü",
       "messages": "Nachrichten",
-      "about": "Warum Abofonsa"
+      "about": "Warum Abofonsa",
+      "onboarding": "Onboarding"
     },
     "roles": {
       "admin": "Administrator",
@@ -53,7 +54,8 @@
       "next": "Weiter",
       "confirm": "Bestätigen",
       "newPatient": "Neuer Patient",
-      "markAllRead": "Alle als gelesen markieren"
+      "markAllRead": "Alle als gelesen markieren",
+      "back": "Zurück"
     },
     "dashboard": {
       "demographics": "Patientendemografie",
@@ -167,6 +169,98 @@
       "reportUploaded": "Bericht hochgeladen",
       "rosterUpdated": "Dienstplan aktualisiert",
       "markedRead": "Als gelesen markiert"
+    },
+    "onboarding": {
+      "title": "Fachkräfte-Onboarding",
+      "nav": "Onboarding",
+      "consentIntro": "Beantragen Sie verifizierten Fachzugang. Ihr Antrag wird vor jeder Vergabe klinischer Berechtigungen vom Prüfungsteam geprüft.",
+      "consentText": "Ich willige in die Verarbeitung meiner Identitäts-, Qualifikations- und Registrierungsdaten zur Akkreditierung ein und bestätige die Richtigkeit meiner Angaben.",
+      "requestedRole": "Beantragte klinische Rolle",
+      "emergencyContact": "Notfallkontakt / Angehörige",
+      "correctionRequired": "Ihr Antrag wurde zur Korrektur zurückgegeben",
+      "reviewIntro": "Prüfen Sie Ihre Angaben und reichen Sie den Antrag zur Prüfung ein.",
+      "steps": {
+        "consent": "Einwilligung & Rolle",
+        "profile": "Profil",
+        "contact": "Adresse & Kontakt",
+        "documents": "Dokumente",
+        "review": "Prüfen & einreichen",
+        "status": "Status"
+      },
+      "fields": {
+        "firstName": "Vorname",
+        "middleNames": "Weitere Vornamen",
+        "lastName": "Nachname",
+        "birthDate": "Geburtsdatum",
+        "sex": "Geschlecht",
+        "title": "Titel / Bezeichnung",
+        "mobilePhone": "Mobiltelefon",
+        "email": "E-Mail",
+        "cardType": "Ausweisart",
+        "cardNumber": "Ausweisnummer",
+        "digitalAddress": "Digitale Adresse",
+        "streetAddress": "Straße",
+        "town": "Ort",
+        "city": "Stadt",
+        "district": "Bezirk",
+        "region": "Region",
+        "country": "Land",
+        "contactName": "Kontaktname",
+        "contactRelationship": "Beziehung",
+        "contactPhone": "Kontakttelefon",
+        "documentType": "Dokumenttyp",
+        "otherLabel": "Bezeichnung",
+        "expiryDate": "Ablaufdatum"
+      },
+      "actions": {
+        "start": "Antrag starten",
+        "saveContinue": "Speichern & weiter",
+        "review": "Prüfen & einreichen",
+        "submit": "Zur Prüfung einreichen"
+      },
+      "statuses": {
+        "APPLICATION_STARTED": "Antrag gestartet",
+        "PROFILE_COMPLETED": "Profil vollständig",
+        "CREDENTIAL_REVIEW": "In Prüfung",
+        "RETURNED_FOR_CORRECTION": "Zur Korrektur zurückgegeben",
+        "REJECTED": "Abgelehnt",
+        "APPROVED": "Genehmigt",
+        "ORGANIZATION_ASSIGNED": "Organisation zugewiesen",
+        "AUTHORITY_ASSIGNED": "Berechtigung zugewiesen",
+        "ROSTER_CONFIGURED": "Dienstplan eingerichtet",
+        "ACTIVE": "Aktiv",
+        "SUSPENDED": "Gesperrt",
+        "EXPIRED": "Abgelaufen",
+        "DEACTIVATED": "Deaktiviert"
+      },
+      "documentTypes": {
+        "CERTIFICATE": "Berufszertifikat",
+        "LICENSE": "Lizenz",
+        "PASSPORT": "Reisepass",
+        "GHANACARD": "Ghana Card",
+        "DRIVERLICENSE": "Führerschein",
+        "VOTERCARD": "Wählerausweis",
+        "PASSPHOTO": "Passfoto",
+        "NHIS": "NHIS-Karte",
+        "OTHER": "Sonstiges"
+      },
+      "mandatory": {
+        "certificate": "Berufszertifikat hochgeladen",
+        "license": "Lizenz mit Ablaufdatum hochgeladen",
+        "identity": "Amtlicher Ausweis hochgeladen",
+        "photo": "Passfoto hochgeladen"
+      },
+      "verification": {
+        "PENDING": "Ausstehend",
+        "VERIFIED": "Verifiziert",
+        "REJECTED": "Abgelehnt"
+      },
+      "toast": {
+        "started": "Antrag gestartet",
+        "saved": "Fortschritt gespeichert",
+        "documentUploaded": "Dokument hochgeladen",
+        "submitted": "Zur Prüfung eingereicht"
+      }
     }
   }
 }
