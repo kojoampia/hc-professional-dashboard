@@ -38,6 +38,7 @@ const onboardingPage = (): Promise<typeof import('./pages/onboarding-page.compon
 const reviewQueuePage = (): Promise<typeof import('./pages/review-queue-page.component')> => import('./pages/review-queue-page.component');
 const reviewDetailPage = (): Promise<typeof import('./pages/review-detail-page.component')> =>
   import('./pages/review-detail-page.component');
+const compliancePage = (): Promise<typeof import('./pages/compliance-page.component')> => import('./pages/compliance-page.component');
 const messagesPage = (): Promise<typeof import('./pages/messages-page.component')> => import('./pages/messages-page.component');
 const aboutPage = (): Promise<typeof import('./pages/about-page.component')> => import('./pages/about-page.component');
 
@@ -110,6 +111,12 @@ const routes: Routes = [
     data: { authorities: [Authority.ADMIN], titleKey: 'healthConnect.review.detail' },
     canActivate: [UserRouteAccessService],
     loadComponent: reviewDetailPage,
+  },
+  {
+    path: 'compliance',
+    data: { authorities: [Authority.ADMIN], titleKey: 'healthConnect.compliance.title' },
+    canActivate: [UserRouteAccessService],
+    loadComponent: compliancePage,
   },
   {
     // Applicants may hold only ROLE_USER, so this route requires authentication

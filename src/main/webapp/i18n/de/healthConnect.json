@@ -197,7 +197,8 @@
       "reportUploaded": "Bericht hochgeladen",
       "rosterUpdated": "Dienstplan aktualisiert",
       "markedRead": "Als gelesen markiert",
-      "acknowledged": "Bestätigung gespeichert"
+      "acknowledged": "Bestätigung gespeichert",
+      "sweepDone": "Prüfung abgeschlossen: {{suspended}} Bewerbung(en) eingeschränkt"
     },
     "onboarding": {
       "title": "Fachkräfte-Onboarding",
@@ -338,6 +339,18 @@
       "dataProtection": "Ich behandle Patientendaten vertraulich und gemäß Datenschutzrecht.",
       "rosterDiscipline": "Ich halte mich an meinen Dienstplan und melde Konflikte meiner Koordination.",
       "acknowledge": "Ich bestätige"
+    },
+    "compliance": {
+      "title": "Compliance & Betrieb",
+      "byStatus": "Bewerbungen nach Status",
+      "bySource": "Bewerbungen nach Quelle",
+      "expiring": "Lizenzen abgelaufen oder laufen in 30 Tagen ab ({{count}})",
+      "runSweep": "Ablaufprüfung starten",
+      "expires": "läuft ab am",
+      "lapsed": "Abgelaufen",
+      "expiringSoon": "Läuft bald ab",
+      "noneExpiring": "Keine Lizenzen laufen in den nächsten 30 Tagen ab.",
+      "auditFeed": "Letzte Onboarding-Audit-Ereignisse"
     }
   }
 }

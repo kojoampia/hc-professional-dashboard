@@ -197,7 +197,8 @@
       "reportUploaded": "Informe subido",
       "rosterUpdated": "Cuadro de turnos actualizado",
       "markedRead": "Marcado como leído",
-      "acknowledged": "Confirmación registrada"
+      "acknowledged": "Confirmación registrada",
+      "sweepDone": "Barrido completado: {{suspended}} solicitud(es) restringida(s)"
     },
     "onboarding": {
       "title": "Incorporación profesional",
@@ -338,6 +339,18 @@
       "dataProtection": "Trataré los datos de los pacientes de forma confidencial y conforme a la ley de protección de datos.",
       "rosterDiscipline": "Cumpliré mi turno asignado y comunicaré conflictos a mi coordinación.",
       "acknowledge": "Lo confirmo"
+    },
+    "compliance": {
+      "title": "Cumplimiento y operaciones",
+      "byStatus": "Solicitudes por estado",
+      "bySource": "Solicitudes por origen",
+      "expiring": "Licencias vencidas o por vencer en 30 días ({{count}})",
+      "runSweep": "Ejecutar barrido de vencimientos",
+      "expires": "vence el",
+      "lapsed": "Vencida",
+      "expiringSoon": "Vence pronto",
+      "noneExpiring": "Ninguna licencia vence en los próximos 30 días.",
+      "auditFeed": "Últimos eventos de auditoría de incorporación"
     }
   }
 }

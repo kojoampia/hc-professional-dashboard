@@ -197,7 +197,8 @@
       "reportUploaded": "Report uploaded",
       "rosterUpdated": "Duty roster updated",
       "markedRead": "Marked as read",
-      "acknowledged": "Acknowledgement recorded"
+      "acknowledged": "Acknowledgement recorded",
+      "sweepDone": "Sweep finished: {{suspended}} application(s) restricted"
     },
     "onboarding": {
       "title": "Professional onboarding",
@@ -338,6 +339,18 @@
       "dataProtection": "I will handle patient data confidentially and in line with data-protection law.",
       "rosterDiscipline": "I will follow my assigned duty roster and report conflicts to my coordinator.",
       "acknowledge": "I acknowledge"
+    },
+    "compliance": {
+      "title": "Compliance & operations",
+      "byStatus": "Applications by status",
+      "bySource": "Applications by source",
+      "expiring": "Licenses lapsed or expiring within 30 days ({{count}})",
+      "runSweep": "Run expiry sweep",
+      "expires": "expires",
+      "lapsed": "Lapsed",
+      "expiringSoon": "Expiring soon",
+      "noneExpiring": "No licenses lapsing in the next 30 days.",
+      "auditFeed": "Recent onboarding audit events"
     }
   }
 }
