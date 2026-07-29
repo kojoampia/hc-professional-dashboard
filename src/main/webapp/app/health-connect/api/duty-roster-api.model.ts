@@ -1,6 +1,6 @@
 /**
- * Duty Roster REST contracts — see application-migration.md Phase 1 /
- * work/phase-1.md. Backed by new `professionalService` roster/shift
+ * Duty Roster REST contracts — see professional-web.md §5
+ * (REST contracts). Backed by new `professionalService` roster/shift
  * entities that do not exist yet (the closest existing concept, `team`, has
  * no shift/subscription model).
  */

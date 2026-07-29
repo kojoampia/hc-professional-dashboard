@@ -1,2 +1,0 @@
-# the real env file holds the JWT signing key — never commit it
-.env

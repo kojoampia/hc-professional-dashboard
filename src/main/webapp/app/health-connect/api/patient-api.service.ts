@@ -22,14 +22,14 @@ export interface PatientQuery {
 
 /**
  * Thin HttpClient wrapper for the Patient Directory / Record endpoints
- * specced in application-migration.md Phase 1. Paginated the same way the
+ * specced in professional-web.md §5. Paginated the same way the
  * rest of this codebase's generated entity services are (req params via
  * createRequestOption, total count read off the X-Total-Count response
  * header) rather than a Spring Data Page envelope, for consistency with
  * med-case.service.ts and friends.
  *
  * Not wired into the app yet — see ../http-health-connect.repository.ts and
- * work/phase-1.md: no backend `Patient` resource exists in any microservice
+ * professional-web.md §5: no backend `Patient` resource exists in any microservice
  * as of this migration.
  */
 @Injectable({ providedIn: 'root' })

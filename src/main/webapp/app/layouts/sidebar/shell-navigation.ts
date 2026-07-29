@@ -3,7 +3,7 @@
  *
  * Single source of truth for what appears in the sidebar groups, which item is
  * shown on the mobile tabbar, and how the topbar derives its crumb/title —
- * see web-layout-plan.md Phase 2 and Appendix B (route parity checklist).
+ * see professional-web.md (this nav model is the single source of truth for the shell).
  */
 
 export interface ShellNavItem {

@@ -7,8 +7,8 @@ import { CaseDistributionSegmentDto, CaseTimelinePointDto, DashboardSummaryDto, 
 
 /**
  * Thin HttpClient wrapper for the dashboard endpoints specced in
- * application-migration.md Phase 1. Not wired into the app yet — see
- * ../http-health-connect.repository.ts and work/phase-1.md.
+ * professional-web.md §5. Not wired into the app yet — see
+ * ../http-health-connect.repository.ts.
  */
 @Injectable({ providedIn: 'root' })
 export class DashboardApiService {

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-/** Static "Why Abofonsa BridgeCare — Professional" page (web-layout-plan.md Phase 6d). */
+/** Static "Why Abofonsa BridgeCare — Professional" page (professional-web.md). */
 @Component({
   standalone: true,
   selector: 'hpd-about-page',

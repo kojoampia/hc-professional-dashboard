@@ -29,7 +29,7 @@ import { HealthConnectRepository, PatientDirectoryFilters } from './health-conne
 
 /**
  * Real HttpClient-backed implementation of HealthConnectRepository, built
- * against the REST contracts specced in application-migration.md Phase 1
+ * against the REST contracts specced in professional-web.md §5
  * (dashboard/patients/med-cases/duty-rosters). None of those endpoints exist
  * in a running backend yet, so this class is written and unit-tested against
  * HttpTestingController (see http-health-connect.repository.spec.ts) but is

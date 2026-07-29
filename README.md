@@ -1,178 +1,153 @@
 # hc-professional-dashboard
 
-A JHipster 8.1.0–generated **Angular frontend gateway** for the Health Connect
-microservice architecture. It provides the professional dashboard UI — entity
-CRUD screens, an analytics dashboard with charting widgets, account/auth/admin
-flows, and i18n — and proxies API calls to backend microservices that live in
-**separate repositories**.
+The **Angular frontend** for the Health Connect / Abofonsa BridgeCare professional portal: the
+clinician workspace (dashboard, patients, case queue, duty roster, messages), the applicant
+onboarding wizard, the admin review/compliance surfaces, and the JHipster account/admin flows. API
+calls go to backend services that live in **separate repositories** (`../gateway`, `../api`).
 
-> **This repository is frontend-only.** It was generated with JHipster
-> `"skipServer": true` (see `.yo-rc.json`): there is no Java/Spring Boot source,
-> no `src/main/java`, and no `src/main/resources` here. The `pom.xml` is retained
-> from the generator and is used by the `frontend-maven-plugin` to build the
-> Angular app; it does **not** build a runnable Spring Boot service. The backend
-> microservices (e.g. `hcprofessionalservice`) are developed and deployed
-> independently.
+> **This repository is frontend-only.** It was generated with JHipster `"skipServer": true` (see
+> `.yo-rc.json`): there is no Java/Spring Boot source, no `src/main/java`, and no
+> `src/main/resources`. The `pom.xml` is retained from the generator so `frontend-maven-plugin` can
+> build the Angular app; it does **not** build a runnable Spring Boot service.
 
-Documentation for the generator itself is at the
-[JHipster 8.1.0 archive](https://www.jhipster.tech/documentation-archive/v8.1.0).
+Deeper documentation, by audience:
+
+| File                     | For                                                                               |
+| ------------------------ | --------------------------------------------------------------------------------- |
+| `AGENTS.md`, `CLAUDE.md` | Working in this repo — conventions, route authority tiers, design-token rules     |
+| `professional-web.md`    | The consolidated planning record: binding decisions, build traps, unfinished work |
+| `../deploy/README.md`    | Deploying the whole three-repo stack                                              |
+| `../CLAUDE.md`           | The workspace as a whole and how the three repos fit together                     |
 
 ## Technology stack
 
-| Area                  | Technology                                                                                    |
-| --------------------- | --------------------------------------------------------------------------------------------- |
-| Framework             | Angular 17 (standalone components)                                                            |
-| Language              | TypeScript 5.2 (`target: es2022`)                                                             |
-| State / data          | RxJS 7.8, Angular `HttpClient`                                                                |
-| UI widgets            | ng-bootstrap 16, Font Awesome, custom chart widgets                                           |
-| i18n                  | `ngx-translate` — English, French, German (`src/main/webapp/i18n/{en,fr,de}`)                 |
-| Build                 | Angular CLI + custom-webpack (`@angular-builders/custom-webpack`), Webpack proxy              |
-| Unit tests            | Jest 29 + `jest-preset-angular`                                                               |
-| E2E tests             | Cypress                                                                                       |
-| Database (configured) | MongoDB (dev and prod, per `.yo-rc.json`) — owned by the backend microservices, not this repo |
-| Infra (dev deps)      | Docker Compose: MongoDB, JHipster Registry, Kafka — see `src/main/docker/`                    |
-| Package manager       | npm (`./npmw` wrapper available for a Node-less environment)                                  |
+| Area            | Technology                                                                                    |
+| --------------- | --------------------------------------------------------------------------------------------- |
+| Generator       | JHipster 9.1.0 (`.yo-rc.json`)                                                                |
+| Framework       | Angular 19.2 (standalone components, signals, native control flow)                            |
+| Language        | TypeScript 5.5 (`target: es2022`)                                                             |
+| Design system   | Angular Material (M3, BridgeCare navy/gold/cream theme) + **Tailwind v4** utilities           |
+| Icons           | Material Icons (**Bootstrap, ng-bootstrap and Font Awesome were fully removed**)              |
+| Charts          | Chart.js via `ng2-charts`                                                                     |
+| State / data    | Angular signals, RxJS 7.8, `HttpClient`                                                       |
+| i18n            | `ngx-translate` — English, **Spanish**, French, German (`src/main/webapp/i18n/{en,es,fr,de}`) |
+| Build           | Angular CLI + `@angular-builders/custom-webpack`, webpack dev proxy                           |
+| Unit tests      | Jest 29 via `@angular-builders/jest` (`jest.conf.js`)                                         |
+| E2E tests       | **None working** — see Testing below                                                          |
+| Package manager | npm (`./npmw` wrapper available for a Node-less environment)                                  |
+
+Note `.yo-rc.json` still lists `languages: ["en","fr","de"]` even though Spanish is complete in code
+and `i18n/`; a regeneration would not know about `es`. `package.json` also carries a stale
+`"resolutions"` block pinning Angular 17 — inert under npm, but do not convert it to npm `overrides`.
 
 ## Project structure
 
 ```
 src/main/webapp/app/
-├── core/        # auth, HTTP interceptors, app config, request/util helpers (singletons)
-├── shared/      # reusable UI helpers, pipes, sort/pagination/filter/date/language/alert
-├── entities/    # entity modules split by microservice namespace
-│   ├── professionalService/   # Address, Team, Task, Membership, Report, Metadata,
-│   │   #                 # Profile, HCCredential, HCPayOption, Stat, Medication, Document
-│   └── patientMS/        # parallel set (+ Condition) — present but not routed (see below)
-├── dashboard/   # analytics dashboard: metric-panel, status-panel, DashboardService
-├── widgets/     # chart/UI widgets: histogram, piechart, treemap, heatmap, linechart,
-│                # chatbot, file-viewer, faq, badgebox, info-box, slides, pnv, filter, page-display
-├── layouts/     # navbar, footer, error, profiles shell
-├── admin/       # JHipster admin screens (users, health, metrics, config, logs, …)
-├── account/     # register, activate, password, settings, password-reset
+├── health-connect/   # THE MAIN FEATURE AREA — clinician + onboarding + admin-review pages,
+│                     # charts, API adapters, role guard, repository abstraction
+├── core/             # auth, HTTP interceptors, app config, careers handoff, request/util helpers
+├── shared/           # reusable primitives: data-table, dialog, form-controls, stat-card,
+│                     # async-state, alert/toast, pipes, sort/pagination/filter/date/language
+├── layouts/          # BridgeCare shell: sidebar/ (navy nav), main/ (cream topbar), tabbar/
+│                     # (mobile), footer, error, profiles. There is no navbar.
+├── entities/         # generated CRUD, namespaced by backend service (see below)
+├── admin/            # health, metrics
+├── account/          # register, activate, password, password-reset, settings
 ├── home/  login/  config/
 └── app.routes.ts
 ```
 
-### Entity microservice namespaces
+Routing is standalone and lazy per area. `health-connect/` uses three distinct authority tiers
+(clinician / admin-only / authenticated-but-no-clinical-role for onboarding) — see `AGENTS.md`
+before adding a route.
 
-Entities are grouped under two namespaces that mirror the backend microservices:
+### Entity namespaces — read this before trusting the folder names
 
-- **`professionalService`** — the entities this dashboard primarily manages. Their routes
-  are registered in `src/main/webapp/app/entities/entity.routes.ts` (lazy-loaded).
-  This is the active entity surface.
-- **`patientMS`** — a parallel set of the same domain entities plus `Condition`. The
-  code is present under `entities/patientMS/` but its routes are **not** wired into
-  `entity.routes.ts`; it targets the separate patient microservice.
+- **`entities/patientService/med-case`** is the only generated CRUD entity in the app, and the only
+  one registered in `entities/entity.routes.ts`.
+- **`entities/professionalService/` is an empty directory.** Its 13 generated entity modules were
+  deleted before the BridgeCare migration. Nothing there to route.
+- **`.jhipster/` holds ~20 entity definitions, most with no generated code.** They are planned
+  entities and generator metadata, not dead references — but do not read them as an inventory of
+  what the app implements.
 
-When adding entities, preserve the `/* jhipster-needle-add-entity-route */` marker —
-that is where the JHipster generator inserts new routes.
-
-### Fonts
-
-The application uses a single uniform font family, **Inter**, across the entire
-UI — the same face the health-connect stat cards render in (they don't set an
-explicit font, so they inherit it). It's loaded via a Google Fonts `<link>` in
-`src/main/webapp/index.html`, applied globally on `body` in
-`src/main/webapp/content/scss/global.scss`, and mirrored as Tailwind's
-`--font-sans` token in `src/main/webapp/content/css/tailwind.css` (so the
-`font-sans` utility class matches it too). Angular Material's M3 theme
-(`src/main/webapp/content/scss/material-theme.scss`) already asked for Inter;
-loading the actual font file is what makes that render correctly instead of
-silently falling back to the browser default. Don't add a second font — use
-Tailwind's `font-*` weight utilities for emphasis instead.
+When adding entities, preserve the `/* jhipster-needle-add-entity-route */` marker — that is where
+the generator inserts new routes.
 
 ### API URLs and the dev proxy
 
 - Build every API URL through `ApplicationConfigService.getEndpointFor(api, microservice?)`
-  (`app/core/config/application-config.service.ts`) — do not hardcode service paths.
-  - `getEndpointFor('api/addresses')` → `/api/addresses` (gateway/monolith route)
-  - `getEndpointFor('api/profiles', 'hcprofessionalservice')` → `/services/hcprofessionalservice/api/profiles`
+  (`app/core/config/application-config.service.ts`) — never hardcode service paths.
+  - `getEndpointFor('api/addresses')` → `/api/addresses` (routed by the gateway directly)
+  - `getEndpointFor('api/onboarding', 'professionalService')` →
+    `/services/professionalService/api/onboarding`
+  - The two service names actually in use are **`professionalService`** and **`patientService`**.
 - In development, `webpack/proxy.conf.js` forwards `/api`, `/services`, `/management`,
-  `/v3/api-docs`, `/auth`, `/health`, `/h2-console` to `http://localhost:5505`.
-  Make sure a backend microservice is reachable there before debugging API issues.
+  `/v3/api-docs`, `/auth`, `/health` and `/h2-console` to `http://localhost:5505`. Make sure the
+  gateway is reachable there before debugging API issues. (`/h2-console` is a vestigial
+  generator default — the stack is MongoDB-only.)
+- In **production** there is no proxy: `npm run webapp:prod` bakes `SERVER_API_URL='/'`, so every
+  call is same-origin and `nginx.conf` proxies it to the gateway container. Changing the proxied
+  path set means editing **both** `webpack/proxy.conf.js` and `nginx.conf`.
 
 ## Development
 
 Requirements: [Node.js](https://nodejs.org/).
 
-Install dependencies (run when `package.json` changes):
-
 ```bash
-npm install
+npm install     # when package.json changes
+npm start       # dev server with HMR on http://localhost:4200
 ```
 
-Run the dev server (HMR, served on http://localhost:4200):
+API calls are proxied to the gateway at `localhost:5505`, which reaches `professionalService`
+through Consul — so a useful session needs the backend stack up. See `../CLAUDE.md`.
 
-```bash
-npm start
-```
-
-API calls are proxied to the backend at `localhost:5505` (see above).
+> **Before changing anything under `webpack/`:** `webpack/webpack.custom.js` hand-injects the
+> Tailwind v4 postcss plugin, because Angular 19 cannot run Tailwind v4 through its built-in
+> support. Remove that hook and **every Tailwind utility class in the app silently stops applying**
+> — no build error, no warning. Verify styling changes against a computed style in a real browser,
+> not a successful build. Full explanation in `professional-web.md` §4.
 
 ## Build
 
-Production web build (concatenates/minifies, rewrites `index.html` references):
-
 ```bash
-npm run webapp:prod
+npm run webapp:prod                                  # production web build
+./mvnw -Pprod clean verify                           # same build, driven through frontend-maven-plugin
+docker build -f Dockerfile.prod -t hc-professional-dashboard:latest .   # production image (nginx)
 ```
 
-Build via Maven (drives the Angular build through `frontend-maven-plugin`):
+`Dockerfile.prod` builds the bundle on `node:22-bookworm` (**not** alpine — npm dies there with
+"Exit handler never called!") and serves it from nginx with `nginx.conf`. The
+`docker-compose.yml` / `docker-compose-prod.yml` pair at the repo root builds dev/prod images for
+this app alone; the **full-stack** deployment is `../deploy/`.
 
-```bash
-./mvnw -Pprod clean verify
-```
-
-To package a Docker image and run the full app container:
-
-```bash
-docker compose build            # dev image (docker-compose.yml)
-docker compose -f docker-compose-prod.yml build   # prod image
-docker compose -f src/main/docker/app.yml up -d
-```
-
-The production app is served by Nginx (`nginx.conf`, `ngsw-config.json`). PWA/service
-worker is disabled by default — to enable, set `enabled: true` in the
-`ServiceWorkerModule.register(...)` call in `src/main/webapp/app/app.config.ts`.
+PWA/service worker is registered but disabled — set `enabled: true` in the
+`ServiceWorkerModule.register(...)` call in `app/app.config.ts` (config in `ngsw-config.json`).
 
 ## Testing
 
-### Unit tests (Jest)
-
-Specs live alongside components as `*.spec.ts` under `src/main/webapp/app/`:
-
 ```bash
-npm test                 # ng test --coverage
-npm run test:watch       # watch mode
+npm test                                       # full Jest suite with coverage
+npm run test:watch                             # watch mode
+npx ng test --test-path-pattern="<regex>"      # a single spec or a subset
 ```
 
-Run a single spec:
+`--test-path-pattern` is the **only** form that works for a subset. Two commands earlier versions of
+this README recommended do not work:
 
-```bash
-npx jest --config jest.conf.js path/to/file.spec.ts
-# or
-npx ng test --include="**/address.service.spec.ts"
-```
+- `npx jest --config jest.conf.js <path>` fails every file with
+  `Cannot use import statement outside a module` — it bypasses the `@angular-builders/jest` layering
+  that applies `jest-preset-angular`'s transform. The error is an artefact of the invocation, not a
+  repo problem.
+- `npx ng test --include=<glob>` — `--include` is not a valid flag for this builder.
 
-### End-to-end tests (Cypress)
-
-E2E specs are in `src/test/javascript/cypress/e2e/entity/*.cy.ts` (one per entity).
-They expect a reachable backend/auth endpoint.
-
-```bash
-npm run e2e              # headless
-npm run e2e:cypress      # Cypress runner
-```
-
-Run a single spec:
-
-```bash
-npx cypress run --spec src/test/javascript/cypress/e2e/entity/address.cy.ts
-```
+**There is no working end-to-end setup.** `cypress` is not a dependency, there is no
+`cypress.config.*`, and there are no `e2e`/`e2e:cypress` scripts. The 15 specs under
+`src/test/javascript/cypress/e2e/entity/` target entities the app no longer contains and are
+unreachable dead code. Either restore the dependency and config or delete them.
 
 ## Code quality
-
-Lint and format:
 
 ```bash
 npm run lint
@@ -181,41 +156,35 @@ npm run prettier:check
 npm run prettier:format
 ```
 
-Sonar analysis — start a local SonarQube and run the scanner (creds are in
-`sonar-project.properties`):
-
-```bash
-docker compose -f src/main/docker/sonar.yml up -d
-npm run ci:backend:test   # or your usual CI script, then sonar:sonar
-```
+Prettier covers Markdown here too, so run it after editing docs. Sonar settings live in
+`sonar-project.properties` and a local scanner stack in `src/main/docker/sonar.yml`; note the
+`ci:backend:test` script runs Maven `verify`, which builds nothing in this repo.
 
 ## Docker for development
 
-`src/main/docker/` holds compose files for the dev dependencies the gateway expects
-in the wider microservice topology:
+`src/main/docker/` holds the generator's dev-dependency compose files:
 
 ```bash
-npm run services:up      # starts MongoDB + JHipster Registry + Kafka (services.yml)
-docker compose -f src/main/docker/mongodb.yml up -d     # MongoDB only
-docker compose -f src/main/docker/jhipster-registry.yml up   # service registry
-docker compose -f src/main/docker/kafka.yml up          # Kafka + Zookeeper
-docker compose -f src/main/docker/jhipster-control-center.yml up   # Control Center on :7419
+npm run services:up                                          # mongodb + jhipster-registry + kafka + zookeeper
+docker compose -f src/main/docker/mongodb.yml up -d           # MongoDB only
+docker compose -f src/main/docker/kafka.yml up                # Kafka + Zookeeper
 ```
+
+**These are largely vestigial for this repo.** `services.yml` starts a **JHipster Registry**, but
+the real backend discovers services through **Consul** — so bring dependencies up from `gateway/`
+or `api/` (`npm run services:up` there), not here. This repo needs no infrastructure of its own
+beyond a reachable gateway on :5505.
 
 ## Continuous integration
 
-CI scripts are defined in `package.json` (`ci:backend:test`, `ci:e2e:*`,
-`ci:frontend:build`, `ci:frontend:test`, `ci:server:await`). Generate CI pipeline
-config with the JHipster `ci-cd` sub-generator if needed; see
-[Setting up Continuous Integration](https://www.jhipster.tech/documentation-archive/v8.1.0/setting-up-ci/).
+CI scripts are defined in `package.json` (`ci:frontend:build`, `ci:frontend:test`, `ci:backend:test`,
+`ci:e2e:*`, `ci:server:await`). The `ci:e2e:*` chain assumes the Cypress setup and a packaged Spring
+Boot jar, neither of which exists here.
 
 ## Useful references
 
-- [JHipster 8.1.0 archive](https://www.jhipster.tech/documentation-archive/v8.1.0)
-- [Doing microservices with JHipster](https://www.jhipster.tech/documentation-archive/v8.1.0/microservices-architecture/)
-- [Service Discovery and Configuration with the JHipster-Registry](https://www.jhipster.tech/documentation-archive/v8.1.0/microservices-architecture/#jhipster-registry)
-- [Using JHipster in development](https://www.jhipster.tech/documentation-archive/v8.1.0/development/)
-- [Using JHipster in production](https://www.jhipster.tech/documentation-archive/v8.1.0/production/)
-- [Running tests](https://www.jhipster.tech/documentation-archive/v8.1.0/running-tests/)
-- [Using Docker and Docker-Compose](https://www.jhipster.tech/documentation-archive/v8.1.0/docker-compose)
-- [Node.js](https://nodejs.org/) · [NPM](https://www.npmjs.com/) · [Webpack](https://webpack.github.io/) · [Jest](https://jestjs.io/) · [Angular CLI](https://angular.dev/tools/cli)
+- [JHipster documentation](https://www.jhipster.tech/documentation-archive/) — this app reports
+  generator version 9.1.0 in `.yo-rc.json`
+- [Angular CLI](https://angular.dev/tools/cli) · [Angular Material](https://material.angular.io/) ·
+  [Tailwind CSS v4](https://tailwindcss.com/) · [Chart.js](https://www.chartjs.org/) ·
+  [Jest](https://jestjs.io/) · [Node.js](https://nodejs.org/)
