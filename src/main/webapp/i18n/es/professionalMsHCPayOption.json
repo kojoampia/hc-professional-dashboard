@@ -1,0 +1,27 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceHCPayOption": {
+      "home": {
+        "title": "Opciones de pago HC",
+        "refreshListLabel": "Actualizar lista",
+        "createLabel": "Crear un nuevo Opción de pago HC",
+        "createOrEditLabel": "Crear o editar Opción de pago HC",
+        "search": "Buscar Opción de pago HC",
+        "notFound": "No se encontraron Opciones de pago HC"
+      },
+      "created": "Se ha creado un nuevo Opción de pago HC con el identificador {{ param }}",
+      "updated": "Opción de pago HC actualizado con el identificador {{ param }}",
+      "deleted": "Opción de pago HC eliminado con el identificador {{ param }}",
+      "delete": {
+        "question": "¿Seguro que desea eliminar Opción de pago HC {{ id }}?"
+      },
+      "detail": {
+        "title": "Opción de pago HC"
+      },
+      "id": "ID",
+      "type": "Tipo",
+      "userID": "ID de usuario",
+      "metadata": "Metadatos"
+    }
+  }
+}

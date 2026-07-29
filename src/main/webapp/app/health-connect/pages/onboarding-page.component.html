@@ -67,6 +67,7 @@
           <div>
             <label class="hpd-label" for="requestedRole">{{ 'healthConnect.onboarding.requestedRole' | translate }}</label>
             <select id="requestedRole" class="hpd-focusable hpd-input" formControlName="requestedRole" data-cy="requestedRole">
+              <option value="" disabled>{{ 'healthConnect.onboarding.chooseRole' | translate }}</option>
               @for (role of requestableRoles; track role) {
                 <option [value]="role">{{ 'healthConnect.roles.' + role.replace('ROLE_', '').toLowerCase() | translate }}</option>
               }

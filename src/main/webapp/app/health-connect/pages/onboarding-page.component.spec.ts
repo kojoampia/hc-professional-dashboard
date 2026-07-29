@@ -3,6 +3,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 
 import { AlertService } from 'app/core/util/alert.service';
+import { CareersHandoffService } from 'app/core/careers/careers-handoff.service';
 import { OnboardingApiService, OnboardingApplicationDto } from '../api/onboarding-api.service';
 import OnboardingPageComponent from './onboarding-page.component';
 
@@ -101,6 +102,13 @@ describe('OnboardingPageComponent', () => {
       await configure();
     });
 
+    it('has no silent role default (careers handoff contract)', () => {
+      expect(component.consentForm.getRawValue().requestedRole).toBe('');
+      component.consentForm.patchValue({ consentAccepted: true });
+      component.start();
+      expect(api.startApplication).not.toHaveBeenCalled();
+    });
+
     it('requires the consent checkbox before starting', () => {
       component.consentForm.patchValue({ requestedRole: 'ROLE_NURSE', consentAccepted: false });
       component.start();
@@ -111,7 +119,7 @@ describe('OnboardingPageComponent', () => {
       api.startApplication.mockReturnValue(of(application('APPLICATION_STARTED', { requestedRole: 'ROLE_PHARMACIST' })));
       component.consentForm.patchValue({ requestedRole: 'ROLE_PHARMACIST', consentAccepted: true });
       component.start();
-      expect(api.startApplication).toHaveBeenCalledWith('ROLE_PHARMACIST');
+      expect(api.startApplication).toHaveBeenCalledWith('ROLE_PHARMACIST', null);
       expect(component.activeStep()).toBe('profile');
     });
   });
@@ -164,6 +172,43 @@ describe('OnboardingPageComponent', () => {
       expect(api.completeProfile).toHaveBeenCalled();
       expect(component.application()?.status).toBe('PROFILE_COMPLETED');
       expect(component.activeStep()).toBe('documents');
+    });
+  });
+
+  describe('careers handoff intake (WP4b gate)', () => {
+    beforeEach(() => {
+      localStorage.clear();
+      api.getOwnApplication.mockReturnValue(throwError(() => ({ status: 404 })));
+    });
+
+    it('pre-selects the stored track and sends the stored src as source', async () => {
+      localStorage.setItem(
+        'hpd-careers-handoff',
+        JSON.stringify({ track: 'ROLE_DOCTOR', locale: 'fr', src: 'web-careers', at: '2026-07-29T00:00:00Z' }),
+      );
+      await configure();
+      expect(component.consentForm.getRawValue().requestedRole).toBe('ROLE_DOCTOR');
+
+      api.startApplication.mockReturnValue(of(application('APPLICATION_STARTED')));
+      component.consentForm.patchValue({ consentAccepted: true });
+      component.start();
+      expect(api.startApplication).toHaveBeenCalledWith('ROLE_DOCTOR', 'web-careers');
+      // consumed after a successful start
+      expect(TestBed.inject(CareersHandoffService).peek()).toBeNull();
+    });
+
+    it('ignores a stored handoff without a track (src still carried)', async () => {
+      localStorage.setItem(
+        'hpd-careers-handoff',
+        JSON.stringify({ track: null, locale: 'en', src: 'web-careers', at: '2026-07-29T00:00:00Z' }),
+      );
+      await configure();
+      expect(component.consentForm.getRawValue().requestedRole).toBe('');
+
+      api.startApplication.mockReturnValue(of(application('APPLICATION_STARTED')));
+      component.consentForm.patchValue({ requestedRole: 'ROLE_CARER', consentAccepted: true });
+      component.start();
+      expect(api.startApplication).toHaveBeenCalledWith('ROLE_CARER', 'web-careers');
     });
   });
 

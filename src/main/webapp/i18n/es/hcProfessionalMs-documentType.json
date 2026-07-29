@@ -1,0 +1,15 @@
+{
+  "professionalDashboardApp": {
+    "DocumentType": {
+      "null": "",
+      "PASSPORT": "PASSPORT",
+      "CERTIFICATE": "CERTIFICATE",
+      "GHANACARD": "GHANACARD",
+      "PASSPHOTO": "PASSPHOTO",
+      "DRIVERLICENSE": "DRIVERLICENSE",
+      "VOTERCARD": "VOTERCARD",
+      "NHIS": "NHIS",
+      "OTHER": "OTHER"
+    }
+  }
+}

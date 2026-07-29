@@ -1,0 +1,37 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceAddress": {
+      "home": {
+        "title": "Direcciones",
+        "refreshListLabel": "Actualizar lista",
+        "createLabel": "Crear una nueva Dirección",
+        "createOrEditLabel": "Crear o editar Dirección",
+        "search": "Buscar Dirección",
+        "notFound": "No se encontraron direcciones"
+      },
+      "created": "Se ha creado una nueva Dirección con el identificador {{ param }}",
+      "updated": "Dirección actualizada con el identificador {{ param }}",
+      "deleted": "Dirección eliminada con el identificador {{ param }}",
+      "delete": {
+        "question": "¿Seguro que desea eliminar Dirección {{ id }}?"
+      },
+      "detail": {
+        "title": "Dirección"
+      },
+      "id": "Id",
+      "digitalAddress": "Dirección digital",
+      "streetAddress": "Dirección (calle)",
+      "areaCode": "Código de área",
+      "town": "Localidad",
+      "city": "Ciudad",
+      "district": "Distrito",
+      "state": "Estado",
+      "region": "Región",
+      "country": "País",
+      "createdDate": "Fecha de creación",
+      "modifiedDate": "Fecha de modificación",
+      "createdBy": "Creado por",
+      "modifiedBy": "Modificado por"
+    }
+  }
+}

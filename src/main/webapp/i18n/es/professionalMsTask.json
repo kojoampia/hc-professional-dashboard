@@ -1,0 +1,35 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceTask": {
+      "home": {
+        "title": "Tareas",
+        "refreshListLabel": "Actualizar lista",
+        "createLabel": "Crear una nueva Tarea",
+        "createOrEditLabel": "Crear o editar Tarea",
+        "search": "Buscar Tarea",
+        "notFound": "No se encontraron tareas"
+      },
+      "created": "Se ha creado una nueva Tarea con el identificador {{ param }}",
+      "updated": "Tarea actualizada con el identificador {{ param }}",
+      "deleted": "Tarea eliminada con el identificador {{ param }}",
+      "delete": {
+        "question": "¿Seguro que desea eliminar Tarea {{ id }}?"
+      },
+      "detail": {
+        "title": "Tarea"
+      },
+      "id": "ID",
+      "name": "Nombre",
+      "description": "Descripción",
+      "schedule": "Horario",
+      "duration": "Duración",
+      "attendantId": "ID del asistente",
+      "teamId": "ID del equipo",
+      "patientId": "ID del paciente",
+      "createdDate": "Fecha de creación",
+      "modifiedDate": "Fecha de modificación",
+      "createdBy": "Creado por",
+      "modifiedBy": "Modificado por"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceReport": {
+      "home": {
+        "title": "Informes",
+        "refreshListLabel": "Actualizar lista",
+        "createLabel": "Crear un nuevo Informe",
+        "createOrEditLabel": "Crear o editar Informe",
+        "search": "Buscar Informe",
+        "notFound": "No se encontraron informes"
+      },
+      "created": "Se ha creado un nuevo Informe con el identificador {{ param }}",
+      "updated": "Informe actualizado con el identificador {{ param }}",
+      "deleted": "Informe eliminado con el identificador {{ param }}",
+      "delete": {
+        "question": "¿Seguro que desea eliminar Informe {{ id }}?"
+      },
+      "detail": {
+        "title": "Informe"
+      },
+      "id": "ID",
+      "category": "Categoría",
+      "description": "Descripción",
+      "name": "Nombre",
+      "url": "Url",
+      "createdDate": "Fecha de creación",
+      "modifiedDate": "Fecha de modificación",
+      "createdBy": "Creado por",
+      "modifiedBy": "Modificado por"
+    }
+  }
+}

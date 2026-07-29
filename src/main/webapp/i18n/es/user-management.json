@@ -1,0 +1,31 @@
+{
+  "userManagement": {
+    "home": {
+      "title": "Usuarios",
+      "refreshListLabel": "Actualizar lista",
+      "createLabel": "Crear un nuevo usuario",
+      "createOrEditLabel": "Crear o editar un usuario"
+    },
+    "created": "Se ha creado un nuevo usuario con el identificador {{ param }}",
+    "updated": "Usuario actualizado con el identificador {{ param }}",
+    "deleted": "Usuario eliminado con el identificador {{ param }}",
+    "delete": {
+      "question": "¿Seguro que desea eliminar el usuario {{ login }}?"
+    },
+    "detail": {
+      "title": "Usuario"
+    },
+    "login": "Usuario",
+    "firstName": "Nombre",
+    "lastName": "Apellidos",
+    "email": "Correo electrónico",
+    "activated": "Activado",
+    "deactivated": "Desactivada",
+    "profiles": "Perfiles",
+    "langKey": "Idioma",
+    "createdBy": "Creado por",
+    "createdDate": "Fecha de creación",
+    "lastModifiedBy": "Modificado por",
+    "lastModifiedDate": "Fecha de modificación"
+  }
+}

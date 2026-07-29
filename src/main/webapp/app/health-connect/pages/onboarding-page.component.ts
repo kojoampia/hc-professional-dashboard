@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { AlertService } from 'app/core/util/alert.service';
+import { CareersHandoffService } from 'app/core/careers/careers-handoff.service';
 import FileUploadTriggerComponent from '../../shared/health-connect/form-controls/file-upload-trigger.component';
 import {
   OnboardingApiService,
@@ -47,6 +48,10 @@ const EDITABLE_STATUSES = new Set(['APPLICATION_STARTED', 'PROFILE_COMPLETED', '
 export default class OnboardingPageComponent implements OnInit {
   private readonly api = inject(OnboardingApiService);
   private readonly alertService = inject(AlertService);
+  private readonly careersHandoff = inject(CareersHandoffService);
+
+  /** Attribution from the careers handoff, sent with the start-application call. */
+  private handoffSource: string | null = null;
 
   readonly requestableRoles = REQUESTABLE_ROLES;
   readonly identityTypes = IDENTITY_TYPES;
@@ -87,7 +92,9 @@ export default class OnboardingPageComponent implements OnInit {
   readonly mandatoryComplete = computed(() => Object.values(this.mandatoryChecklist()).every(Boolean));
 
   readonly consentForm = new FormGroup({
-    requestedRole: new FormControl<string>('ROLE_NURSE', { nonNullable: true, validators: Validators.required }),
+    // No silent default (careers handoff contract): the applicant chooses
+    // explicitly unless an inbound track pre-selects for them.
+    requestedRole: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),
     consentAccepted: new FormControl<boolean>(false, { nonNullable: true, validators: Validators.requiredTrue }),
   });
 
@@ -124,7 +131,20 @@ export default class OnboardingPageComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.applyCareersHandoff();
     this.load();
+  }
+
+  /** Pre-select the careers track and carry src; unknown/absent values change nothing. */
+  private applyCareersHandoff(): void {
+    const handoff = this.careersHandoff.peek();
+    if (!handoff) {
+      return;
+    }
+    if (handoff.track) {
+      this.consentForm.patchValue({ requestedRole: handoff.track });
+    }
+    this.handoffSource = handoff.src;
   }
 
   load(): void {
@@ -178,11 +198,12 @@ export default class OnboardingPageComponent implements OnInit {
       return;
     }
     this.saving.set(true);
-    this.api.startApplication(this.consentForm.getRawValue().requestedRole).subscribe({
+    this.api.startApplication(this.consentForm.getRawValue().requestedRole, this.handoffSource).subscribe({
       next: application => {
         this.application.set(application);
         this.activeStep.set('profile');
         this.saving.set(false);
+        this.careersHandoff.clear();
         this.alertService.showToast('healthConnect.onboarding.toast.started');
       },
       error: () => this.saving.set(false),
