@@ -186,6 +186,12 @@ Merge discipline: a WP merges to its repo's base branch only when its gate (§ I
 
 ### WP status log
 
+**WP5 — done (2026-07-29), pending merge review** (`api` + `web` branches `onboarding/wp5-reviewer-admin-flow`, based on WP4b).
+
+- **api:** `GET /api/onboarding/applications` (admin, status filter, newest submissions first, attribution included), `GET /applications/{id}/documents` (admin or owner, bytes stripped), `PUT /documents/{id}/verify|reject` (admin only; rejection requires a reason; `verifiedBy`/`verifiedAt` recorded). `ReviewerFlowIT` proves listing, cross-applicant document access, and verification are ROLE_ADMIN-only. Full verify **199/199**.
+- **web:** `/review` queue (ROLE_ADMIN route) with status filter pills and the **source column** (careers contract §3), and `/review/:id` — summary with source badge, document list with authorized blob preview + per-document verify/reject, approve/return/reject (approval disabled until all documents verified, mirroring the server guard), organization assignment, **authority assignment via the gateway user-management API** followed by the api's `AUTHORITY_ASSIGNED` mark, roster/activate/suspend actions, audit trail. Administration sidebar entry; i18n en/fr/de/es. 367/367 tests, lint + prod build green.
+- Gate: `ReviewerFlowIT` (api) + `review-pages.spec` (web) — reviewer vs admin-pipeline vs applicant affordances are disjoint and state-driven.
+
 **WP4b — done (2026-07-29), pending merge review** (`web` + `api` branches `onboarding/wp4b-careers-handoff`, based on WP4 / WP3 respectively).
 
 - **api:** `ProfessionalApplication.source` (nullable, trimmed, 64-char cap) set at creation via `StartApplicationRequest.source`; absent stays null. `OnboardingFlowIT` 9/9.
