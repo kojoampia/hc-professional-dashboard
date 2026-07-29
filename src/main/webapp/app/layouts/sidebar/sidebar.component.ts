@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Input, OnInit, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateService } from '@ngx-translate/core';
@@ -13,7 +13,7 @@ import { LoginService } from 'app/login/login.service';
 import { ProfileService } from 'app/layouts/profiles/profile.service';
 import ActiveMenuDirective from './active-menu.directive';
 import { resolveAuthorityRole } from 'app/health-connect/authority-role';
-import { HEALTH_CONNECT_REPOSITORY, HealthConnectRepository } from 'app/health-connect/health-connect.repository';
+import { DutyRosterAssignmentsService } from 'app/health-connect/api/duty-roster-assignments.service';
 import { MessagesApiService } from 'app/health-connect/api/messages-api.service';
 import { ShiftLabel } from 'app/health-connect/health-connect.models';
 import { SHELL_NAV_GROUPS, ShellNavGroup, ShellNavItem } from './shell-navigation';
@@ -43,7 +43,7 @@ export default class SidebarComponent implements OnInit {
     private accountService: AccountService,
     private profileService: ProfileService,
     private router: Router,
-    @Inject(HEALTH_CONNECT_REPOSITORY) private healthConnectRepository: HealthConnectRepository,
+    private dutyRosterAssignments: DutyRosterAssignmentsService,
   ) {
     if (VERSION) {
       this.version = VERSION.toLowerCase().startsWith('v') ? VERSION : `v${VERSION}`;
@@ -57,6 +57,10 @@ export default class SidebarComponent implements OnInit {
 
     this.accountService.getAuthenticationState().subscribe(account => {
       this.account = account;
+      if (account) {
+        // WP6 gate: the user-card shift label is driven by real assignments.
+        this.dutyRosterAssignments.loadMyAssignments();
+      }
     });
   }
 
@@ -130,6 +134,6 @@ export default class SidebarComponent implements OnInit {
   }
 
   get shiftLabel(): ShiftLabel | null {
-    return this.account ? this.healthConnectRepository.shiftLabelForAccount(this.account.login) : null;
+    return this.account ? this.dutyRosterAssignments.shiftLabel() : null;
   }
 }

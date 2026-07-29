@@ -127,7 +127,35 @@
       "nextShift": "Next shift: {{time}}",
       "upcoming": "Upcoming",
       "active": "Active",
-      "completed": "Completed"
+      "completed": "Completed",
+      "myAssignments": "My duty assignments",
+      "notAssigned": "No duty assignments yet. A roster administrator assigns your shifts.",
+      "assignmentOnly": "Duty rosters are assigned by administrators. Contact your coordinator for changes.",
+      "administer": "Roster administration",
+      "professionalId": "Professional profile ID",
+      "date": "Date",
+      "shift": "Shift",
+      "duty": "Duty",
+      "wardName": "Ward / unit",
+      "assign": "Assign shift",
+      "unassign": "Unassign",
+      "shiftNames": {
+        "MORNING": "Morning (06:00–14:00)",
+        "AFTERNOON": "Afternoon (14:00–22:00)",
+        "NIGHT": "Night (22:00–06:00)"
+      },
+      "duties": {
+        "DOCTOR": "Doctor",
+        "NURSE": "Nurse",
+        "PARAMEDIC": "Paramedic",
+        "PHARMACIST": "Pharmacist",
+        "THERAPIST": "Therapist",
+        "CARER": "Carer",
+        "ANGEL": "Care angel",
+        "CHEMIST": "Chemist",
+        "TECHNICIAN": "Technician",
+        "OTHER": "Other"
+      }
     },
     "states": {
       "loading": "Loading...",
@@ -168,7 +196,8 @@
       "activityLogged": "Activity logged",
       "reportUploaded": "Report uploaded",
       "rosterUpdated": "Duty roster updated",
-      "markedRead": "Marked as read"
+      "markedRead": "Marked as read",
+      "acknowledged": "Acknowledgement recorded"
     },
     "onboarding": {
       "title": "Professional onboarding",
@@ -301,6 +330,14 @@
         "activated": "Professional access activated",
         "suspended": "Application suspended"
       }
+    },
+    "firstLogin": {
+      "title": "Welcome to BridgeCare Professional",
+      "body": "Before you start, please confirm that you have read and accept your professional obligations:",
+      "dutyOfCare": "I will act within my assigned clinical role and duty of care.",
+      "dataProtection": "I will handle patient data confidentially and in line with data-protection law.",
+      "rosterDiscipline": "I will follow my assigned duty roster and report conflicts to my coordinator.",
+      "acknowledge": "I acknowledge"
     }
   }
 }

@@ -110,6 +110,14 @@ export class OnboardingApiService {
   private readonly applicationConfigService = inject(ApplicationConfigService);
   private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/onboarding', 'professionalService');
 
+  acknowledgementStatus(): Observable<{ acknowledged: boolean }> {
+    return this.http.get<{ acknowledged: boolean }>(`${this.resourceUrl}/acknowledgement`);
+  }
+
+  acknowledge(): Observable<unknown> {
+    return this.http.post(`${this.resourceUrl}/acknowledgement`, null);
+  }
+
   listApplications(status?: OnboardingStatus): Observable<OnboardingApplicationDto[]> {
     const params = status ? { params: { status } } : {};
     return this.http.get<OnboardingApplicationDto[]>(`${this.resourceUrl}/applications`, params);
