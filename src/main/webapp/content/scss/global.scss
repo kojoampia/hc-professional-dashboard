@@ -1,8 +1,9 @@
 /* ==========================================================================
 HealthConnect / Abofonsa BridgeCare design tokens and layout primitives
 
-Token contract — ../../../../../Abofonsa_BridgeCare_Professional_Demo.html
-(workspace root) is the source of truth; see web-layout-plan.md Phase 0/1.
+Token contract — Abofonsa_BridgeCare_Professional_Demo.html at the workspace
+root is the source of truth; see web/professional-web.md §3 for the token
+table and the verified WCAG ratios.
 The previous indigo/slate values (from professional-demo.html) were replaced
 by the BridgeCare navy/gold/cream palette in Phase 1. Two text tones were
 darkened from the demo values to reach WCAG AA 4.5:1 on their tint
@@ -220,8 +221,8 @@ a:hover {
 BridgeCare component classes (demo .btn / .field patterns) — shared across
 auth, account, and feature pages. Prefer these over ad-hoc per-page button
 styling; variants match the demo: primary (navy), gold, ghost, danger.
-Never put white text on gold — use the inherited dark tone (see Appendix A
-of web-layout-plan.md).
+Never put white text on gold (2.74:1, fails AA) — use the inherited dark
+tone. Verified ratios: professional-web.md §3.
 ========================================================================== */
 .hpd-btn {
   display: inline-flex;

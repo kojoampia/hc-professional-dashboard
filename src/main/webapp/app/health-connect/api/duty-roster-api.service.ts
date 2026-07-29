@@ -7,8 +7,8 @@ import { DutyRosterDto } from './duty-roster-api.model';
 
 /**
  * Thin HttpClient wrapper for the Duty Roster endpoints specced in
- * application-migration.md Phase 1. Not wired into the app yet — see
- * ../http-health-connect.repository.ts and work/phase-1.md.
+ * professional-web.md §5. Not wired into the app yet — see
+ * ../http-health-connect.repository.ts.
  */
 @Injectable({ providedIn: 'root' })
 export class DutyRosterApiService {
