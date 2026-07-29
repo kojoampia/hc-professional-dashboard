@@ -186,6 +186,14 @@ Merge discipline: a WP merges to its repo's base branch only when its gate (§ I
 
 ### WP status log
 
+**WP4b — done (2026-07-29), pending merge review** (`web` + `api` branches `onboarding/wp4b-careers-handoff`, based on WP4 / WP3 respectively).
+
+- **api:** `ProfessionalApplication.source` (nullable, trimmed, 64-char cap) set at creation via `StartApplicationRequest.source`; absent stays null. `OnboardingFlowIT` 9/9.
+- **web:** `CareersHandoffService` captures `track`/`locale`/`src` on `/register` (known-set validation; localStorage carry across the registration → activation → authenticated-wizard boundary), locale switches the UI language and `langKey` on arrival, the wizard pre-selects the stored track, sends `src` as `source`, and clears the handoff after a successful start. The silent `ROLE_NURSE` default is removed (empty + required). Bare/unknown parameters change nothing (contract §4).
+- **Spanish:** full `i18n/es/` catalog — 34 files, zero untranslated strings (technical enums/proper nouns verbatim); `LANGUAGES`, webpack merge, dayjs locale, and language-name pipe wired; `es.json` verified in the prod bundle.
+- Gate: handoff service spec (capture/known-set/degradation/consume/truncation), wizard pre-selection + no-default + source specs, api-service body spec, `OnboardingFlowIT` source persistence. Web 358/358, api targeted ITs green, lint + prod build green.
+- Remaining contract touchpoints land later as planned: source column in the WP5 queue, per-source funnel count in WP7, live URL via WP8 — only then does careers flip `professionalPortalUrl`.
+
 **WP4 — done (2026-07-29), pending merge review** (`web` branch `onboarding/wp4-applicant-flow`, based on WP1; consumes the WP3 api surface).
 
 - Status-driven applicant wizard at `/onboarding` (authenticated-only route — no clinical role, since applicants hold `ROLE_USER`): consent + requested role (all nine) → profile → address & emergency contact → documents → review/submit → status timeline from the audit events. Corrections re-open editable steps with the reviewer's notes; the wizard locks during review.
