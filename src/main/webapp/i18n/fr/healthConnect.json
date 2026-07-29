@@ -197,7 +197,8 @@
       "reportUploaded": "Rapport téléversé",
       "rosterUpdated": "Planning de garde mis à jour",
       "markedRead": "Marqué comme lu",
-      "acknowledged": "Confirmation enregistrée"
+      "acknowledged": "Confirmation enregistrée",
+      "sweepDone": "Contrôle terminé : {{suspended}} candidature(s) restreinte(s)"
     },
     "onboarding": {
       "title": "Intégration professionnelle",
@@ -338,6 +339,18 @@
       "dataProtection": "Je traiterai les données des patients de manière confidentielle et conformément à la législation sur la protection des données.",
       "rosterDiscipline": "Je respecterai mon planning de garde et signalerai tout conflit à ma coordination.",
       "acknowledge": "J'accepte"
+    },
+    "compliance": {
+      "title": "Conformité et opérations",
+      "byStatus": "Candidatures par statut",
+      "bySource": "Candidatures par source",
+      "expiring": "Licences expirées ou expirant sous 30 jours ({{count}})",
+      "runSweep": "Lancer le contrôle d'expiration",
+      "expires": "expire le",
+      "lapsed": "Expirée",
+      "expiringSoon": "Expire bientôt",
+      "noneExpiring": "Aucune licence n’expire dans les 30 prochains jours.",
+      "auditFeed": "Derniers événements d'audit d'intégration"
     }
   }
 }
