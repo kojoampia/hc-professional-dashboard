@@ -170,15 +170,17 @@ Authority assignment happens **only** in the gateway's user-management API, driv
 
 One branch per work package in each repo it touches, named `onboarding/wp<N>-<slug>`. Bases: `web/` and `api/` branch from `main`; `gateway/` branches from **`feature/sb4-upgrade`** (the active Spring Boot 4 line, 4 commits ahead of its `main`). Branches are staged up front from today's HEADs — **rebase each branch onto the merged result of its predecessor before starting work on it** (WP order is dependency order).
 
-| WP  | Branch                                   | gateway | api | web |
-| --- | ---------------------------------------- | :-----: | :-: | :-: |
-| WP1 | `onboarding/wp1-authorities`             |   ✔    | ✔  | ✔  |
-| WP2 | `onboarding/wp2-data-contracts`          |         | ✔  |     |
-| WP3 | `onboarding/wp3-state-machine-events`    |   ✔    | ✔  |     |
-| WP4 | `onboarding/wp4-applicant-flow`          |         |     | ✔  |
-| WP5 | `onboarding/wp5-reviewer-admin-flow`     |         | ✔  | ✔  |
-| WP6 | `onboarding/wp6-duty-roster-first-login` |         | ✔  | ✔  |
-| WP7 | `onboarding/wp7-compliance-ops`          |         | ✔  | ✔  |
+| WP   | Branch                                   | gateway | api | web |
+| ---- | ---------------------------------------- | :-----: | :-: | :-: |
+| WP1  | `onboarding/wp1-authorities`             |   ✔    | ✔  | ✔  |
+| WP2  | `onboarding/wp2-data-contracts`          |         | ✔  |     |
+| WP3  | `onboarding/wp3-state-machine-events`    |   ✔    | ✔  |     |
+| WP4  | `onboarding/wp4-applicant-flow`          |         |     | ✔  |
+| WP5  | `onboarding/wp5-reviewer-admin-flow`     |         | ✔  | ✔  |
+| WP6  | `onboarding/wp6-duty-roster-first-login` |         | ✔  | ✔  |
+| WP4b | `onboarding/wp4b-careers-handoff`        |         | ✔  | ✔  |
+| WP7  | `onboarding/wp7-compliance-ops`          |         | ✔  | ✔  |
+| WP8  | `onboarding/wp8-deployment`              |   ✔    | ✔  | ✔  |
 
 Merge discipline: a WP merges to its repo's base branch only when its gate (§ Implementation work packages) is green; cross-repo WPs (1, 3, 5, 6, 7) merge together or not at all.
 
