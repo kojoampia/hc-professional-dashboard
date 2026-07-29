@@ -45,8 +45,12 @@ export interface DutyRoster {
 }
 
 export interface ShiftLabel {
-  translationKey: 'healthConnect.roster.activeShift' | 'healthConnect.roster.nextShift';
-  translationParams: { time: string };
+  translationKey:
+    | 'healthConnect.roster.activeShift'
+    | 'healthConnect.roster.nextShift'
+    | 'healthConnect.roster.flexibleShift'
+    | 'healthConnect.roster.nextFlexibleShift';
+  translationParams: { time?: string; date?: string };
 }
 
 export interface PatientListRow {

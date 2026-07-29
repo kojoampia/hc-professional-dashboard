@@ -9,7 +9,7 @@ import { Authority } from 'app/config/authority.constants';
 
 import { DutyRosterAssignmentDto, DutyRosterAssignmentsService, DutyRosterShift } from '../api/duty-roster-assignments.service';
 
-const SHIFTS: readonly DutyRosterShift[] = ['MORNING', 'AFTERNOON', 'NIGHT'];
+const SHIFTS: readonly DutyRosterShift[] = ['MORNING', 'AFTERNOON', 'NIGHT', 'DAY', 'FLEXIBLE'];
 const DUTIES: readonly string[] = [
   'DOCTOR',
   'NURSE',

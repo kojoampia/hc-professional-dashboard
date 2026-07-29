@@ -142,7 +142,9 @@
       "shiftNames": {
         "MORNING": "Früh (06:00–14:00)",
         "AFTERNOON": "Spät (14:00–22:00)",
-        "NIGHT": "Nacht (22:00–06:00)"
+        "NIGHT": "Nacht (22:00–06:00)",
+        "DAY": "Tag (08:00–17:00)",
+        "FLEXIBLE": "Flexibel (2–4-h-Blöcke)"
       },
       "duties": {
         "DOCTOR": "Arzt/Ärztin",
@@ -155,7 +157,9 @@
         "CHEMIST": "Chemiker/in",
         "TECHNICIAN": "Techniker/in",
         "OTHER": "Sonstige"
-      }
+      },
+      "flexibleShift": "Heute flexibler Dienst (2–4-h-Blöcke)",
+      "nextFlexibleShift": "Nächste flexible Schicht: {{date}}"
     },
     "states": {
       "loading": "Wird geladen...",

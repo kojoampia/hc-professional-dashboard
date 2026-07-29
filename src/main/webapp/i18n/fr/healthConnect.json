@@ -142,7 +142,9 @@
       "shiftNames": {
         "MORNING": "Matin (06:00–14:00)",
         "AFTERNOON": "Après-midi (14:00–22:00)",
-        "NIGHT": "Nuit (22:00–06:00)"
+        "NIGHT": "Nuit (22:00–06:00)",
+        "DAY": "Journée (08:00–17:00)",
+        "FLEXIBLE": "Flexible (blocs de 2–4 h)"
       },
       "duties": {
         "DOCTOR": "Médecin",
@@ -155,7 +157,9 @@
         "CHEMIST": "Chimiste",
         "TECHNICIAN": "Technicien·ne",
         "OTHER": "Autre"
-      }
+      },
+      "flexibleShift": "Garde flexible aujourd'hui (blocs de 2–4 h)",
+      "nextFlexibleShift": "Prochaine garde flexible : {{date}}"
     },
     "states": {
       "loading": "Chargement...",

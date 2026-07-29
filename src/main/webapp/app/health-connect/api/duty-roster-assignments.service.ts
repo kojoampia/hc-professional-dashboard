@@ -5,7 +5,7 @@ import { Observable, tap } from 'rxjs';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { ShiftLabel } from '../health-connect.models';
 
-export type DutyRosterShift = 'MORNING' | 'AFTERNOON' | 'NIGHT';
+export type DutyRosterShift = 'MORNING' | 'AFTERNOON' | 'NIGHT' | 'DAY' | 'FLEXIBLE';
 
 export interface DutyRosterAssignmentDto {
   id?: string;
@@ -17,12 +17,22 @@ export interface DutyRosterAssignmentDto {
   description?: string | null;
 }
 
-/** Local shift windows (hour of day, 24h): NIGHT wraps past midnight. */
-const SHIFT_WINDOWS: Record<DutyRosterShift, { start: number; end: number }> = {
+/**
+ * Local shift windows (hour of day, 24h): NIGHT wraps past midnight. FLEXIBLE
+ * deliberately has no window — it stands for individually agreed 2–4 hour time
+ * blocks on the assignment date and is labelled separately.
+ */
+const SHIFT_WINDOWS: Partial<Record<DutyRosterShift, { start: number; end: number }>> = {
   MORNING: { start: 6, end: 14 },
   AFTERNOON: { start: 14, end: 22 },
   NIGHT: { start: 22, end: 6 },
+  DAY: { start: 8, end: 17 },
 };
+
+/** Sorting anchor for windowless (FLEXIBLE) shifts. */
+const DEFAULT_START_HOUR = 8;
+
+const startHour = (shift: DutyRosterShift): number => SHIFT_WINDOWS[shift]?.start ?? DEFAULT_START_HOUR;
 
 const pad = (n: number): string => String(n).padStart(2, '0');
 
@@ -82,13 +92,21 @@ export class DutyRosterAssignmentsService {
       }
     }
 
+    // a FLEXIBLE assignment covers its whole date in 2-4h blocks
+    if (assignments.some(a => a.shift === 'FLEXIBLE' && a.date === today)) {
+      return { translationKey: 'healthConnect.roster.flexibleShift', translationParams: { date: today } };
+    }
+
     const upcoming = assignments
-      .filter(a => a.date > today || (a.date === today && hour < SHIFT_WINDOWS[a.shift].start))
-      .sort((a, b) => (a.date === b.date ? SHIFT_WINDOWS[a.shift].start - SHIFT_WINDOWS[b.shift].start : a.date < b.date ? -1 : 1))[0];
+      .filter(a => a.date > today || (a.date === today && hour < startHour(a.shift)))
+      .sort((a, b) => (a.date === b.date ? startHour(a.shift) - startHour(b.shift) : a.date < b.date ? -1 : 1))[0];
     if (upcoming) {
+      if (upcoming.shift === 'FLEXIBLE') {
+        return { translationKey: 'healthConnect.roster.nextFlexibleShift', translationParams: { date: upcoming.date } };
+      }
       return {
         translationKey: 'healthConnect.roster.nextShift',
-        translationParams: { time: `${upcoming.date} ${pad(SHIFT_WINDOWS[upcoming.shift].start)}:00` },
+        translationParams: { time: `${upcoming.date} ${pad(startHour(upcoming.shift))}:00` },
       };
     }
     return null;

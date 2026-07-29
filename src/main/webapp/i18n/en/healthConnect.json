@@ -142,7 +142,9 @@
       "shiftNames": {
         "MORNING": "Morning (06:00–14:00)",
         "AFTERNOON": "Afternoon (14:00–22:00)",
-        "NIGHT": "Night (22:00–06:00)"
+        "NIGHT": "Night (22:00–06:00)",
+        "DAY": "Day (08:00–17:00)",
+        "FLEXIBLE": "Flexible (2–4 h blocks)"
       },
       "duties": {
         "DOCTOR": "Doctor",
@@ -155,7 +157,9 @@
         "CHEMIST": "Chemist",
         "TECHNICIAN": "Technician",
         "OTHER": "Other"
-      }
+      },
+      "flexibleShift": "Flexible duty today (2–4 h blocks)",
+      "nextFlexibleShift": "Next flexible shift: {{date}}"
     },
     "states": {
       "loading": "Loading...",
