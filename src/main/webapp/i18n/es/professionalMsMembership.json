@@ -1,0 +1,31 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceMembership": {
+      "home": {
+        "title": "Membresías",
+        "refreshListLabel": "Actualizar lista",
+        "createLabel": "Crear una nueva Membresía",
+        "createOrEditLabel": "Crear o editar Membresía",
+        "search": "Buscar Membresía",
+        "notFound": "No se encontraron membresías"
+      },
+      "created": "Se ha creado una nueva Membresía con el identificador {{ param }}",
+      "updated": "Membresía actualizada con el identificador {{ param }}",
+      "deleted": "Membresía eliminada con el identificador {{ param }}",
+      "delete": {
+        "question": "¿Seguro que desea eliminar Membresía {{ id }}?"
+      },
+      "detail": {
+        "title": "Membresía"
+      },
+      "id": "ID",
+      "name": "Nombre",
+      "description": "Descripción",
+      "status": "Estado",
+      "createdDate": "Fecha de creación",
+      "modifiedDate": "Fecha de modificación",
+      "createdBy": "Creado por",
+      "modifiedBy": "Modificado por"
+    }
+  }
+}

@@ -1,0 +1,267 @@
+{
+  "healthConnect": {
+    "navigation": {
+      "dashboard": "Panel de control",
+      "patients": "Pacientes",
+      "cases": "Casos",
+      "dutyRoster": "Cuadro de turnos",
+      "care": "Atención",
+      "overview": "Resumen",
+      "session": "Sesión",
+      "menu": "Menú",
+      "messages": "Mensajes",
+      "about": "Por qué Abofonsa",
+      "onboarding": "Incorporación"
+    },
+    "roles": {
+      "admin": "Administrador",
+      "doctor": "Médico",
+      "nurse": "Enfermero/a",
+      "paramedic": "Paramédico",
+      "pharmacist": "Farmacéutico",
+      "therapist": "Terapeuta",
+      "carer": "Cuidador",
+      "user": "Usuario",
+      "angel": "Ángel",
+      "chemist": "Químico farmacéutico",
+      "technician": "Técnico"
+    },
+    "stats": {
+      "patients": "Pacientes",
+      "female": "Mujer",
+      "male": "Hombre",
+      "kids": "Menores",
+      "unspecified": "Sin especificar",
+      "urgent": "Urgente",
+      "open": "Abierto",
+      "closed": "Cerrado"
+    },
+    "actions": {
+      "view": "Ver",
+      "print": "Imprimir",
+      "edit": "Editar",
+      "copy": "Copiar",
+      "close": "Cerrar",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "upload": "Subir informe",
+      "retry": "Reintentar",
+      "reopen": "Reabrir",
+      "archive": "Archivar",
+      "subscribe": "Suscribirse",
+      "unsubscribe": "Cancelar suscripción",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "confirm": "Confirmar",
+      "newPatient": "Nuevo paciente",
+      "markAllRead": "Marcar todo como leído",
+      "back": "Atrás"
+    },
+    "dashboard": {
+      "demographics": "Demografía de pacientes",
+      "caseStatus": "Estado del caso",
+      "caseTime": "Casos en el tiempo",
+      "caseDistribution": "Distribución de casos",
+      "casePatient": "Casos por paciente",
+      "allPatients": "Todos los pacientes",
+      "charts": {
+        "title": "Gráficos de casos",
+        "caseTimeDescription": "Una línea de tiempo con el número acumulado de casos por fecha.",
+        "caseDistributionDescription": "El número de casos urgentes, abiertos y cerrados.",
+        "casePatientDescription": "El número de casos asociados a cada paciente.",
+        "caseSeries": "Casos",
+        "statusLegend": "Estado del caso",
+        "caseLegend": "Casos",
+        "cases": "Casos",
+        "date": "Fecha",
+        "caseCount": "Número de casos"
+      }
+    },
+    "patient": {
+      "directory": "Directorio de pacientes",
+      "search": "Buscar pacientes",
+      "filters": "Filtros de pacientes",
+      "gender": "Género",
+      "allGenders": "Todos los géneros",
+      "childrenOnly": "Solo menores",
+      "lastActivity": "Última actividad",
+      "patient": "Paciente",
+      "record": "Paciente: {{name}}",
+      "identity": "Identidad del paciente",
+      "dateOfBirth": "Fecha de nacimiento",
+      "phone": "Teléfono",
+      "email": "Correo electrónico",
+      "emergencyContact": "Contacto de emergencia / pariente más cercano",
+      "cases": "Casos",
+      "visitations": "Visitas",
+      "personalCareVisit": "Visita de atención personal",
+      "activityTrail": "Historial de actividad",
+      "medications": "Medicamentos",
+      "reports": "Informes",
+      "copyConfirmation": "¿Crear un duplicado en borrador de este expediente de paciente?"
+    },
+    "case": {
+      "queue": "Cola de casos",
+      "brief": "Resumen",
+      "date": "Abierto",
+      "status": "Estado",
+      "scope": "Ámbito de casos",
+      "detail": "Caso n.º {{number}}",
+      "symptoms": "Síntomas",
+      "diagnosis": "Diagnóstico",
+      "recommendations": "Recomendaciones"
+    },
+    "activity": {
+      "title": "Registro de actividad",
+      "eventTitle": "Título del evento",
+      "description": "Descripción detallada del evento."
+    },
+    "roster": {
+      "subtitle": "Suscríbase a los turnos para dirigir sus casos urgentes y abiertos a su cola «Mi turno».",
+      "allCases": "Todos los casos",
+      "myRoster": "Mi turno",
+      "subscribed": "Mis turnos suscritos",
+      "available": "Turnos disponibles",
+      "shifts": "Turnos",
+      "activeShift": "De guardia hasta {{time}}",
+      "nextShift": "Próximo turno: {{time}}",
+      "upcoming": "Próximo",
+      "active": "Activo",
+      "completed": "Completado"
+    },
+    "states": {
+      "loading": "Cargando…",
+      "empty": "No se encontraron registros.",
+      "error": "No se pudo cargar esta información.",
+      "readOnly": "Tiene acceso de solo lectura."
+    },
+    "pagination": {
+      "label": "Paginación",
+      "page": "Página {{page}}"
+    },
+    "table": {
+      "actions": "Acciones",
+      "label": "Tabla de resultados"
+    },
+    "validation": {
+      "invalidFile": "Seleccione un archivo compatible dentro del tamaño permitido.",
+      "required": "Complete todos los campos obligatorios."
+    },
+    "brand": {
+      "name": "Abofonsa",
+      "product": "Profesional",
+      "tagline": "Espacio del profesional clínico",
+      "description": "El lado clínico de BridgeCare: expedientes de pacientes, triaje y cuadros de turnos en un solo lugar.",
+      "signInHint": "Inicie sesión en su cuenta clínica."
+    },
+    "messages": {
+      "title": "Mensajes",
+      "empty": "No hay mensajes nuevos de pacientes en este momento.",
+      "backendPending": "La mensajería se activará cuando el servicio de mensajería esté conectado."
+    },
+    "about": {
+      "title": "Por qué Abofonsa BridgeCare — Professional",
+      "body": "Una plataforma, dos caras: las familias reservan y siguen la atención a través del portal familiar de BridgeCare, mientras que el personal clínico gestiona aquí pacientes, triaje y cuadros de turnos, compartiendo los mismos expedientes en tiempo real."
+    },
+    "toast": {
+      "caseSaved": "Caso guardado",
+      "activityLogged": "Actividad registrada",
+      "reportUploaded": "Informe subido",
+      "rosterUpdated": "Cuadro de turnos actualizado",
+      "markedRead": "Marcado como leído"
+    },
+    "onboarding": {
+      "title": "Incorporación profesional",
+      "nav": "Incorporación",
+      "chooseRole": "Elija su rol clínico…",
+      "consentIntro": "Solicite acceso profesional verificado. Su solicitud es revisada por el equipo de acreditación antes de conceder cualquier autoridad clínica.",
+      "consentText": "Doy mi consentimiento para el tratamiento de mi información de identidad, cualificación y registro con fines de acreditación, y confirmo que la información que proporciono es exacta.",
+      "requestedRole": "Rol clínico solicitado",
+      "emergencyContact": "Contacto de emergencia / pariente más cercano",
+      "correctionRequired": "Su solicitud fue devuelta para corrección",
+      "reviewIntro": "Compruebe sus datos y envíe su solicitud para la revisión de credenciales.",
+      "steps": {
+        "consent": "Consentimiento y rol",
+        "profile": "Perfil",
+        "contact": "Dirección y contacto",
+        "documents": "Documentos",
+        "review": "Revisar y enviar",
+        "status": "Estado"
+      },
+      "fields": {
+        "firstName": "Nombre",
+        "middleNames": "Segundos nombres",
+        "lastName": "Apellidos",
+        "birthDate": "Fecha de nacimiento",
+        "sex": "Sexo",
+        "title": "Título / cargo",
+        "mobilePhone": "Teléfono móvil",
+        "email": "Correo electrónico",
+        "cardType": "Tipo de documento de identidad",
+        "cardNumber": "Número de identidad",
+        "digitalAddress": "Dirección digital",
+        "streetAddress": "Dirección (calle)",
+        "town": "Localidad",
+        "city": "Ciudad",
+        "district": "Distrito",
+        "region": "Región",
+        "country": "País",
+        "contactName": "Nombre del contacto",
+        "contactRelationship": "Parentesco",
+        "contactPhone": "Teléfono del contacto",
+        "documentType": "Tipo de documento",
+        "otherLabel": "Etiqueta",
+        "expiryDate": "Fecha de caducidad"
+      },
+      "actions": {
+        "start": "Iniciar solicitud",
+        "saveContinue": "Guardar y continuar",
+        "review": "Revisar y enviar",
+        "submit": "Enviar a revisión"
+      },
+      "statuses": {
+        "APPLICATION_STARTED": "Solicitud iniciada",
+        "PROFILE_COMPLETED": "Perfil completado",
+        "CREDENTIAL_REVIEW": "En revisión de credenciales",
+        "RETURNED_FOR_CORRECTION": "Devuelta para corrección",
+        "REJECTED": "Rechazada",
+        "APPROVED": "Aprobada",
+        "ORGANIZATION_ASSIGNED": "Organización asignada",
+        "AUTHORITY_ASSIGNED": "Autoridad asignada",
+        "ROSTER_CONFIGURED": "Cuadro de turnos configurado",
+        "ACTIVE": "Activo",
+        "SUSPENDED": "Suspendida",
+        "EXPIRED": "Caducada",
+        "DEACTIVATED": "Desactivada"
+      },
+      "documentTypes": {
+        "CERTIFICATE": "Certificado profesional",
+        "LICENSE": "Licencia",
+        "PASSPORT": "Pasaporte",
+        "GHANACARD": "Ghana Card",
+        "DRIVERLICENSE": "Permiso de conducir",
+        "VOTERCARD": "Tarjeta de votante",
+        "PASSPHOTO": "Foto de pasaporte",
+        "NHIS": "Tarjeta NHIS",
+        "OTHER": "Otro"
+      },
+      "mandatory": {
+        "certificate": "Certificado profesional subido",
+        "license": "Licencia con fecha de caducidad subida",
+        "identity": "Documento de identidad oficial subido",
+        "photo": "Foto de pasaporte subida"
+      },
+      "verification": {
+        "PENDING": "Pendiente de revisión",
+        "VERIFIED": "Verificado",
+        "REJECTED": "Rechazada"
+      },
+      "toast": {
+        "started": "Solicitud iniciada",
+        "saved": "Progreso guardado",
+        "documentUploaded": "Documento subido",
+        "submitted": "Enviada a revisión"
+      }
+    }
+  }
+}

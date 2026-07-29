@@ -1,0 +1,32 @@
+{
+  "health": {
+    "title": "Comprobaciones de salud",
+    "refresh.button": "Actualizar",
+    "stacktrace": "Stacktrace",
+    "details": {
+      "details": "Detalles",
+      "properties": "Propiedades",
+      "name": "Nombre",
+      "value": "Valor",
+      "error": "Error"
+    },
+    "indicator": {
+      "diskSpace": "Espacio en disco",
+      "mail": "Correo electrónico",
+      "livenessState": "Estado de actividad",
+      "readinessState": "Estado de preparación",
+      "ping": "Solicitud",
+      "mongo": "MongoDB"
+    },
+    "table": {
+      "service": "Nombre del servicio",
+      "status": "Estado"
+    },
+    "status": {
+      "UNKNOWN": "UNKNOWN",
+      "UP": "UP",
+      "OUT_OF_SERVICE": "OUT_OF_SERVICE",
+      "DOWN": "DOWN"
+    }
+  }
+}

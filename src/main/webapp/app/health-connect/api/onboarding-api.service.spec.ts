@@ -25,7 +25,14 @@ describe('OnboardingApiService', () => {
     service.startApplication('ROLE_NURSE').subscribe();
     const req = httpMock.expectOne(`${base}/applications`);
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ requestedRole: 'ROLE_NURSE', consentAccepted: true });
+    expect(req.request.body).toEqual({ requestedRole: 'ROLE_NURSE', consentAccepted: true, source: null });
+    req.flush({ id: 'app-1', accountId: 'me', status: 'APPLICATION_STARTED' });
+  });
+
+  it('carries the careers attribution source when present', () => {
+    service.startApplication('ROLE_DOCTOR', 'web-careers').subscribe();
+    const req = httpMock.expectOne(`${base}/applications`);
+    expect(req.request.body).toEqual({ requestedRole: 'ROLE_DOCTOR', consentAccepted: true, source: 'web-careers' });
     req.flush({ id: 'app-1', accountId: 'me', status: 'APPLICATION_STARTED' });
   });
 

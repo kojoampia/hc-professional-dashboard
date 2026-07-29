@@ -1,0 +1,27 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceTeam": {
+      "home": {
+        "title": "Equipos",
+        "refreshListLabel": "Actualizar lista",
+        "createLabel": "Crear un nuevo Equipo",
+        "createOrEditLabel": "Crear o editar Equipo",
+        "search": "Buscar Equipo",
+        "notFound": "No se encontraron equipos"
+      },
+      "created": "Se ha creado un nuevo Equipo con el identificador {{ param }}",
+      "updated": "Equipo actualizado con el identificador {{ param }}",
+      "deleted": "Equipo eliminado con el identificador {{ param }}",
+      "delete": {
+        "question": "¿Seguro que desea eliminar Equipo {{ id }}?"
+      },
+      "detail": {
+        "title": "Equipo"
+      },
+      "id": "ID",
+      "name": "Nombre",
+      "description": "Descripción",
+      "contact": "Contacto"
+    }
+  }
+}

@@ -1,10 +1,12 @@
-import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
 import { EMAIL_ALREADY_USED_TYPE, LOGIN_ALREADY_USED_TYPE } from 'app/config/error.constants';
+import { CareersHandoffService } from 'app/core/careers/careers-handoff.service';
+import { StateStorageService } from 'app/core/auth/state-storage.service';
 import SharedModule from 'app/shared/shared.module';
 import PasswordStrengthBarComponent from '../password/password-strength-bar/password-strength-bar.component';
 import { RegisterService } from './register.service';
@@ -14,7 +16,11 @@ import { RegisterService } from './register.service';
   imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule, PasswordStrengthBarComponent],
   templateUrl: './register.component.html',
 })
-export default class RegisterComponent implements AfterViewInit {
+export default class RegisterComponent implements OnInit, AfterViewInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly careersHandoff = inject(CareersHandoffService);
+  private readonly stateStorageService = inject(StateStorageService);
+
   @ViewChild('login', { static: false })
   login?: ElementRef;
 
@@ -52,6 +58,17 @@ export default class RegisterComponent implements AfterViewInit {
     private translateService: TranslateService,
     private registerService: RegisterService,
   ) {}
+
+  ngOnInit(): void {
+    // Careers handoff (docs/careers-handoff-contract.md): capture
+    // track/locale/src for the onboarding wizard and honour the locale the
+    // candidate was reading in. Absent/unknown parameters change nothing.
+    const handoff = this.careersHandoff.capture(this.route.snapshot.queryParamMap);
+    if (handoff?.locale && handoff.locale !== this.translateService.currentLang) {
+      this.stateStorageService.storeLocale(handoff.locale);
+      this.translateService.use(handoff.locale);
+    }
+  }
 
   ngAfterViewInit(): void {
     if (this.login) {
