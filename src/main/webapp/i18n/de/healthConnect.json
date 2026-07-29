@@ -127,7 +127,35 @@
       "nextShift": "Nächste Schicht: {{time}}",
       "upcoming": "Bevorstehend",
       "active": "Aktiv",
-      "completed": "Abgeschlossen"
+      "completed": "Abgeschlossen",
+      "myAssignments": "Meine Diensteinteilungen",
+      "notAssigned": "Noch keine Diensteinteilungen. Ein Dienstplan-Administrator teilt Ihre Schichten zu.",
+      "assignmentOnly": "Dienstpläne werden von Administratoren zugeteilt. Wenden Sie sich für Änderungen an Ihre Koordination.",
+      "administer": "Dienstplanverwaltung",
+      "professionalId": "ID des Fachprofils",
+      "date": "Datum",
+      "shift": "Schicht",
+      "duty": "Funktion",
+      "wardName": "Station / Einheit",
+      "assign": "Schicht zuteilen",
+      "unassign": "Entfernen",
+      "shiftNames": {
+        "MORNING": "Früh (06:00–14:00)",
+        "AFTERNOON": "Spät (14:00–22:00)",
+        "NIGHT": "Nacht (22:00–06:00)"
+      },
+      "duties": {
+        "DOCTOR": "Arzt/Ärztin",
+        "NURSE": "Pflegekraft",
+        "PARAMEDIC": "Rettungssanitäter/in",
+        "PHARMACIST": "Apotheker/in",
+        "THERAPIST": "Therapeut/in",
+        "CARER": "Betreuungskraft",
+        "ANGEL": "Care-Angel",
+        "CHEMIST": "Chemiker/in",
+        "TECHNICIAN": "Techniker/in",
+        "OTHER": "Sonstige"
+      }
     },
     "states": {
       "loading": "Wird geladen...",
@@ -168,7 +196,8 @@
       "activityLogged": "Aktivität protokolliert",
       "reportUploaded": "Bericht hochgeladen",
       "rosterUpdated": "Dienstplan aktualisiert",
-      "markedRead": "Als gelesen markiert"
+      "markedRead": "Als gelesen markiert",
+      "acknowledged": "Bestätigung gespeichert"
     },
     "onboarding": {
       "title": "Fachkräfte-Onboarding",
@@ -301,6 +330,14 @@
         "activated": "Fachzugang aktiviert",
         "suspended": "Antrag gesperrt"
       }
+    },
+    "firstLogin": {
+      "title": "Willkommen bei BridgeCare Professional",
+      "body": "Bitte bestätigen Sie vor dem Start, dass Sie Ihre beruflichen Pflichten gelesen haben und akzeptieren:",
+      "dutyOfCare": "Ich handle im Rahmen meiner zugewiesenen klinischen Rolle und Sorgfaltspflicht.",
+      "dataProtection": "Ich behandle Patientendaten vertraulich und gemäß Datenschutzrecht.",
+      "rosterDiscipline": "Ich halte mich an meinen Dienstplan und melde Konflikte meiner Koordination.",
+      "acknowledge": "Ich bestätige"
     }
   }
 }

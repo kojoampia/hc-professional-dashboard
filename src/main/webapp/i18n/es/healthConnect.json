@@ -127,7 +127,35 @@
       "nextShift": "Próximo turno: {{time}}",
       "upcoming": "Próximo",
       "active": "Activo",
-      "completed": "Completado"
+      "completed": "Completado",
+      "myAssignments": "Mis turnos asignados",
+      "notAssigned": "Aún no hay turnos asignados. Un administrador de turnos asigna sus guardias.",
+      "assignmentOnly": "Los turnos los asignan los administradores. Contacte con su coordinador para cambios.",
+      "administer": "Administración de turnos",
+      "professionalId": "ID del perfil profesional",
+      "date": "Fecha",
+      "shift": "Turno",
+      "duty": "Función",
+      "wardName": "Planta / unidad",
+      "assign": "Asignar turno",
+      "unassign": "Quitar",
+      "shiftNames": {
+        "MORNING": "Mañana (06:00–14:00)",
+        "AFTERNOON": "Tarde (14:00–22:00)",
+        "NIGHT": "Noche (22:00–06:00)"
+      },
+      "duties": {
+        "DOCTOR": "Médico/a",
+        "NURSE": "Enfermero/a",
+        "PARAMEDIC": "Paramédico/a",
+        "PHARMACIST": "Farmacéutico/a",
+        "THERAPIST": "Terapeuta",
+        "CARER": "Cuidador/a",
+        "ANGEL": "Ángel de cuidados",
+        "CHEMIST": "Químico/a",
+        "TECHNICIAN": "Técnico/a",
+        "OTHER": "Otro"
+      }
     },
     "states": {
       "loading": "Cargando…",
@@ -168,7 +196,8 @@
       "activityLogged": "Actividad registrada",
       "reportUploaded": "Informe subido",
       "rosterUpdated": "Cuadro de turnos actualizado",
-      "markedRead": "Marcado como leído"
+      "markedRead": "Marcado como leído",
+      "acknowledged": "Confirmación registrada"
     },
     "onboarding": {
       "title": "Incorporación profesional",
@@ -301,6 +330,14 @@
         "activated": "Acceso profesional activado",
         "suspended": "Solicitud suspendida"
       }
+    },
+    "firstLogin": {
+      "title": "Bienvenido/a a BridgeCare Professional",
+      "body": "Antes de empezar, confirme que ha leído y acepta sus obligaciones profesionales:",
+      "dutyOfCare": "Actuaré dentro de mi rol clínico asignado y mi deber de cuidado.",
+      "dataProtection": "Trataré los datos de los pacientes de forma confidencial y conforme a la ley de protección de datos.",
+      "rosterDiscipline": "Cumpliré mi turno asignado y comunicaré conflictos a mi coordinación.",
+      "acknowledge": "Lo confirmo"
     }
   }
 }

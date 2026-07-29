@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router, RouterOutlet, Routes } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -60,6 +62,8 @@ describe('HealthConnect feature routes', () => {
     await TestBed.configureTestingModule({
       imports: [HealthConnectRouteTestHostComponent, TranslateModule.forRoot()],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         provideRouter(routes),
         {
           provide: AccountService,
