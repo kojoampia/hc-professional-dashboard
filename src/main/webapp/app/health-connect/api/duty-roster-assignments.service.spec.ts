@@ -52,6 +52,37 @@ describe('DutyRosterAssignmentsService', () => {
       expect(label).toEqual({ translationKey: 'healthConnect.roster.activeShift', translationParams: { time: '06:00' } });
     });
 
+    it('reports an active DAY shift within the 08:00-17:00 window', () => {
+      const label = service.computeShiftLabel([assignment({ date: '2026-07-30', shift: 'DAY' })], at('2026-07-30T12:00:00'));
+      expect(label).toEqual({ translationKey: 'healthConnect.roster.activeShift', translationParams: { time: '17:00' } });
+      expect(service.computeShiftLabel([assignment({ date: '2026-07-30', shift: 'DAY' })], at('2026-07-30T18:00:00'))).toBeNull();
+    });
+
+    it('labels a FLEXIBLE assignment on the current date as flexible duty regardless of the hour', () => {
+      const flexible = [assignment({ date: '2026-07-30', shift: 'FLEXIBLE' })];
+      expect(service.computeShiftLabel(flexible, at('2026-07-30T07:00:00'))).toEqual({
+        translationKey: 'healthConnect.roster.flexibleShift',
+        translationParams: { date: '2026-07-30' },
+      });
+      expect(service.computeShiftLabel(flexible, at('2026-07-30T21:00:00'))).toEqual({
+        translationKey: 'healthConnect.roster.flexibleShift',
+        translationParams: { date: '2026-07-30' },
+      });
+    });
+
+    it('prefers an active fixed-window shift over a same-day flexible assignment', () => {
+      const label = service.computeShiftLabel(
+        [assignment({ date: '2026-07-30', shift: 'FLEXIBLE' }), assignment({ id: 'a-2', date: '2026-07-30', shift: 'DAY' })],
+        at('2026-07-30T12:00:00'),
+      );
+      expect(label).toEqual({ translationKey: 'healthConnect.roster.activeShift', translationParams: { time: '17:00' } });
+    });
+
+    it('announces an upcoming FLEXIBLE assignment by date without a fixed start time', () => {
+      const label = service.computeShiftLabel([assignment({ date: '2026-08-02', shift: 'FLEXIBLE' })], at('2026-07-30T10:00:00'));
+      expect(label).toEqual({ translationKey: 'healthConnect.roster.nextFlexibleShift', translationParams: { date: '2026-08-02' } });
+    });
+
     it('falls back to the next upcoming shift start', () => {
       const label = service.computeShiftLabel(
         [assignment({ date: '2026-07-31', shift: 'AFTERNOON' }), assignment({ id: 'a-2', date: '2026-07-30', shift: 'NIGHT' })],
