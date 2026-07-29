@@ -1,0 +1,31 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceStat": {
+      "home": {
+        "title": "Estadísticas",
+        "refreshListLabel": "Actualizar lista",
+        "createLabel": "Crear una nueva Estadística",
+        "createOrEditLabel": "Crear o editar Estadística",
+        "search": "Buscar Estadística",
+        "notFound": "No se encontraron estadísticas"
+      },
+      "created": "Se ha creado una nueva Estadística con el identificador {{ param }}",
+      "updated": "Estadística actualizada con el identificador {{ param }}",
+      "deleted": "Estadística eliminada con el identificador {{ param }}",
+      "delete": {
+        "question": "¿Seguro que desea eliminar Estadística {{ id }}?"
+      },
+      "detail": {
+        "title": "Estadística"
+      },
+      "id": "ID",
+      "type": "Tipo",
+      "name": "Nombre",
+      "description": "Descripción",
+      "value": "Valor",
+      "note": "Nota",
+      "createdDate": "Fecha de creación",
+      "createdBy": "Creado por"
+    }
+  }
+}

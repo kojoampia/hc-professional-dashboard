@@ -173,6 +173,7 @@
     "onboarding": {
       "title": "Intégration professionnelle",
       "nav": "Intégration",
+      "chooseRole": "Choisissez votre rôle clinique…",
       "consentIntro": "Demandez un accès professionnel vérifié. Votre demande est examinée par l'équipe d'accréditation avant toute attribution d'autorité clinique.",
       "consentText": "Je consens au traitement de mes informations d'identité, de qualification et d'enregistrement à des fins d'accréditation, et je confirme l'exactitude des informations fournies.",
       "requestedRole": "Rôle clinique demandé",

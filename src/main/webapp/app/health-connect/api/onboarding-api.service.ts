@@ -109,8 +109,12 @@ export class OnboardingApiService {
   private readonly applicationConfigService = inject(ApplicationConfigService);
   private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/onboarding', 'professionalService');
 
-  startApplication(requestedRole: string): Observable<OnboardingApplicationDto> {
-    return this.http.post<OnboardingApplicationDto>(`${this.resourceUrl}/applications`, { requestedRole, consentAccepted: true });
+  startApplication(requestedRole: string, source?: string | null): Observable<OnboardingApplicationDto> {
+    return this.http.post<OnboardingApplicationDto>(`${this.resourceUrl}/applications`, {
+      requestedRole,
+      consentAccepted: true,
+      source: source ?? null,
+    });
   }
 
   getOwnApplication(): Observable<OnboardingApplicationDto> {

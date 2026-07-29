@@ -173,6 +173,7 @@
     "onboarding": {
       "title": "Fachkräfte-Onboarding",
       "nav": "Onboarding",
+      "chooseRole": "Wählen Sie Ihre klinische Rolle…",
       "consentIntro": "Beantragen Sie verifizierten Fachzugang. Ihr Antrag wird vor jeder Vergabe klinischer Berechtigungen vom Prüfungsteam geprüft.",
       "consentText": "Ich willige in die Verarbeitung meiner Identitäts-, Qualifikations- und Registrierungsdaten zur Akkreditierung ein und bestätige die Richtigkeit meiner Angaben.",
       "requestedRole": "Beantragte klinische Rolle",

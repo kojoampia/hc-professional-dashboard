@@ -173,6 +173,7 @@
     "onboarding": {
       "title": "Professional onboarding",
       "nav": "Onboarding",
+      "chooseRole": "Choose your clinical role…",
       "consentIntro": "Apply for verified professional access. Your application is reviewed by the credentialing team before any clinical authority is granted.",
       "consentText": "I consent to the processing of my identity, qualification, and registration information for credentialing, and confirm the information I provide is accurate.",
       "requestedRole": "Requested clinical role",
