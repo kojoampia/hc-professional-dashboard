@@ -186,6 +186,12 @@ Merge discipline: a WP merges to its repo's base branch only when its gate (§ I
 
 ### WP status log
 
+**WP7 — done (2026-07-29), pending merge review** (`api` + `web` branches `onboarding/wp7-compliance-ops`, based on WP6).
+
+- **api:** `ComplianceService` — license-expiry sweep that suspends ACTIVE applications through the WP3 state machine (audited `license-expired: <docId>` reason, `compliance.alert` published on `hc.professional.entity`), lapsed/lapsing-30d watchlist joined to applications, per-status **and per-source funnel metrics (careers task 145)**, and a newest-first cross-application audit feed (top 50). `OnboardingService` reactivation guard: SUSPENDED → ACTIVE now 409s without a verified, unexpired license. `ComplianceScheduler` runs the same idempotent sweep nightly at 04:00; `ComplianceResource` exposes it all admin-only under `/api/onboarding/compliance` (`sweep`, `expiring?days`, `metrics`, `events`). `ComplianceFlowIT` 4/4; full verify green.
+- **web:** `/compliance` (ROLE_ADMIN route + Administration sidebar entry) — funnel tiles by status and by attribution source, expiring-license watchlist with lapsed/upcoming badges and per-row links into `/review/:id`, on-demand sweep button with outcome toast, and the onboarding audit feed. `ComplianceApiService` client; i18n en/fr/de/es. 381/381 tests, lint + prettier + prod build green.
+- Gate met end-to-end in `ComplianceFlowIT`: expiring license → watchlist → sweep restriction (SUSPENDED + audit event + Kafka alert) → reactivation blocked (409) → new verified license → reactivation, with the full transition chain in the audit trail.
+
 **WP6 — done (2026-07-29), pending merge review** (`api` + `web` branches `onboarding/wp6-duty-roster-first-login`, based on WP5).
 
 - **api:** `DutyRoster` collection corrected to the assignment-only contract (§ Data contracts): `date`/`duty`/`professionalId`/`shift`/`name`/`description`, **no `patientId`**, `DutyRole` covering the nine clinical roles + OTHER, `ShiftType` MORNING/AFTERNOON/NIGHT. `POST|DELETE /api/onboarding/duty-rosters` admin-only (unknown profile → 400, creation publishes `entity.created`), `GET` admin-only, `GET /my` returns the caller's own assignments via their profile. First-login acknowledgement: `GET/POST /api/onboarding/acknowledgement` — recorded as an append-only `OnboardingEvent` (reason `first-login-acknowledgement`), idempotent (repeat → 409), and accounts without an application have nothing to acknowledge. `DutyRosterFlowIT` 5/5; full verify green.
