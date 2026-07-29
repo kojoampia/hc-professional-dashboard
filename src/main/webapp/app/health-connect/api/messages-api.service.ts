@@ -9,7 +9,7 @@ export interface ClinicianMessage {
 }
 
 /**
- * Messages surface (web-layout-plan.md Phase 6c).
+ * Messages surface (professional-web.md §5).
  *
  * BACKEND DEPENDENCY: no messages endpoint exists yet in `gateway/` or `api/`
  * — this service intentionally serves an empty inbox rather than faking data.

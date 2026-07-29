@@ -1,6 +1,6 @@
 /**
- * Dashboard REST contracts — see application-migration.md Phase 1 /
- * work/phase-1.md. Backed by the `patientService` microservice; none of
+ * Dashboard REST contracts — see professional-web.md §5
+ * (REST contracts). Backed by the `patientService` microservice; none of
  * these endpoints exist yet, this is the spec they're built against.
  */
 

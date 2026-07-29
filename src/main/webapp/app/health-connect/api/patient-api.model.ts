@@ -1,6 +1,6 @@
 /**
- * Patient Directory / Record REST contracts — see application-migration.md
- * Phase 1 / work/phase-1.md. Backed by a new `patientService` `Patient`
+ * Patient Directory / Record REST contracts — see professional-web.md
+ * §5. Backed by a new `patientService` `Patient`
  * resource that does not exist yet anywhere in this repo's microservices.
  */
 

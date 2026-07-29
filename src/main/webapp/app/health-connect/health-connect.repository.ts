@@ -352,7 +352,7 @@ export class MockHealthConnectRepository implements HealthConnectRepository {
 
 /**
  * Default provider stays the in-memory mock: no backend implements the
- * Phase 1 REST contracts yet (see application-migration.md / work/phase-1.md).
+ * Phase 1 REST contracts yet (see professional-web.md §5).
  * Once one exists, swap in the real implementation with a one-line DI override:
  *
  *   { provide: HEALTH_CONNECT_REPOSITORY, useClass: HttpHealthConnectRepository }
