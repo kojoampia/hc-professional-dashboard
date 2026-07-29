@@ -1,0 +1,25 @@
+# Loaded into Consul KV by consul-config-loader and served to every app of
+# the stack as shared configuration (Spring Cloud Consul config).
+#
+# The ${...} placeholders resolve INSIDE each container against its own
+# environment variables (set in docker-compose.professional.yml from .env) —
+# no secret is stored in this file or in the repo.
+configserver:
+  name: Health Connect professional production config
+  status: Loaded into Consul KV by consul-config-loader
+
+jhipster:
+  security:
+    authentication:
+      jwt:
+        # one shared signing key: the gateway issues tokens, the api validates them
+        base64-secret: ${JWT_BASE64_SECRET}
+  mail:
+    base-url: ${PORTAL_BASE_URL:https://professional.abofonsa.com}
+
+spring:
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:25}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}

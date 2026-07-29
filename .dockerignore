@@ -1,0 +1,11 @@
+node_modules
+target
+build
+dist
+.git
+.angular
+coverage
+deploy
+src/test
+*.md
+.claude
