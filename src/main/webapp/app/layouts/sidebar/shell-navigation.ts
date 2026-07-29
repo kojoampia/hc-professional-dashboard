@@ -88,6 +88,13 @@ export const SHELL_NAV_GROUPS: ShellNavGroup[] = [
     dataCy: 'adminMenu',
     items: [
       {
+        path: '/review',
+        labelKey: 'healthConnect.review.title',
+        icon: 'fact_check',
+        crumbKey: 'global.menu.admin.main',
+        dataCy: 'reviewMenu',
+      },
+      {
         path: '/med-case',
         labelKey: 'professionalDashboardApp.hcPatientServiceMedCase.home.title',
         icon: 'folder_shared',

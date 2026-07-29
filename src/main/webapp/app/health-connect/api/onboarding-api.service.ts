@@ -47,6 +47,7 @@ export interface OnboardingApplicationDto {
   submittedAt?: string | null;
   decisionReason?: string | null;
   correctionNotes?: string | null;
+  source?: string | null;
 }
 
 export interface OnboardingEventDto {
@@ -108,6 +109,66 @@ export class OnboardingApiService {
   private readonly http = inject(HttpClient);
   private readonly applicationConfigService = inject(ApplicationConfigService);
   private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/onboarding', 'professionalService');
+
+  listApplications(status?: OnboardingStatus): Observable<OnboardingApplicationDto[]> {
+    const params = status ? { params: { status } } : {};
+    return this.http.get<OnboardingApplicationDto[]>(`${this.resourceUrl}/applications`, params);
+  }
+
+  getApplication(id: string): Observable<OnboardingApplicationDto> {
+    return this.http.get<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}`);
+  }
+
+  applicationDocuments(id: string): Observable<OnboardingDocumentDto[]> {
+    return this.http.get<OnboardingDocumentDto[]>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/documents`);
+  }
+
+  verifyDocument(id: string): Observable<OnboardingDocumentDto> {
+    return this.http.put<OnboardingDocumentDto>(`${this.resourceUrl}/documents/${encodeURIComponent(id)}/verify`, null);
+  }
+
+  rejectDocument(id: string, reason: string): Observable<OnboardingDocumentDto> {
+    return this.http.put<OnboardingDocumentDto>(`${this.resourceUrl}/documents/${encodeURIComponent(id)}/reject`, { reason });
+  }
+
+  documentContent(id: string): Observable<Blob> {
+    return this.http.get(`${this.resourceUrl}/documents/${encodeURIComponent(id)}/content`, { responseType: 'blob' });
+  }
+
+  decide(id: string, decision: OnboardingStatus, reason?: string, correctionNotes?: string): Observable<OnboardingApplicationDto> {
+    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/decide`, {
+      decision,
+      reason: reason ?? null,
+      correctionNotes: correctionNotes ?? null,
+    });
+  }
+
+  assignOrganization(
+    id: string,
+    payload: { specialtyCategoryId?: string | null; teamIds?: string[]; supervisorProfileId?: string | null },
+  ): Observable<OnboardingApplicationDto> {
+    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/organization`, payload);
+  }
+
+  markAuthorityAssigned(id: string): Observable<OnboardingApplicationDto> {
+    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/authority-assigned`, null);
+  }
+
+  markRosterConfigured(id: string): Observable<OnboardingApplicationDto> {
+    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/roster-configured`, null);
+  }
+
+  activate(id: string): Observable<OnboardingApplicationDto> {
+    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/activate`, null);
+  }
+
+  suspend(id: string, reason: string): Observable<OnboardingApplicationDto> {
+    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/suspend`, { reason });
+  }
+
+  deactivate(id: string, reason: string): Observable<OnboardingApplicationDto> {
+    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/deactivate`, { reason });
+  }
 
   startApplication(requestedRole: string, source?: string | null): Observable<OnboardingApplicationDto> {
     return this.http.post<OnboardingApplicationDto>(`${this.resourceUrl}/applications`, {

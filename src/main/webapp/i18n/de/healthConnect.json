@@ -262,6 +262,45 @@
         "documentUploaded": "Dokument hochgeladen",
         "submitted": "Zur Prüfung eingereicht"
       }
+    },
+    "review": {
+      "title": "Prüfungswarteschlange",
+      "detail": "Antragsprüfung",
+      "applicant": "Antragsteller",
+      "source": "Quelle",
+      "submitted": "Eingereicht",
+      "open": "Prüfung öffnen",
+      "all": "Alle",
+      "filter": "Nach Status filtern",
+      "empty": "Keine Anträge in diesem Status.",
+      "summary": "Antragsübersicht",
+      "correctionNotes": "Korrekturhinweise",
+      "decision": "Entscheidung & Aktivierung",
+      "reason": "Begründung des Prüfers",
+      "notes": "Korrekturhinweise",
+      "approve": "Genehmigen",
+      "return": "Zur Korrektur zurückgeben",
+      "reject": "Antrag ablehnen",
+      "verify": "Verifizieren",
+      "rejectDocument": "Ablehnen",
+      "verifyFirst": "Die Genehmigung wird freigeschaltet, sobald alle Dokumente verifiziert sind.",
+      "specialtyCategory": "Fachkategorie",
+      "teamIds": "Team-IDs",
+      "assignOrganization": "Organisation zuweisen",
+      "assignAuthority": "Klinische Berechtigung zuweisen",
+      "rosterConfigured": "Dienstplan als eingerichtet markieren",
+      "activate": "Fachzugang aktivieren",
+      "suspend": "Sperren",
+      "toast": {
+        "documentVerified": "Dokument verifiziert",
+        "documentRejected": "Dokument abgelehnt",
+        "decided": "Entscheidung erfasst",
+        "organizationAssigned": "Organisation zugewiesen",
+        "authorityAssigned": "Klinische Berechtigung zugewiesen",
+        "rosterConfigured": "Dienstplan markiert",
+        "activated": "Fachzugang aktiviert",
+        "suspended": "Antrag gesperrt"
+      }
     }
   }
 }

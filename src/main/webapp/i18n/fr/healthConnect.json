@@ -262,6 +262,45 @@
         "documentUploaded": "Document téléversé",
         "submitted": "Soumise pour examen"
       }
+    },
+    "review": {
+      "title": "File d'examen",
+      "detail": "Examen de la demande",
+      "applicant": "Candidat",
+      "source": "Source",
+      "submitted": "Soumise",
+      "open": "Ouvrir l'examen",
+      "all": "Toutes",
+      "filter": "Filtrer par statut",
+      "empty": "Aucune demande dans cet état.",
+      "summary": "Résumé de la demande",
+      "correctionNotes": "Notes de correction",
+      "decision": "Décision et activation",
+      "reason": "Motif de l'examinateur",
+      "notes": "Notes de correction",
+      "approve": "Approuver",
+      "return": "Renvoyer pour correction",
+      "reject": "Rejeter la demande",
+      "verify": "Vérifier",
+      "rejectDocument": "Rejeter",
+      "verifyFirst": "L'approbation se débloque une fois tous les documents vérifiés.",
+      "specialtyCategory": "Catégorie de spécialité",
+      "teamIds": "Identifiants d'équipes",
+      "assignOrganization": "Attribuer l'organisation",
+      "assignAuthority": "Attribuer l'autorité clinique",
+      "rosterConfigured": "Marquer le planning configuré",
+      "activate": "Activer l'accès professionnel",
+      "suspend": "Suspendre",
+      "toast": {
+        "documentVerified": "Document vérifié",
+        "documentRejected": "Document rejeté",
+        "decided": "Décision enregistrée",
+        "organizationAssigned": "Organisation attribuée",
+        "authorityAssigned": "Autorité clinique attribuée",
+        "rosterConfigured": "Planning marqué configuré",
+        "activated": "Accès professionnel activé",
+        "suspended": "Demande suspendue"
+      }
     }
   }
 }
