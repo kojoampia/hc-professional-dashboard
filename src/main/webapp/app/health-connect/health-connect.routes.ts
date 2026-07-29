@@ -35,6 +35,9 @@ const caseDetailPage = (): Promise<typeof import('./pages/case-detail-page.compo
 const caseQueuePage = (): Promise<typeof import('./pages/case-queue-page.component')> => import('./pages/case-queue-page.component');
 const dutyRosterPage = (): Promise<typeof import('./pages/duty-roster-page.component')> => import('./pages/duty-roster-page.component');
 const onboardingPage = (): Promise<typeof import('./pages/onboarding-page.component')> => import('./pages/onboarding-page.component');
+const reviewQueuePage = (): Promise<typeof import('./pages/review-queue-page.component')> => import('./pages/review-queue-page.component');
+const reviewDetailPage = (): Promise<typeof import('./pages/review-detail-page.component')> =>
+  import('./pages/review-detail-page.component');
 const messagesPage = (): Promise<typeof import('./pages/messages-page.component')> => import('./pages/messages-page.component');
 const aboutPage = (): Promise<typeof import('./pages/about-page.component')> => import('./pages/about-page.component');
 
@@ -95,6 +98,18 @@ const routes: Routes = [
     ...protectedFeatureRoute,
     loadComponent: dutyRosterPage,
     data: { ...protectedFeatureRoute.data, titleKey: 'healthConnect.navigation.dutyRoster' },
+  },
+  {
+    path: 'review',
+    data: { authorities: [Authority.ADMIN], titleKey: 'healthConnect.review.title' },
+    canActivate: [UserRouteAccessService],
+    loadComponent: reviewQueuePage,
+  },
+  {
+    path: 'review/:id',
+    data: { authorities: [Authority.ADMIN], titleKey: 'healthConnect.review.detail' },
+    canActivate: [UserRouteAccessService],
+    loadComponent: reviewDetailPage,
   },
   {
     // Applicants may hold only ROLE_USER, so this route requires authentication

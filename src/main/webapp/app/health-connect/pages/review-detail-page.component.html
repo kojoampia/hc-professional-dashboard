@@ -1,0 +1,270 @@
+<main class="mx-auto max-w-5xl px-4 py-8 md:px-8">
+  <h1 class="sr-only">{{ 'healthConnect.review.detail' | translate }}</h1>
+
+  @if (loadState() === 'loading') {
+    <p class="py-6 text-center text-hpd-muted">{{ 'healthConnect.states.loading' | translate }}</p>
+  } @else if (loadState() === 'error') {
+    <div class="rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger" role="alert">
+      {{ 'healthConnect.states.error' | translate }}
+      <button class="hpd-focusable ml-2 cursor-pointer border-0 bg-transparent font-bold underline" type="button" (click)="load()">
+        {{ 'healthConnect.actions.retry' | translate }}
+      </button>
+    </div>
+  } @else {
+    @if (application(); as app) {
+      <div class="mb-4 flex flex-wrap items-center gap-3">
+        <button class="hpd-focusable hpd-btn hpd-btn-ghost !px-3 !py-1.5 text-sm" type="button" (click)="back()">
+          {{ 'healthConnect.actions.back' | translate }}
+        </button>
+        <span class="rounded-full bg-[#e7eef6] px-3 py-1 text-sm font-bold text-hpd-primary" data-cy="reviewStatus">
+          {{ 'healthConnect.onboarding.statuses.' + app.status | translate }}
+        </span>
+        @if (app.source) {
+          <span class="rounded-full bg-hpd-gold-tint px-3 py-1 text-[11.5px] font-bold text-hpd-warning" data-cy="reviewSource">
+            {{ 'healthConnect.review.source' | translate }}: {{ app.source }}
+          </span>
+        }
+      </div>
+
+      <!-- summary -->
+      <section class="mb-4 overflow-hidden rounded-hpd border border-hpd-border bg-white shadow-hpd-sm" data-cy="reviewSummary">
+        <h2 class="border-b border-hpd-border bg-hpd-cream px-5 py-2.5 text-[11.5px] font-bold uppercase tracking-wider text-hpd-muted">
+          {{ 'healthConnect.review.summary' | translate }}
+        </h2>
+        <dl class="m-0 grid grid-cols-[auto_1fr] gap-x-6 gap-y-1.5 p-5 text-sm">
+          <dt class="font-bold text-hpd-muted">{{ 'healthConnect.review.applicant' | translate }}</dt>
+          <dd class="m-0 text-hpd-primary-dark">{{ app.login ?? app.accountId }}</dd>
+          <dt class="font-bold text-hpd-muted">{{ 'healthConnect.onboarding.requestedRole' | translate }}</dt>
+          <dd class="m-0 text-hpd-primary-dark">
+            @if (roleLabelKey(); as roleKey) {
+              {{ roleKey | translate }}
+            } @else {
+              —
+            }
+          </dd>
+          <dt class="font-bold text-hpd-muted">{{ 'healthConnect.review.submitted' | translate }}</dt>
+          <dd class="m-0 text-hpd-primary-dark">{{ app.submittedAt?.slice(0, 16)?.replace('T', ' ') ?? '—' }}</dd>
+          @if (app.correctionNotes) {
+            <dt class="font-bold text-hpd-muted">{{ 'healthConnect.review.correctionNotes' | translate }}</dt>
+            <dd class="m-0 text-hpd-primary-dark">{{ app.correctionNotes }}</dd>
+          }
+        </dl>
+      </section>
+
+      <!-- documents -->
+      <section class="mb-4 overflow-hidden rounded-hpd border border-hpd-border bg-white shadow-hpd-sm" data-cy="reviewDocuments">
+        <h2 class="border-b border-hpd-border bg-hpd-cream px-5 py-2.5 text-[11.5px] font-bold uppercase tracking-wider text-hpd-muted">
+          {{ 'healthConnect.onboarding.steps.documents' | translate }}
+        </h2>
+        <ul class="m-0 grid list-none gap-2 p-5">
+          @for (doc of documents(); track doc.id) {
+            <li class="flex flex-wrap items-center justify-between gap-3 rounded-hpd-sm border border-hpd-border px-3.5 py-2.5 text-sm">
+              <span class="min-w-0 truncate text-hpd-primary-dark">
+                {{ 'healthConnect.onboarding.documentTypes.' + doc.type | translate }}
+                @if (doc.otherLabel) {
+                  ({{ doc.otherLabel }})
+                }
+                · {{ doc.name }}
+                @if (doc.expiryDate) {
+                  · {{ 'healthConnect.onboarding.fields.expiryDate' | translate }}: {{ doc.expiryDate }}
+                }
+              </span>
+              <span class="flex items-center gap-2">
+                <span
+                  class="rounded-full px-2.5 py-0.5 text-[11px] font-bold"
+                  [class]="
+                    doc.verificationStatus === 'VERIFIED'
+                      ? 'bg-hpd-success-tint text-hpd-success'
+                      : doc.verificationStatus === 'REJECTED'
+                        ? 'bg-hpd-danger-tint text-hpd-danger'
+                        : 'bg-hpd-warning-tint text-hpd-warning'
+                  "
+                  >{{ 'healthConnect.onboarding.verification.' + (doc.verificationStatus ?? 'PENDING') | translate }}</span
+                >
+                <button
+                  class="hpd-focusable hpd-btn hpd-btn-ghost !px-2.5 !py-1 text-xs"
+                  type="button"
+                  [attr.data-cy]="'preview-' + doc.id"
+                  (click)="preview(doc)"
+                >
+                  {{ 'healthConnect.actions.view' | translate }}
+                </button>
+                <button
+                  class="hpd-focusable hpd-btn hpd-btn-primary !px-2.5 !py-1 text-xs"
+                  type="button"
+                  [disabled]="busy() || doc.verificationStatus === 'VERIFIED'"
+                  [attr.data-cy]="'verify-' + doc.id"
+                  (click)="verify(doc)"
+                >
+                  {{ 'healthConnect.review.verify' | translate }}
+                </button>
+                <button
+                  class="hpd-focusable hpd-btn hpd-btn-danger !px-2.5 !py-1 text-xs"
+                  type="button"
+                  [disabled]="busy() || doc.verificationStatus === 'REJECTED'"
+                  [attr.data-cy]="'reject-' + doc.id"
+                  (click)="reject(doc)"
+                >
+                  {{ 'healthConnect.review.rejectDocument' | translate }}
+                </button>
+              </span>
+            </li>
+          } @empty {
+            <li class="py-3 text-center text-sm text-hpd-subtle">{{ 'healthConnect.states.empty' | translate }}</li>
+          }
+        </ul>
+      </section>
+
+      <!-- decision / pipeline -->
+      <section class="mb-4 overflow-hidden rounded-hpd border border-hpd-border bg-white shadow-hpd-sm" data-cy="reviewActions">
+        <h2 class="border-b border-hpd-border bg-hpd-cream px-5 py-2.5 text-[11.5px] font-bold uppercase tracking-wider text-hpd-muted">
+          {{ 'healthConnect.review.decision' | translate }}
+        </h2>
+        <div class="grid gap-4 p-5">
+          <form class="grid gap-4 sm:grid-cols-2" [formGroup]="decisionForm">
+            <div>
+              <label class="hpd-label" for="rv-reason">{{ 'healthConnect.review.reason' | translate }}</label>
+              <input id="rv-reason" class="hpd-focusable hpd-input" formControlName="reason" data-cy="decisionReason" />
+            </div>
+            <div>
+              <label class="hpd-label" for="rv-notes">{{ 'healthConnect.review.notes' | translate }}</label>
+              <input id="rv-notes" class="hpd-focusable hpd-input" formControlName="correctionNotes" data-cy="correctionNotes" />
+            </div>
+          </form>
+
+          @if (status() === 'CREDENTIAL_REVIEW') {
+            <div class="flex flex-wrap gap-2" data-cy="decisionButtons">
+              <button
+                class="hpd-focusable hpd-btn hpd-btn-gold"
+                type="button"
+                [disabled]="busy() || !allDocumentsVerified()"
+                data-cy="approve"
+                (click)="decide('APPROVED')"
+              >
+                {{ 'healthConnect.review.approve' | translate }}
+              </button>
+              <button
+                class="hpd-focusable hpd-btn hpd-btn-ghost"
+                type="button"
+                [disabled]="busy()"
+                data-cy="return"
+                (click)="decide('RETURNED_FOR_CORRECTION')"
+              >
+                {{ 'healthConnect.review.return' | translate }}
+              </button>
+              <button
+                class="hpd-focusable hpd-btn hpd-btn-danger"
+                type="button"
+                [disabled]="busy()"
+                data-cy="rejectApplication"
+                (click)="decide('REJECTED')"
+              >
+                {{ 'healthConnect.review.reject' | translate }}
+              </button>
+            </div>
+            @if (!allDocumentsVerified()) {
+              <p class="m-0 text-xs text-hpd-warning">{{ 'healthConnect.review.verifyFirst' | translate }}</p>
+            }
+          }
+
+          @if (status() === 'APPROVED') {
+            <form class="grid gap-4 sm:grid-cols-3" [formGroup]="organizationForm" data-cy="organizationForm">
+              <div>
+                <label class="hpd-label" for="rv-category">{{ 'healthConnect.review.specialtyCategory' | translate }}</label>
+                <input
+                  id="rv-category"
+                  class="hpd-focusable hpd-input"
+                  formControlName="specialtyCategoryId"
+                  data-cy="specialtyCategoryId"
+                />
+              </div>
+              <div>
+                <label class="hpd-label" for="rv-teams">{{ 'healthConnect.review.teamIds' | translate }}</label>
+                <input id="rv-teams" class="hpd-focusable hpd-input" formControlName="teamIds" placeholder="team-1, team-2" />
+              </div>
+              <div class="flex items-end">
+                <button
+                  class="hpd-focusable hpd-btn hpd-btn-primary w-full"
+                  type="button"
+                  [disabled]="busy()"
+                  data-cy="assignOrganization"
+                  (click)="assignOrganization()"
+                >
+                  {{ 'healthConnect.review.assignOrganization' | translate }}
+                </button>
+              </div>
+            </form>
+          }
+
+          @if (status() === 'ORGANIZATION_ASSIGNED') {
+            <button
+              class="hpd-focusable hpd-btn hpd-btn-primary w-fit"
+              type="button"
+              [disabled]="busy()"
+              data-cy="assignAuthority"
+              (click)="assignAuthority()"
+            >
+              {{ 'healthConnect.review.assignAuthority' | translate }}
+            </button>
+          }
+          @if (status() === 'AUTHORITY_ASSIGNED') {
+            <button
+              class="hpd-focusable hpd-btn hpd-btn-primary w-fit"
+              type="button"
+              [disabled]="busy()"
+              data-cy="rosterConfigured"
+              (click)="markRosterConfigured()"
+            >
+              {{ 'healthConnect.review.rosterConfigured' | translate }}
+            </button>
+          }
+          @if (status() === 'ROSTER_CONFIGURED') {
+            <button
+              class="hpd-focusable hpd-btn hpd-btn-gold w-fit"
+              type="button"
+              [disabled]="busy()"
+              data-cy="activate"
+              (click)="activate()"
+            >
+              {{ 'healthConnect.review.activate' | translate }}
+            </button>
+          }
+          @if (status() === 'ACTIVE') {
+            <button
+              class="hpd-focusable hpd-btn hpd-btn-danger w-fit"
+              type="button"
+              [disabled]="busy()"
+              data-cy="suspend"
+              (click)="suspend()"
+            >
+              {{ 'healthConnect.review.suspend' | translate }}
+            </button>
+          }
+        </div>
+      </section>
+
+      <!-- audit trail -->
+      <section class="overflow-hidden rounded-hpd border border-hpd-border bg-white shadow-hpd-sm" data-cy="reviewTrail">
+        <h2 class="border-b border-hpd-border bg-hpd-cream px-5 py-2.5 text-[11.5px] font-bold uppercase tracking-wider text-hpd-muted">
+          {{ 'healthConnect.onboarding.steps.status' | translate }}
+        </h2>
+        <ol class="m-0 grid list-none gap-2 p-5">
+          @for (event of eventTrail(); track event.id) {
+            <li class="flex items-baseline gap-3 border-b border-dashed border-hpd-border pb-2 text-sm">
+              <span class="text-[11px] text-hpd-subtle">{{ event.at?.slice(0, 16)?.replace('T', ' ') }}</span>
+              <span class="text-hpd-primary-dark">{{
+                'healthConnect.onboarding.statuses.' + (event.toStatus ?? 'APPLICATION_STARTED') | translate
+              }}</span>
+              <span class="text-hpd-muted">{{ event.actor }}</span>
+              @if (event.reason) {
+                <span class="text-hpd-muted">— {{ event.reason }}</span>
+              }
+            </li>
+          } @empty {
+            <li class="py-2 text-sm text-hpd-subtle">{{ 'healthConnect.states.empty' | translate }}</li>
+          }
+        </ol>
+      </section>
+    }
+  }
+</main>

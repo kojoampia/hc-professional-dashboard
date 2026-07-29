@@ -262,6 +262,45 @@
         "documentUploaded": "Documento subido",
         "submitted": "Enviada a revisión"
       }
+    },
+    "review": {
+      "title": "Cola de revisión",
+      "detail": "Revisión de la solicitud",
+      "applicant": "Solicitante",
+      "source": "Origen",
+      "submitted": "Enviada",
+      "open": "Abrir revisión",
+      "all": "Todas",
+      "filter": "Filtrar por estado",
+      "empty": "No hay solicitudes en este estado.",
+      "summary": "Resumen de la solicitud",
+      "correctionNotes": "Notas de corrección",
+      "decision": "Decisión y activación",
+      "reason": "Motivo del revisor",
+      "notes": "Notas de corrección",
+      "approve": "Aprobar",
+      "return": "Devolver para corrección",
+      "reject": "Rechazar la solicitud",
+      "verify": "Verificar",
+      "rejectDocument": "Rechazar",
+      "verifyFirst": "La aprobación se desbloquea cuando todos los documentos están verificados.",
+      "specialtyCategory": "Categoría de especialidad",
+      "teamIds": "IDs de equipos",
+      "assignOrganization": "Asignar organización",
+      "assignAuthority": "Asignar autoridad clínica",
+      "rosterConfigured": "Marcar cuadro de turnos configurado",
+      "activate": "Activar acceso profesional",
+      "suspend": "Suspender",
+      "toast": {
+        "documentVerified": "Documento verificado",
+        "documentRejected": "Documento rechazado",
+        "decided": "Decisión registrada",
+        "organizationAssigned": "Organización asignada",
+        "authorityAssigned": "Autoridad clínica asignada",
+        "rosterConfigured": "Cuadro de turnos marcado",
+        "activated": "Acceso profesional activado",
+        "suspended": "Solicitud suspendida"
+      }
     }
   }
 }

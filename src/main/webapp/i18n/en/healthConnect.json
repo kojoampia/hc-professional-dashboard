@@ -262,6 +262,45 @@
         "documentUploaded": "Document uploaded",
         "submitted": "Submitted for review"
       }
+    },
+    "review": {
+      "title": "Review queue",
+      "detail": "Application review",
+      "applicant": "Applicant",
+      "source": "Source",
+      "submitted": "Submitted",
+      "open": "Open review",
+      "all": "All",
+      "filter": "Filter by status",
+      "empty": "No applications in this state.",
+      "summary": "Application summary",
+      "correctionNotes": "Correction notes",
+      "decision": "Decision & activation",
+      "reason": "Reviewer reason",
+      "notes": "Correction notes",
+      "approve": "Approve",
+      "return": "Return for correction",
+      "reject": "Reject application",
+      "verify": "Verify",
+      "rejectDocument": "Reject",
+      "verifyFirst": "Approval unlocks once every document is verified.",
+      "specialtyCategory": "Specialty category",
+      "teamIds": "Team ids",
+      "assignOrganization": "Assign organization",
+      "assignAuthority": "Assign clinical authority",
+      "rosterConfigured": "Mark roster configured",
+      "activate": "Activate professional access",
+      "suspend": "Suspend",
+      "toast": {
+        "documentVerified": "Document verified",
+        "documentRejected": "Document rejected",
+        "decided": "Decision recorded",
+        "organizationAssigned": "Organization assigned",
+        "authorityAssigned": "Clinical authority assigned",
+        "rosterConfigured": "Roster marked configured",
+        "activated": "Professional access activated",
+        "suspended": "Application suspended"
+      }
     }
   }
 }
