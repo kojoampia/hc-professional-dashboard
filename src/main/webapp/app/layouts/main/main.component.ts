@@ -12,6 +12,7 @@ import SharedModule from 'app/shared/shared.module';
 import FooterComponent from '../footer/footer.component';
 import PageRibbonComponent from '../profiles/page-ribbon.component';
 import ToastOutletComponent from 'app/shared/alert/toast-outlet.component';
+import FirstLoginAcknowledgementComponent from 'app/health-connect/first-login/first-login-acknowledgement.component';
 import SidebarComponent from '../sidebar/sidebar.component';
 import TabbarComponent from '../tabbar/tabbar.component';
 import { findShellNavItem } from '../sidebar/shell-navigation';
@@ -29,6 +30,7 @@ import { findShellNavItem } from '../sidebar/shell-navigation';
     SidebarComponent,
     TabbarComponent,
     ToastOutletComponent,
+    FirstLoginAcknowledgementComponent,
   ],
 })
 export default class MainComponent implements OnInit {

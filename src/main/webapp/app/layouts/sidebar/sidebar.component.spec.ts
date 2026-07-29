@@ -11,7 +11,8 @@ import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
 import { ProfileService } from 'app/layouts/profiles/profile.service';
 import { LoginService } from 'app/login/login.service';
-import { MockHealthConnectRepository } from 'app/health-connect/health-connect.repository';
+import { DutyRosterAssignmentsService } from 'app/health-connect/api/duty-roster-assignments.service';
+import { ShiftLabel } from 'app/health-connect/health-connect.models';
 
 import SidebarComponent from './sidebar.component';
 import { SHELL_NAV_GROUPS } from './shell-navigation';
@@ -34,11 +35,20 @@ describe('Sidebar Component', () => {
   };
 
   const groupByLabel = (labelKey: string) => SHELL_NAV_GROUPS.find(group => group.labelKey === labelKey)!;
+  let currentShiftLabel: ShiftLabel | null;
+  let dutyRosterAssignments: { loadMyAssignments: jest.Mock; shiftLabel: () => ShiftLabel | null };
 
   beforeEach(waitForAsync(() => {
+    currentShiftLabel = null;
+    dutyRosterAssignments = { loadMyAssignments: jest.fn(), shiftLabel: () => currentShiftLabel };
     TestBed.configureTestingModule({
       imports: [SidebarComponent, RouterTestingModule.withRoutes([]), TranslateModule.forRoot()],
-      providers: [LoginService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+      providers: [
+        LoginService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+        { provide: DutyRosterAssignmentsService, useValue: dutyRosterAssignments as unknown as DutyRosterAssignmentsService },
+      ],
     })
       .overrideTemplate(SidebarComponent, '')
       .compileComponents();
@@ -99,23 +109,20 @@ describe('Sidebar Component', () => {
     expect(comp.account).toBeNull();
   });
 
-  it('should resolve a translated clinical role badge and optional shift from the authenticated account', () => {
+  it('should resolve a translated clinical role badge and drive the shift label from real assignments (WP6 gate)', () => {
     accountService.authenticate({ ...account, authorities: ['ROLE_DOCTOR'], login: 'doctor' });
 
     comp.ngOnInit();
 
     expect(comp.roleBadgeTranslationKey).toBe('healthConnect.roles.doctor');
-    expect(comp.shiftLabel).toEqual({
-      translationKey: 'healthConnect.roster.activeShift',
-      translationParams: { time: '20:00' },
-    });
-    const repository = TestBed.inject(MockHealthConnectRepository);
-    repository.unsubscribeProfessionalFromRoster('professional-doctor', 'ward-3-night');
+    // the sidebar asks the real assignments service, not a mock repository
+    expect(dutyRosterAssignments.loadMyAssignments).toHaveBeenCalled();
     expect(comp.shiftLabel).toBeNull();
-    repository.subscribeProfessionalToRoster('professional-doctor', 'ward-3-night');
+
+    currentShiftLabel = { translationKey: 'healthConnect.roster.activeShift', translationParams: { time: '14:00' } };
     expect(comp.shiftLabel).toEqual({
       translationKey: 'healthConnect.roster.activeShift',
-      translationParams: { time: '20:00' },
+      translationParams: { time: '14:00' },
     });
   });
 

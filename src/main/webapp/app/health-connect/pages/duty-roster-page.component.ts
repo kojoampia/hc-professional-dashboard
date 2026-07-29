@@ -1,145 +1,217 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatIconModule } from '@angular/material/icon';
 
 import { AccountService } from 'app/core/auth/account.service';
 import { AlertService } from 'app/core/util/alert.service';
+import { Authority } from 'app/config/authority.constants';
 
-import { hasHealthConnectPermission } from '../authority-role';
-import { DutyRoster } from '../health-connect.models';
-import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
+import { DutyRosterAssignmentDto, DutyRosterAssignmentsService, DutyRosterShift } from '../api/duty-roster-assignments.service';
 
+const SHIFTS: readonly DutyRosterShift[] = ['MORNING', 'AFTERNOON', 'NIGHT'];
+const DUTIES: readonly string[] = [
+  'DOCTOR',
+  'NURSE',
+  'PARAMEDIC',
+  'PHARMACIST',
+  'THERAPIST',
+  'CARER',
+  'ANGEL',
+  'CHEMIST',
+  'TECHNICIAN',
+  'OTHER',
+];
+
+/**
+ * Duty roster (WP6, admin-assignment-only decision): professionals see their
+ * own assignments read-only; administrators additionally assign and unassign.
+ * Backed by the real `/api/onboarding/duty-rosters` surface — the mock
+ * subscribe/unsubscribe flow is gone.
+ */
 @Component({
   standalone: true,
   selector: 'hpd-duty-roster-page',
-  imports: [CommonModule, MatIconModule, TranslateModule],
+  imports: [ReactiveFormsModule, TranslateModule],
   template: `
-    <main class="mx-auto max-w-7xl px-4 py-8 md:px-8">
-      <div class="rounded-hpd border border-hpd-border bg-white p-6 shadow-hpd-sm">
-        <h1 class="sr-only">{{ 'healthConnect.navigation.dutyRoster' | translate }}</h1>
-        <p class="mb-6 text-sm text-hpd-muted">{{ 'healthConnect.roster.subtitle' | translate }}</p>
+    <main class="mx-auto max-w-5xl px-4 py-8 md:px-8">
+      <h1 class="sr-only">{{ 'healthConnect.navigation.dutyRoster' | translate }}</h1>
 
-        <div class="hpd-roster-grid grid grid-cols-1 gap-8 md:grid-cols-2">
-          <article>
-            <h2 class="mb-3 text-sm font-bold uppercase tracking-wide text-hpd-muted">
-              {{ 'healthConnect.roster.subscribed' | translate }}
-            </h2>
-            <div class="grid grid-cols-1 gap-4">
-              @for (roster of subscribedRosters(); track roster.id) {
-                <ng-container [ngTemplateOutlet]="rosterCard" [ngTemplateOutletContext]="{ roster: roster }" />
-              } @empty {
-                <p class="text-sm text-hpd-subtle">{{ 'healthConnect.states.empty' | translate }}</p>
-              }
-            </div>
-          </article>
-          <article>
-            <h2 class="mb-3 text-sm font-bold uppercase tracking-wide text-hpd-muted">
-              {{ 'healthConnect.roster.available' | translate }}
-            </h2>
-            <div class="grid grid-cols-1 gap-4">
-              @for (roster of availableRosters(); track roster.id) {
-                <ng-container [ngTemplateOutlet]="rosterCard" [ngTemplateOutletContext]="{ roster: roster }" />
-              } @empty {
-                <p class="text-sm text-hpd-subtle">{{ 'healthConnect.states.empty' | translate }}</p>
-              }
-            </div>
-          </article>
-        </div>
-      </div>
+      <section class="mb-4 overflow-hidden rounded-hpd border border-hpd-border bg-white shadow-hpd-sm" data-cy="myAssignments">
+        <h2 class="m-0 border-b border-hpd-border bg-hpd-cream px-5 py-2.5 text-[11.5px] font-bold uppercase tracking-wider text-hpd-muted">
+          {{ 'healthConnect.roster.myAssignments' | translate }}
+        </h2>
+        <ul class="m-0 grid list-none gap-2 p-5">
+          @for (assignment of myAssignments(); track assignment.id) {
+            <li class="flex flex-wrap items-center justify-between gap-3 rounded-hpd-sm border border-hpd-border px-3.5 py-2.5 text-sm">
+              <span class="min-w-0 truncate text-hpd-primary-dark">
+                {{ assignment.date }} · {{ assignment.name }}
+                <span class="text-hpd-muted">({{ 'healthConnect.roster.duties.' + assignment.duty | translate }})</span>
+              </span>
+              <span class="rounded-full bg-[#e7eef6] px-2.5 py-0.5 text-[11px] font-bold text-hpd-primary">
+                {{ 'healthConnect.roster.shiftNames.' + assignment.shift | translate }}
+              </span>
+            </li>
+          } @empty {
+            <li class="py-3 text-center text-sm text-hpd-subtle" data-cy="noAssignments">
+              {{ 'healthConnect.roster.notAssigned' | translate }}
+            </li>
+          }
+        </ul>
+        @if (!isAdmin()) {
+          <p class="m-0 border-t border-hpd-border bg-hpd-cream/50 px-5 py-2.5 text-xs text-hpd-muted">
+            {{ 'healthConnect.roster.assignmentOnly' | translate }}
+          </p>
+        }
+      </section>
 
-      <ng-template #rosterCard let-roster="roster">
-        <section
-          class="hpd-roster-card rounded-hpd border p-4"
-          [class]="isSubscribed(roster) ? 'border-hpd-primary/40 bg-hpd-primary/5' : 'border-hpd-border'"
-        >
-          <div class="mb-3 flex items-start justify-between gap-2">
-            <h3 class="flex items-center gap-2 text-sm font-bold text-hpd-primary-dark">
-              <mat-icon aria-hidden="true" class="!text-lg text-hpd-subtle">event_available</mat-icon>
-              {{ roster.name }}
-            </h3>
-            @if (canManageRosters() && professionalId(); as professionalId) {
-              <button
-                class="hpd-focusable whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-bold"
-                [class]="
-                  isSubscribed(roster)
-                    ? 'border-[1.5px] border-hpd-border bg-white text-hpd-muted hover:border-hpd-primary'
-                    : 'bg-hpd-primary text-white hover:bg-hpd-primary-hover'
-                "
-                type="button"
-                (click)="toggleSubscription(roster, professionalId)"
-              >
-                {{ (isSubscribed(roster) ? 'healthConnect.actions.unsubscribe' : 'healthConnect.actions.subscribe') | translate }}
-              </button>
-            } @else {
-              <p class="text-xs text-hpd-subtle">{{ 'healthConnect.states.readOnly' | translate }}</p>
-            }
+      @if (isAdmin()) {
+        <section class="overflow-hidden rounded-hpd border border-hpd-border bg-white shadow-hpd-sm" data-cy="rosterAdmin">
+          <h2
+            class="m-0 border-b border-hpd-border bg-hpd-cream px-5 py-2.5 text-[11.5px] font-bold uppercase tracking-wider text-hpd-muted"
+          >
+            {{ 'healthConnect.roster.administer' | translate }}
+          </h2>
+          <div class="grid gap-5 p-5">
+            <form class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5" [formGroup]="assignForm" (ngSubmit)="assign()">
+              <div>
+                <label class="hpd-label" for="dr-professional">{{ 'healthConnect.roster.professionalId' | translate }}</label>
+                <input
+                  id="dr-professional"
+                  class="hpd-focusable hpd-input"
+                  formControlName="professionalId"
+                  data-cy="assignProfessionalId"
+                />
+              </div>
+              <div>
+                <label class="hpd-label" for="dr-date">{{ 'healthConnect.roster.date' | translate }}</label>
+                <input id="dr-date" class="hpd-focusable hpd-input" type="date" formControlName="date" data-cy="assignDate" />
+              </div>
+              <div>
+                <label class="hpd-label" for="dr-shift">{{ 'healthConnect.roster.shift' | translate }}</label>
+                <select id="dr-shift" class="hpd-focusable hpd-input" formControlName="shift">
+                  @for (shift of shifts; track shift) {
+                    <option [value]="shift">{{ 'healthConnect.roster.shiftNames.' + shift | translate }}</option>
+                  }
+                </select>
+              </div>
+              <div>
+                <label class="hpd-label" for="dr-duty">{{ 'healthConnect.roster.duty' | translate }}</label>
+                <select id="dr-duty" class="hpd-focusable hpd-input" formControlName="duty">
+                  @for (duty of duties; track duty) {
+                    <option [value]="duty">{{ 'healthConnect.roster.duties.' + duty | translate }}</option>
+                  }
+                </select>
+              </div>
+              <div>
+                <label class="hpd-label" for="dr-name">{{ 'healthConnect.roster.wardName' | translate }}</label>
+                <input id="dr-name" class="hpd-focusable hpd-input" formControlName="name" data-cy="assignName" />
+              </div>
+              <div class="sm:col-span-2 lg:col-span-5">
+                <button class="hpd-focusable hpd-btn hpd-btn-primary" type="submit" [disabled]="busy()" data-cy="assignSubmit">
+                  {{ 'healthConnect.roster.assign' | translate }}
+                </button>
+              </div>
+            </form>
+
+            <ul class="m-0 grid list-none gap-2 p-0" data-cy="allAssignments">
+              @for (assignment of allAssignments(); track assignment.id) {
+                <li class="flex flex-wrap items-center justify-between gap-3 rounded-hpd-sm border border-hpd-border px-3.5 py-2.5 text-sm">
+                  <span class="min-w-0 truncate text-hpd-primary-dark">
+                    {{ assignment.date }} · {{ assignment.name }} · {{ assignment.professionalId }}
+                    <span class="text-hpd-muted">({{ 'healthConnect.roster.duties.' + assignment.duty | translate }})</span>
+                  </span>
+                  <span class="flex items-center gap-2">
+                    <span class="rounded-full bg-[#e7eef6] px-2.5 py-0.5 text-[11px] font-bold text-hpd-primary">
+                      {{ 'healthConnect.roster.shiftNames.' + assignment.shift | translate }}
+                    </span>
+                    <button
+                      class="hpd-focusable hpd-btn hpd-btn-danger !px-2.5 !py-1 !text-xs"
+                      type="button"
+                      [disabled]="busy()"
+                      [attr.data-cy]="'unassign-' + assignment.id"
+                      (click)="unassign(assignment)"
+                    >
+                      {{ 'healthConnect.roster.unassign' | translate }}
+                    </button>
+                  </span>
+                </li>
+              } @empty {
+                <li class="py-3 text-center text-sm text-hpd-subtle">{{ 'healthConnect.states.empty' | translate }}</li>
+              }
+            </ul>
           </div>
-          <h4 class="sr-only">{{ 'healthConnect.roster.shifts' | translate }}</h4>
-          <ul class="m-0 grid list-none gap-2 p-0">
-            @for (shift of roster.shifts; track shift.id) {
-              <li class="flex items-center justify-between gap-2 text-xs">
-                <span class="text-hpd-muted">{{ shift.startsAt.slice(0, 16) }} → {{ shift.endsAt.slice(11, 16) }}</span>
-                <span
-                  class="rounded-full px-2 py-0.5 font-bold capitalize"
-                  [class]="
-                    shift.status === 'active'
-                      ? 'bg-hpd-success-tint text-hpd-success'
-                      : shift.status === 'upcoming'
-                        ? 'bg-[#e7eef6] text-hpd-primary'
-                        : 'bg-hpd-warning-tint text-hpd-warning'
-                  "
-                >
-                  {{ 'healthConnect.roster.' + shift.status | translate }}
-                </span>
-              </li>
-            } @empty {
-              <li class="text-xs text-hpd-subtle">{{ 'healthConnect.states.empty' | translate }}</li>
-            }
-          </ul>
         </section>
-      </ng-template>
+      }
     </main>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class DutyRosterPageComponent {
-  readonly repository = inject(HEALTH_CONNECT_REPOSITORY);
+export default class DutyRosterPageComponent implements OnInit {
+  private readonly rosterService = inject(DutyRosterAssignmentsService);
   private readonly account = inject(AccountService);
   private readonly alertService = inject(AlertService);
   private readonly currentAccount = toSignal(this.account.getAuthenticationState(), { initialValue: null });
 
-  readonly professionalId = computed(() => {
-    const login = this.currentAccount()?.login;
-    return login ? this.repository.professionalIdForAccount(login) : null;
-  });
-  readonly canManageRosters = computed(() => hasHealthConnectPermission(this.currentAccount()?.authorities, 'manageDutyRoster'));
-  readonly subscribedRosters = computed(() => this.filterRosters(true));
-  readonly availableRosters = computed(() => this.filterRosters(false));
+  readonly shifts = SHIFTS;
+  readonly duties = DUTIES;
+  readonly myAssignments = this.rosterService.myAssignments;
+  readonly allAssignments = signal<DutyRosterAssignmentDto[]>([]);
+  readonly busy = signal(false);
 
-  isSubscribed(roster: DutyRoster): boolean {
-    const professionalId = this.professionalId();
-    return professionalId !== null && roster.subscribedProfessionalIds.includes(professionalId);
+  readonly isAdmin = computed(() => (this.currentAccount()?.authorities ?? []).includes(Authority.ADMIN));
+
+  readonly assignForm = new FormGroup({
+    professionalId: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),
+    date: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),
+    shift: new FormControl<DutyRosterShift>('MORNING', { nonNullable: true, validators: Validators.required }),
+    duty: new FormControl<string>('NURSE', { nonNullable: true, validators: Validators.required }),
+    name: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),
+  });
+
+  ngOnInit(): void {
+    this.rosterService.loadMyAssignments();
+    if (this.isAdmin()) {
+      this.refreshAll();
+    }
   }
 
-  toggleSubscription(roster: DutyRoster, professionalId: string): void {
-    if (!this.canManageRosters()) {
+  assign(): void {
+    if (this.assignForm.invalid) {
+      this.assignForm.markAllAsTouched();
       return;
     }
-    if (this.isSubscribed(roster)) {
-      this.repository.unsubscribeProfessionalFromRoster(professionalId, roster.id);
-    } else {
-      this.repository.subscribeProfessionalToRoster(professionalId, roster.id);
-    }
-    this.alertService.showToast('healthConnect.toast.rosterUpdated');
+    this.busy.set(true);
+    this.rosterService.assign(this.assignForm.getRawValue()).subscribe({
+      next: () => {
+        this.busy.set(false);
+        this.assignForm.reset();
+        this.alertService.showToast('healthConnect.toast.rosterUpdated');
+        this.refreshAll();
+      },
+      error: () => this.busy.set(false),
+    });
   }
 
-  private filterRosters(subscribed: boolean): readonly DutyRoster[] {
-    const professionalId = this.professionalId();
-    if (!professionalId) {
-      return [];
+  unassign(assignment: DutyRosterAssignmentDto): void {
+    if (!assignment.id) {
+      return;
     }
-    return this.repository.dutyRosters().filter(roster => roster.subscribedProfessionalIds.includes(professionalId) === subscribed);
+    this.busy.set(true);
+    this.rosterService.unassign(assignment.id).subscribe({
+      next: () => {
+        this.busy.set(false);
+        this.alertService.showToast('healthConnect.toast.rosterUpdated');
+        this.refreshAll();
+      },
+      error: () => this.busy.set(false),
+    });
+  }
+
+  private refreshAll(): void {
+    this.rosterService.listAll().subscribe({
+      next: assignments => this.allAssignments.set(assignments),
+      error: () => this.allAssignments.set([]),
+    });
   }
 }
