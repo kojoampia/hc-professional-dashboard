@@ -17,8 +17,8 @@
     },
     {
       "fieldName": "data",
-      "fieldType": "ByteBuffer",
-      "fieldTypeBlobContent": "data"
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "any"
     },
     {
       "fieldName": "type",
@@ -42,7 +42,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "hcProfessionalService",
+  "microserviceName": "professionalService",
   "name": "Document",
   "pagination": "no",
   "readOnly": false,

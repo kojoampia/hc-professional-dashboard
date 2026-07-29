@@ -39,7 +39,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "hcprofessionalService",
+  "microserviceName": "professionalService",
   "name": "Activity",
   "pagination": "no",
   "readOnly": false,
