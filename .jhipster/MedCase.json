@@ -2,7 +2,7 @@
   "annotations": {
     "changelogDate": "20260720214037"
   },
-  "clientRootFolder": "hcPatientService",
+  "clientRootFolder": "patientService",
   "databaseType": "mongodb",
   "dto": "no",
   "fields": [
@@ -51,7 +51,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "hcPatientService",
+  "microserviceName": "patientService",
   "name": "MedCase",
   "pagination": "infinite-scroll",
   "readOnly": false,
