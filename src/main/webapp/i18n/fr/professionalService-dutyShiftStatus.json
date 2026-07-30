@@ -2,9 +2,9 @@
   "professionalDashboardApp": {
     "DutyShiftStatus": {
       "null": "",
-      "UPCOMING": "UPCOMING",
-      "ACTIVE": "ACTIVE",
-      "COMPLETED": "COMPLETED"
+      "UPCOMING": "À venir",
+      "ACTIVE": "Actif",
+      "COMPLETED": "Terminé"
     }
   }
 }

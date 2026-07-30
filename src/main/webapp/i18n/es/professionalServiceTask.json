@@ -1,0 +1,34 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceTask": {
+      "home": {
+        "title": "Tasks",
+        "refreshListLabel": "Refrescar lista",
+        "createLabel": "Crear nuevo Task",
+        "createOrEditLabel": "Crear o editar Task",
+        "notFound": "Ningún Tasks encontrado"
+      },
+      "created": "Un nuevo Task ha sido creado con el identificador {{ param }}",
+      "updated": "Un Task ha sido actualizado con el identificador {{ param }}",
+      "deleted": "Un Task ha sido eliminado con el identificador {{ param }}",
+      "delete": {
+        "question": "¿Seguro que quiere eliminar Task {{ id }}?"
+      },
+      "detail": {
+        "title": "Task"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "schedule": "Schedule",
+      "duration": "Duration",
+      "attendantId": "Attendant Id",
+      "teamId": "Team Id",
+      "patientId": "Patient Id",
+      "createdDate": "Created Date",
+      "modifiedDate": "Modified Date",
+      "createdBy": "Created By",
+      "modifiedBy": "Modified By"
+    }
+  }
+}

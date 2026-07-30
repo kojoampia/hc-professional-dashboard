@@ -1,0 +1,40 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceProfile": {
+      "home": {
+        "title": "Profiles",
+        "refreshListLabel": "Refrescar lista",
+        "createLabel": "Crear nuevo Profile",
+        "createOrEditLabel": "Crear o editar Profile",
+        "notFound": "Ningún Profiles encontrado"
+      },
+      "created": "Un nuevo Profile ha sido creado con el identificador {{ param }}",
+      "updated": "Un Profile ha sido actualizado con el identificador {{ param }}",
+      "deleted": "Un Profile ha sido eliminado con el identificador {{ param }}",
+      "delete": {
+        "question": "¿Seguro que quiere eliminar Profile {{ id }}?"
+      },
+      "detail": {
+        "title": "Profile"
+      },
+      "id": "Id",
+      "firstName": "First Name",
+      "middleNames": "Middle Names",
+      "lastName": "Last Name",
+      "team": "Team",
+      "birthDate": "Birth Date",
+      "sex": "Sex",
+      "mobilePhone": "Mobile Phone",
+      "phoneNumber": "Phone Number",
+      "email": "Email",
+      "idType": "Id Type",
+      "idNumber": "Id Number",
+      "documents": "Documents",
+      "address": "Address",
+      "bankAccount": "Bank Account",
+      "tenantId": "Tenant Id",
+      "rosterId": "Roster Id",
+      "teamId": "Team Id"
+    }
+  }
+}

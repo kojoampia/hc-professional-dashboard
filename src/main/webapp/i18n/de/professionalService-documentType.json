@@ -2,15 +2,15 @@
   "professionalDashboardApp": {
     "DocumentType": {
       "null": "",
-      "PASSPORT": "PASSPORT",
-      "CERTIFICATE": "CERTIFICATE",
-      "LICENSE": "LICENSE",
-      "GHANACARD": "GHANACARD",
-      "PASSPHOTO": "PASSPHOTO",
-      "DRIVERLICENSE": "DRIVERLICENSE",
-      "VOTERCARD": "VOTERCARD",
-      "NHIS": "NHIS",
-      "OTHER": "OTHER"
+      "PASSPORT": "Reisepass",
+      "CERTIFICATE": "Zertifikat",
+      "LICENSE": "Lizenz",
+      "GHANACARD": "Ghana-Karte",
+      "PASSPHOTO": "Passfoto",
+      "DRIVERLICENSE": "Führerschein",
+      "VOTERCARD": "Wählerausweis",
+      "NHIS": "NHIS-Karte",
+      "OTHER": "Andere"
     }
   }
 }

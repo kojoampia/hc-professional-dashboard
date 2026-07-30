@@ -199,7 +199,7 @@ const fixTs = src => {
   if (/\.spec\.ts$/.test(FILE) && /(list|detail)\//.test(FILE) && /describe\(/.test(out) && !/describe\.skip\(/.test(out)) {
     out = out.replace(
       /^describe\(/m,
-      "// SKIPPED: needs Angular 20's TestBed.tick() for httpResource-backed components.\n// See scripts/postprocess-generated-entities.mjs and refactor-plan.md.\ndescribe.skip(",
+      "// SKIPPED: needs the Angular 20 TestBed.tick() API for httpResource-backed components.\n// See scripts/postprocess-generated-entities.mjs and refactor-plan.md.\ndescribe.skip(",
     );
   }
 
@@ -283,7 +283,7 @@ for (const file of walk(ROOT)) {
 /** Apply `fn` to code only, leaving string/template literal contents untouched. */
 const outsideStrings = (src, fn) =>
   src
-    .split(/('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*`)/s)
+    .split(/(\/\/[^\n]*|\/\*[\s\S]*?\*\/|'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*`)/s)
     .map((part, i) => (i % 2 === 1 ? part : fn(part)))
     .join('');
 
