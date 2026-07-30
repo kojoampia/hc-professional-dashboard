@@ -2,6 +2,7 @@
   "annotations": {
     "changelogDate": "20260724060800"
   },
+  "applications": ["*"],
   "clientRootFolder": "patientService",
   "databaseType": "mongodb",
   "dto": "no",
@@ -21,7 +22,8 @@
     },
     {
       "fieldName": "sex",
-      "fieldType": "String"
+      "fieldType": "PatientSex",
+      "fieldValues": "FEMALE,MALE,UNSPECIFIED"
     },
     {
       "fieldName": "isChild",

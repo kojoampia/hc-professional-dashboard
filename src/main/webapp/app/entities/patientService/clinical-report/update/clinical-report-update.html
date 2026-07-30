@@ -1,0 +1,91 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="hpd-clinical-report-heading"
+        data-cy="ClinicalReportCreateUpdateHeading"
+        jhiTranslate="professionalDashboardApp.patientServiceClinicalReport.home.createOrEditLabel"
+      >
+        Create or edit a Clinical Report
+      </h2>
+
+      <div>
+        <hpd-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+
+        <div class="mb-3">
+          <label class="form-label" for="field_id" jhiTranslate="professionalDashboardApp.patientServiceClinicalReport.id">Id</label>
+          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
+        }
+
+        <div class="mb-3">
+          <label class="form-label" for="field_patientId" jhiTranslate="professionalDashboardApp.patientServiceClinicalReport.patientId"
+            >Patient Id</label
+          >
+          <input type="text" class="form-control" name="patientId" id="field_patientId" data-cy="patientId" formControlName="patientId" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_occurredAt" jhiTranslate="professionalDashboardApp.patientServiceClinicalReport.occurredAt"
+            >Occurred At</label
+          >
+          <div class="d-flex">
+            <input
+              id="field_occurredAt"
+              data-cy="occurredAt"
+              type="datetime-local"
+              class="form-control"
+              name="occurredAt"
+              formControlName="occurredAt"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_label" jhiTranslate="professionalDashboardApp.patientServiceClinicalReport.label"
+            >Label</label
+          >
+          <input type="text" class="form-control" name="label" id="field_label" data-cy="label" formControlName="label" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_reportType" jhiTranslate="professionalDashboardApp.patientServiceClinicalReport.reportType"
+            >Report Type</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="reportType"
+            id="field_reportType"
+            data-cy="reportType"
+            formControlName="reportType"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_url" jhiTranslate="professionalDashboardApp.patientServiceClinicalReport.url">Url</label>
+          <input type="text" class="form-control" name="url" id="field_url" data-cy="url" formControlName="url" />
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <mat-icon aria-hidden="true" class="!text-base">cancel</mat-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving()"
+          class="btn btn-primary"
+        >
+          <mat-icon aria-hidden="true" class="!text-base">save</mat-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

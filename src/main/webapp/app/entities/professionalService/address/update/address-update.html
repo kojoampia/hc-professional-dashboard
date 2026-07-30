@@ -1,0 +1,171 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="hpd-address-heading"
+        data-cy="AddressCreateUpdateHeading"
+        jhiTranslate="professionalDashboardApp.professionalServiceAddress.home.createOrEditLabel"
+      >
+        Create or edit a Address
+      </h2>
+
+      <div>
+        <hpd-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+
+        <div class="mb-3">
+          <label class="form-label" for="field_id" jhiTranslate="professionalDashboardApp.professionalServiceAddress.id">Id</label>
+          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
+        }
+
+        <div class="mb-3">
+          <label
+            class="form-label"
+            for="field_digitalAddress"
+            jhiTranslate="professionalDashboardApp.professionalServiceAddress.digitalAddress"
+            >Digital Address</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="digitalAddress"
+            id="field_digitalAddress"
+            data-cy="digitalAddress"
+            formControlName="digitalAddress"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label
+            class="form-label"
+            for="field_streetAddress"
+            jhiTranslate="professionalDashboardApp.professionalServiceAddress.streetAddress"
+            >Street Address</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="streetAddress"
+            id="field_streetAddress"
+            data-cy="streetAddress"
+            formControlName="streetAddress"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_areaCode" jhiTranslate="professionalDashboardApp.professionalServiceAddress.areaCode"
+            >Area Code</label
+          >
+          <input type="text" class="form-control" name="areaCode" id="field_areaCode" data-cy="areaCode" formControlName="areaCode" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_town" jhiTranslate="professionalDashboardApp.professionalServiceAddress.town">Town</label>
+          <input type="text" class="form-control" name="town" id="field_town" data-cy="town" formControlName="town" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_city" jhiTranslate="professionalDashboardApp.professionalServiceAddress.city">City</label>
+          <input type="text" class="form-control" name="city" id="field_city" data-cy="city" formControlName="city" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_district" jhiTranslate="professionalDashboardApp.professionalServiceAddress.district"
+            >District</label
+          >
+          <input type="text" class="form-control" name="district" id="field_district" data-cy="district" formControlName="district" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_state" jhiTranslate="professionalDashboardApp.professionalServiceAddress.state">State</label>
+          <input type="text" class="form-control" name="state" id="field_state" data-cy="state" formControlName="state" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_region" jhiTranslate="professionalDashboardApp.professionalServiceAddress.region"
+            >Region</label
+          >
+          <input type="text" class="form-control" name="region" id="field_region" data-cy="region" formControlName="region" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_country" jhiTranslate="professionalDashboardApp.professionalServiceAddress.country"
+            >Country</label
+          >
+          <input type="text" class="form-control" name="country" id="field_country" data-cy="country" formControlName="country" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_createdDate" jhiTranslate="professionalDashboardApp.professionalServiceAddress.createdDate"
+            >Created Date</label
+          >
+          <div class="input-group">
+            <input
+              id="field_createdDate"
+              data-cy="createdDate"
+              type="date"
+              class="form-control"
+              name="createdDate"
+              formControlName="createdDate"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_modifiedDate" jhiTranslate="professionalDashboardApp.professionalServiceAddress.modifiedDate"
+            >Modified Date</label
+          >
+          <div class="input-group">
+            <input
+              id="field_modifiedDate"
+              data-cy="modifiedDate"
+              type="date"
+              class="form-control"
+              name="modifiedDate"
+              formControlName="modifiedDate"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_createdBy" jhiTranslate="professionalDashboardApp.professionalServiceAddress.createdBy"
+            >Created By</label
+          >
+          <input type="text" class="form-control" name="createdBy" id="field_createdBy" data-cy="createdBy" formControlName="createdBy" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_modifiedBy" jhiTranslate="professionalDashboardApp.professionalServiceAddress.modifiedBy"
+            >Modified By</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="modifiedBy"
+            id="field_modifiedBy"
+            data-cy="modifiedBy"
+            formControlName="modifiedBy"
+          />
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <mat-icon aria-hidden="true" class="!text-base">cancel</mat-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving()"
+          class="btn btn-primary"
+        >
+          <mat-icon aria-hidden="true" class="!text-base">save</mat-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

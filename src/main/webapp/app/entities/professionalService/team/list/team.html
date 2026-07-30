@@ -1,0 +1,98 @@
+<div>
+  <h2 id="page-heading" data-cy="TeamHeading">
+    <span jhiTranslate="professionalDashboardApp.professionalServiceTeam.home.title">Teams</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
+        <mat-icon aria-hidden="true" class="!text-base" [class.animate-spin]="isLoading()">sync</mat-icon>
+        <span jhiTranslate="professionalDashboardApp.professionalServiceTeam.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-team"
+        [routerLink]="['/team/new']"
+      >
+        <mat-icon aria-hidden="true" class="!text-base">add</mat-icon>
+        <span jhiTranslate="professionalDashboardApp.professionalServiceTeam.home.createLabel">Create a new Team</span>
+      </button>
+    </div>
+  </h2>
+
+  <hpd-alert-error />
+
+  <hpd-alert />
+
+  @if (teams().length === 0) {
+  <div class="alert alert-warning" id="no-result">
+    <span jhiTranslate="professionalDashboardApp.professionalServiceTeam.home.notFound">No Teams found</span>
+  </div>
+  } @else {
+  <div class="table-responsive table-entities" id="entities">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr jhiSort [predicate]="sortState().predicate" [ascending]="sortState().ascending" (sortChange)="navigateToWithComponentValues($event)">
+          <th scope="col" jhiSortBy="id" #idSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceTeam.id">Id</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ idSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="name" #nameSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceTeam.name">Name</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ nameSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="description" #descriptionSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceTeam.description">Description</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ descriptionSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="contact" #contactSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceTeam.contact">Contact</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ contactSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (team of teams(); track trackId(team)) {
+        <tr data-cy="entityTable">
+          <td><a [routerLink]="['/team', team.id, 'view']">{{ team.id }}</a></td>
+          <td>{{ team.name }}</td>
+          <td>{{ team.description }}</td>
+          <td>{{ team.contact }}</td>
+          <td class="text-end">
+            <div class="btn-group">
+              <a [routerLink]="['/team', team.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                <mat-icon aria-hidden="true" class="!text-base">visibility</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+              </a>
+
+              <a [routerLink]="['/team', team.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+              </a>
+
+              <button type="submit" (click)="delete(team)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <mat-icon aria-hidden="true" class="!text-base">close</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+</div>

@@ -1,0 +1,79 @@
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+
+import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule } from '@ngx-translate/core';
+import { Observable, finalize } from 'rxjs';
+
+import { AlertErrorComponent } from 'app/shared/alert/alert-error.component';
+import { TranslateDirective } from 'app/shared/language';
+import { TaskService } from '../service/task.service';
+import { ITask } from '../task.model';
+
+import { TaskFormGroup, TaskFormService } from './task-form.service';
+
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'hpd-task-update',
+  templateUrl: './task-update.html',
+  imports: [TranslateDirective, TranslateModule, AlertErrorComponent, ReactiveFormsModule, MatIconModule],
+})
+export class TaskUpdateComponent implements OnInit {
+  readonly isSaving = signal(false);
+  task: ITask | null = null;
+
+  protected taskService = inject(TaskService);
+  protected taskFormService = inject(TaskFormService);
+  protected activatedRoute = inject(ActivatedRoute);
+
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  editForm: TaskFormGroup = this.taskFormService.createTaskFormGroup();
+
+  ngOnInit(): void {
+    this.activatedRoute.data.subscribe(({ task }) => {
+      this.task = task;
+      if (task) {
+        this.updateForm(task);
+      }
+    });
+  }
+
+  previousState(): void {
+    globalThis.history.back();
+  }
+
+  save(): void {
+    this.isSaving.set(true);
+    const task = this.taskFormService.getTask(this.editForm);
+    if (task.id === null) {
+      this.subscribeToSaveResponse(this.taskService.create(task));
+    } else {
+      this.subscribeToSaveResponse(this.taskService.update(task));
+    }
+  }
+
+  protected subscribeToSaveResponse(result: Observable<ITask | null>): void {
+    result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
+      next: () => this.onSaveSuccess(),
+      error: () => this.onSaveError(),
+    });
+  }
+
+  protected onSaveSuccess(): void {
+    this.previousState();
+  }
+
+  protected onSaveError(): void {
+    // Api for inheritance.
+  }
+
+  protected onSaveFinalize(): void {
+    this.isSaving.set(false);
+  }
+
+  protected updateForm(task: ITask): void {
+    this.task = task;
+    this.taskFormService.resetForm(this.editForm, task);
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "professionalDashboardApp": {
+    "patientServiceClinicalReport": {
+      "home": {
+        "title": "Clinical Reports",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Clinical Report erstellen",
+        "createOrEditLabel": "Clinical Report erstellen oder bearbeiten",
+        "notFound": "Keine Clinical Reports gefunden"
+      },
+      "created": "Clinical Report erstellt mit ID {{ param }}",
+      "updated": "Clinical Report aktualisiert mit ID {{ param }}",
+      "deleted": "Clinical Report gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Clinical Report {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Clinical Report"
+      },
+      "id": "Id",
+      "patientId": "Patient Id",
+      "occurredAt": "Occurred At",
+      "label": "Label",
+      "reportType": "Report Type",
+      "url": "Url"
+    }
+  }
+}

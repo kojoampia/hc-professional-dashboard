@@ -2,6 +2,7 @@
   "annotations": {
     "changelogDate": "20240320235005"
   },
+  "applications": ["*"],
   "clientRootFolder": "professionalService",
   "databaseType": "mongodb",
   "dto": "no",
@@ -21,8 +22,7 @@
     },
     {
       "fieldName": "data",
-      "fieldType": "byte[]",
-      "fieldTypeBlobContent": "any"
+      "fieldType": "AnyBlob"
     },
     {
       "fieldName": "type",

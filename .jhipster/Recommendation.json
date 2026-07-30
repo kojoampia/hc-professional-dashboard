@@ -2,6 +2,7 @@
   "annotations": {
     "changelogDate": "20260724060300"
   },
+  "applications": ["*"],
   "clientRootFolder": "patientService",
   "databaseType": "mongodb",
   "dto": "no",
@@ -24,7 +25,15 @@
   "name": "Recommendation",
   "pagination": "no",
   "readOnly": false,
-  "relationships": [],
+  "relationships": [
+    {
+      "otherEntityName": "clinicalCase",
+      "otherEntityRelationshipName": "recommendation",
+      "relationshipName": "clinicalCase",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-many"
+    }
+  ],
   "searchEngine": "no",
   "service": "serviceClass"
 }

@@ -1,0 +1,47 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (dutyRoster(); as dutyRosterRef) {
+    <div>
+      <h2 data-cy="dutyRosterDetailsHeading">
+        <span jhiTranslate="professionalDashboardApp.professionalServiceDutyRoster.detail.title">Duty Roster</span>
+      </h2>
+
+      <hr />
+
+      <hpd-alert-error />
+
+      <hpd-alert />
+
+      <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="professionalDashboardApp.professionalServiceDutyRoster.id">Id</span></dt>
+        <dd>
+          <span>{{ dutyRosterRef.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalServiceDutyRoster.name">Name</span></dt>
+        <dd>
+          <span>{{ dutyRosterRef.name }}</span>
+        </dd>
+        <dt>
+          <span jhiTranslate="professionalDashboardApp.professionalServiceDutyRoster.subscribedProfessional">Subscribed Professional</span>
+        </dt>
+        <dd>
+          @for (subscribedProfessional of dutyRosterRef.subscribedProfessionals; track $index; let last = $last) {
+          <span>
+            <a [routerLink]="['/health-connect-professional', subscribedProfessional.id, 'view']">{{ subscribedProfessional?.id }}</a>{{
+            last ? '' : ', ' }}
+          </span>
+          }
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <mat-icon aria-hidden="true" class="!text-base">arrow_back</mat-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/duty-roster', dutyRosterRef.id, 'edit']" class="btn btn-primary">
+        <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+    }
+  </div>
+</div>

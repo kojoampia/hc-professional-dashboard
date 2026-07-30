@@ -1,0 +1,61 @@
+{
+  "annotations": {
+    "changelogDate": "20260730120000"
+  },
+  "applications": ["*"],
+  "clientRootFolder": "patientService",
+  "entityTableName": "clinicalcase",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "patientId",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "openedAt",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "brief",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "CaseStatus",
+      "fieldValues": "URGENT,OPEN,CLOSED"
+    },
+    {
+      "fieldName": "symptoms",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "diagnosis",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "assignedProfessionalId",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "assignedRosterId",
+      "fieldType": "String"
+    }
+  ],
+  "microserviceName": "patientService",
+  "name": "ClinicalCase",
+  "pagination": "infinite-scroll",
+  "relationships": [
+    {
+      "otherEntityName": "recommendation",
+      "otherEntityRelationshipName": "clinicalCase",
+      "relationshipName": "recommendation",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

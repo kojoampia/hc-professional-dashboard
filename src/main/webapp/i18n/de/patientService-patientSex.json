@@ -1,0 +1,10 @@
+{
+  "professionalDashboardApp": {
+    "PatientSex": {
+      "null": "",
+      "FEMALE": "FEMALE",
+      "MALE": "MALE",
+      "UNSPECIFIED": "UNSPECIFIED"
+    }
+  }
+}

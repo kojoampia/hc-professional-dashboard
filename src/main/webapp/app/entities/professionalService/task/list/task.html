@@ -1,0 +1,162 @@
+<div>
+  <h2 id="page-heading" data-cy="TaskHeading">
+    <span jhiTranslate="professionalDashboardApp.professionalServiceTask.home.title">Tasks</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
+        <mat-icon aria-hidden="true" class="!text-base" [class.animate-spin]="isLoading()">sync</mat-icon>
+        <span jhiTranslate="professionalDashboardApp.professionalServiceTask.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-task"
+        [routerLink]="['/task/new']"
+      >
+        <mat-icon aria-hidden="true" class="!text-base">add</mat-icon>
+        <span jhiTranslate="professionalDashboardApp.professionalServiceTask.home.createLabel">Create a new Task</span>
+      </button>
+    </div>
+  </h2>
+
+  <hpd-alert-error />
+
+  <hpd-alert />
+
+  @if (tasks().length === 0) {
+  <div class="alert alert-warning" id="no-result">
+    <span jhiTranslate="professionalDashboardApp.professionalServiceTask.home.notFound">No Tasks found</span>
+  </div>
+  } @else {
+  <div class="table-responsive table-entities" id="entities">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr jhiSort [predicate]="sortState().predicate" [ascending]="sortState().ascending" (sortChange)="navigateToWithComponentValues($event)">
+          <th scope="col" jhiSortBy="id" #idSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceTask.id">Id</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ idSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="name" #nameSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceTask.name">Name</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ nameSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="description" #descriptionSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceTask.description">Description</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ descriptionSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="schedule" #scheduleSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceTask.schedule">Schedule</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ scheduleSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="duration" #durationSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceTask.duration">Duration</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ durationSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="attendantId" #attendantIdSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceTask.attendantId">Attendant Id</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ attendantIdSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="teamId" #teamIdSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceTask.teamId">Team Id</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ teamIdSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="patientId" #patientIdSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceTask.patientId">Patient Id</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ patientIdSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="createdDate" #createdDateSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceTask.createdDate">Created Date</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ createdDateSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="modifiedDate" #modifiedDateSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceTask.modifiedDate">Modified Date</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ modifiedDateSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="createdBy" #createdBySort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceTask.createdBy">Created By</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ createdBySort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="modifiedBy" #modifiedBySort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceTask.modifiedBy">Modified By</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ modifiedBySort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (task of tasks(); track trackId(task)) {
+        <tr data-cy="entityTable">
+          <td><a [routerLink]="['/task', task.id, 'view']">{{ task.id }}</a></td>
+          <td>{{ task.name }}</td>
+          <td>{{ task.description }}</td>
+          <td>{{ task.schedule | formatMediumDate }}</td>
+          <td>{{ task.duration }}</td>
+          <td>{{ task.attendantId }}</td>
+          <td>{{ task.teamId }}</td>
+          <td>{{ task.patientId }}</td>
+          <td>{{ task.createdDate | formatMediumDate }}</td>
+          <td>{{ task.modifiedDate | formatMediumDate }}</td>
+          <td>{{ task.createdBy }}</td>
+          <td>{{ task.modifiedBy }}</td>
+          <td class="text-end">
+            <div class="btn-group">
+              <a [routerLink]="['/task', task.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                <mat-icon aria-hidden="true" class="!text-base">visibility</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+              </a>
+
+              <a [routerLink]="['/task', task.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+              </a>
+
+              <button type="submit" (click)="delete(task)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <mat-icon aria-hidden="true" class="!text-base">close</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+</div>

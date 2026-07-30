@@ -1,0 +1,29 @@
+{
+  "professionalDashboardApp": {
+    "patientServiceActivityLogEntry": {
+      "home": {
+        "title": "ActivityLogEntries",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Activity Log Entry",
+        "createOrEditLabel": "Créer ou éditer un Activity Log Entry",
+        "notFound": "Aucun Activity Log Entry trouvé"
+      },
+      "created": "Un nouveau Activity Log Entry a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Activity Log Entry avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Activity Log Entry avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Activity Log Entry {{ id }} ?"
+      },
+      "detail": {
+        "title": "Activity Log Entry"
+      },
+      "id": "Id",
+      "patientId": "Patient Id",
+      "occurredAt": "Occurred At",
+      "label": "Label",
+      "title": "Title",
+      "description": "Description",
+      "createdAt": "Created At"
+    }
+  }
+}
