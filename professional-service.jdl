@@ -1,25 +1,12 @@
-application {
-  config {
-    baseName professionalDashboard
-    clientFramework angular
-    clientTheme none
-    creationTimestamp 1707426466782
-    databaseType mongodb
-    devDatabaseType mongodb
-    enableTranslation true
-    jhiPrefix hpd
-    jhipsterVersion "9.1.0"
-    languages [en, fr, de]
-    microfrontends []
-    nativeLanguage en
-    prodDatabaseType mongodb
-    skipServer true
-    testFrameworks [cypress]
-    withAdminUi true
-  }
-
-  entities Activity, ActivityLogEntry, Address, ClinicalReport, Document, DutyRoster, DutyShift, HealthConnectProfessional, MedCase, Medication, MedicationRecord, Metadata, Patient, Profile, Recommendation, Report, Stat, Task, Team, Visitation
-}
+// Entities owned by professionalService.
+//
+// Entity-only JDL: application config lives in .yo-rc.json, so this file can be
+// applied with `jhipster jdl professional-service.jdl` without duplicating it.
+//
+// DutyRoster, DutyShift and HealthConnectProfessional mirror
+// app/health-connect/health-connect.models.ts. The rest are the older generated
+// definitions this repo has carried since 2024; their Angular modules were
+// deleted before the BridgeCare migration and are regenerated here.
 
 @ChangelogDate("20240326164027")
 entity Activity (activity) {
@@ -32,16 +19,7 @@ entity Activity (activity) {
   modifiedDate Instant
   modifiedBy String
 }
-@ChangelogDate("20260724060600")
-entity ActivityLogEntry (activitylogentry) {
-  id String
-  patientId String
-  occurredAt Instant
-  label String
-  title String
-  description String
-  createdAt Instant
-}
+
 @ChangelogDate("20240206205816")
 entity Address (address) {
   id String
@@ -59,15 +37,7 @@ entity Address (address) {
   createdBy String
   modifiedBy String
 }
-@ChangelogDate("20260724060700")
-entity ClinicalReport (clinicalreport) {
-  id String
-  patientId String
-  occurredAt Instant
-  label String
-  reportType String
-  url String
-}
+
 @ChangelogDate("20240320235005")
 entity Document (jhi_document) {
   id String
@@ -80,44 +50,30 @@ entity Document (jhi_document) {
   createdBy String
   modifiedBy String
 }
+
 @ChangelogDate("20260724060000")
 entity DutyRoster (dutyroster) {
   id String
   name String
-  subscribedProfessionalIds String
 }
+
 @ChangelogDate("20260724060100")
 entity DutyShift (dutyshift) {
   id String
-  rosterId String
   professionalId String
   startsAt Instant
   endsAt Instant
-  status String
+  status DutyShiftStatus
 }
+
 @ChangelogDate("20260724060200")
 entity HealthConnectProfessional (healthconnectprofessional) {
   id String
   accountLogin String
   name String
   role String
-  dutyRosterIds String
 }
-@ChangelogDate("20260720214037")
-entity MedCase {
-  id String
-  symptoms String
-  diagnoses String
-  recommendations String
-  createdDate Instant
-  createdBy String
-  modifiedDate Instant
-  modifiedBy String
-  patientId String
-  status String
-  assignedRosterId String
-  brief String
-}
+
 @ChangelogDate("20240206215539")
 entity Medication (medication) {
   id String
@@ -129,13 +85,7 @@ entity Medication (medication) {
   createdBy String
   modifiedBy String
 }
-@ChangelogDate("20260724060500")
-entity MedicationRecord (medicationrecord) {
-  id String
-  patientId String
-  occurredAt Instant
-  label String
-}
+
 @ChangelogDate("20240206220638")
 entity Metadata (metadata) {
   id String
@@ -145,20 +95,7 @@ entity Metadata (metadata) {
   modifiedDate LocalDate
   data String
 }
-@ChangelogDate("20260724060800")
-entity Patient (patient) {
-  id String
-  patientName String
-  lastActivityAt Instant
-  sex String
-  isChild Boolean
-  dateOfBirth LocalDate
-  phone String
-  email String
-  emergencyContactName String
-  emergencyContactPhone String
-  avatarUrl String
-}
+
 @ChangelogDate("20240206221158")
 entity Profile (profile) {
   id String
@@ -180,12 +117,7 @@ entity Profile (profile) {
   rosterId String
   teamId String
 }
-@ChangelogDate("20260724060300")
-entity Recommendation (recommendation) {
-  id String
-  label String
-  category String
-}
+
 @ChangelogDate("20240206220512")
 entity Report (report) {
   id String
@@ -198,6 +130,7 @@ entity Report (report) {
   createdBy String
   modifiedBy String
 }
+
 @ChangelogDate("20240206215832")
 entity Stat (stat) {
   id String
@@ -209,6 +142,7 @@ entity Stat (stat) {
   createdDate LocalDate
   createdBy String
 }
+
 @ChangelogDate("20240206220119")
 entity Task (task) {
   id String
@@ -224,19 +158,13 @@ entity Task (task) {
   createdBy String
   modifiedBy String
 }
+
 @ChangelogDate("20240206215921")
 entity Team (team) {
   id String
   name String
   description String
   contact String
-}
-@ChangelogDate("20260724060400")
-entity Visitation (visitation) {
-  id String
-  patientId String
-  occurredAt Instant
-  label String
 }
 
 enum DocumentType {
@@ -251,11 +179,27 @@ enum DocumentType {
   OTHER
 }
 
-search Activity, ActivityLogEntry, Address, ClinicalReport, Document, DutyRoster, DutyShift, HealthConnectProfessional, MedCase, Medication, MedicationRecord, Metadata, Patient, Profile, Recommendation, Report, Stat, Task, Team, Visitation with no
+enum DutyShiftStatus {
+  UPCOMING,
+  ACTIVE,
+  COMPLETED
+}
+
+// Replaces DutyRoster.subscribedProfessionalIds: string[] and its inverse
+// HealthConnectProfessional.dutyRosterIds: string[], which were both flattened
+// to String because JDL has no array field type.
+relationship ManyToMany {
+  DutyRoster{subscribedProfessionals} to HealthConnectProfessional{dutyRosters}
+}
+
+// Replaces DutyRoster.shifts: DutyShift[]. The relationship also supplies what
+// DutyShift.rosterId used to carry, so that scalar is gone.
+relationship OneToMany {
+  DutyRoster{shifts} to DutyShift{roster}
+}
+
 microservice Activity, Address, Document, DutyRoster, DutyShift, HealthConnectProfessional, Medication, Metadata, Profile, Report, Stat, Task, Team with professionalService
-microservice ActivityLogEntry, ClinicalReport, MedCase, MedicationRecord, Patient, Recommendation, Visitation with patientService
 clientRootFolder Activity, Address, Document, DutyRoster, DutyShift, HealthConnectProfessional, Medication, Metadata, Profile, Report, Stat, Task, Team with professionalService
-clientRootFolder ActivityLogEntry, ClinicalReport, MedCase, MedicationRecord, Patient, Recommendation, Visitation with patientService
-service ActivityLogEntry, ClinicalReport, Document, DutyRoster, DutyShift, HealthConnectProfessional, MedCase, MedicationRecord, Patient, Profile, Recommendation, Visitation with serviceClass
-paginate MedCase with infinite-scroll
-paginate Patient, Profile with pagination
+service Document, DutyRoster, DutyShift, HealthConnectProfessional, Profile with serviceClass
+search Activity, Address, Document, DutyRoster, DutyShift, HealthConnectProfessional, Medication, Metadata, Profile, Report, Stat, Task, Team with no
+paginate Profile with pagination
