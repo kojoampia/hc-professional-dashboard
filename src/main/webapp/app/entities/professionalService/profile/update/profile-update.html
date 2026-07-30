@@ -1,5 +1,5 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
+<div class="flex justify-center">
+  <div class="">
     <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
       <h2
         id="hpd-profile-heading"
@@ -15,25 +15,25 @@
         @if (editForm.controls.id.value !== null) {
 
         <div class="mb-3">
-          <label class="form-label" for="field_id" jhiTranslate="professionalDashboardApp.professionalServiceProfile.id">Id</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          <label class="hpd-label" for="field_id" jhiTranslate="professionalDashboardApp.professionalServiceProfile.id">Id</label>
+          <input type="text" class="hpd-input" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
         </div>
         }
 
         <div class="mb-3">
-          <label class="form-label" for="field_firstName" jhiTranslate="professionalDashboardApp.professionalServiceProfile.firstName"
+          <label class="hpd-label" for="field_firstName" jhiTranslate="professionalDashboardApp.professionalServiceProfile.firstName"
             >First Name</label
           >
-          <input type="text" class="form-control" name="firstName" id="field_firstName" data-cy="firstName" formControlName="firstName" />
+          <input type="text" class="hpd-input" name="firstName" id="field_firstName" data-cy="firstName" formControlName="firstName" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_middleNames" jhiTranslate="professionalDashboardApp.professionalServiceProfile.middleNames"
+          <label class="hpd-label" for="field_middleNames" jhiTranslate="professionalDashboardApp.professionalServiceProfile.middleNames"
             >Middle Names</label
           >
           <input
             type="text"
-            class="form-control"
+            class="hpd-input"
             name="middleNames"
             id="field_middleNames"
             data-cy="middleNames"
@@ -42,19 +42,19 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_lastName" jhiTranslate="professionalDashboardApp.professionalServiceProfile.lastName"
+          <label class="hpd-label" for="field_lastName" jhiTranslate="professionalDashboardApp.professionalServiceProfile.lastName"
             >Last Name</label
           >
-          <input type="text" class="form-control" name="lastName" id="field_lastName" data-cy="lastName" formControlName="lastName" />
+          <input type="text" class="hpd-input" name="lastName" id="field_lastName" data-cy="lastName" formControlName="lastName" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_team" jhiTranslate="professionalDashboardApp.professionalServiceProfile.team">Team</label>
-          <input type="text" class="form-control" name="team" id="field_team" data-cy="team" formControlName="team" />
+          <label class="hpd-label" for="field_team" jhiTranslate="professionalDashboardApp.professionalServiceProfile.team">Team</label>
+          <input type="text" class="hpd-input" name="team" id="field_team" data-cy="team" formControlName="team" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_birthDate" jhiTranslate="professionalDashboardApp.professionalServiceProfile.birthDate"
+          <label class="hpd-label" for="field_birthDate" jhiTranslate="professionalDashboardApp.professionalServiceProfile.birthDate"
             >Birth Date</label
           >
           <div class="input-group">
@@ -62,7 +62,7 @@
               id="field_birthDate"
               data-cy="birthDate"
               type="date"
-              class="form-control"
+              class="hpd-input"
               name="birthDate"
               formControlName="birthDate"
             />
@@ -70,17 +70,17 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_sex" jhiTranslate="professionalDashboardApp.professionalServiceProfile.sex">Sex</label>
-          <input type="text" class="form-control" name="sex" id="field_sex" data-cy="sex" formControlName="sex" />
+          <label class="hpd-label" for="field_sex" jhiTranslate="professionalDashboardApp.professionalServiceProfile.sex">Sex</label>
+          <input type="text" class="hpd-input" name="sex" id="field_sex" data-cy="sex" formControlName="sex" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_mobilePhone" jhiTranslate="professionalDashboardApp.professionalServiceProfile.mobilePhone"
+          <label class="hpd-label" for="field_mobilePhone" jhiTranslate="professionalDashboardApp.professionalServiceProfile.mobilePhone"
             >Mobile Phone</label
           >
           <input
             type="text"
-            class="form-control"
+            class="hpd-input"
             name="mobilePhone"
             id="field_mobilePhone"
             data-cy="mobilePhone"
@@ -89,12 +89,12 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_phoneNumber" jhiTranslate="professionalDashboardApp.professionalServiceProfile.phoneNumber"
+          <label class="hpd-label" for="field_phoneNumber" jhiTranslate="professionalDashboardApp.professionalServiceProfile.phoneNumber"
             >Phone Number</label
           >
           <input
             type="text"
-            class="form-control"
+            class="hpd-input"
             name="phoneNumber"
             id="field_phoneNumber"
             data-cy="phoneNumber"
@@ -103,45 +103,45 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_email" jhiTranslate="professionalDashboardApp.professionalServiceProfile.email">Email</label>
-          <input type="text" class="form-control" name="email" id="field_email" data-cy="email" formControlName="email" />
+          <label class="hpd-label" for="field_email" jhiTranslate="professionalDashboardApp.professionalServiceProfile.email">Email</label>
+          <input type="text" class="hpd-input" name="email" id="field_email" data-cy="email" formControlName="email" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_idType" jhiTranslate="professionalDashboardApp.professionalServiceProfile.idType"
+          <label class="hpd-label" for="field_idType" jhiTranslate="professionalDashboardApp.professionalServiceProfile.idType"
             >Id Type</label
           >
-          <input type="text" class="form-control" name="idType" id="field_idType" data-cy="idType" formControlName="idType" />
+          <input type="text" class="hpd-input" name="idType" id="field_idType" data-cy="idType" formControlName="idType" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_idNumber" jhiTranslate="professionalDashboardApp.professionalServiceProfile.idNumber"
+          <label class="hpd-label" for="field_idNumber" jhiTranslate="professionalDashboardApp.professionalServiceProfile.idNumber"
             >Id Number</label
           >
-          <input type="text" class="form-control" name="idNumber" id="field_idNumber" data-cy="idNumber" formControlName="idNumber" />
+          <input type="text" class="hpd-input" name="idNumber" id="field_idNumber" data-cy="idNumber" formControlName="idNumber" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_documents" jhiTranslate="professionalDashboardApp.professionalServiceProfile.documents"
+          <label class="hpd-label" for="field_documents" jhiTranslate="professionalDashboardApp.professionalServiceProfile.documents"
             >Documents</label
           >
-          <input type="text" class="form-control" name="documents" id="field_documents" data-cy="documents" formControlName="documents" />
+          <input type="text" class="hpd-input" name="documents" id="field_documents" data-cy="documents" formControlName="documents" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_address" jhiTranslate="professionalDashboardApp.professionalServiceProfile.address"
+          <label class="hpd-label" for="field_address" jhiTranslate="professionalDashboardApp.professionalServiceProfile.address"
             >Address</label
           >
-          <input type="text" class="form-control" name="address" id="field_address" data-cy="address" formControlName="address" />
+          <input type="text" class="hpd-input" name="address" id="field_address" data-cy="address" formControlName="address" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_bankAccount" jhiTranslate="professionalDashboardApp.professionalServiceProfile.bankAccount"
+          <label class="hpd-label" for="field_bankAccount" jhiTranslate="professionalDashboardApp.professionalServiceProfile.bankAccount"
             >Bank Account</label
           >
           <input
             type="text"
-            class="form-control"
+            class="hpd-input"
             name="bankAccount"
             id="field_bankAccount"
             data-cy="bankAccount"
@@ -150,29 +150,29 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_tenantId" jhiTranslate="professionalDashboardApp.professionalServiceProfile.tenantId"
+          <label class="hpd-label" for="field_tenantId" jhiTranslate="professionalDashboardApp.professionalServiceProfile.tenantId"
             >Tenant Id</label
           >
-          <input type="text" class="form-control" name="tenantId" id="field_tenantId" data-cy="tenantId" formControlName="tenantId" />
+          <input type="text" class="hpd-input" name="tenantId" id="field_tenantId" data-cy="tenantId" formControlName="tenantId" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_rosterId" jhiTranslate="professionalDashboardApp.professionalServiceProfile.rosterId"
+          <label class="hpd-label" for="field_rosterId" jhiTranslate="professionalDashboardApp.professionalServiceProfile.rosterId"
             >Roster Id</label
           >
-          <input type="text" class="form-control" name="rosterId" id="field_rosterId" data-cy="rosterId" formControlName="rosterId" />
+          <input type="text" class="hpd-input" name="rosterId" id="field_rosterId" data-cy="rosterId" formControlName="rosterId" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_teamId" jhiTranslate="professionalDashboardApp.professionalServiceProfile.teamId"
+          <label class="hpd-label" for="field_teamId" jhiTranslate="professionalDashboardApp.professionalServiceProfile.teamId"
             >Team Id</label
           >
-          <input type="text" class="form-control" name="teamId" id="field_teamId" data-cy="teamId" formControlName="teamId" />
+          <input type="text" class="hpd-input" name="teamId" id="field_teamId" data-cy="teamId" formControlName="teamId" />
         </div>
       </div>
 
       <div>
-        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="hpd-btn hpd-btn-ghost" (click)="previousState()">
           <mat-icon aria-hidden="true" class="!text-base">cancel</mat-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
         </button>
 
@@ -181,7 +181,7 @@
           id="save-entity"
           data-cy="entityCreateSaveButton"
           [disabled]="editForm.invalid || isSaving()"
-          class="btn btn-primary"
+          class="hpd-btn hpd-btn-primary"
         >
           <mat-icon aria-hidden="true" class="!text-base">save</mat-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
         </button>

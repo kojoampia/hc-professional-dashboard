@@ -1,5 +1,5 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
+<div class="flex justify-center">
+  <div class="">
     @if (activity(); as activityRef) {
     <div>
       <h2 data-cy="activityDetailsHeading">
@@ -12,7 +12,7 @@
 
       <hpd-alert />
 
-      <dl class="row-md jh-entity-details">
+      <dl class="grid gap-4-md jh-entity-details">
         <dt><span jhiTranslate="professionalDashboardApp.professionalServiceActivity.id">Id</span></dt>
         <dd>
           <span>{{ activityRef.id }}</span>
@@ -47,11 +47,11 @@
         </dd>
       </dl>
 
-      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+      <button type="submit" (click)="previousState()" class="hpd-btn hpd-btn-ghost" data-cy="entityDetailsBackButton">
         <mat-icon aria-hidden="true" class="!text-base">arrow_back</mat-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
       </button>
 
-      <button type="button" [routerLink]="['/activity', activityRef.id, 'edit']" class="btn btn-primary">
+      <button type="button" [routerLink]="['/activity', activityRef.id, 'edit']" class="hpd-btn hpd-btn-primary">
         <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
       </button>
     </div>

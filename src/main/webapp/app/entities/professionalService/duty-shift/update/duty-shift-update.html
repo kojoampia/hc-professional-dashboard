@@ -1,5 +1,5 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
+<div class="flex justify-center">
+  <div class="">
     <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
       <h2
         id="hpd-duty-shift-heading"
@@ -15,21 +15,21 @@
         @if (editForm.controls.id.value !== null) {
 
         <div class="mb-3">
-          <label class="form-label" for="field_id" jhiTranslate="professionalDashboardApp.professionalServiceDutyShift.id">Id</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          <label class="hpd-label" for="field_id" jhiTranslate="professionalDashboardApp.professionalServiceDutyShift.id">Id</label>
+          <input type="text" class="hpd-input" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
         </div>
         }
 
         <div class="mb-3">
           <label
-            class="form-label"
+            class="hpd-label"
             for="field_professionalId"
             jhiTranslate="professionalDashboardApp.professionalServiceDutyShift.professionalId"
             >Professional Id</label
           >
           <input
             type="text"
-            class="form-control"
+            class="hpd-input"
             name="professionalId"
             id="field_professionalId"
             data-cy="professionalId"
@@ -38,15 +38,15 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_startsAt" jhiTranslate="professionalDashboardApp.professionalServiceDutyShift.startsAt"
+          <label class="hpd-label" for="field_startsAt" jhiTranslate="professionalDashboardApp.professionalServiceDutyShift.startsAt"
             >Starts At</label
           >
-          <div class="d-flex">
+          <div class="flex">
             <input
               id="field_startsAt"
               data-cy="startsAt"
               type="datetime-local"
-              class="form-control"
+              class="hpd-input"
               name="startsAt"
               formControlName="startsAt"
               placeholder="YYYY-MM-DD HH:mm"
@@ -55,15 +55,15 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_endsAt" jhiTranslate="professionalDashboardApp.professionalServiceDutyShift.endsAt"
+          <label class="hpd-label" for="field_endsAt" jhiTranslate="professionalDashboardApp.professionalServiceDutyShift.endsAt"
             >Ends At</label
           >
-          <div class="d-flex">
+          <div class="flex">
             <input
               id="field_endsAt"
               data-cy="endsAt"
               type="datetime-local"
-              class="form-control"
+              class="hpd-input"
               name="endsAt"
               formControlName="endsAt"
               placeholder="YYYY-MM-DD HH:mm"
@@ -72,10 +72,10 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_status" jhiTranslate="professionalDashboardApp.professionalServiceDutyShift.status"
+          <label class="hpd-label" for="field_status" jhiTranslate="professionalDashboardApp.professionalServiceDutyShift.status"
             >Status</label
           >
-          <select class="form-control" name="status" formControlName="status" id="field_status" data-cy="status">
+          <select class="hpd-input" name="status" formControlName="status" id="field_status" data-cy="status">
             <option [ngValue]="null">{{ 'professionalDashboardApp.DutyShiftStatus.null' | translate }}</option>
             @for (dutyShiftStatus of dutyShiftStatusValues; track $index) {
             <option [value]="dutyShiftStatus">{{ 'professionalDashboardApp.DutyShiftStatus.' + dutyShiftStatus | translate }}</option>
@@ -84,11 +84,11 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_roster" jhiTranslate="professionalDashboardApp.professionalServiceDutyShift.roster"
+          <label class="hpd-label" for="field_roster" jhiTranslate="professionalDashboardApp.professionalServiceDutyShift.roster"
             >Roster</label
           >
           <select
-            class="form-control"
+            class="hpd-input"
             id="field_roster"
             data-cy="roster"
             name="roster"
@@ -104,7 +104,7 @@
       </div>
 
       <div>
-        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="hpd-btn hpd-btn-ghost" (click)="previousState()">
           <mat-icon aria-hidden="true" class="!text-base">cancel</mat-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
         </button>
 
@@ -113,7 +113,7 @@
           id="save-entity"
           data-cy="entityCreateSaveButton"
           [disabled]="editForm.invalid || isSaving()"
-          class="btn btn-primary"
+          class="hpd-btn hpd-btn-primary"
         >
           <mat-icon aria-hidden="true" class="!text-base">save</mat-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
         </button>
