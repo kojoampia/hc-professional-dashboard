@@ -27,6 +27,7 @@ jhipster jdl professional-service.jdl patient-service.jdl --skip-install --force
 
 echo "==> 3/4 repairing generated code"
 node scripts/postprocess-generated-entities.mjs
+node scripts/restyle-generated-entities.mjs
 node scripts/apply-enum-i18n.mjs
 
 echo "==> 4/4 dropping the generated user-management route"

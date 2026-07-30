@@ -2,8 +2,8 @@
   <h2 id="page-heading" data-cy="RecommendationHeading">
     <span jhiTranslate="professionalDashboardApp.patientServiceRecommendation.home.title">Recommendations</span>
 
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
+    <div class="flex justify-end">
+      <button class="hpd-btn hpd-btn-ghost me-2" (click)="load()" [disabled]="isLoading()">
         <mat-icon aria-hidden="true" class="!text-base" [class.animate-spin]="isLoading()">sync</mat-icon>
         <span jhiTranslate="professionalDashboardApp.patientServiceRecommendation.home.refreshListLabel">Refresh list</span>
       </button>
@@ -11,7 +11,7 @@
       <button
         id="jh-create-entity"
         data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-recommendation"
+        class="hpd-btn hpd-btn-primary jh-create-entity create-recommendation"
         [routerLink]="['/recommendation/new']"
       >
         <mat-icon aria-hidden="true" class="!text-base">add</mat-icon>
@@ -25,30 +25,30 @@
   <hpd-alert />
 
   @if (recommendations().length === 0) {
-  <div class="alert alert-warning" id="no-result">
+  <div class="rounded-hpd-sm border border-[#eedfb9] bg-hpd-gold-tint px-4 py-3 text-sm text-hpd-muted" id="no-result">
     <span jhiTranslate="professionalDashboardApp.patientServiceRecommendation.home.notFound">No Recommendations found</span>
   </div>
   } @else {
-  <div class="table-responsive table-entities" id="entities">
-    <table class="table table-striped" aria-describedby="page-heading">
+  <div class="overflow-x-auto rounded-hpd-sm border border-hpd-border table-entities" id="entities">
+    <table class="w-full text-left text-sm" aria-describedby="page-heading">
       <thead>
         <tr jhiSort [predicate]="sortState().predicate" [ascending]="sortState().ascending" (sortChange)="navigateToWithComponentValues($event)">
           <th scope="col" jhiSortBy="id" #idSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceRecommendation.id">Id</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ idSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="label" #labelSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceRecommendation.label">Label</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ labelSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="category" #categorySort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceRecommendation.category">Category</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ categorySort.icon }}</mat-icon>
@@ -63,19 +63,19 @@
           <td><a [routerLink]="['/recommendation', recommendation.id, 'view']">{{ recommendation.id }}</a></td>
           <td>{{ recommendation.label }}</td>
           <td>{{ recommendation.category }}</td>
-          <td class="text-end">
-            <div class="btn-group">
-              <a [routerLink]="['/recommendation', recommendation.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+          <td class="text-right">
+            <div class="flex flex-wrap items-center gap-2">
+              <a [routerLink]="['/recommendation', recommendation.id, 'view']" class="hpd-btn hpd-btn-ghost btn-sm" data-cy="entityDetailsButton">
                 <mat-icon aria-hidden="true" class="!text-base">visibility</mat-icon>
                 <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
               </a>
 
-              <a [routerLink]="['/recommendation', recommendation.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+              <a [routerLink]="['/recommendation', recommendation.id, 'edit']" class="hpd-btn hpd-btn-primary btn-sm" data-cy="entityEditButton">
                 <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>
                 <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
               </a>
 
-              <button type="submit" (click)="delete(recommendation)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+              <button type="submit" (click)="delete(recommendation)" class="hpd-btn hpd-btn-danger btn-sm" data-cy="entityDeleteButton">
                 <mat-icon aria-hidden="true" class="!text-base">close</mat-icon>
                 <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
               </button>

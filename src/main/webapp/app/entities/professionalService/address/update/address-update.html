@@ -1,5 +1,5 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
+<div class="flex justify-center">
+  <div class="">
     <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
       <h2
         id="hpd-address-heading"
@@ -15,21 +15,21 @@
         @if (editForm.controls.id.value !== null) {
 
         <div class="mb-3">
-          <label class="form-label" for="field_id" jhiTranslate="professionalDashboardApp.professionalServiceAddress.id">Id</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          <label class="hpd-label" for="field_id" jhiTranslate="professionalDashboardApp.professionalServiceAddress.id">Id</label>
+          <input type="text" class="hpd-input" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
         </div>
         }
 
         <div class="mb-3">
           <label
-            class="form-label"
+            class="hpd-label"
             for="field_digitalAddress"
             jhiTranslate="professionalDashboardApp.professionalServiceAddress.digitalAddress"
             >Digital Address</label
           >
           <input
             type="text"
-            class="form-control"
+            class="hpd-input"
             name="digitalAddress"
             id="field_digitalAddress"
             data-cy="digitalAddress"
@@ -39,14 +39,14 @@
 
         <div class="mb-3">
           <label
-            class="form-label"
+            class="hpd-label"
             for="field_streetAddress"
             jhiTranslate="professionalDashboardApp.professionalServiceAddress.streetAddress"
             >Street Address</label
           >
           <input
             type="text"
-            class="form-control"
+            class="hpd-input"
             name="streetAddress"
             id="field_streetAddress"
             data-cy="streetAddress"
@@ -55,50 +55,50 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_areaCode" jhiTranslate="professionalDashboardApp.professionalServiceAddress.areaCode"
+          <label class="hpd-label" for="field_areaCode" jhiTranslate="professionalDashboardApp.professionalServiceAddress.areaCode"
             >Area Code</label
           >
-          <input type="text" class="form-control" name="areaCode" id="field_areaCode" data-cy="areaCode" formControlName="areaCode" />
+          <input type="text" class="hpd-input" name="areaCode" id="field_areaCode" data-cy="areaCode" formControlName="areaCode" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_town" jhiTranslate="professionalDashboardApp.professionalServiceAddress.town">Town</label>
-          <input type="text" class="form-control" name="town" id="field_town" data-cy="town" formControlName="town" />
+          <label class="hpd-label" for="field_town" jhiTranslate="professionalDashboardApp.professionalServiceAddress.town">Town</label>
+          <input type="text" class="hpd-input" name="town" id="field_town" data-cy="town" formControlName="town" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_city" jhiTranslate="professionalDashboardApp.professionalServiceAddress.city">City</label>
-          <input type="text" class="form-control" name="city" id="field_city" data-cy="city" formControlName="city" />
+          <label class="hpd-label" for="field_city" jhiTranslate="professionalDashboardApp.professionalServiceAddress.city">City</label>
+          <input type="text" class="hpd-input" name="city" id="field_city" data-cy="city" formControlName="city" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_district" jhiTranslate="professionalDashboardApp.professionalServiceAddress.district"
+          <label class="hpd-label" for="field_district" jhiTranslate="professionalDashboardApp.professionalServiceAddress.district"
             >District</label
           >
-          <input type="text" class="form-control" name="district" id="field_district" data-cy="district" formControlName="district" />
+          <input type="text" class="hpd-input" name="district" id="field_district" data-cy="district" formControlName="district" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_state" jhiTranslate="professionalDashboardApp.professionalServiceAddress.state">State</label>
-          <input type="text" class="form-control" name="state" id="field_state" data-cy="state" formControlName="state" />
+          <label class="hpd-label" for="field_state" jhiTranslate="professionalDashboardApp.professionalServiceAddress.state">State</label>
+          <input type="text" class="hpd-input" name="state" id="field_state" data-cy="state" formControlName="state" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_region" jhiTranslate="professionalDashboardApp.professionalServiceAddress.region"
+          <label class="hpd-label" for="field_region" jhiTranslate="professionalDashboardApp.professionalServiceAddress.region"
             >Region</label
           >
-          <input type="text" class="form-control" name="region" id="field_region" data-cy="region" formControlName="region" />
+          <input type="text" class="hpd-input" name="region" id="field_region" data-cy="region" formControlName="region" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_country" jhiTranslate="professionalDashboardApp.professionalServiceAddress.country"
+          <label class="hpd-label" for="field_country" jhiTranslate="professionalDashboardApp.professionalServiceAddress.country"
             >Country</label
           >
-          <input type="text" class="form-control" name="country" id="field_country" data-cy="country" formControlName="country" />
+          <input type="text" class="hpd-input" name="country" id="field_country" data-cy="country" formControlName="country" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_createdDate" jhiTranslate="professionalDashboardApp.professionalServiceAddress.createdDate"
+          <label class="hpd-label" for="field_createdDate" jhiTranslate="professionalDashboardApp.professionalServiceAddress.createdDate"
             >Created Date</label
           >
           <div class="input-group">
@@ -106,7 +106,7 @@
               id="field_createdDate"
               data-cy="createdDate"
               type="date"
-              class="form-control"
+              class="hpd-input"
               name="createdDate"
               formControlName="createdDate"
             />
@@ -114,7 +114,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_modifiedDate" jhiTranslate="professionalDashboardApp.professionalServiceAddress.modifiedDate"
+          <label class="hpd-label" for="field_modifiedDate" jhiTranslate="professionalDashboardApp.professionalServiceAddress.modifiedDate"
             >Modified Date</label
           >
           <div class="input-group">
@@ -122,7 +122,7 @@
               id="field_modifiedDate"
               data-cy="modifiedDate"
               type="date"
-              class="form-control"
+              class="hpd-input"
               name="modifiedDate"
               formControlName="modifiedDate"
             />
@@ -130,19 +130,19 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_createdBy" jhiTranslate="professionalDashboardApp.professionalServiceAddress.createdBy"
+          <label class="hpd-label" for="field_createdBy" jhiTranslate="professionalDashboardApp.professionalServiceAddress.createdBy"
             >Created By</label
           >
-          <input type="text" class="form-control" name="createdBy" id="field_createdBy" data-cy="createdBy" formControlName="createdBy" />
+          <input type="text" class="hpd-input" name="createdBy" id="field_createdBy" data-cy="createdBy" formControlName="createdBy" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_modifiedBy" jhiTranslate="professionalDashboardApp.professionalServiceAddress.modifiedBy"
+          <label class="hpd-label" for="field_modifiedBy" jhiTranslate="professionalDashboardApp.professionalServiceAddress.modifiedBy"
             >Modified By</label
           >
           <input
             type="text"
-            class="form-control"
+            class="hpd-input"
             name="modifiedBy"
             id="field_modifiedBy"
             data-cy="modifiedBy"
@@ -152,7 +152,7 @@
       </div>
 
       <div>
-        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="hpd-btn hpd-btn-ghost" (click)="previousState()">
           <mat-icon aria-hidden="true" class="!text-base">cancel</mat-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
         </button>
 
@@ -161,7 +161,7 @@
           id="save-entity"
           data-cy="entityCreateSaveButton"
           [disabled]="editForm.invalid || isSaving()"
-          class="btn btn-primary"
+          class="hpd-btn hpd-btn-primary"
         >
           <mat-icon aria-hidden="true" class="!text-base">save</mat-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
         </button>

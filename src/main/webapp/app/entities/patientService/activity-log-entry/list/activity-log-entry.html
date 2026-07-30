@@ -2,8 +2,8 @@
   <h2 id="page-heading" data-cy="ActivityLogEntryHeading">
     <span jhiTranslate="professionalDashboardApp.patientServiceActivityLogEntry.home.title">Activity Log Entries</span>
 
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
+    <div class="flex justify-end">
+      <button class="hpd-btn hpd-btn-ghost me-2" (click)="load()" [disabled]="isLoading()">
         <mat-icon aria-hidden="true" class="!text-base" [class.animate-spin]="isLoading()">sync</mat-icon>
         <span jhiTranslate="professionalDashboardApp.patientServiceActivityLogEntry.home.refreshListLabel">Refresh list</span>
       </button>
@@ -11,7 +11,7 @@
       <button
         id="jh-create-entity"
         data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-activity-log-entry"
+        class="hpd-btn hpd-btn-primary jh-create-entity create-activity-log-entry"
         [routerLink]="['/activity-log-entry/new']"
       >
         <mat-icon aria-hidden="true" class="!text-base">add</mat-icon>
@@ -25,58 +25,58 @@
   <hpd-alert />
 
   @if (activityLogEntries().length === 0) {
-  <div class="alert alert-warning" id="no-result">
+  <div class="rounded-hpd-sm border border-[#eedfb9] bg-hpd-gold-tint px-4 py-3 text-sm text-hpd-muted" id="no-result">
     <span jhiTranslate="professionalDashboardApp.patientServiceActivityLogEntry.home.notFound">No Activity Log Entries found</span>
   </div>
   } @else {
-  <div class="table-responsive table-entities" id="entities">
-    <table class="table table-striped" aria-describedby="page-heading">
+  <div class="overflow-x-auto rounded-hpd-sm border border-hpd-border table-entities" id="entities">
+    <table class="w-full text-left text-sm" aria-describedby="page-heading">
       <thead>
         <tr jhiSort [predicate]="sortState().predicate" [ascending]="sortState().ascending" (sortChange)="navigateToWithComponentValues($event)">
           <th scope="col" jhiSortBy="id" #idSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceActivityLogEntry.id">Id</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ idSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="patientId" #patientIdSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceActivityLogEntry.patientId">Patient Id</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ patientIdSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="occurredAt" #occurredAtSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceActivityLogEntry.occurredAt">Occurred At</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ occurredAtSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="label" #labelSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceActivityLogEntry.label">Label</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ labelSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="title" #titleSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceActivityLogEntry.title">Title</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ titleSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="description" #descriptionSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceActivityLogEntry.description">Description</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ descriptionSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="createdAt" #createdAtSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceActivityLogEntry.createdAt">Created At</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ createdAtSort.icon }}</mat-icon>
@@ -95,11 +95,11 @@
           <td>{{ activityLogEntry.title }}</td>
           <td>{{ activityLogEntry.description }}</td>
           <td>{{ activityLogEntry.createdAt | formatMediumDatetime }}</td>
-          <td class="text-end">
-            <div class="btn-group">
+          <td class="text-right">
+            <div class="flex flex-wrap items-center gap-2">
               <a
                 [routerLink]="['/activity-log-entry', activityLogEntry.id, 'view']"
-                class="btn btn-info btn-sm"
+                class="hpd-btn hpd-btn-ghost btn-sm"
                 data-cy="entityDetailsButton"
               >
                 <mat-icon aria-hidden="true" class="!text-base">visibility</mat-icon>
@@ -108,14 +108,14 @@
 
               <a
                 [routerLink]="['/activity-log-entry', activityLogEntry.id, 'edit']"
-                class="btn btn-primary btn-sm"
+                class="hpd-btn hpd-btn-primary btn-sm"
                 data-cy="entityEditButton"
               >
                 <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>
                 <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
               </a>
 
-              <button type="submit" (click)="delete(activityLogEntry)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+              <button type="submit" (click)="delete(activityLogEntry)" class="hpd-btn hpd-btn-danger btn-sm" data-cy="entityDeleteButton">
                 <mat-icon aria-hidden="true" class="!text-base">close</mat-icon>
                 <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
               </button>
