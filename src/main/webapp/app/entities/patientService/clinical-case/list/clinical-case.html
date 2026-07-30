@@ -2,8 +2,8 @@
   <h2 id="page-heading" data-cy="ClinicalCaseHeading">
     <span jhiTranslate="professionalDashboardApp.patientServiceClinicalCase.home.title">Clinical Cases</span>
 
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
+    <div class="flex justify-end">
+      <button class="hpd-btn hpd-btn-ghost me-2" (click)="load()" [disabled]="isLoading()">
         <mat-icon aria-hidden="true" class="!text-base" [class.animate-spin]="isLoading()">sync</mat-icon>
         <span jhiTranslate="professionalDashboardApp.patientServiceClinicalCase.home.refreshListLabel">Refresh list</span>
       </button>
@@ -11,7 +11,7 @@
       <button
         id="jh-create-entity"
         data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-clinical-case"
+        class="hpd-btn hpd-btn-primary jh-create-entity create-clinical-case"
         [routerLink]="['/clinical-case/new']"
       >
         <mat-icon aria-hidden="true" class="!text-base">add</mat-icon>
@@ -25,65 +25,65 @@
   <hpd-alert />
 
   @if (clinicalCases().length === 0) {
-  <div class="alert alert-warning" id="no-result">
+  <div class="rounded-hpd-sm border border-[#eedfb9] bg-hpd-gold-tint px-4 py-3 text-sm text-hpd-muted" id="no-result">
     <span jhiTranslate="professionalDashboardApp.patientServiceClinicalCase.home.notFound">No Clinical Cases found</span>
   </div>
   } @else {
-  <div class="table-responsive table-entities" id="entities">
-    <table class="table table-striped" aria-describedby="page-heading">
+  <div class="overflow-x-auto rounded-hpd-sm border border-hpd-border table-entities" id="entities">
+    <table class="w-full text-left text-sm" aria-describedby="page-heading">
       <thead>
         <tr jhiSort [predicate]="sortState().predicate" [ascending]="sortState().ascending" (sortChange)="navigateToWithComponentValues($event)">
           <th scope="col" jhiSortBy="id" #idSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceClinicalCase.id">Id</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ idSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="patientId" #patientIdSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceClinicalCase.patientId">Patient Id</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ patientIdSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="openedAt" #openedAtSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceClinicalCase.openedAt">Opened At</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ openedAtSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="brief" #briefSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceClinicalCase.brief">Brief</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ briefSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="status" #statusSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceClinicalCase.status">Status</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ statusSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="symptoms" #symptomsSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceClinicalCase.symptoms">Symptoms</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ symptomsSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="diagnosis" #diagnosisSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceClinicalCase.diagnosis">Diagnosis</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ diagnosisSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="assignedProfessionalId" #assignedProfessionalIdSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceClinicalCase.assignedProfessionalId"
                 >Assigned Professional Id</span
               >
@@ -92,7 +92,7 @@
             </div>
           </th>
           <th scope="col" jhiSortBy="assignedRosterId" #assignedRosterIdSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientServiceClinicalCase.assignedRosterId">Assigned Roster Id</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ assignedRosterIdSort.icon }}</mat-icon>
@@ -115,19 +115,19 @@
           <td>{{ clinicalCase.diagnosis }}</td>
           <td>{{ clinicalCase.assignedProfessionalId }}</td>
           <td>{{ clinicalCase.assignedRosterId }}</td>
-          <td class="text-end">
-            <div class="btn-group">
-              <a [routerLink]="['/clinical-case', clinicalCase.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+          <td class="text-right">
+            <div class="flex flex-wrap items-center gap-2">
+              <a [routerLink]="['/clinical-case', clinicalCase.id, 'view']" class="hpd-btn hpd-btn-ghost btn-sm" data-cy="entityDetailsButton">
                 <mat-icon aria-hidden="true" class="!text-base">visibility</mat-icon>
                 <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
               </a>
 
-              <a [routerLink]="['/clinical-case', clinicalCase.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+              <a [routerLink]="['/clinical-case', clinicalCase.id, 'edit']" class="hpd-btn hpd-btn-primary btn-sm" data-cy="entityEditButton">
                 <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>
                 <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
               </a>
 
-              <button type="submit" (click)="delete(clinicalCase)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+              <button type="submit" (click)="delete(clinicalCase)" class="hpd-btn hpd-btn-danger btn-sm" data-cy="entityDeleteButton">
                 <mat-icon aria-hidden="true" class="!text-base">close</mat-icon>
                 <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
               </button>

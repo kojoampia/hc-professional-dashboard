@@ -1,5 +1,5 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
+<div class="flex justify-center">
+  <div class="">
     <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
       <h2
         id="hpd-team-heading"
@@ -15,23 +15,23 @@
         @if (editForm.controls.id.value !== null) {
 
         <div class="mb-3">
-          <label class="form-label" for="field_id" jhiTranslate="professionalDashboardApp.professionalServiceTeam.id">Id</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          <label class="hpd-label" for="field_id" jhiTranslate="professionalDashboardApp.professionalServiceTeam.id">Id</label>
+          <input type="text" class="hpd-input" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
         </div>
         }
 
         <div class="mb-3">
-          <label class="form-label" for="field_name" jhiTranslate="professionalDashboardApp.professionalServiceTeam.name">Name</label>
-          <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name" />
+          <label class="hpd-label" for="field_name" jhiTranslate="professionalDashboardApp.professionalServiceTeam.name">Name</label>
+          <input type="text" class="hpd-input" name="name" id="field_name" data-cy="name" formControlName="name" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_description" jhiTranslate="professionalDashboardApp.professionalServiceTeam.description"
+          <label class="hpd-label" for="field_description" jhiTranslate="professionalDashboardApp.professionalServiceTeam.description"
             >Description</label
           >
           <input
             type="text"
-            class="form-control"
+            class="hpd-input"
             name="description"
             id="field_description"
             data-cy="description"
@@ -40,15 +40,15 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_contact" jhiTranslate="professionalDashboardApp.professionalServiceTeam.contact"
+          <label class="hpd-label" for="field_contact" jhiTranslate="professionalDashboardApp.professionalServiceTeam.contact"
             >Contact</label
           >
-          <input type="text" class="form-control" name="contact" id="field_contact" data-cy="contact" formControlName="contact" />
+          <input type="text" class="hpd-input" name="contact" id="field_contact" data-cy="contact" formControlName="contact" />
         </div>
       </div>
 
       <div>
-        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="hpd-btn hpd-btn-ghost" (click)="previousState()">
           <mat-icon aria-hidden="true" class="!text-base">cancel</mat-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
         </button>
 
@@ -57,7 +57,7 @@
           id="save-entity"
           data-cy="entityCreateSaveButton"
           [disabled]="editForm.invalid || isSaving()"
-          class="btn btn-primary"
+          class="hpd-btn hpd-btn-primary"
         >
           <mat-icon aria-hidden="true" class="!text-base">save</mat-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
         </button>

@@ -1,5 +1,5 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
+<div class="flex justify-center">
+  <div class="">
     <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
       <h2
         id="hpd-document-heading"
@@ -15,29 +15,29 @@
         @if (editForm.controls.id.value !== null) {
 
         <div class="mb-3">
-          <label class="form-label" for="field_id" jhiTranslate="professionalDashboardApp.professionalServiceDocument.id">Id</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          <label class="hpd-label" for="field_id" jhiTranslate="professionalDashboardApp.professionalServiceDocument.id">Id</label>
+          <input type="text" class="hpd-input" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
         </div>
         }
 
         <div class="mb-3">
-          <label class="form-label" for="field_name" jhiTranslate="professionalDashboardApp.professionalServiceDocument.name">Name</label>
-          <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name" />
+          <label class="hpd-label" for="field_name" jhiTranslate="professionalDashboardApp.professionalServiceDocument.name">Name</label>
+          <input type="text" class="hpd-input" name="name" id="field_name" data-cy="name" formControlName="name" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_profileId" jhiTranslate="professionalDashboardApp.professionalServiceDocument.profileId"
+          <label class="hpd-label" for="field_profileId" jhiTranslate="professionalDashboardApp.professionalServiceDocument.profileId"
             >Profile Id</label
           >
-          <input type="text" class="form-control" name="profileId" id="field_profileId" data-cy="profileId" formControlName="profileId" />
+          <input type="text" class="hpd-input" name="profileId" id="field_profileId" data-cy="profileId" formControlName="profileId" />
         </div>
 
         @let dataRef = editForm.get('data')!;
         <div class="mb-3">
-          <label class="form-label" for="field_data" jhiTranslate="professionalDashboardApp.professionalServiceDocument.data">Data</label>
+          <label class="hpd-label" for="field_data" jhiTranslate="professionalDashboardApp.professionalServiceDocument.data">Data</label>
           <div>
             @if (dataRef.value) {
-            <div class="form-text text-danger clearfix">
+            <div class="text-sm text-hpd-muted text-danger clearfix">
               <a
                 class="pull-start"
                 (click)="openFile(dataRef.value!, editForm.get('dataContentType')!.value!)"
@@ -48,7 +48,7 @@
               <button
                 type="button"
                 (click)="editForm.patchValue({ data: undefined, dataContentType: undefined });"
-                class="btn btn-secondary btn-xs pull-end"
+                class="hpd-btn hpd-btn-ghost btn-xs pull-end"
               >
                 <mat-icon aria-hidden="true" class="!text-base">close</mat-icon>
               </button>
@@ -62,13 +62,13 @@
               jhiTranslate="entity.action.addblob"
             />
           </div>
-          <input type="hidden" class="form-control" name="data" id="field_data" data-cy="data" formControlName="data" />
-          <input type="hidden" class="form-control" name="dataContentType" id="field_dataContentType" formControlName="dataContentType" />
+          <input type="hidden" class="hpd-input" name="data" id="field_data" data-cy="data" formControlName="data" />
+          <input type="hidden" class="hpd-input" name="dataContentType" id="field_dataContentType" formControlName="dataContentType" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_type" jhiTranslate="professionalDashboardApp.professionalServiceDocument.type">Type</label>
-          <select class="form-control" name="type" formControlName="type" id="field_type" data-cy="type">
+          <label class="hpd-label" for="field_type" jhiTranslate="professionalDashboardApp.professionalServiceDocument.type">Type</label>
+          <select class="hpd-input" name="type" formControlName="type" id="field_type" data-cy="type">
             <option [ngValue]="null">{{ 'professionalDashboardApp.DocumentType.null' | translate }}</option>
             @for (documentType of documentTypeValues; track $index) {
             <option [value]="documentType">{{ 'professionalDashboardApp.DocumentType.' + documentType | translate }}</option>
@@ -77,7 +77,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_createdDate" jhiTranslate="professionalDashboardApp.professionalServiceDocument.createdDate"
+          <label class="hpd-label" for="field_createdDate" jhiTranslate="professionalDashboardApp.professionalServiceDocument.createdDate"
             >Created Date</label
           >
           <div class="input-group">
@@ -85,7 +85,7 @@
               id="field_createdDate"
               data-cy="createdDate"
               type="date"
-              class="form-control"
+              class="hpd-input"
               name="createdDate"
               formControlName="createdDate"
             />
@@ -94,7 +94,7 @@
 
         <div class="mb-3">
           <label
-            class="form-label"
+            class="hpd-label"
             for="field_modifiedDate"
             jhiTranslate="professionalDashboardApp.professionalServiceDocument.modifiedDate"
             >Modified Date</label
@@ -104,7 +104,7 @@
               id="field_modifiedDate"
               data-cy="modifiedDate"
               type="date"
-              class="form-control"
+              class="hpd-input"
               name="modifiedDate"
               formControlName="modifiedDate"
             />
@@ -112,19 +112,19 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_createdBy" jhiTranslate="professionalDashboardApp.professionalServiceDocument.createdBy"
+          <label class="hpd-label" for="field_createdBy" jhiTranslate="professionalDashboardApp.professionalServiceDocument.createdBy"
             >Created By</label
           >
-          <input type="text" class="form-control" name="createdBy" id="field_createdBy" data-cy="createdBy" formControlName="createdBy" />
+          <input type="text" class="hpd-input" name="createdBy" id="field_createdBy" data-cy="createdBy" formControlName="createdBy" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_modifiedBy" jhiTranslate="professionalDashboardApp.professionalServiceDocument.modifiedBy"
+          <label class="hpd-label" for="field_modifiedBy" jhiTranslate="professionalDashboardApp.professionalServiceDocument.modifiedBy"
             >Modified By</label
           >
           <input
             type="text"
-            class="form-control"
+            class="hpd-input"
             name="modifiedBy"
             id="field_modifiedBy"
             data-cy="modifiedBy"
@@ -134,7 +134,7 @@
       </div>
 
       <div>
-        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="hpd-btn hpd-btn-ghost" (click)="previousState()">
           <mat-icon aria-hidden="true" class="!text-base">cancel</mat-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
         </button>
 
@@ -143,7 +143,7 @@
           id="save-entity"
           data-cy="entityCreateSaveButton"
           [disabled]="editForm.invalid || isSaving()"
-          class="btn btn-primary"
+          class="hpd-btn hpd-btn-primary"
         >
           <mat-icon aria-hidden="true" class="!text-base">save</mat-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
         </button>

@@ -1,5 +1,5 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
+<div class="flex justify-center">
+  <div class="">
     <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
       <h2
         id="hpd-task-heading"
@@ -15,23 +15,23 @@
         @if (editForm.controls.id.value !== null) {
 
         <div class="mb-3">
-          <label class="form-label" for="field_id" jhiTranslate="professionalDashboardApp.professionalServiceTask.id">Id</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          <label class="hpd-label" for="field_id" jhiTranslate="professionalDashboardApp.professionalServiceTask.id">Id</label>
+          <input type="text" class="hpd-input" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
         </div>
         }
 
         <div class="mb-3">
-          <label class="form-label" for="field_name" jhiTranslate="professionalDashboardApp.professionalServiceTask.name">Name</label>
-          <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name" />
+          <label class="hpd-label" for="field_name" jhiTranslate="professionalDashboardApp.professionalServiceTask.name">Name</label>
+          <input type="text" class="hpd-input" name="name" id="field_name" data-cy="name" formControlName="name" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_description" jhiTranslate="professionalDashboardApp.professionalServiceTask.description"
+          <label class="hpd-label" for="field_description" jhiTranslate="professionalDashboardApp.professionalServiceTask.description"
             >Description</label
           >
           <input
             type="text"
-            class="form-control"
+            class="hpd-input"
             name="description"
             id="field_description"
             data-cy="description"
@@ -40,7 +40,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_schedule" jhiTranslate="professionalDashboardApp.professionalServiceTask.schedule"
+          <label class="hpd-label" for="field_schedule" jhiTranslate="professionalDashboardApp.professionalServiceTask.schedule"
             >Schedule</label
           >
           <div class="input-group">
@@ -48,7 +48,7 @@
               id="field_schedule"
               data-cy="schedule"
               type="date"
-              class="form-control"
+              class="hpd-input"
               name="schedule"
               formControlName="schedule"
             />
@@ -56,19 +56,19 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_duration" jhiTranslate="professionalDashboardApp.professionalServiceTask.duration"
+          <label class="hpd-label" for="field_duration" jhiTranslate="professionalDashboardApp.professionalServiceTask.duration"
             >Duration</label
           >
-          <input type="number" class="form-control" name="duration" id="field_duration" data-cy="duration" formControlName="duration" />
+          <input type="number" class="hpd-input" name="duration" id="field_duration" data-cy="duration" formControlName="duration" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_attendantId" jhiTranslate="professionalDashboardApp.professionalServiceTask.attendantId"
+          <label class="hpd-label" for="field_attendantId" jhiTranslate="professionalDashboardApp.professionalServiceTask.attendantId"
             >Attendant Id</label
           >
           <input
             type="text"
-            class="form-control"
+            class="hpd-input"
             name="attendantId"
             id="field_attendantId"
             data-cy="attendantId"
@@ -77,21 +77,21 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_teamId" jhiTranslate="professionalDashboardApp.professionalServiceTask.teamId"
+          <label class="hpd-label" for="field_teamId" jhiTranslate="professionalDashboardApp.professionalServiceTask.teamId"
             >Team Id</label
           >
-          <input type="text" class="form-control" name="teamId" id="field_teamId" data-cy="teamId" formControlName="teamId" />
+          <input type="text" class="hpd-input" name="teamId" id="field_teamId" data-cy="teamId" formControlName="teamId" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_patientId" jhiTranslate="professionalDashboardApp.professionalServiceTask.patientId"
+          <label class="hpd-label" for="field_patientId" jhiTranslate="professionalDashboardApp.professionalServiceTask.patientId"
             >Patient Id</label
           >
-          <input type="text" class="form-control" name="patientId" id="field_patientId" data-cy="patientId" formControlName="patientId" />
+          <input type="text" class="hpd-input" name="patientId" id="field_patientId" data-cy="patientId" formControlName="patientId" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_createdDate" jhiTranslate="professionalDashboardApp.professionalServiceTask.createdDate"
+          <label class="hpd-label" for="field_createdDate" jhiTranslate="professionalDashboardApp.professionalServiceTask.createdDate"
             >Created Date</label
           >
           <div class="input-group">
@@ -99,7 +99,7 @@
               id="field_createdDate"
               data-cy="createdDate"
               type="date"
-              class="form-control"
+              class="hpd-input"
               name="createdDate"
               formControlName="createdDate"
             />
@@ -107,7 +107,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_modifiedDate" jhiTranslate="professionalDashboardApp.professionalServiceTask.modifiedDate"
+          <label class="hpd-label" for="field_modifiedDate" jhiTranslate="professionalDashboardApp.professionalServiceTask.modifiedDate"
             >Modified Date</label
           >
           <div class="input-group">
@@ -115,7 +115,7 @@
               id="field_modifiedDate"
               data-cy="modifiedDate"
               type="date"
-              class="form-control"
+              class="hpd-input"
               name="modifiedDate"
               formControlName="modifiedDate"
             />
@@ -123,19 +123,19 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_createdBy" jhiTranslate="professionalDashboardApp.professionalServiceTask.createdBy"
+          <label class="hpd-label" for="field_createdBy" jhiTranslate="professionalDashboardApp.professionalServiceTask.createdBy"
             >Created By</label
           >
-          <input type="text" class="form-control" name="createdBy" id="field_createdBy" data-cy="createdBy" formControlName="createdBy" />
+          <input type="text" class="hpd-input" name="createdBy" id="field_createdBy" data-cy="createdBy" formControlName="createdBy" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_modifiedBy" jhiTranslate="professionalDashboardApp.professionalServiceTask.modifiedBy"
+          <label class="hpd-label" for="field_modifiedBy" jhiTranslate="professionalDashboardApp.professionalServiceTask.modifiedBy"
             >Modified By</label
           >
           <input
             type="text"
-            class="form-control"
+            class="hpd-input"
             name="modifiedBy"
             id="field_modifiedBy"
             data-cy="modifiedBy"
@@ -145,7 +145,7 @@
       </div>
 
       <div>
-        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="hpd-btn hpd-btn-ghost" (click)="previousState()">
           <mat-icon aria-hidden="true" class="!text-base">cancel</mat-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
         </button>
 
@@ -154,7 +154,7 @@
           id="save-entity"
           data-cy="entityCreateSaveButton"
           [disabled]="editForm.invalid || isSaving()"
-          class="btn btn-primary"
+          class="hpd-btn hpd-btn-primary"
         >
           <mat-icon aria-hidden="true" class="!text-base">save</mat-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
         </button>

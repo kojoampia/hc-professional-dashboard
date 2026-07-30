@@ -2,8 +2,8 @@
   <h2 id="page-heading" data-cy="ProfileHeading">
     <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.home.title">Profiles</span>
 
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
+    <div class="flex justify-end">
+      <button class="hpd-btn hpd-btn-ghost me-2" (click)="load()" [disabled]="isLoading()">
         <mat-icon aria-hidden="true" class="!text-base" [class.animate-spin]="isLoading()">sync</mat-icon>
         <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.home.refreshListLabel">Refresh list</span>
       </button>
@@ -11,7 +11,7 @@
       <button
         id="jh-create-entity"
         data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-profile"
+        class="hpd-btn hpd-btn-primary jh-create-entity create-profile"
         [routerLink]="['/profile/new']"
       >
         <mat-icon aria-hidden="true" class="!text-base">add</mat-icon>
@@ -25,135 +25,135 @@
   <hpd-alert />
 
   @if (profiles().length === 0) {
-  <div class="alert alert-warning" id="no-result">
+  <div class="rounded-hpd-sm border border-[#eedfb9] bg-hpd-gold-tint px-4 py-3 text-sm text-hpd-muted" id="no-result">
     <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.home.notFound">No Profiles found</span>
   </div>
   } @else {
-  <div class="table-responsive table-entities" id="entities">
-    <table class="table table-striped" aria-describedby="page-heading">
+  <div class="overflow-x-auto rounded-hpd-sm border border-hpd-border table-entities" id="entities">
+    <table class="w-full text-left text-sm" aria-describedby="page-heading">
       <thead>
         <tr jhiSort [predicate]="sortState().predicate" [ascending]="sortState().ascending" (sortChange)="navigateToWithComponentValues($event)">
           <th scope="col" jhiSortBy="id" #idSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.id">Id</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ idSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="firstName" #firstNameSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.firstName">First Name</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ firstNameSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="middleNames" #middleNamesSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.middleNames">Middle Names</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ middleNamesSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="lastName" #lastNameSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.lastName">Last Name</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ lastNameSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="team" #teamSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.team">Team</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ teamSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="birthDate" #birthDateSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.birthDate">Birth Date</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ birthDateSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="sex" #sexSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.sex">Sex</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ sexSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="mobilePhone" #mobilePhoneSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.mobilePhone">Mobile Phone</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ mobilePhoneSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="phoneNumber" #phoneNumberSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.phoneNumber">Phone Number</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ phoneNumberSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="email" #emailSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.email">Email</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ emailSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="idType" #idTypeSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.idType">Id Type</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ idTypeSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="idNumber" #idNumberSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.idNumber">Id Number</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ idNumberSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="documents" #documentsSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.documents">Documents</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ documentsSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="address" #addressSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.address">Address</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ addressSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="bankAccount" #bankAccountSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.bankAccount">Bank Account</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ bankAccountSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="tenantId" #tenantIdSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.tenantId">Tenant Id</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ tenantIdSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="rosterId" #rosterIdSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.rosterId">Roster Id</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ rosterIdSort.icon }}</mat-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="teamId" #teamIdSort="jhiSortBy">
-            <div class="d-flex">
+            <div class="flex">
               <span jhiTranslate="professionalDashboardApp.professionalServiceProfile.teamId">Team Id</span>
 
               <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ teamIdSort.icon }}</mat-icon>
@@ -183,19 +183,19 @@
           <td>{{ profile.tenantId }}</td>
           <td>{{ profile.rosterId }}</td>
           <td>{{ profile.teamId }}</td>
-          <td class="text-end">
-            <div class="btn-group">
-              <a [routerLink]="['/profile', profile.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+          <td class="text-right">
+            <div class="flex flex-wrap items-center gap-2">
+              <a [routerLink]="['/profile', profile.id, 'view']" class="hpd-btn hpd-btn-ghost btn-sm" data-cy="entityDetailsButton">
                 <mat-icon aria-hidden="true" class="!text-base">visibility</mat-icon>
                 <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
               </a>
 
-              <a [routerLink]="['/profile', profile.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+              <a [routerLink]="['/profile', profile.id, 'edit']" class="hpd-btn hpd-btn-primary btn-sm" data-cy="entityEditButton">
                 <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>
                 <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
               </a>
 
-              <button type="submit" (click)="delete(profile)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+              <button type="submit" (click)="delete(profile)" class="hpd-btn hpd-btn-danger btn-sm" data-cy="entityDeleteButton">
                 <mat-icon aria-hidden="true" class="!text-base">close</mat-icon>
                 <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
               </button>
@@ -208,11 +208,11 @@
   </div>
   } @if (profiles().length > 0) {
   <div>
-    <div class="d-flex justify-content-center">
+    <div class="flex justify-center">
       <hpd-item-count [params]="{ page: page(), totalItems: totalItems(), itemsPerPage: itemsPerPage() }" />
     </div>
 
-    <div class="d-flex justify-content-center">
+    <div class="flex justify-center">
       <hpd-pagination [totalPages]="totalPages()" [initialPage]="page()" (pageChange)="navigateToPage($event)" />
     </div>
   </div>
