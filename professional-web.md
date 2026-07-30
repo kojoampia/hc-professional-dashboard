@@ -171,22 +171,14 @@ repository interface is synchronous and signal-based while HTTP is not.
 
 Three known compromises in that HTTP implementation, all flagged in code:
 
-- `updateCase` joins `ClinicalCase.recommendationIds` with commas into `IMedCase.recommendations`,
-  a single free-text backend field — lossy, pending a structured column.
+- ~~`updateCase` joins `recommendationIds` with commas into a free-text field~~ — **resolved.**
+  `MedCase` was retired in favour of `ClinicalCase`, whose `recommendations` is a real ManyToMany
+  relationship, so the comma-join is gone.
 - `professionalIdForAccount` / `shiftLabelForAccount` return `null` over HTTP; no
   professional-directory endpoint was ever specified. The mock resolves them from a fixture.
-- `MedCaseService` calls plain `api/med-cases`, **not** the `services/patientService/...` path the
-  old plan specified — it routes through the gateway directly. The real URL is asserted in
-  `http-health-connect.repository.spec.ts`; don't "correct" it to match the plan.
-- **That endpoint is now gone.** `hc-patient-service` replaced `MedCase` with `ClinicalCase`: the path
-  is `/api/clinical-cases`, and the payload differs — `patientId`, `openedAt`, `brief`,
-  `assignedProfessionalId` and `assignedRosterId` were added, `diagnoses` became `diagnosis`,
-  free-text `recommendations` became a relationship to a new `Recommendation` entity, and
-  `closeDate`, `category` and the audit fields are gone. So on this branch `MedCaseService` is dead:
-  it 404s today, and simply repointing its URL would return 200 with fields the model does not have.
-  Do **not** patch the URL here. The generated `ClinicalCase` client that matches the new contract
-  already exists on `refactor/jhipster-entity-layer` ("Phases 2-5: retire MedCase, generate all 20
-  entities"); bringing that branch in is the fix, not a hand-edit.
+- `ClinicalCaseService` calls plain `api/clinical-cases`, **not** a `services/patientService/...`
+  path — for a `skipServer` client the `microservice` JDL option does not add a URL prefix. The real
+  URL is asserted in `http-health-connect.repository.spec.ts`; don't "correct" it.
 
 ### Open follow-ups
 
