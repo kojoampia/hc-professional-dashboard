@@ -15,7 +15,7 @@ import { MedicationComponent } from './medication';
 
 jest.useFakeTimers();
 
-// SKIPPED: needs Angular 20's TestBed.tick() for httpResource-backed components.
+// SKIPPED: needs the Angular 20 TestBed.tick() API for httpResource-backed components.
 // See scripts/postprocess-generated-entities.mjs and refactor-plan.md.
 describe.skip('Medication Management Component', () => {
   let httpMock: HttpTestingController;

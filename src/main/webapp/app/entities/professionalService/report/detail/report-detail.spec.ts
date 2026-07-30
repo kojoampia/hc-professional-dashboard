@@ -10,7 +10,7 @@ import { of } from 'rxjs';
 
 import { ReportDetailComponent } from './report-detail';
 
-// SKIPPED: needs Angular 20's TestBed.tick() for httpResource-backed components.
+// SKIPPED: needs the Angular 20 TestBed.tick() API for httpResource-backed components.
 // See scripts/postprocess-generated-entities.mjs and refactor-plan.md.
 describe.skip('Report Management Detail Component', () => {
   let comp: ReportDetailComponent;

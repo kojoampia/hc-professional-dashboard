@@ -1,0 +1,30 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceStat": {
+      "home": {
+        "title": "Stats",
+        "refreshListLabel": "Refrescar lista",
+        "createLabel": "Crear nuevo Stat",
+        "createOrEditLabel": "Crear o editar Stat",
+        "notFound": "Ningún Stats encontrado"
+      },
+      "created": "Un nuevo Stat ha sido creado con el identificador {{ param }}",
+      "updated": "Un Stat ha sido actualizado con el identificador {{ param }}",
+      "deleted": "Un Stat ha sido eliminado con el identificador {{ param }}",
+      "delete": {
+        "question": "¿Seguro que quiere eliminar Stat {{ id }}?"
+      },
+      "detail": {
+        "title": "Stat"
+      },
+      "id": "Id",
+      "type": "Type",
+      "name": "Name",
+      "description": "Description",
+      "value": "Value",
+      "note": "Note",
+      "createdDate": "Created Date",
+      "createdBy": "Created By"
+    }
+  }
+}

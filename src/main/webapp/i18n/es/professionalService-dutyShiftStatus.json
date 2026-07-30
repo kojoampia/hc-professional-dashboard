@@ -1,0 +1,10 @@
+{
+  "professionalDashboardApp": {
+    "DutyShiftStatus": {
+      "null": "",
+      "UPCOMING": "Próximo",
+      "ACTIVE": "Activo",
+      "COMPLETED": "Completado"
+    }
+  }
+}

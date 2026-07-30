@@ -37,7 +37,7 @@
     ],
     "jhiPrefix": "hpd",
     "jhipsterVersion": "9.1.0",
-    "languages": ["en", "fr", "de"],
+    "languages": ["en", "es", "fr", "de"],
     "lastLiquibaseTimestamp": 1784582227000,
     "microfrontend": null,
     "microfrontends": [],

@@ -1,0 +1,26 @@
+{
+  "professionalDashboardApp": {
+    "patientServiceVisitation": {
+      "home": {
+        "title": "Visitations",
+        "refreshListLabel": "Refrescar lista",
+        "createLabel": "Crear nuevo Visitation",
+        "createOrEditLabel": "Crear o editar Visitation",
+        "notFound": "Ningún Visitations encontrado"
+      },
+      "created": "Un nuevo Visitation ha sido creado con el identificador {{ param }}",
+      "updated": "Un Visitation ha sido actualizado con el identificador {{ param }}",
+      "deleted": "Un Visitation ha sido eliminado con el identificador {{ param }}",
+      "delete": {
+        "question": "¿Seguro que quiere eliminar Visitation {{ id }}?"
+      },
+      "detail": {
+        "title": "Visitation"
+      },
+      "id": "Id",
+      "patientId": "Patient Id",
+      "occurredAt": "Occurred At",
+      "label": "Label"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceMedication": {
+      "home": {
+        "title": "Medications",
+        "refreshListLabel": "Refrescar lista",
+        "createLabel": "Crear nuevo Medication",
+        "createOrEditLabel": "Crear o editar Medication",
+        "notFound": "Ningún Medications encontrado"
+      },
+      "created": "Un nuevo Medication ha sido creado con el identificador {{ param }}",
+      "updated": "Un Medication ha sido actualizado con el identificador {{ param }}",
+      "deleted": "Un Medication ha sido eliminado con el identificador {{ param }}",
+      "delete": {
+        "question": "¿Seguro que quiere eliminar Medication {{ id }}?"
+      },
+      "detail": {
+        "title": "Medication"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "prescription": "Prescription",
+      "createdDate": "Created Date",
+      "modifiedDate": "Modified Date",
+      "createdBy": "Created By",
+      "modifiedBy": "Modified By"
+    }
+  }
+}

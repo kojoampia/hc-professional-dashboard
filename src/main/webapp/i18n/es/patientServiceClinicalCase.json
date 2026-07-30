@@ -1,0 +1,32 @@
+{
+  "professionalDashboardApp": {
+    "patientServiceClinicalCase": {
+      "home": {
+        "title": "Clinical Cases",
+        "refreshListLabel": "Refrescar lista",
+        "createLabel": "Crear nuevo Clinical Case",
+        "createOrEditLabel": "Crear o editar Clinical Case",
+        "notFound": "Ningún Clinical Cases encontrado"
+      },
+      "created": "Un nuevo Clinical Case ha sido creado con el identificador {{ param }}",
+      "updated": "Un Clinical Case ha sido actualizado con el identificador {{ param }}",
+      "deleted": "Un Clinical Case ha sido eliminado con el identificador {{ param }}",
+      "delete": {
+        "question": "¿Seguro que quiere eliminar Clinical Case {{ id }}?"
+      },
+      "detail": {
+        "title": "Clinical Case"
+      },
+      "id": "Id",
+      "patientId": "Patient Id",
+      "openedAt": "Opened At",
+      "brief": "Brief",
+      "status": "Status",
+      "symptoms": "Symptoms",
+      "diagnosis": "Diagnosis",
+      "assignedProfessionalId": "Assigned Professional Id",
+      "assignedRosterId": "Assigned Roster Id",
+      "recommendation": "Recommendation"
+    }
+  }
+}
