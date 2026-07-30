@@ -86,6 +86,6 @@
   "pagination": "pagination",
   "readOnly": false,
   "relationships": [],
-  "searchEngine": true,
+  "searchEngine": "no",
   "service": "serviceClass"
 }

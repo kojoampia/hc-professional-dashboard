@@ -1,0 +1,261 @@
+application {
+  config {
+    baseName professionalDashboard
+    clientFramework angular
+    clientTheme none
+    creationTimestamp 1707426466782
+    databaseType mongodb
+    devDatabaseType mongodb
+    enableTranslation true
+    jhiPrefix hpd
+    jhipsterVersion "9.1.0"
+    languages [en, fr, de]
+    microfrontends []
+    nativeLanguage en
+    prodDatabaseType mongodb
+    skipServer true
+    testFrameworks [cypress]
+    withAdminUi true
+  }
+
+  entities Activity, ActivityLogEntry, Address, ClinicalReport, Document, DutyRoster, DutyShift, HealthConnectProfessional, MedCase, Medication, MedicationRecord, Metadata, Patient, Profile, Recommendation, Report, Stat, Task, Team, Visitation
+}
+
+@ChangelogDate("20240326164027")
+entity Activity (activity) {
+  id String
+  name String
+  description String
+  patientId String
+  createdDate Instant
+  createdBy String
+  modifiedDate Instant
+  modifiedBy String
+}
+@ChangelogDate("20260724060600")
+entity ActivityLogEntry (activitylogentry) {
+  id String
+  patientId String
+  occurredAt Instant
+  label String
+  title String
+  description String
+  createdAt Instant
+}
+@ChangelogDate("20240206205816")
+entity Address (address) {
+  id String
+  digitalAddress String
+  streetAddress String
+  areaCode String
+  town String
+  city String
+  district String
+  state String
+  region String
+  country String
+  createdDate LocalDate
+  modifiedDate LocalDate
+  createdBy String
+  modifiedBy String
+}
+@ChangelogDate("20260724060700")
+entity ClinicalReport (clinicalreport) {
+  id String
+  patientId String
+  occurredAt Instant
+  label String
+  reportType String
+  url String
+}
+@ChangelogDate("20240320235005")
+entity Document (jhi_document) {
+  id String
+  name String
+  profileId String
+  data AnyBlob
+  type DocumentType
+  createdDate LocalDate
+  modifiedDate LocalDate
+  createdBy String
+  modifiedBy String
+}
+@ChangelogDate("20260724060000")
+entity DutyRoster (dutyroster) {
+  id String
+  name String
+  subscribedProfessionalIds String
+}
+@ChangelogDate("20260724060100")
+entity DutyShift (dutyshift) {
+  id String
+  rosterId String
+  professionalId String
+  startsAt Instant
+  endsAt Instant
+  status String
+}
+@ChangelogDate("20260724060200")
+entity HealthConnectProfessional (healthconnectprofessional) {
+  id String
+  accountLogin String
+  name String
+  role String
+  dutyRosterIds String
+}
+@ChangelogDate("20260720214037")
+entity MedCase {
+  id String
+  symptoms String
+  diagnoses String
+  recommendations String
+  createdDate Instant
+  createdBy String
+  modifiedDate Instant
+  modifiedBy String
+  patientId String
+  status String
+  assignedRosterId String
+  brief String
+}
+@ChangelogDate("20240206215539")
+entity Medication (medication) {
+  id String
+  name String
+  description String
+  prescription String
+  createdDate LocalDate
+  modifiedDate LocalDate
+  createdBy String
+  modifiedBy String
+}
+@ChangelogDate("20260724060500")
+entity MedicationRecord (medicationrecord) {
+  id String
+  patientId String
+  occurredAt Instant
+  label String
+}
+@ChangelogDate("20240206220638")
+entity Metadata (metadata) {
+  id String
+  createdBy String
+  modifiedBy String
+  createdDate LocalDate
+  modifiedDate LocalDate
+  data String
+}
+@ChangelogDate("20260724060800")
+entity Patient (patient) {
+  id String
+  patientName String
+  lastActivityAt Instant
+  sex String
+  isChild Boolean
+  dateOfBirth LocalDate
+  phone String
+  email String
+  emergencyContactName String
+  emergencyContactPhone String
+  avatarUrl String
+}
+@ChangelogDate("20240206221158")
+entity Profile (profile) {
+  id String
+  firstName String
+  middleNames String
+  lastName String
+  team String
+  birthDate LocalDate
+  sex String
+  mobilePhone String
+  phoneNumber String
+  email String
+  idType String
+  idNumber String
+  documents String
+  address String
+  bankAccount String
+  tenantId String
+  rosterId String
+  teamId String
+}
+@ChangelogDate("20260724060300")
+entity Recommendation (recommendation) {
+  id String
+  label String
+  category String
+}
+@ChangelogDate("20240206220512")
+entity Report (report) {
+  id String
+  category String
+  description String
+  name String
+  url String
+  createdDate LocalDate
+  modifiedDate LocalDate
+  createdBy String
+  modifiedBy String
+}
+@ChangelogDate("20240206215832")
+entity Stat (stat) {
+  id String
+  type String
+  name String
+  description String
+  value Double
+  note String
+  createdDate LocalDate
+  createdBy String
+}
+@ChangelogDate("20240206220119")
+entity Task (task) {
+  id String
+  name String
+  description String
+  schedule LocalDate
+  duration Double
+  attendantId String
+  teamId String
+  patientId String
+  createdDate LocalDate
+  modifiedDate LocalDate
+  createdBy String
+  modifiedBy String
+}
+@ChangelogDate("20240206215921")
+entity Team (team) {
+  id String
+  name String
+  description String
+  contact String
+}
+@ChangelogDate("20260724060400")
+entity Visitation (visitation) {
+  id String
+  patientId String
+  occurredAt Instant
+  label String
+}
+
+enum DocumentType {
+  PASSPORT,
+  CERTIFICATE,
+  LICENSE,
+  GHANACARD,
+  PASSPHOTO,
+  DRIVERLICENSE,
+  VOTERCARD,
+  NHIS,
+  OTHER
+}
+
+search Activity, ActivityLogEntry, Address, ClinicalReport, Document, DutyRoster, DutyShift, HealthConnectProfessional, MedCase, Medication, MedicationRecord, Metadata, Patient, Profile, Recommendation, Report, Stat, Task, Team, Visitation with no
+microservice Activity, Address, Document, DutyRoster, DutyShift, HealthConnectProfessional, Medication, Metadata, Profile, Report, Stat, Task, Team with professionalService
+microservice ActivityLogEntry, ClinicalReport, MedCase, MedicationRecord, Patient, Recommendation, Visitation with patientService
+clientRootFolder Activity, Address, Document, DutyRoster, DutyShift, HealthConnectProfessional, Medication, Metadata, Profile, Report, Stat, Task, Team with professionalService
+clientRootFolder ActivityLogEntry, ClinicalReport, MedCase, MedicationRecord, Patient, Recommendation, Visitation with patientService
+service ActivityLogEntry, ClinicalReport, Document, DutyRoster, DutyShift, HealthConnectProfessional, MedCase, MedicationRecord, Patient, Profile, Recommendation, Visitation with serviceClass
+paginate MedCase with infinite-scroll
+paginate Patient, Profile with pagination
