@@ -1,0 +1,28 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceMetadata": {
+      "home": {
+        "title": "Metadata",
+        "refreshListLabel": "Refrescar lista",
+        "createLabel": "Crear nuevo Metadata",
+        "createOrEditLabel": "Crear o editar Metadata",
+        "notFound": "Ningún Metadata encontrado"
+      },
+      "created": "Un nuevo Metadata ha sido creado con el identificador {{ param }}",
+      "updated": "Un Metadata ha sido actualizado con el identificador {{ param }}",
+      "deleted": "Un Metadata ha sido eliminado con el identificador {{ param }}",
+      "delete": {
+        "question": "¿Seguro que quiere eliminar Metadata {{ id }}?"
+      },
+      "detail": {
+        "title": "Metadata"
+      },
+      "id": "Id",
+      "createdBy": "Created By",
+      "modifiedBy": "Modified By",
+      "createdDate": "Created Date",
+      "modifiedDate": "Modified Date",
+      "data": "Data"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "professionalDashboardApp": {
+    "patientServicePatient": {
+      "home": {
+        "title": "Patients",
+        "refreshListLabel": "Refrescar lista",
+        "createLabel": "Crear nuevo Patient",
+        "createOrEditLabel": "Crear o editar Patient",
+        "notFound": "Ningún Patients encontrado"
+      },
+      "created": "Un nuevo Patient ha sido creado con el identificador {{ param }}",
+      "updated": "Un Patient ha sido actualizado con el identificador {{ param }}",
+      "deleted": "Un Patient ha sido eliminado con el identificador {{ param }}",
+      "delete": {
+        "question": "¿Seguro que quiere eliminar Patient {{ id }}?"
+      },
+      "detail": {
+        "title": "Patient"
+      },
+      "id": "Id",
+      "patientName": "Patient Name",
+      "lastActivityAt": "Last Activity At",
+      "sex": "Sex",
+      "isChild": "Is Child",
+      "dateOfBirth": "Date Of Birth",
+      "phone": "Phone",
+      "email": "Email",
+      "emergencyContactName": "Emergency Contact Name",
+      "emergencyContactPhone": "Emergency Contact Phone",
+      "avatarUrl": "Avatar Url"
+    }
+  }
+}

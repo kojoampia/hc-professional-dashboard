@@ -10,7 +10,7 @@ import { of } from 'rxjs';
 
 import { DutyRosterDetailComponent } from './duty-roster-detail';
 
-// SKIPPED: needs Angular 20's TestBed.tick() for httpResource-backed components.
+// SKIPPED: needs the Angular 20 TestBed.tick() API for httpResource-backed components.
 // See scripts/postprocess-generated-entities.mjs and refactor-plan.md.
 describe.skip('DutyRoster Management Detail Component', () => {
   let comp: DutyRosterDetailComponent;
