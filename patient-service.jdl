@@ -1,0 +1,107 @@
+// Entities owned by patientService.
+//
+// Entity-only JDL: application config lives in .yo-rc.json, so this file can be
+// applied with `jhipster jdl patient-service.jdl` without duplicating it.
+//
+// ClinicalCase replaces the retired MedCase entity. It is modelled directly on
+// ClinicalCase in app/health-connect/health-connect.models.ts, which is why
+// recommendations is a real relationship rather than the comma-joined free-text
+// field MedCase used.
+
+@ChangelogDate("20260724060600")
+entity ActivityLogEntry (activitylogentry) {
+  id String
+  patientId String
+  occurredAt Instant
+  label String
+  title String
+  description String
+  createdAt Instant
+}
+
+@ChangelogDate("20260730120000")
+entity ClinicalCase (clinicalcase) {
+  id String
+  patientId String
+  openedAt Instant
+  brief String
+  status CaseStatus
+  symptoms String
+  diagnosis String
+  assignedProfessionalId String
+  assignedRosterId String
+}
+
+@ChangelogDate("20260724060700")
+entity ClinicalReport (clinicalreport) {
+  id String
+  patientId String
+  occurredAt Instant
+  label String
+  reportType String
+  url String
+}
+
+@ChangelogDate("20260724060500")
+entity MedicationRecord (medicationrecord) {
+  id String
+  patientId String
+  occurredAt Instant
+  label String
+}
+
+@ChangelogDate("20260724060800")
+entity Patient (patient) {
+  id String
+  patientName String
+  lastActivityAt Instant
+  sex PatientSex
+  isChild Boolean
+  dateOfBirth LocalDate
+  phone String
+  email String
+  emergencyContactName String
+  emergencyContactPhone String
+  avatarUrl String
+}
+
+@ChangelogDate("20260724060300")
+entity Recommendation (recommendation) {
+  id String
+  label String
+  category String
+}
+
+@ChangelogDate("20260724060400")
+entity Visitation (visitation) {
+  id String
+  patientId String
+  occurredAt Instant
+  label String
+}
+
+enum CaseStatus {
+  URGENT,
+  OPEN,
+  CLOSED
+}
+
+enum PatientSex {
+  FEMALE,
+  MALE,
+  UNSPECIFIED
+}
+
+// Replaces ClinicalCase.recommendationIds: string[]. JDL has no array field
+// type, and flattening it to String is what forced the comma-join in
+// http-health-connect.repository.ts.
+relationship ManyToMany {
+  ClinicalCase{recommendations} to Recommendation{cases}
+}
+
+microservice ActivityLogEntry, ClinicalCase, ClinicalReport, MedicationRecord, Patient, Recommendation, Visitation with patientService
+clientRootFolder ActivityLogEntry, ClinicalCase, ClinicalReport, MedicationRecord, Patient, Recommendation, Visitation with patientService
+service ActivityLogEntry, ClinicalCase, ClinicalReport, MedicationRecord, Patient, Recommendation, Visitation with serviceClass
+search ActivityLogEntry, ClinicalCase, ClinicalReport, MedicationRecord, Patient, Recommendation, Visitation with no
+paginate ClinicalCase with infinite-scroll
+paginate Patient with pagination
