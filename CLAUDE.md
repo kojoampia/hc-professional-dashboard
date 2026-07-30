@@ -59,7 +59,7 @@ That is the **only** form that works, and it is verified. Two commands this file
   - `core/` — authentication, HTTP interceptors, app config, low-level request/util helpers (singletons).
   - `shared/` — reusable UI helpers, pipes, sort/pagination/filter/date/language/alert utilities.
   - `entities/` — entity modules, split by microservice namespace:
-    - `entities/entity.routes.ts` registers only `patientService/med-case` — the app's one generated CRUD entity. `entities/professionalService/` is an **empty directory** (its modules were deleted pre-migration). The `/* jhipster-needle-add-entity-route */` comment is the JHipster generator's insertion point.
+    - `entities/entity.routes.ts` registers all **20 generated entities** (13 `professionalService`, 7 `patientService`), inserted at the `/* jhipster-needle-add-entity-route */` marker when the JDL is applied. Regenerate with `./scripts/regenerate-entities.sh` — never by hand, and never with a bare `jhipster jdl`.
   - `layouts/` — BridgeCare shell: `sidebar/` (navy sidebar; nav model in `shell-navigation.ts` drives sidebar groups, mobile tabbar, and topbar crumb/title), `main/` (cream topbar + content column), `tabbar/` (mobile bottom tabs), plus footer/error/profiles. There is no horizontal navbar.
   - `health-connect/` — clinician feature pages (dashboard, patients, case queue, duty roster, messages, about), charts, and API adapters.
   - `admin/` (health, metrics), `account/`, `home/`, `login/`, `config/`.

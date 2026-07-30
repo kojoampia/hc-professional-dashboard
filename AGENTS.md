@@ -15,13 +15,12 @@ A JHipster-generated **Angular frontend gateway** (frontend only) for the Health
 - **Bootstrap, ng-bootstrap and Font Awesome are gone** — fully removed, `styles.css` dropped 336 kB → 60 kB. Material Icons is the only icon font. Don't reintroduce them or copy patterns that assume them.
 - ngx-translate (**en/es/fr/de** under `src/main/webapp/i18n/`, four complete catalogs)
 - Build: Angular CLI + `@angular-builders/custom-webpack`; dev API proxy in `webpack/proxy.conf.js` → `http://localhost:5505`. **`webpack/webpack.custom.js` also hand-injects the Tailwind v4 postcss plugin — see `professional-web.md` §4 before touching it.**
-- Tests: Jest 29 via the Angular builder (`jest.conf.js`). **There is no working Cypress setup** — no dependency, no config, no `e2e` script; the specs under `src/test/javascript/cypress/` are dead code.
+- Tests: Jest 29 via the Angular builder (`jest.conf.js`). **There is no E2E setup at all** — Cypress was removed from `.yo-rc` and its 24 unreachable specs deleted, so the generator no longer emits them. Adding E2E back is a deliberate choice, not a leftover.
 - npm (use `./npmw` if Node isn't installed locally)
 
-Two stale-config traps in `package.json` / `.yo-rc.json` — both inert today, both landmines:
+One stale-config trap in `package.json` — inert today, a landmine:
 
 - A leftover `"resolutions"` block pins Angular **17** while `dependencies` are on 19. `resolutions` is a Yarn field that npm ignores, so it has no effect as things stand — do not "fix" it by converting it to npm `overrides`, which would actually downgrade the app.
-- `.yo-rc.json` still lists `languages: ["en", "fr", "de"]` even though Spanish is fully present in code and `i18n/`. A JHipster regeneration would not know about `es`; add it there if you ever regenerate.
 
 ## Commands
 
@@ -41,8 +40,21 @@ Two commands earlier versions of this file recommended **do not work**, verified
 ## Architecture facts that matter
 
 - Source root is `src/main/webapp/app` (`core/`, `shared/`, `entities/`, `health-connect/` (clinician + onboarding feature pages, charts, API adapters), `layouts/`, `admin/`, `account/`, `home/`, `login/`, `config/`).
-- **The real UI is `health-connect/`, not `entities/`.** `entities/patientService/med-case` is the only generated CRUD entity in the app and the only route in `entities/entity.routes.ts`. **`entities/professionalService/` is an empty directory** — its 13 modules were deleted before the BridgeCare migration. `.jhipster/` holds 20 entity definitions, 19 with no generated code — planned entities and generator metadata, not an inventory of what exists.
-- **Do not run the entity generator here.** It was tried and reverted; the output is not usable. `.yo-resolve` carries **77 checked-in `skip` rules** that deliberately block regeneration of eight `professionalService` entities, so they come out structurally incomplete (no `service/`, no `route/`, no `.routes.ts`). The templates also emit imports for packages this repo removed (`@fortawesome/angular-fontawesome`, `@ng-bootstrap/ng-bootstrap/modal`) and for `app/shared/alert/alert{,-error}`, whose real exports are `AlertComponent`/`AlertErrorComponent` in `*.component.ts`; class names come out without the `Component` suffix the ESLint config requires; `entity.routes.ts` is left untouched so nothing is routed; and i18n is emitted for `en` only. Regenerating `med-case` also reverts the ~10 fixes recorded in `professional-web.md`. Note `tsc` will report clean on all of it, because unrouted files are unreachable from `main.ts` and never type-checked.
+- **The real UI is `health-connect/`; `entities/` is generated CRUD.** All **20 entities** are generated and routed — 13 under `entities/professionalService/`, 7 under `entities/patientService/` — from the two JDL files at the repo root. `MedCase` no longer exists; `ClinicalCase` replaced it.
+- **Never edit generated entity code by hand, and never run the generator bare.** Use:
+
+  ```bash
+  ./scripts/regenerate-entities.sh
+  ```
+
+  It applies the JDL and then three repair passes, because generated JHipster code has never compiled against this repo as-emitted. Editing by hand loses the change on the next regeneration; running `jhipster jdl` alone leaves the build broken. The scripts document every repair:
+
+  - `scripts/postprocess-generated-entities.mjs` — Bootstrap/ng-bootstrap/Font Awesome are gone (dialogs → Material, pagination → `hpd-pagination`, datepicker → native, icons → Material Icons); alert components are `*Component` in `*.component.ts` while the error model is `AlertError`; `shared/sort` uses `{ predicate, ascending }` and `startSort(property, order)`; the generator derives directive selectors from `jhiPrefix`, emitting `hpdTranslate`/`hpdSort`/`hpdSortBy`, none of which exist (the real ones are `jhi*`); specs arrive written for Vitest and Angular 20.
+  - `scripts/restyle-generated-entities.mjs` — Bootstrap classes → BridgeCare tokens.
+  - `scripts/apply-enum-i18n.mjs` — enum translations otherwise echo the constant in every locale.
+
+- **`tsc` is not a sufficient gate for entity code.** Unrouted files are unreachable from `main.ts` and are never type-checked, so `tsc` reports clean on templates that are comprehensively broken. Verify with `npm run lint` **and** `npx ng build` (the only gate that checks templates) **and** `npx ng test`.
+- **40 generated specs are `describe.skip`ped**, all the `list/` and `detail/` ones. JHipster 9.1 emits components built on `httpResource` with specs that drive them via Angular 20's `TestBed.tick()`; on Angular 19.2 `flushEffects()` does not issue the resource request and awaiting `whenStable()` deadlocks. The reason is in each file. They should pass on the Angular 20 upgrade.
 - Build API URLs with `ApplicationConfigService.getEndpointFor(api, microservice?)` — never hardcode `/services/...` paths. Everything in the `api/` repo needs the `'professionalService'` second argument; the adapters in `health-connect/api/` are the examples to copy.
 - Entity services follow the JHipster pattern (typed model + `New*`/`PartialUpdate*` aliases, `Rest*` wire types with dayjs↔string conversion, `createRequestOption`). Match it for new entities.
 - Route guards use `UserRouteAccessService` + `Authority` constants; auth is JWT against the gateway.

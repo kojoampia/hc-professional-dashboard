@@ -171,13 +171,14 @@ repository interface is synchronous and signal-based while HTTP is not.
 
 Three known compromises in that HTTP implementation, all flagged in code:
 
-- `updateCase` joins `ClinicalCase.recommendationIds` with commas into `IMedCase.recommendations`,
-  a single free-text backend field — lossy, pending a structured column.
+- ~~`updateCase` joins `recommendationIds` with commas into a free-text field~~ — **resolved.**
+  `MedCase` was retired in favour of `ClinicalCase`, whose `recommendations` is a real ManyToMany
+  relationship, so the comma-join is gone.
 - `professionalIdForAccount` / `shiftLabelForAccount` return `null` over HTTP; no
   professional-directory endpoint was ever specified. The mock resolves them from a fixture.
-- `MedCaseService` calls plain `api/med-cases`, **not** the `services/patientService/...` path the
-  old plan specified — it routes through the gateway directly. The real URL is asserted in
-  `http-health-connect.repository.spec.ts`; don't "correct" it to match the plan.
+- `ClinicalCaseService` calls plain `api/clinical-cases`, **not** a `services/patientService/...`
+  path — for a `skipServer` client the `microservice` JDL option does not add a URL prefix. The real
+  URL is asserted in `http-health-connect.repository.spec.ts`; don't "correct" it.
 
 ### Open follow-ups
 

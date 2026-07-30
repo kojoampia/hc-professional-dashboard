@@ -3,7 +3,7 @@
     "baseName": "professionalDashboard",
     "clientBundler": "webpack",
     "clientFramework": "angular",
-    "clientTestFrameworks": ["cypress"],
+    "clientTestFrameworks": [],
     "clientTheme": "none",
     "creationTimestamp": 1707426466782,
     "cypressAudit": false,
@@ -44,7 +44,7 @@
     "nativeLanguage": "en",
     "prodDatabaseType": "mongodb",
     "skipServer": true,
-    "testFrameworks": ["cypress"],
+    "testFrameworks": [],
     "withAdminUi": true
   }
 }

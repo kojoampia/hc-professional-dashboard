@@ -33,7 +33,7 @@ Deeper documentation, by audience:
 | i18n            | `ngx-translate` — English, **Spanish**, French, German (`src/main/webapp/i18n/{en,es,fr,de}`) |
 | Build           | Angular CLI + `@angular-builders/custom-webpack`, webpack dev proxy                           |
 | Unit tests      | Jest 29 via `@angular-builders/jest` (`jest.conf.js`)                                         |
-| E2E tests       | **None working** — see Testing below                                                          |
+| E2E tests       | **None** — Cypress was removed deliberately; see Testing below                                |
 | Package manager | npm (`./npmw` wrapper available for a Node-less environment)                                  |
 
 Note `.yo-rc.json` still lists `languages: ["en","fr","de"]` even though Spanish is complete in code
@@ -64,16 +64,16 @@ before adding a route.
 
 ### Entity namespaces — read this before trusting the folder names
 
-- **`entities/patientService/med-case`** is the only generated CRUD entity in the app, and the only
-  one registered in `entities/entity.routes.ts`.
-- **`entities/professionalService/` is an empty directory.** Its 13 generated entity modules were
-  deleted before the BridgeCare migration. Nothing there to route.
-- **`.jhipster/` holds ~20 entity definitions, most with no generated code.** They are planned
-  entities and generator metadata, not dead references — but do not read them as an inventory of
-  what the app implements.
+All **20 entities** are generated and routed: 13 under `entities/professionalService/`, 7 under
+`entities/patientService/`. They come from the two JDL files at the repo root —
+`professional-service.jdl` and `patient-service.jdl` — which are the source of truth for the model.
 
-When adding entities, preserve the `/* jhipster-needle-add-entity-route */` marker — that is where
-the generator inserts new routes.
+**Regenerate with `./scripts/regenerate-entities.sh`, never by hand and never with a bare
+`jhipster jdl`.** Generated JHipster code has never compiled against this repo as-emitted, so the
+script applies the JDL and then three repair passes. See `AGENTS.md` for what each one fixes.
+
+Preserve the `/* jhipster-needle-add-entity-route */` marker — that is where the generator inserts
+new routes.
 
 ### API URLs and the dev proxy
 
@@ -142,10 +142,9 @@ this README recommended do not work:
   repo problem.
 - `npx ng test --include=<glob>` — `--include` is not a valid flag for this builder.
 
-**There is no working end-to-end setup.** `cypress` is not a dependency, there is no
-`cypress.config.*`, and there are no `e2e`/`e2e:cypress` scripts. The 15 specs under
-`src/test/javascript/cypress/e2e/entity/` target entities the app no longer contains and are
-unreachable dead code. Either restore the dependency and config or delete them.
+**There is no end-to-end setup, by choice.** Cypress had no dependency, no config and no runner
+script, so its specs could never run. It has been removed from `.yo-rc.json` and the spec tree
+deleted, which also stops the generator emitting new ones. Re-adding E2E is a deliberate decision.
 
 ## Code quality
 
