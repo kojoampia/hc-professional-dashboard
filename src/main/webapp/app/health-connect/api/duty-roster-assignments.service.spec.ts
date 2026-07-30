@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { advanceTo, clear } from 'jest-date-mock';
 
 import { DutyRosterAssignmentDto, DutyRosterAssignmentsService } from './duty-roster-assignments.service';
 
@@ -29,14 +30,22 @@ describe('DutyRosterAssignmentsService', () => {
     httpMock = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => httpMock.verify());
+  afterEach(() => {
+    clear();
+    httpMock.verify();
+  });
 
   it('targets the professionalService onboarding duty-roster surface', () => {
+    // `shiftLabel` is a computed over the real clock, so pin "now" inside the
+    // fixture's MORNING window — otherwise this passes only between 06:00 and
+    // 14:00 on the fixture date and fails every day after it.
+    advanceTo(new Date('2026-07-30T09:30:00'));
+
     service.loadMyAssignments();
     const request = httpMock.expectOne('services/professionalService/api/onboarding/duty-rosters/my');
     request.flush([assignment({})]);
     expect(service.myAssignments()).toHaveLength(1);
-    expect(service.shiftLabel()).not.toBeNull();
+    expect(service.shiftLabel()).toEqual({ translationKey: 'healthConnect.roster.activeShift', translationParams: { time: '14:00' } });
   });
 
   describe('computeShiftLabel', () => {
