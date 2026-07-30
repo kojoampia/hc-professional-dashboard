@@ -1,0 +1,26 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceDutyRoster": {
+      "home": {
+        "title": "Duty Rosters",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Duty Roster erstellen",
+        "createOrEditLabel": "Duty Roster erstellen oder bearbeiten",
+        "notFound": "Keine Duty Rosters gefunden"
+      },
+      "created": "Duty Roster erstellt mit ID {{ param }}",
+      "updated": "Duty Roster aktualisiert mit ID {{ param }}",
+      "deleted": "Duty Roster gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Duty Roster {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Duty Roster"
+      },
+      "id": "Id",
+      "name": "Name",
+      "shifts": "Shifts",
+      "subscribedProfessional": "Subscribed Professional"
+    }
+  }
+}

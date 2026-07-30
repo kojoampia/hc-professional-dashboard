@@ -95,8 +95,10 @@ enum PatientSex {
 // Replaces ClinicalCase.recommendationIds: string[]. JDL has no array field
 // type, and flattening it to String is what forced the comma-join in
 // http-health-connect.repository.ts.
+// Field names are SINGULAR on purpose: JHipster pluralises the to-many side, so
+// {recommendations} would generate the field `recommendationses`.
 relationship ManyToMany {
-  ClinicalCase{recommendations} to Recommendation{cases}
+  ClinicalCase{recommendation} to Recommendation{clinicalCase}
 }
 
 microservice ActivityLogEntry, ClinicalCase, ClinicalReport, MedicationRecord, Patient, Recommendation, Visitation with patientService

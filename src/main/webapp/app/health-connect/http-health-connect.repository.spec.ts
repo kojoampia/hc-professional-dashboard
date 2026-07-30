@@ -24,7 +24,7 @@ describe('HttpHealthConnectRepository', () => {
         { headers: { 'X-Total-Count': '1' } },
       );
     httpMock
-      .expectOne(request => request.url.endsWith('api/med-cases'))
+      .expectOne(request => request.url.endsWith('api/clinical-cases'))
       .flush(
         [
           {
@@ -82,7 +82,7 @@ describe('HttpHealthConnectRepository', () => {
     expect(repository.findPatient('patient-kojo')?.patient.patientName).toBe('Kojo Ampia-Addison');
   });
 
-  it('optimistically applies updateCase and PATCHes the extended med-case fields', () => {
+  it('optimistically applies updateCase and PATCHes the clinical-case fields', () => {
     flushInitialLoad();
 
     const updated = repository.updateCase('case-1', { status: 'closed', diagnosis: 'Resolved' });
@@ -90,9 +90,10 @@ describe('HttpHealthConnectRepository', () => {
     expect(updated).toMatchObject({ id: 'case-1', status: 'closed', diagnosis: 'Resolved' });
     expect(repository.caseCounts()).toEqual({ urgent: 0, open: 0, closed: 1 });
 
-    const req = httpMock.expectOne(request => request.url.endsWith('api/med-cases/case-1'));
+    const req = httpMock.expectOne(request => request.url.endsWith('api/clinical-cases/case-1'));
     expect(req.request.method).toBe('PATCH');
-    expect(req.request.body).toMatchObject({ status: 'closed', diagnoses: 'Resolved' });
-    req.flush({ id: 'case-1', status: 'closed', diagnoses: 'Resolved' });
+    // status goes to the wire in the generated enum's upper case; diagnosis is a real field now.
+    expect(req.request.body).toMatchObject({ status: 'CLOSED', diagnosis: 'Resolved' });
+    req.flush({ id: 'case-1', status: 'CLOSED', diagnosis: 'Resolved' });
   });
 });

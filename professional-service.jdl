@@ -187,9 +187,10 @@ enum DutyShiftStatus {
 
 // Replaces DutyRoster.subscribedProfessionalIds: string[] and its inverse
 // HealthConnectProfessional.dutyRosterIds: string[], which were both flattened
-// to String because JDL has no array field type.
+// to String because JDL has no array field type. Field names are SINGULAR on
+// purpose: JHipster pluralises the to-many side.
 relationship ManyToMany {
-  DutyRoster{subscribedProfessionals} to HealthConnectProfessional{dutyRosters}
+  DutyRoster{subscribedProfessional} to HealthConnectProfessional{dutyRoster}
 }
 
 // Replaces DutyRoster.shifts: DutyShift[]. The relationship also supplies what

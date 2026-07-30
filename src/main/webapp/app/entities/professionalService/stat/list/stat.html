@@ -1,0 +1,130 @@
+<div>
+  <h2 id="page-heading" data-cy="StatHeading">
+    <span jhiTranslate="professionalDashboardApp.professionalServiceStat.home.title">Stats</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
+        <mat-icon aria-hidden="true" class="!text-base" [class.animate-spin]="isLoading()">sync</mat-icon>
+        <span jhiTranslate="professionalDashboardApp.professionalServiceStat.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-stat"
+        [routerLink]="['/stat/new']"
+      >
+        <mat-icon aria-hidden="true" class="!text-base">add</mat-icon>
+        <span jhiTranslate="professionalDashboardApp.professionalServiceStat.home.createLabel">Create a new Stat</span>
+      </button>
+    </div>
+  </h2>
+
+  <hpd-alert-error />
+
+  <hpd-alert />
+
+  @if (stats().length === 0) {
+  <div class="alert alert-warning" id="no-result">
+    <span jhiTranslate="professionalDashboardApp.professionalServiceStat.home.notFound">No Stats found</span>
+  </div>
+  } @else {
+  <div class="table-responsive table-entities" id="entities">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr jhiSort [predicate]="sortState().predicate" [ascending]="sortState().ascending" (sortChange)="navigateToWithComponentValues($event)">
+          <th scope="col" jhiSortBy="id" #idSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceStat.id">Id</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ idSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="type" #typeSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceStat.type">Type</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ typeSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="name" #nameSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceStat.name">Name</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ nameSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="description" #descriptionSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceStat.description">Description</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ descriptionSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="value" #valueSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceStat.value">Value</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ valueSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="note" #noteSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceStat.note">Note</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ noteSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="createdDate" #createdDateSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceStat.createdDate">Created Date</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ createdDateSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="createdBy" #createdBySort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceStat.createdBy">Created By</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ createdBySort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (stat of stats(); track trackId(stat)) {
+        <tr data-cy="entityTable">
+          <td><a [routerLink]="['/stat', stat.id, 'view']">{{ stat.id }}</a></td>
+          <td>{{ stat.type }}</td>
+          <td>{{ stat.name }}</td>
+          <td>{{ stat.description }}</td>
+          <td>{{ stat.value }}</td>
+          <td>{{ stat.note }}</td>
+          <td>{{ stat.createdDate | formatMediumDate }}</td>
+          <td>{{ stat.createdBy }}</td>
+          <td class="text-end">
+            <div class="btn-group">
+              <a [routerLink]="['/stat', stat.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                <mat-icon aria-hidden="true" class="!text-base">visibility</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+              </a>
+
+              <a [routerLink]="['/stat', stat.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+              </a>
+
+              <button type="submit" (click)="delete(stat)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <mat-icon aria-hidden="true" class="!text-base">close</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+</div>

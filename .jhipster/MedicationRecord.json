@@ -2,6 +2,7 @@
   "annotations": {
     "changelogDate": "20260724060500"
   },
+  "applications": ["*"],
   "clientRootFolder": "patientService",
   "databaseType": "mongodb",
   "dto": "no",

@@ -1,0 +1,26 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceDutyRoster": {
+      "home": {
+        "title": "DutyRosters",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Duty Roster",
+        "createOrEditLabel": "Créer ou éditer un Duty Roster",
+        "notFound": "Aucun Duty Roster trouvé"
+      },
+      "created": "Un nouveau Duty Roster a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Duty Roster avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Duty Roster avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Duty Roster {{ id }} ?"
+      },
+      "detail": {
+        "title": "Duty Roster"
+      },
+      "id": "Id",
+      "name": "Name",
+      "shifts": "Shifts",
+      "subscribedProfessional": "Subscribed Professional"
+    }
+  }
+}

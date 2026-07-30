@@ -1,0 +1,33 @@
+{
+  "professionalDashboardApp": {
+    "patientServicePatient": {
+      "home": {
+        "title": "Patients",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Patient erstellen",
+        "createOrEditLabel": "Patient erstellen oder bearbeiten",
+        "notFound": "Keine Patients gefunden"
+      },
+      "created": "Patient erstellt mit ID {{ param }}",
+      "updated": "Patient aktualisiert mit ID {{ param }}",
+      "deleted": "Patient gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Patient {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Patient"
+      },
+      "id": "Id",
+      "patientName": "Patient Name",
+      "lastActivityAt": "Last Activity At",
+      "sex": "Sex",
+      "isChild": "Is Child",
+      "dateOfBirth": "Date Of Birth",
+      "phone": "Phone",
+      "email": "Email",
+      "emergencyContactName": "Emergency Contact Name",
+      "emergencyContactPhone": "Emergency Contact Phone",
+      "avatarUrl": "Avatar Url"
+    }
+  }
+}

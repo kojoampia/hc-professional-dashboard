@@ -19,7 +19,18 @@
         "professionalServiceProfile": "Profile",
         "professionalServiceHcCredential": "HC Credential",
         "professionalServiceHcPayOption": "HC Pay Option",
-        "professionalServiceDocument": "Document"
+        "professionalServiceDocument": "Document",
+        "professionalServiceActivity": "Activity",
+        "professionalServiceDutyRoster": "Duty Roster",
+        "professionalServiceDutyShift": "Duty Shift",
+        "professionalServiceHealthConnectProfessional": "Health Connect Professional",
+        "patientServiceRecommendation": "Recommendation",
+        "patientServiceVisitation": "Visitation",
+        "patientServiceMedicationRecord": "Medication Record",
+        "patientServiceActivityLogEntry": "Activity Log Entry",
+        "patientServiceClinicalReport": "Clinical Report",
+        "patientServicePatient": "Patient",
+        "patientServiceClinicalCase": "Clinical Case"
       },
       "account": {
         "main": "Compte",

@@ -24,8 +24,6 @@
       "Profile",
       "PersonalDocument",
       "Activity",
-      "Patient",
-      "MedCase",
       "DutyRoster",
       "DutyShift",
       "HealthConnectProfessional",
@@ -33,7 +31,9 @@
       "Visitation",
       "MedicationRecord",
       "ActivityLogEntry",
-      "ClinicalReport"
+      "ClinicalReport",
+      "Patient",
+      "ClinicalCase"
     ],
     "jhiPrefix": "hpd",
     "jhipsterVersion": "9.1.0",

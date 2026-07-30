@@ -1,0 +1,74 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (patient(); as patientRef) {
+    <div>
+      <h2 data-cy="patientDetailsHeading">
+        <span jhiTranslate="professionalDashboardApp.patientServicePatient.detail.title">Patient</span>
+      </h2>
+
+      <hr />
+
+      <hpd-alert-error />
+
+      <hpd-alert />
+
+      <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="professionalDashboardApp.patientServicePatient.id">Id</span></dt>
+        <dd>
+          <span>{{ patientRef.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.patientServicePatient.patientName">Patient Name</span></dt>
+        <dd>
+          <span>{{ patientRef.patientName }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.patientServicePatient.lastActivityAt">Last Activity At</span></dt>
+        <dd>
+          <span>{{ patientRef.lastActivityAt | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.patientServicePatient.sex">Sex</span></dt>
+        <dd>
+          <span [jhiTranslate]="'professionalDashboardApp.PatientSex.' + (patientRef.sex ?? 'null')"
+            >{{ {"null":"","FEMALE":"FEMALE","MALE":"MALE","UNSPECIFIED":"UNSPECIFIED"}[patientRef.sex ?? 'null'] }}</span
+          >
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.patientServicePatient.isChild">Is Child</span></dt>
+        <dd>
+          <span>{{ patientRef.isChild }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.patientServicePatient.dateOfBirth">Date Of Birth</span></dt>
+        <dd>
+          <span>{{ patientRef.dateOfBirth | formatMediumDate }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.patientServicePatient.phone">Phone</span></dt>
+        <dd>
+          <span>{{ patientRef.phone }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.patientServicePatient.email">Email</span></dt>
+        <dd>
+          <span>{{ patientRef.email }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.patientServicePatient.emergencyContactName">Emergency Contact Name</span></dt>
+        <dd>
+          <span>{{ patientRef.emergencyContactName }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.patientServicePatient.emergencyContactPhone">Emergency Contact Phone</span></dt>
+        <dd>
+          <span>{{ patientRef.emergencyContactPhone }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.patientServicePatient.avatarUrl">Avatar Url</span></dt>
+        <dd>
+          <span>{{ patientRef.avatarUrl }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <mat-icon aria-hidden="true" class="!text-base">arrow_back</mat-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/patient', patientRef.id, 'edit']" class="btn btn-primary">
+        <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+    }
+  </div>
+</div>

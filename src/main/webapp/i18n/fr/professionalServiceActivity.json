@@ -1,0 +1,30 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceActivity": {
+      "home": {
+        "title": "Activities",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Activity",
+        "createOrEditLabel": "Créer ou éditer un Activity",
+        "notFound": "Aucun Activity trouvé"
+      },
+      "created": "Un nouveau Activity a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Activity avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Activity avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Activity {{ id }} ?"
+      },
+      "detail": {
+        "title": "Activity"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "patientId": "Patient Id",
+      "createdDate": "Created Date",
+      "createdBy": "Created By",
+      "modifiedDate": "Modified Date",
+      "modifiedBy": "Modified By"
+    }
+  }
+}

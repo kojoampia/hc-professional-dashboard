@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 
-import { MedCaseService } from 'app/entities/patientService/med-case/service/med-case.service';
-import { IMedCase } from 'app/entities/patientService/med-case/med-case.model';
+import { ClinicalCaseService } from 'app/entities/patientService/clinical-case/service/clinical-case.service';
+import { IClinicalCase } from 'app/entities/patientService/clinical-case/clinical-case.model';
 
 import { DashboardApiService } from './api/dashboard-api.service';
 import { DutyRosterApiService } from './api/duty-roster-api.service';
@@ -30,7 +30,7 @@ import { HealthConnectRepository, PatientDirectoryFilters } from './health-conne
 /**
  * Real HttpClient-backed implementation of HealthConnectRepository, built
  * against the REST contracts specced in professional-web.md §5
- * (dashboard/patients/med-cases/duty-rosters). None of those endpoints exist
+ * (dashboard/patients/clinical-cases/duty-rosters). None of those endpoints exist
  * in a running backend yet, so this class is written and unit-tested against
  * HttpTestingController (see http-health-connect.repository.spec.ts) but is
  * NOT the active HEALTH_CONNECT_REPOSITORY provider — see health-connect.repository.ts,
@@ -55,12 +55,12 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
   private readonly dashboardApi = inject(DashboardApiService);
   private readonly patientApi = inject(PatientApiService);
   private readonly dutyRosterApi = inject(DutyRosterApiService);
-  private readonly medCaseService = inject(MedCaseService);
+  private readonly clinicalCaseService = inject(ClinicalCaseService);
 
   private readonly patientRowCache = signal<readonly PatientListRow[]>([]);
   private readonly recordCache = signal<ReadonlyMap<string, PatientRecord>>(new Map());
   private readonly pendingRecordFetches = new Set<string>();
-  private readonly medCaseCache = signal<readonly IMedCase[]>([]);
+  private readonly clinicalCaseCache = signal<readonly IClinicalCase[]>([]);
   private readonly rosterCache = signal<readonly DutyRoster[]>([]);
   private readonly chartCache = signal<ChartData>({ caseTimeline: [], caseDistribution: [], casesByPatient: [] });
   private readonly archivedCaseIds = signal<ReadonlySet<string>>(new Set());
@@ -75,7 +75,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
   }));
   readonly patientRows = computed(() => this.patientRowCache());
   readonly caseQueue = computed<readonly CaseQueueRow[]>(() =>
-    this.medCaseCache()
+    this.clinicalCaseCache()
       .map(toCaseQueueRow)
       .filter(item => !this.archivedCaseIds().has(item.id)),
   );
@@ -154,8 +154,8 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
   }
 
   findCase(id: string): ClinicalCase | undefined {
-    const medCase = this.medCaseCache().find(candidate => candidate.id === id);
-    return medCase && toClinicalCase(medCase);
+    const clinicalCase = this.clinicalCaseCache().find(candidate => candidate.id === id);
+    return clinicalCase && toClinicalCase(clinicalCase);
   }
 
   listCases(status?: CaseStatus, rosterScope: RosterScope = 'all', professionalId?: string): readonly CaseQueueRow[] {
@@ -193,25 +193,24 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
     id: string,
     changes: Partial<Pick<ClinicalCase, 'symptoms' | 'diagnosis' | 'recommendationIds' | 'status'>>,
   ): ClinicalCase | null {
-    const existing = this.medCaseCache().find(candidate => candidate.id === id);
+    const existing = this.clinicalCaseCache().find(candidate => candidate.id === id);
     if (!existing) {
       return null;
     }
-    const updatedMedCase: IMedCase = {
+    const updatedCase: IClinicalCase = {
       ...existing,
       symptoms: changes.symptoms ?? existing.symptoms,
-      diagnoses: changes.diagnosis ?? existing.diagnoses,
-      // IMedCase.recommendations is still a single free-text field on the backend;
-      // recommendationIds (structured checklist) has no backend column yet, so the
-      // ids are flattened into a comma-separated string as an interim mapping.
-      recommendations: changes.recommendationIds ? changes.recommendationIds.join(',') : existing.recommendations,
-      status: changes.status ?? existing.status,
+      diagnosis: changes.diagnosis ?? existing.diagnosis,
+      // recommendations is a real ManyToMany relationship now, so the ids map
+      // straight onto related objects — no comma-joined free-text column.
+      recommendations: changes.recommendationIds ? changes.recommendationIds.map(recommendationId => ({ id: recommendationId })) : existing.recommendations,
+      status: changes.status ? (changes.status.toUpperCase() as IClinicalCase['status']) : existing.status,
     };
-    this.medCaseCache.update(cache => cache.map(candidate => (candidate.id === id ? updatedMedCase : candidate)));
-    this.medCaseService.partialUpdate(updatedMedCase).subscribe({
+    this.clinicalCaseCache.update(cache => cache.map(candidate => (candidate.id === id ? updatedCase : candidate)));
+    this.clinicalCaseService.partialUpdate(updatedCase).subscribe({
       error: () => this.error.set(`Failed to save case ${id}`),
     });
-    return toClinicalCase(updatedMedCase);
+    return toClinicalCase(updatedCase);
   }
 
   appendActivity(
@@ -322,8 +321,8 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
       error: () => this.error.set('Failed to load patient directory'),
     });
 
-    this.medCaseService.query().subscribe({
-      next: response => this.medCaseCache.set(response.body ?? []),
+    this.clinicalCaseService.query().subscribe({
+      next: response => this.clinicalCaseCache.set(response.body ?? []),
       error: () => this.error.set('Failed to load case queue'),
     });
 
@@ -390,25 +389,34 @@ const toPatientListRow = (dto: PatientListItemDto): PatientListRow => ({
   isChild: dto.isChild,
 });
 
-const toCaseQueueRow = (medCase: IMedCase): CaseQueueRow => ({
-  id: medCase.id,
-  patientId: medCase.patientId ?? '',
-  date: medCase.createdDate?.toISOString() ?? new Date(0).toISOString(),
-  brief: medCase.brief ?? medCase.symptoms ?? '',
-  status: medCase.status ?? 'open',
-  assignedRosterId: medCase.assignedRosterId ?? undefined,
+/** The generated enum is upper-case; the feature model's CaseStatus is lower-case. */
+const toCaseStatus = (status: IClinicalCase['status']): CaseStatus => (status ? (status.toLowerCase() as CaseStatus) : 'open');
+
+const toCaseQueueRow = (clinicalCase: IClinicalCase): CaseQueueRow => ({
+  id: clinicalCase.id,
+  patientId: clinicalCase.patientId ?? '',
+  date: clinicalCase.openedAt?.toISOString() ?? new Date(0).toISOString(),
+  brief: clinicalCase.brief ?? clinicalCase.symptoms ?? '',
+  status: toCaseStatus(clinicalCase.status),
+  assignedProfessionalId: clinicalCase.assignedProfessionalId ?? undefined,
+  assignedRosterId: clinicalCase.assignedRosterId ?? undefined,
 });
 
-const toClinicalCase = (medCase: IMedCase): ClinicalCase => ({
-  id: medCase.id,
-  patientId: medCase.patientId ?? '',
-  openedAt: medCase.createdDate?.toISOString() ?? new Date(0).toISOString(),
-  brief: medCase.brief ?? medCase.symptoms ?? '',
-  status: medCase.status ?? 'open',
-  symptoms: medCase.symptoms ?? '',
-  diagnosis: medCase.diagnoses ?? '',
-  recommendationIds: medCase.recommendations ? medCase.recommendations.split(',').filter(Boolean) : [],
-  assignedRosterId: medCase.assignedRosterId ?? undefined,
+const toClinicalCase = (clinicalCase: IClinicalCase): ClinicalCase => ({
+  id: clinicalCase.id,
+  patientId: clinicalCase.patientId ?? '',
+  openedAt: clinicalCase.openedAt?.toISOString() ?? new Date(0).toISOString(),
+  brief: clinicalCase.brief ?? clinicalCase.symptoms ?? '',
+  status: toCaseStatus(clinicalCase.status),
+  symptoms: clinicalCase.symptoms ?? '',
+  diagnosis: clinicalCase.diagnosis ?? '',
+  // Defensive: the relationship may be absent, or a bare id list, depending on
+  // whether the backend serialises the related objects.
+  recommendationIds: Array.isArray(clinicalCase.recommendations)
+    ? clinicalCase.recommendations.map(recommendation => (typeof recommendation === 'string' ? recommendation : recommendation.id))
+    : [],
+  assignedProfessionalId: clinicalCase.assignedProfessionalId ?? undefined,
+  assignedRosterId: clinicalCase.assignedRosterId ?? undefined,
 });
 
 const paginate = <T>(items: readonly T[], pageRequest: PageRequest): Page<T> => {
