@@ -30,16 +30,16 @@ describe('Activity e2e test', () => {
   });
 
   beforeEach(() => {
-    cy.intercept('GET', '/services/hcprofessionalService/api/activities+(?*|)').as('entitiesRequest');
-    cy.intercept('POST', '/services/hcprofessionalService/api/activities').as('postEntityRequest');
-    cy.intercept('DELETE', '/services/hcprofessionalService/api/activities/*').as('deleteEntityRequest');
+    cy.intercept('GET', '/services/professionalservice/api/activities+(?*|)').as('entitiesRequest');
+    cy.intercept('POST', '/services/professionalservice/api/activities').as('postEntityRequest');
+    cy.intercept('DELETE', '/services/professionalservice/api/activities/*').as('deleteEntityRequest');
   });
 
   afterEach(() => {
     if (activity) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/services/hcprofessionalService/api/activities/${activity.id}`,
+        url: `/services/professionalservice/api/activities/${activity.id}`,
       }).then(() => {
         activity = undefined;
       });
@@ -63,7 +63,7 @@ describe('Activity e2e test', () => {
   describe('Activity page', () => {
     it('should have translated page title', () => {
       cy.visit(activityPageUrl);
-      cy.getEntityHeading('Activity').should('not.contain', 'professionalDashboardApp.hcprofessionalServiceActivity.home.title');
+      cy.getEntityHeading('Activity').should('not.contain', 'professionalDashboardApp.professionalServiceActivity.home.title');
     });
 
     describe('create button click', () => {
@@ -89,7 +89,7 @@ describe('Activity e2e test', () => {
       beforeEach(() => {
         cy.authenticatedRequest({
           method: 'POST',
-          url: '/services/hcprofessionalService/api/activities',
+          url: '/services/professionalservice/api/activities',
           body: activitySample,
         }).then(({ body }) => {
           activity = body;
@@ -97,7 +97,7 @@ describe('Activity e2e test', () => {
           cy.intercept(
             {
               method: 'GET',
-              url: '/services/hcprofessionalService/api/activities+(?*|)',
+              url: '/services/professionalservice/api/activities+(?*|)',
               times: 1,
             },
             {

@@ -1,39 +1,45 @@
 import {
-  entityTableSelector,
-  entityDetailsButtonSelector,
-  entityDetailsBackButtonSelector,
-  entityCreateButtonSelector,
-  entityCreateSaveButtonSelector,
-  entityCreateCancelButtonSelector,
-  entityEditButtonSelector,
-  entityDeleteButtonSelector,
   entityConfirmDeleteButtonSelector,
+  entityCreateButtonSelector,
+  entityCreateCancelButtonSelector,
+  entityCreateSaveButtonSelector,
+  entityDeleteButtonSelector,
+  entityDetailsBackButtonSelector,
+  entityDetailsButtonSelector,
+  entityEditButtonSelector,
+  entityTableSelector,
 } from '../../support/entity';
 
 describe('Task e2e test', () => {
   const taskPageUrl = '/task';
   const taskPageUrlPattern = new RegExp('/task(\\?.*)?$');
-  const username = Cypress.env('E2E_USERNAME') ?? 'user';
-  const password = Cypress.env('E2E_PASSWORD') ?? 'user';
+  let username: string;
+  let password: string;
   const taskSample = {};
 
   let task;
+
+  before(() => {
+    cy.credentials().then(credentials => {
+      ({ username, password } = credentials);
+    });
+  });
 
   beforeEach(() => {
     cy.login(username, password);
   });
 
   beforeEach(() => {
-    cy.intercept('GET', '/services/hcprofessionalService/api/tasks+(?*|)').as('entitiesRequest');
-    cy.intercept('POST', '/services/hcprofessionalService/api/tasks').as('postEntityRequest');
-    cy.intercept('DELETE', '/services/hcprofessionalService/api/tasks/*').as('deleteEntityRequest');
+    cy.intercept('GET', '/services/professionalservice/api/tasks+(?*|)').as('entitiesRequest');
+    cy.intercept('POST', '/services/professionalservice/api/tasks').as('postEntityRequest');
+    cy.intercept('DELETE', '/services/professionalservice/api/tasks/*').as('deleteEntityRequest');
   });
 
   afterEach(() => {
     if (task) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/services/hcprofessionalService/api/tasks/${task.id}`,
+        url: `/services/professionalservice/api/tasks/${task.id}`,
       }).then(() => {
         task = undefined;
       });
@@ -44,7 +50,7 @@ describe('Task e2e test', () => {
     cy.visit('/');
     cy.clickOnEntityMenuItem('task');
     cy.wait('@entitiesRequest').then(({ response }) => {
-      if (response.body.length === 0) {
+      if (response?.body.length === 0) {
         cy.get(entityTableSelector).should('not.exist');
       } else {
         cy.get(entityTableSelector).should('exist');
@@ -55,6 +61,11 @@ describe('Task e2e test', () => {
   });
 
   describe('Task page', () => {
+    it('should have translated page title', () => {
+      cy.visit(taskPageUrl);
+      cy.getEntityHeading('Task').should('not.contain', 'professionalDashboardApp.professionalServiceTask.home.title');
+    });
+
     describe('create button click', () => {
       beforeEach(() => {
         cy.visit(taskPageUrl);
@@ -68,7 +79,7 @@ describe('Task e2e test', () => {
         cy.get(entityCreateSaveButtonSelector).should('exist');
         cy.get(entityCreateCancelButtonSelector).click();
         cy.wait('@entitiesRequest').then(({ response }) => {
-          expect(response.statusCode).to.equal(200);
+          expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', taskPageUrlPattern);
       });
@@ -78,7 +89,7 @@ describe('Task e2e test', () => {
       beforeEach(() => {
         cy.authenticatedRequest({
           method: 'POST',
-          url: '/services/hcprofessionalService/api/tasks',
+          url: '/services/professionalservice/api/tasks',
           body: taskSample,
         }).then(({ body }) => {
           task = body;
@@ -86,7 +97,7 @@ describe('Task e2e test', () => {
           cy.intercept(
             {
               method: 'GET',
-              url: '/services/hcprofessionalService/api/tasks+(?*|)',
+              url: '/services/professionalservice/api/tasks+(?*|)',
               times: 1,
             },
             {
@@ -106,7 +117,7 @@ describe('Task e2e test', () => {
         cy.getEntityDetailsHeading('task');
         cy.get(entityDetailsBackButtonSelector).click();
         cy.wait('@entitiesRequest').then(({ response }) => {
-          expect(response.statusCode).to.equal(200);
+          expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', taskPageUrlPattern);
       });
@@ -117,7 +128,7 @@ describe('Task e2e test', () => {
         cy.get(entityCreateSaveButtonSelector).should('exist');
         cy.get(entityCreateCancelButtonSelector).click();
         cy.wait('@entitiesRequest').then(({ response }) => {
-          expect(response.statusCode).to.equal(200);
+          expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', taskPageUrlPattern);
       });
@@ -127,7 +138,7 @@ describe('Task e2e test', () => {
         cy.getEntityCreateUpdateHeading('Task');
         cy.get(entityCreateSaveButtonSelector).click();
         cy.wait('@entitiesRequest').then(({ response }) => {
-          expect(response.statusCode).to.equal(200);
+          expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', taskPageUrlPattern);
       });
@@ -137,10 +148,10 @@ describe('Task e2e test', () => {
         cy.getEntityDeleteDialogHeading('task').should('exist');
         cy.get(entityConfirmDeleteButtonSelector).click();
         cy.wait('@deleteEntityRequest').then(({ response }) => {
-          expect(response.statusCode).to.equal(204);
+          expect(response?.statusCode).to.equal(204);
         });
         cy.wait('@entitiesRequest').then(({ response }) => {
-          expect(response.statusCode).to.equal(200);
+          expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', taskPageUrlPattern);
 
@@ -151,56 +162,56 @@ describe('Task e2e test', () => {
 
   describe('new Task page', () => {
     beforeEach(() => {
-      cy.visit(`${taskPageUrl}`);
+      cy.visit(taskPageUrl);
       cy.get(entityCreateButtonSelector).click();
       cy.getEntityCreateUpdateHeading('Task');
     });
 
     it('should create an instance of Task', () => {
-      cy.get(`[data-cy="name"]`).type('these yippee');
-      cy.get(`[data-cy="name"]`).should('have.value', 'these yippee');
+      cy.get(`[data-cy="name"]`).type('nervously delectable abscond');
+      cy.get(`[data-cy="name"]`).should('have.value', 'nervously delectable abscond');
 
-      cy.get(`[data-cy="description"]`).type('pish');
-      cy.get(`[data-cy="description"]`).should('have.value', 'pish');
+      cy.get(`[data-cy="description"]`).type('a ravage yowza');
+      cy.get(`[data-cy="description"]`).should('have.value', 'a ravage yowza');
 
       cy.get(`[data-cy="schedule"]`).type('2024-02-06');
       cy.get(`[data-cy="schedule"]`).blur();
       cy.get(`[data-cy="schedule"]`).should('have.value', '2024-02-06');
 
-      cy.get(`[data-cy="duration"]`).type('18486.8');
-      cy.get(`[data-cy="duration"]`).should('have.value', '18486.8');
+      cy.get(`[data-cy="duration"]`).type('6929.41');
+      cy.get(`[data-cy="duration"]`).should('have.value', '6929.41');
 
-      cy.get(`[data-cy="attendantId"]`).type('wherever resident');
-      cy.get(`[data-cy="attendantId"]`).should('have.value', 'wherever resident');
+      cy.get(`[data-cy="attendantId"]`).type('woot');
+      cy.get(`[data-cy="attendantId"]`).should('have.value', 'woot');
 
-      cy.get(`[data-cy="teamId"]`).type('tic monthly');
-      cy.get(`[data-cy="teamId"]`).should('have.value', 'tic monthly');
+      cy.get(`[data-cy="teamId"]`).type('but case drum');
+      cy.get(`[data-cy="teamId"]`).should('have.value', 'but case drum');
 
-      cy.get(`[data-cy="patientId"]`).type('obvious');
-      cy.get(`[data-cy="patientId"]`).should('have.value', 'obvious');
+      cy.get(`[data-cy="patientId"]`).type('apud near');
+      cy.get(`[data-cy="patientId"]`).should('have.value', 'apud near');
 
       cy.get(`[data-cy="createdDate"]`).type('2024-02-06');
       cy.get(`[data-cy="createdDate"]`).blur();
       cy.get(`[data-cy="createdDate"]`).should('have.value', '2024-02-06');
 
-      cy.get(`[data-cy="modifiedDate"]`).type('2024-02-05');
+      cy.get(`[data-cy="modifiedDate"]`).type('2024-02-06');
       cy.get(`[data-cy="modifiedDate"]`).blur();
-      cy.get(`[data-cy="modifiedDate"]`).should('have.value', '2024-02-05');
+      cy.get(`[data-cy="modifiedDate"]`).should('have.value', '2024-02-06');
 
-      cy.get(`[data-cy="createdBy"]`).type('beneath accident but');
-      cy.get(`[data-cy="createdBy"]`).should('have.value', 'beneath accident but');
+      cy.get(`[data-cy="createdBy"]`).type('plus jellyfish chasuble');
+      cy.get(`[data-cy="createdBy"]`).should('have.value', 'plus jellyfish chasuble');
 
-      cy.get(`[data-cy="modifiedBy"]`).type('why');
-      cy.get(`[data-cy="modifiedBy"]`).should('have.value', 'why');
+      cy.get(`[data-cy="modifiedBy"]`).type('plus yearly');
+      cy.get(`[data-cy="modifiedBy"]`).should('have.value', 'plus yearly');
 
       cy.get(entityCreateSaveButtonSelector).click();
 
       cy.wait('@postEntityRequest').then(({ response }) => {
-        expect(response.statusCode).to.equal(201);
+        expect(response?.statusCode).to.equal(201);
         task = response.body;
       });
       cy.wait('@entitiesRequest').then(({ response }) => {
-        expect(response.statusCode).to.equal(200);
+        expect(response?.statusCode).to.equal(200);
       });
       cy.url().should('match', taskPageUrlPattern);
     });

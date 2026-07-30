@@ -2,6 +2,7 @@
   "annotations": {
     "changelogDate": "20240206215921"
   },
+  "applications": ["*"],
   "changelogDate": "20240206215921",
   "clientRootFolder": "professionalService",
   "databaseType": "mongodb",

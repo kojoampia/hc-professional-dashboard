@@ -1,50 +1,56 @@
 import {
-  entityTableSelector,
-  entityDetailsButtonSelector,
-  entityDetailsBackButtonSelector,
-  entityCreateButtonSelector,
-  entityCreateSaveButtonSelector,
-  entityCreateCancelButtonSelector,
-  entityEditButtonSelector,
-  entityDeleteButtonSelector,
   entityConfirmDeleteButtonSelector,
+  entityCreateButtonSelector,
+  entityCreateCancelButtonSelector,
+  entityCreateSaveButtonSelector,
+  entityDeleteButtonSelector,
+  entityDetailsBackButtonSelector,
+  entityDetailsButtonSelector,
+  entityEditButtonSelector,
+  entityTableSelector,
 } from '../../support/entity';
 
 describe('Metadata e2e test', () => {
   const metadataPageUrl = '/metadata';
   const metadataPageUrlPattern = new RegExp('/metadata(\\?.*)?$');
-  const username = Cypress.env('E2E_USERNAME') ?? 'user';
-  const password = Cypress.env('E2E_PASSWORD') ?? 'user';
+  let username: string;
+  let password: string;
   const metadataSample = {};
 
   let metadata;
+
+  before(() => {
+    cy.credentials().then(credentials => {
+      ({ username, password } = credentials);
+    });
+  });
 
   beforeEach(() => {
     cy.login(username, password);
   });
 
   beforeEach(() => {
-    cy.intercept('GET', '/services/professionalService/api/metadata+(?*|)').as('entitiesRequest');
-    cy.intercept('POST', '/services/professionalService/api/metadata').as('postEntityRequest');
-    cy.intercept('DELETE', '/services/professionalService/api/metadata/*').as('deleteEntityRequest');
+    cy.intercept('GET', '/services/professionalservice/api/metadata+(?*|)').as('entitiesRequest');
+    cy.intercept('POST', '/services/professionalservice/api/metadata').as('postEntityRequest');
+    cy.intercept('DELETE', '/services/professionalservice/api/metadata/*').as('deleteEntityRequest');
   });
 
   afterEach(() => {
     if (metadata) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/services/professionalService/api/metadata/${metadata.id}`,
+        url: `/services/professionalservice/api/metadata/${metadata.id}`,
       }).then(() => {
         metadata = undefined;
       });
     }
   });
 
-  it('Metadata menu should load Metadata page', () => {
+  it('Metadatas menu should load Metadatas page', () => {
     cy.visit('/');
     cy.clickOnEntityMenuItem('metadata');
     cy.wait('@entitiesRequest').then(({ response }) => {
-      if (response.body.length === 0) {
+      if (response?.body.length === 0) {
         cy.get(entityTableSelector).should('not.exist');
       } else {
         cy.get(entityTableSelector).should('exist');
@@ -55,6 +61,11 @@ describe('Metadata e2e test', () => {
   });
 
   describe('Metadata page', () => {
+    it('should have translated page title', () => {
+      cy.visit(metadataPageUrl);
+      cy.getEntityHeading('Metadata').should('not.contain', 'professionalDashboardApp.professionalServiceMetadata.home.title');
+    });
+
     describe('create button click', () => {
       beforeEach(() => {
         cy.visit(metadataPageUrl);
@@ -68,7 +79,7 @@ describe('Metadata e2e test', () => {
         cy.get(entityCreateSaveButtonSelector).should('exist');
         cy.get(entityCreateCancelButtonSelector).click();
         cy.wait('@entitiesRequest').then(({ response }) => {
-          expect(response.statusCode).to.equal(200);
+          expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', metadataPageUrlPattern);
       });
@@ -78,7 +89,7 @@ describe('Metadata e2e test', () => {
       beforeEach(() => {
         cy.authenticatedRequest({
           method: 'POST',
-          url: '/services/professionalService/api/metadata',
+          url: '/services/professionalservice/api/metadata',
           body: metadataSample,
         }).then(({ body }) => {
           metadata = body;
@@ -86,7 +97,7 @@ describe('Metadata e2e test', () => {
           cy.intercept(
             {
               method: 'GET',
-              url: '/services/professionalService/api/metadata+(?*|)',
+              url: '/services/professionalservice/api/metadata+(?*|)',
               times: 1,
             },
             {
@@ -106,7 +117,7 @@ describe('Metadata e2e test', () => {
         cy.getEntityDetailsHeading('metadata');
         cy.get(entityDetailsBackButtonSelector).click();
         cy.wait('@entitiesRequest').then(({ response }) => {
-          expect(response.statusCode).to.equal(200);
+          expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', metadataPageUrlPattern);
       });
@@ -117,7 +128,7 @@ describe('Metadata e2e test', () => {
         cy.get(entityCreateSaveButtonSelector).should('exist');
         cy.get(entityCreateCancelButtonSelector).click();
         cy.wait('@entitiesRequest').then(({ response }) => {
-          expect(response.statusCode).to.equal(200);
+          expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', metadataPageUrlPattern);
       });
@@ -127,7 +138,7 @@ describe('Metadata e2e test', () => {
         cy.getEntityCreateUpdateHeading('Metadata');
         cy.get(entityCreateSaveButtonSelector).click();
         cy.wait('@entitiesRequest').then(({ response }) => {
-          expect(response.statusCode).to.equal(200);
+          expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', metadataPageUrlPattern);
       });
@@ -137,10 +148,10 @@ describe('Metadata e2e test', () => {
         cy.getEntityDeleteDialogHeading('metadata').should('exist');
         cy.get(entityConfirmDeleteButtonSelector).click();
         cy.wait('@deleteEntityRequest').then(({ response }) => {
-          expect(response.statusCode).to.equal(204);
+          expect(response?.statusCode).to.equal(204);
         });
         cy.wait('@entitiesRequest').then(({ response }) => {
-          expect(response.statusCode).to.equal(200);
+          expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', metadataPageUrlPattern);
 
@@ -151,17 +162,17 @@ describe('Metadata e2e test', () => {
 
   describe('new Metadata page', () => {
     beforeEach(() => {
-      cy.visit(`${metadataPageUrl}`);
+      cy.visit(metadataPageUrl);
       cy.get(entityCreateButtonSelector).click();
       cy.getEntityCreateUpdateHeading('Metadata');
     });
 
     it('should create an instance of Metadata', () => {
-      cy.get(`[data-cy="createdBy"]`).type('notwithstanding after youthful');
-      cy.get(`[data-cy="createdBy"]`).should('have.value', 'notwithstanding after youthful');
+      cy.get(`[data-cy="createdBy"]`).type('veto');
+      cy.get(`[data-cy="createdBy"]`).should('have.value', 'veto');
 
-      cy.get(`[data-cy="modifiedBy"]`).type('dense');
-      cy.get(`[data-cy="modifiedBy"]`).should('have.value', 'dense');
+      cy.get(`[data-cy="modifiedBy"]`).type('slide er unnecessarily');
+      cy.get(`[data-cy="modifiedBy"]`).should('have.value', 'slide er unnecessarily');
 
       cy.get(`[data-cy="createdDate"]`).type('2024-02-06');
       cy.get(`[data-cy="createdDate"]`).blur();
@@ -171,17 +182,17 @@ describe('Metadata e2e test', () => {
       cy.get(`[data-cy="modifiedDate"]`).blur();
       cy.get(`[data-cy="modifiedDate"]`).should('have.value', '2024-02-06');
 
-      cy.get(`[data-cy="data"]`).type('clearly recap webbed');
-      cy.get(`[data-cy="data"]`).should('have.value', 'clearly recap webbed');
+      cy.get(`[data-cy="data"]`).type('hepatitis');
+      cy.get(`[data-cy="data"]`).should('have.value', 'hepatitis');
 
       cy.get(entityCreateSaveButtonSelector).click();
 
       cy.wait('@postEntityRequest').then(({ response }) => {
-        expect(response.statusCode).to.equal(201);
+        expect(response?.statusCode).to.equal(201);
         metadata = response.body;
       });
       cy.wait('@entitiesRequest').then(({ response }) => {
-        expect(response.statusCode).to.equal(200);
+        expect(response?.statusCode).to.equal(200);
       });
       cy.url().should('match', metadataPageUrlPattern);
     });

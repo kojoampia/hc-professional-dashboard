@@ -1,0 +1,10 @@
+{
+  "professionalDashboardApp": {
+    "CaseStatus": {
+      "null": "",
+      "URGENT": "URGENT",
+      "OPEN": "OPEN",
+      "CLOSED": "CLOSED"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceDutyShift": {
+      "home": {
+        "title": "Duty Shifts",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Duty Shift",
+        "createOrEditLabel": "Create or edit a Duty Shift",
+        "notFound": "No Duty Shifts found"
+      },
+      "created": "A new Duty Shift is created with identifier {{ param }}",
+      "updated": "A Duty Shift is updated with identifier {{ param }}",
+      "deleted": "A Duty Shift is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Duty Shift {{ id }}?"
+      },
+      "detail": {
+        "title": "Duty Shift"
+      },
+      "id": "Id",
+      "professionalId": "Professional Id",
+      "startsAt": "Starts At",
+      "endsAt": "Ends At",
+      "status": "Status",
+      "roster": "Roster"
+    }
+  }
+}

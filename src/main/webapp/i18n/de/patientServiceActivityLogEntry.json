@@ -1,0 +1,29 @@
+{
+  "professionalDashboardApp": {
+    "patientServiceActivityLogEntry": {
+      "home": {
+        "title": "Activity Log Entries",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Activity Log Entry erstellen",
+        "createOrEditLabel": "Activity Log Entry erstellen oder bearbeiten",
+        "notFound": "Keine Activity Log Entries gefunden"
+      },
+      "created": "Activity Log Entry erstellt mit ID {{ param }}",
+      "updated": "Activity Log Entry aktualisiert mit ID {{ param }}",
+      "deleted": "Activity Log Entry gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Activity Log Entry {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Activity Log Entry"
+      },
+      "id": "Id",
+      "patientId": "Patient Id",
+      "occurredAt": "Occurred At",
+      "label": "Label",
+      "title": "Title",
+      "description": "Description",
+      "createdAt": "Created At"
+    }
+  }
+}

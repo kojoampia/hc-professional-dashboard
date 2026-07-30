@@ -1,0 +1,26 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceDutyRoster": {
+      "home": {
+        "title": "Duty Rosters",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Duty Roster",
+        "createOrEditLabel": "Create or edit a Duty Roster",
+        "notFound": "No Duty Rosters found"
+      },
+      "created": "A new Duty Roster is created with identifier {{ param }}",
+      "updated": "A Duty Roster is updated with identifier {{ param }}",
+      "deleted": "A Duty Roster is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Duty Roster {{ id }}?"
+      },
+      "detail": {
+        "title": "Duty Roster"
+      },
+      "id": "Id",
+      "name": "Name",
+      "shifts": "Shifts",
+      "subscribedProfessional": "Subscribed Professional"
+    }
+  }
+}

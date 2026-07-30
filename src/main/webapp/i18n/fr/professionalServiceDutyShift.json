@@ -1,0 +1,28 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceDutyShift": {
+      "home": {
+        "title": "DutyShifts",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Duty Shift",
+        "createOrEditLabel": "Créer ou éditer un Duty Shift",
+        "notFound": "Aucun Duty Shift trouvé"
+      },
+      "created": "Un nouveau Duty Shift a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Duty Shift avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Duty Shift avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Duty Shift {{ id }} ?"
+      },
+      "detail": {
+        "title": "Duty Shift"
+      },
+      "id": "Id",
+      "professionalId": "Professional Id",
+      "startsAt": "Starts At",
+      "endsAt": "Ends At",
+      "status": "Status",
+      "roster": "Roster"
+    }
+  }
+}

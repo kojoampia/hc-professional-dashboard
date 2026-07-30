@@ -1,0 +1,147 @@
+<div>
+  <h2 id="page-heading" data-cy="DocumentHeading">
+    <span jhiTranslate="professionalDashboardApp.professionalServiceDocument.home.title">Documents</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
+        <mat-icon aria-hidden="true" class="!text-base" [class.animate-spin]="isLoading()">sync</mat-icon>
+        <span jhiTranslate="professionalDashboardApp.professionalServiceDocument.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-document"
+        [routerLink]="['/document/new']"
+      >
+        <mat-icon aria-hidden="true" class="!text-base">add</mat-icon>
+        <span jhiTranslate="professionalDashboardApp.professionalServiceDocument.home.createLabel">Create a new Document</span>
+      </button>
+    </div>
+  </h2>
+
+  <hpd-alert-error />
+
+  <hpd-alert />
+
+  @if (documents().length === 0) {
+  <div class="alert alert-warning" id="no-result">
+    <span jhiTranslate="professionalDashboardApp.professionalServiceDocument.home.notFound">No Documents found</span>
+  </div>
+  } @else {
+  <div class="table-responsive table-entities" id="entities">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr jhiSort [predicate]="sortState().predicate" [ascending]="sortState().ascending" (sortChange)="navigateToWithComponentValues($event)">
+          <th scope="col" jhiSortBy="id" #idSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceDocument.id">Id</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ idSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="name" #nameSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceDocument.name">Name</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ nameSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="profileId" #profileIdSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceDocument.profileId">Profile Id</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ profileIdSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="data" #dataSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceDocument.data">Data</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ dataSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="type" #typeSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceDocument.type">Type</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ typeSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="createdDate" #createdDateSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceDocument.createdDate">Created Date</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ createdDateSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="modifiedDate" #modifiedDateSort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceDocument.modifiedDate">Modified Date</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ modifiedDateSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="createdBy" #createdBySort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceDocument.createdBy">Created By</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ createdBySort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="modifiedBy" #modifiedBySort="jhiSortBy">
+            <div class="d-flex">
+              <span jhiTranslate="professionalDashboardApp.professionalServiceDocument.modifiedBy">Modified By</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ modifiedBySort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (document of documents(); track trackId(document)) {
+        <tr data-cy="entityTable">
+          <td><a [routerLink]="['/document', document.id, 'view']">{{ document.id }}</a></td>
+          <td>{{ document.name }}</td>
+          <td>{{ document.profileId }}</td>
+          <td>
+            @if (document.data) {
+            <a (click)="openFile(document.data, document.dataContentType)" jhiTranslate="entity.action.open">Open</a>
+            <span>{{ document.dataContentType }}, {{ byteSize(document.data) }}</span>
+            }
+          </td>
+          <td [jhiTranslate]="'professionalDashboardApp.DocumentType.' + (document.type ?? 'null')">
+            {{
+            {"null":"","PASSPORT":"PASSPORT","CERTIFICATE":"CERTIFICATE","GHANACARD":"GHANACARD","PASSPHOTO":"PASSPHOTO","DRIVERLICENSE":"DRIVERLICENSE","VOTERCARD":"VOTERCARD","NHIS":"NHIS","OTHER":"OTHER","LICENSE":"LICENSE"}[document.type
+            ?? 'null'] }}
+          </td>
+          <td>{{ document.createdDate | formatMediumDate }}</td>
+          <td>{{ document.modifiedDate | formatMediumDate }}</td>
+          <td>{{ document.createdBy }}</td>
+          <td>{{ document.modifiedBy }}</td>
+          <td class="text-end">
+            <div class="btn-group">
+              <a [routerLink]="['/document', document.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                <mat-icon aria-hidden="true" class="!text-base">visibility</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+              </a>
+
+              <a [routerLink]="['/document', document.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+              </a>
+
+              <button type="submit" (click)="delete(document)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <mat-icon aria-hidden="true" class="!text-base">close</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+</div>

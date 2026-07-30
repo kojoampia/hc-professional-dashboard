@@ -102,8 +102,8 @@ export const SHELL_NAV_GROUPS: ShellNavGroup[] = [
         dataCy: 'complianceMenu',
       },
       {
-        path: '/med-case',
-        labelKey: 'professionalDashboardApp.hcPatientServiceMedCase.home.title',
+        path: '/clinical-case',
+        labelKey: 'professionalDashboardApp.patientServiceClinicalCase.home.title',
         icon: 'folder_shared',
         crumbKey: 'global.menu.admin.main',
       },

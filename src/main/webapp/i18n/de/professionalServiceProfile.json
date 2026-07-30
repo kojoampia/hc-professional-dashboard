@@ -1,0 +1,40 @@
+{
+  "professionalDashboardApp": {
+    "professionalServiceProfile": {
+      "home": {
+        "title": "Profiles",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Profile erstellen",
+        "createOrEditLabel": "Profile erstellen oder bearbeiten",
+        "notFound": "Keine Profiles gefunden"
+      },
+      "created": "Profile erstellt mit ID {{ param }}",
+      "updated": "Profile aktualisiert mit ID {{ param }}",
+      "deleted": "Profile gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Profile {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Profile"
+      },
+      "id": "Id",
+      "firstName": "First Name",
+      "middleNames": "Middle Names",
+      "lastName": "Last Name",
+      "team": "Team",
+      "birthDate": "Birth Date",
+      "sex": "Sex",
+      "mobilePhone": "Mobile Phone",
+      "phoneNumber": "Phone Number",
+      "email": "Email",
+      "idType": "Id Type",
+      "idNumber": "Id Number",
+      "documents": "Documents",
+      "address": "Address",
+      "bankAccount": "Bank Account",
+      "tenantId": "Tenant Id",
+      "rosterId": "Roster Id",
+      "teamId": "Team Id"
+    }
+  }
+}

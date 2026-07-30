@@ -2,6 +2,7 @@
   "annotations": {
     "changelogDate": "20260724060100"
   },
+  "applications": ["*"],
   "clientRootFolder": "professionalService",
   "databaseType": "mongodb",
   "dto": "no",
@@ -9,10 +10,6 @@
   "fields": [
     {
       "fieldName": "id",
-      "fieldType": "String"
-    },
-    {
-      "fieldName": "rosterId",
       "fieldType": "String"
     },
     {
@@ -29,14 +26,23 @@
     },
     {
       "fieldName": "status",
-      "fieldType": "String"
+      "fieldType": "DutyShiftStatus",
+      "fieldValues": "UPCOMING,ACTIVE,COMPLETED"
     }
   ],
   "microserviceName": "professionalService",
   "name": "DutyShift",
   "pagination": "no",
   "readOnly": false,
-  "relationships": [],
+  "relationships": [
+    {
+      "otherEntityName": "dutyRoster",
+      "otherEntityRelationshipName": "shifts",
+      "relationshipName": "roster",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
+    }
+  ],
   "searchEngine": "no",
   "service": "serviceClass"
 }

@@ -1,0 +1,26 @@
+{
+  "professionalDashboardApp": {
+    "patientServiceMedicationRecord": {
+      "home": {
+        "title": "Medication Records",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Medication Record erstellen",
+        "createOrEditLabel": "Medication Record erstellen oder bearbeiten",
+        "notFound": "Keine Medication Records gefunden"
+      },
+      "created": "Medication Record erstellt mit ID {{ param }}",
+      "updated": "Medication Record aktualisiert mit ID {{ param }}",
+      "deleted": "Medication Record gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Medication Record {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Medication Record"
+      },
+      "id": "Id",
+      "patientId": "Patient Id",
+      "occurredAt": "Occurred At",
+      "label": "Label"
+    }
+  }
+}

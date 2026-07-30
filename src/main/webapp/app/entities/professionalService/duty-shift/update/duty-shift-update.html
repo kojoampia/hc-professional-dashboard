@@ -1,0 +1,123 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="hpd-duty-shift-heading"
+        data-cy="DutyShiftCreateUpdateHeading"
+        jhiTranslate="professionalDashboardApp.professionalServiceDutyShift.home.createOrEditLabel"
+      >
+        Create or edit a Duty Shift
+      </h2>
+
+      <div>
+        <hpd-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+
+        <div class="mb-3">
+          <label class="form-label" for="field_id" jhiTranslate="professionalDashboardApp.professionalServiceDutyShift.id">Id</label>
+          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
+        }
+
+        <div class="mb-3">
+          <label
+            class="form-label"
+            for="field_professionalId"
+            jhiTranslate="professionalDashboardApp.professionalServiceDutyShift.professionalId"
+            >Professional Id</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="professionalId"
+            id="field_professionalId"
+            data-cy="professionalId"
+            formControlName="professionalId"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_startsAt" jhiTranslate="professionalDashboardApp.professionalServiceDutyShift.startsAt"
+            >Starts At</label
+          >
+          <div class="d-flex">
+            <input
+              id="field_startsAt"
+              data-cy="startsAt"
+              type="datetime-local"
+              class="form-control"
+              name="startsAt"
+              formControlName="startsAt"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_endsAt" jhiTranslate="professionalDashboardApp.professionalServiceDutyShift.endsAt"
+            >Ends At</label
+          >
+          <div class="d-flex">
+            <input
+              id="field_endsAt"
+              data-cy="endsAt"
+              type="datetime-local"
+              class="form-control"
+              name="endsAt"
+              formControlName="endsAt"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_status" jhiTranslate="professionalDashboardApp.professionalServiceDutyShift.status"
+            >Status</label
+          >
+          <select class="form-control" name="status" formControlName="status" id="field_status" data-cy="status">
+            <option [ngValue]="null">{{ 'professionalDashboardApp.DutyShiftStatus.null' | translate }}</option>
+            @for (dutyShiftStatus of dutyShiftStatusValues; track $index) {
+            <option [value]="dutyShiftStatus">{{ 'professionalDashboardApp.DutyShiftStatus.' + dutyShiftStatus | translate }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_roster" jhiTranslate="professionalDashboardApp.professionalServiceDutyShift.roster"
+            >Roster</label
+          >
+          <select
+            class="form-control"
+            id="field_roster"
+            data-cy="roster"
+            name="roster"
+            formControlName="roster"
+            [compareWith]="compareDutyRoster"
+          >
+            <option [ngValue]="null"></option>
+            @for (dutyRosterOption of dutyRostersSharedCollection(); track $index) {
+            <option [ngValue]="dutyRosterOption">{{ dutyRosterOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <mat-icon aria-hidden="true" class="!text-base">cancel</mat-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving()"
+          class="btn btn-primary"
+        >
+          <mat-icon aria-hidden="true" class="!text-base">save</mat-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
