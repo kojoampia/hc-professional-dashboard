@@ -10,6 +10,12 @@ module.exports = {
   resolver: 'jest-preset-angular/build/resolvers/ng-jest-resolver.js',
   globals: {
     ...environment,
+    // `webpack.custom.js` supplies this through DefinePlugin, computed from the build mode, so it is
+    // not in `environment.js` and Jest — which never runs webpack — has no value for it. Without one,
+    // `app.constants.ts` throws at import time and every spec that reaches it (anything pulling in
+    // the sidebar or main layout) fails to run at all rather than failing an assertion.
+    // '' is what a development build gets, and it disables the exporter.
+    __RUM_ENDPOINT__: '',
   },
   roots: ['<rootDir>', `<rootDir>/${baseUrl}`],
   modulePaths: [`<rootDir>/${baseUrl}`],
