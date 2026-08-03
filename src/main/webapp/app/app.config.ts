@@ -10,6 +10,7 @@ import { DEBUG_INFO_ENABLED } from 'app/app.constants';
 import './config/dayjs';
 import { TranslationModule } from 'app/shared/language/translation.module';
 import { httpInterceptorProviders } from 'app/core/interceptor/index';
+import { provideRumRouteTracing } from 'app/core/telemetry/rum-route-tracing';
 import routes from './app.routes';
 // jhipster-needle-angular-add-module-import JHipster will add new module here
 import { AppPageTitleStrategy } from './app-page-title-strategy';
@@ -33,6 +34,9 @@ export const appConfig: ApplicationConfig = {
     { provide: LOCALE_ID, useValue: 'en' },
     httpInterceptorProviders,
     { provide: TitleStrategy, useClass: AppPageTitleStrategy },
+    // Route-change spans. Inert unless initRum() started the SDK, which it only does in builds
+    // where __RUM_ENDPOINT__ is set — so this costs a Router subscription and nothing else in dev.
+    provideRumRouteTracing(),
     // jhipster-needle-angular-add-module JHipster will add new module here
   ],
 };

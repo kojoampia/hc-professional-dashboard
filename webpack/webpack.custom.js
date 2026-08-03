@@ -115,6 +115,12 @@ module.exports = async (config, options, targetOptions) => {
       // APP_VERSION is passed as an environment variable from the Gradle / Maven build tasks.
       __VERSION__: JSON.stringify(environment.__VERSION__),
       __DEBUG_INFO_ENABLED__: environment.__DEBUG_INFO_ENABLED__ || config.mode === 'development',
+      // Browser RUM ingestion path; empty in development so `ng serve` posts nothing at all.
+      // Relative on purpose — it resolves against whatever origin serves the page, which keeps the
+      // export same-origin and preflight-free. nginx on the host maps this path to the OTel
+      // collector's browser receiver. NOT gated on __DEBUG_INFO_ENABLED__ above: that is hardcoded
+      // true in environment.js, so it is true in production builds too.
+      __RUM_ENDPOINT__: JSON.stringify(config.mode === 'development' ? '' : '/v1/traces'),
       // The root URL for API calls, ending with a '/' - for example: `"https://www.jhipster.tech:8081/myservice/"`.
       // If this URL is left empty (""), then it will be relative to the current context.
       // If you use an API server, in `prod` mode, you will need to enable CORS
