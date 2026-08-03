@@ -103,7 +103,7 @@ export const SHELL_NAV_GROUPS: ShellNavGroup[] = [
       },
       {
         path: '/clinical-case',
-        labelKey: 'professionalDashboardApp.patientServiceClinicalCase.home.title',
+        labelKey: 'professionalDashboardApp.patientserviceClinicalCase.home.title',
         icon: 'folder_shared',
         crumbKey: 'global.menu.admin.main',
       },

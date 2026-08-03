@@ -1,0 +1,55 @@
+<div class="flex justify-center">
+  <div class="">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="hpd-recommendation-heading"
+        data-cy="RecommendationCreateUpdateHeading"
+        jhiTranslate="professionalDashboardApp.patientserviceRecommendation.home.createOrEditLabel"
+      >
+        Create or edit a Recommendation
+      </h2>
+
+      <div>
+        <hpd-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_id" jhiTranslate="professionalDashboardApp.patientserviceRecommendation.id">Id</label>
+          <input type="text" class="hpd-input" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
+        }
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_label" jhiTranslate="professionalDashboardApp.patientserviceRecommendation.label"
+            >Label</label
+          >
+          <input type="text" class="hpd-input" name="label" id="field_label" data-cy="label" formControlName="label" />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_category" jhiTranslate="professionalDashboardApp.patientserviceRecommendation.category"
+            >Category</label
+          >
+          <input type="text" class="hpd-input" name="category" id="field_category" data-cy="category" formControlName="category" />
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="hpd-btn hpd-btn-ghost" (click)="previousState()">
+          <mat-icon aria-hidden="true" class="!text-base">cancel</mat-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving()"
+          class="hpd-btn hpd-btn-primary"
+        >
+          <mat-icon aria-hidden="true" class="!text-base">save</mat-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,84 @@
+<div class="flex justify-center">
+  <div class="">
+    @if (address(); as addressRef) {
+    <div>
+      <h2 data-cy="addressDetailsHeading">
+        <span jhiTranslate="professionalDashboardApp.professionalserviceAddress.detail.title">Address</span>
+      </h2>
+
+      <hr />
+
+      <hpd-alert-error />
+
+      <hpd-alert />
+
+      <dl class="grid gap-4-md jh-entity-details">
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceAddress.id">Id</span></dt>
+        <dd>
+          <span>{{ addressRef.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceAddress.digitalAddress">Digital Address</span></dt>
+        <dd>
+          <span>{{ addressRef.digitalAddress }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceAddress.streetAddress">Street Address</span></dt>
+        <dd>
+          <span>{{ addressRef.streetAddress }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceAddress.areaCode">Area Code</span></dt>
+        <dd>
+          <span>{{ addressRef.areaCode }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceAddress.town">Town</span></dt>
+        <dd>
+          <span>{{ addressRef.town }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceAddress.city">City</span></dt>
+        <dd>
+          <span>{{ addressRef.city }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceAddress.district">District</span></dt>
+        <dd>
+          <span>{{ addressRef.district }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceAddress.state">State</span></dt>
+        <dd>
+          <span>{{ addressRef.state }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceAddress.region">Region</span></dt>
+        <dd>
+          <span>{{ addressRef.region }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceAddress.country">Country</span></dt>
+        <dd>
+          <span>{{ addressRef.country }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceAddress.createdDate">Created Date</span></dt>
+        <dd>
+          <span>{{ addressRef.createdDate | formatMediumDate }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceAddress.modifiedDate">Modified Date</span></dt>
+        <dd>
+          <span>{{ addressRef.modifiedDate | formatMediumDate }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceAddress.createdBy">Created By</span></dt>
+        <dd>
+          <span>{{ addressRef.createdBy }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceAddress.modifiedBy">Modified By</span></dt>
+        <dd>
+          <span>{{ addressRef.modifiedBy }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="hpd-btn hpd-btn-ghost" data-cy="entityDetailsBackButton">
+        <mat-icon aria-hidden="true" class="!text-base">arrow_back</mat-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/address', addressRef.id, 'edit']" class="hpd-btn hpd-btn-primary">
+        <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+    }
+  </div>
+</div>

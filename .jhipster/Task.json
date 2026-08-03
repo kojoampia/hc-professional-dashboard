@@ -57,7 +57,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "professionalService",
+  "microserviceName": "professionalservice",
   "name": "Task",
   "pagination": "no",
   "readOnly": false,

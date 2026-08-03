@@ -108,7 +108,7 @@ export interface OnboardingDocumentDto {
 export class OnboardingApiService {
   private readonly http = inject(HttpClient);
   private readonly applicationConfigService = inject(ApplicationConfigService);
-  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/onboarding', 'professionalService');
+  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/onboarding', 'professionalservice');
 
   acknowledgementStatus(): Observable<{ acknowledged: boolean }> {
     return this.http.get<{ acknowledged: boolean }>(`${this.resourceUrl}/acknowledgement`);

@@ -6,7 +6,7 @@ Guidance for AI agents working in this repository. Describes the code as it actu
 
 A JHipster-generated **Angular frontend gateway** (frontend only) for the Health Connect microservice architecture: the professional dashboard UI with entity CRUD screens, hand-built clinician and onboarding screens, an analytics dashboard, account/auth/admin flows, and i18n (en/es/fr/de). `.yo-rc.json` records `jhipsterVersion: 9.1.0`.
 
-**There is no Java or Spring Boot source in this repo.** `.yo-rc.json` sets `"skipServer": true`; `src/main/java` and `src/main/resources` do not exist. The `pom.xml` exists only so the `frontend-maven-plugin` can build the Angular app. The backend lives in the sibling repos `gateway/` (reactive gateway, port 5505) and `api/` (`professionalService` microservice). Do not add backend code, Liquibase changelogs, or JPA entities here — there is nothing for them to attach to.
+**There is no Java or Spring Boot source in this repo.** `.yo-rc.json` sets `"skipServer": true`; `src/main/java` and `src/main/resources` do not exist. The `pom.xml` exists only so the `frontend-maven-plugin` can build the Angular app. The backend lives in the sibling repos `gateway/` (reactive gateway, port 5505) and `api/` (`professionalservice` microservice). Do not add backend code, Liquibase changelogs, or JPA entities here — there is nothing for them to attach to.
 
 ## Actual technology stack
 
@@ -40,7 +40,7 @@ Two commands earlier versions of this file recommended **do not work**, verified
 ## Architecture facts that matter
 
 - Source root is `src/main/webapp/app` (`core/`, `shared/`, `entities/`, `health-connect/` (clinician + onboarding feature pages, charts, API adapters), `layouts/`, `admin/`, `account/`, `home/`, `login/`, `config/`).
-- **The real UI is `health-connect/`; `entities/` is generated CRUD.** All **20 entities** are generated and routed — 13 under `entities/professionalService/`, 7 under `entities/patientService/` — from the two JDL files at the repo root. `MedCase` no longer exists; `ClinicalCase` replaced it.
+- **The real UI is `health-connect/`; `entities/` is generated CRUD.** All **20 entities** are generated and routed — 13 under `entities/professionalservice/`, 7 under `entities/patientservice/` — from the two JDL files at the repo root. `MedCase` no longer exists; `ClinicalCase` replaced it.
 - **Never edit generated entity code by hand, and never run the generator bare.** Use:
 
   ```bash
@@ -55,7 +55,7 @@ Two commands earlier versions of this file recommended **do not work**, verified
 
 - **`tsc` is not a sufficient gate for entity code.** Unrouted files are unreachable from `main.ts` and are never type-checked, so `tsc` reports clean on templates that are comprehensively broken. Verify with `npm run lint` **and** `npx ng build` (the only gate that checks templates) **and** `npx ng test`.
 - **40 generated specs are `describe.skip`ped**, all the `list/` and `detail/` ones. JHipster 9.1 emits components built on `httpResource` with specs that drive them via Angular 20's `TestBed.tick()`; on Angular 19.2 `flushEffects()` does not issue the resource request and awaiting `whenStable()` deadlocks. The reason is in each file. They should pass on the Angular 20 upgrade.
-- Build API URLs with `ApplicationConfigService.getEndpointFor(api, microservice?)` — never hardcode `/services/...` paths. Everything in the `api/` repo needs the `'professionalService'` second argument; the adapters in `health-connect/api/` are the examples to copy.
+- Build API URLs with `ApplicationConfigService.getEndpointFor(api, microservice?)` — never hardcode `/services/...` paths. Everything in the `api/` repo needs the `'professionalservice'` second argument; the adapters in `health-connect/api/` are the examples to copy.
 - Entity services follow the JHipster pattern (typed model + `New*`/`PartialUpdate*` aliases, `Rest*` wire types with dayjs↔string conversion, `createRequestOption`). Match it for new entities.
 - Route guards use `UserRouteAccessService` + `Authority` constants; auth is JWT against the gateway.
 

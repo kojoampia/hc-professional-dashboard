@@ -37,7 +37,7 @@
       "fieldType": "Instant"
     }
   ],
-  "microserviceName": "patientService",
+  "microserviceName": "patientservice",
   "name": "ActivityLogEntry",
   "pagination": "no",
   "readOnly": false,

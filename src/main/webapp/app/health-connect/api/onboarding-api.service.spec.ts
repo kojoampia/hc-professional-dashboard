@@ -16,7 +16,7 @@ describe('OnboardingApiService', () => {
     });
     service = TestBed.inject(OnboardingApiService);
     httpMock = TestBed.inject(HttpTestingController);
-    base = TestBed.inject(ApplicationConfigService).getEndpointFor('api/onboarding', 'professionalService');
+    base = TestBed.inject(ApplicationConfigService).getEndpointFor('api/onboarding', 'professionalservice');
   });
 
   afterEach(() => httpMock.verify());

@@ -1,6 +1,6 @@
 {
   "professionalDashboardApp": {
-    "patientServicePatient": {
+    "patientservicePatient": {
       "home": {
         "title": "Patients",
         "refreshListLabel": "Actualiser la liste",

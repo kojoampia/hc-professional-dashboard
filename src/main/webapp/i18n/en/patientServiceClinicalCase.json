@@ -1,6 +1,6 @@
 {
   "professionalDashboardApp": {
-    "patientServiceClinicalCase": {
+    "patientserviceClinicalCase": {
       "home": {
         "title": "Clinical Cases",
         "refreshListLabel": "Refresh list",

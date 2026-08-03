@@ -33,7 +33,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "patientService",
+  "microserviceName": "patientservice",
   "name": "ClinicalReport",
   "pagination": "no",
   "readOnly": false,

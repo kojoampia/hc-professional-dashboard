@@ -1,6 +1,6 @@
 {
   "professionalDashboardApp": {
-    "patientServiceRecommendation": {
+    "patientserviceRecommendation": {
       "home": {
         "title": "Recommendations",
         "refreshListLabel": "Actualiser la liste",

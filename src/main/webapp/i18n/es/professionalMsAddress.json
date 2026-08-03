@@ -1,6 +1,6 @@
 {
   "professionalDashboardApp": {
-    "professionalServiceAddress": {
+    "professionalserviceAddress": {
       "home": {
         "title": "Direcciones",
         "refreshListLabel": "Actualizar lista",

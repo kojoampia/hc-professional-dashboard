@@ -1,0 +1,42 @@
+<div class="flex justify-center">
+  <div class="">
+    @if (team(); as teamRef) {
+    <div>
+      <h2 data-cy="teamDetailsHeading"><span jhiTranslate="professionalDashboardApp.professionalserviceTeam.detail.title">Team</span></h2>
+
+      <hr />
+
+      <hpd-alert-error />
+
+      <hpd-alert />
+
+      <dl class="grid gap-4-md jh-entity-details">
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceTeam.id">Id</span></dt>
+        <dd>
+          <span>{{ teamRef.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceTeam.name">Name</span></dt>
+        <dd>
+          <span>{{ teamRef.name }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceTeam.description">Description</span></dt>
+        <dd>
+          <span>{{ teamRef.description }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceTeam.contact">Contact</span></dt>
+        <dd>
+          <span>{{ teamRef.contact }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="hpd-btn hpd-btn-ghost" data-cy="entityDetailsBackButton">
+        <mat-icon aria-hidden="true" class="!text-base">arrow_back</mat-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/team', teamRef.id, 'edit']" class="hpd-btn hpd-btn-primary">
+        <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+    }
+  </div>
+</div>

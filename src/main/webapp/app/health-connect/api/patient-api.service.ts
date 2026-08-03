@@ -36,7 +36,7 @@ export interface PatientQuery {
 export class PatientApiService {
   private readonly http = inject(HttpClient);
   private readonly applicationConfigService = inject(ApplicationConfigService);
-  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/patients', 'patientService');
+  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/patients', 'patientservice');
 
   query(request: PatientQuery = {}): Observable<HttpResponse<PatientListItemDto[]>> {
     const options = createRequestOption(request);

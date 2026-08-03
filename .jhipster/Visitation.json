@@ -25,7 +25,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "patientService",
+  "microserviceName": "patientservice",
   "name": "Visitation",
   "pagination": "no",
   "readOnly": false,

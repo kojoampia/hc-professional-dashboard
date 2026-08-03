@@ -1,0 +1,44 @@
+<div class="flex justify-center">
+  <div class="">
+    @if (visitation(); as visitationRef) {
+    <div>
+      <h2 data-cy="visitationDetailsHeading">
+        <span jhiTranslate="professionalDashboardApp.patientserviceVisitation.detail.title">Visitation</span>
+      </h2>
+
+      <hr />
+
+      <hpd-alert-error />
+
+      <hpd-alert />
+
+      <dl class="grid gap-4-md jh-entity-details">
+        <dt><span jhiTranslate="professionalDashboardApp.patientserviceVisitation.id">Id</span></dt>
+        <dd>
+          <span>{{ visitationRef.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.patientserviceVisitation.patientId">Patient Id</span></dt>
+        <dd>
+          <span>{{ visitationRef.patientId }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.patientserviceVisitation.occurredAt">Occurred At</span></dt>
+        <dd>
+          <span>{{ visitationRef.occurredAt | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.patientserviceVisitation.label">Label</span></dt>
+        <dd>
+          <span>{{ visitationRef.label }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="hpd-btn hpd-btn-ghost" data-cy="entityDetailsBackButton">
+        <mat-icon aria-hidden="true" class="!text-base">arrow_back</mat-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/visitation', visitationRef.id, 'edit']" class="hpd-btn hpd-btn-primary">
+        <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+    }
+  </div>
+</div>

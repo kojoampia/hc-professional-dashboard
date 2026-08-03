@@ -14,7 +14,7 @@ import { CaseDistributionSegmentDto, CaseTimelinePointDto, DashboardSummaryDto, 
 export class DashboardApiService {
   private readonly http = inject(HttpClient);
   private readonly applicationConfigService = inject(ApplicationConfigService);
-  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/dashboard', 'patientService');
+  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/dashboard', 'patientservice');
 
   summary(): Observable<DashboardSummaryDto> {
     return this.http.get<DashboardSummaryDto>(`${this.resourceUrl}/summary`);

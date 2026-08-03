@@ -46,7 +46,7 @@ const pad = (n: number): string => String(n).padStart(2, '0');
 export class DutyRosterAssignmentsService {
   private readonly http = inject(HttpClient);
   private readonly applicationConfigService = inject(ApplicationConfigService);
-  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/onboarding/duty-rosters', 'professionalService');
+  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/onboarding/duty-rosters', 'professionalservice');
 
   private readonly myAssignmentsState = signal<readonly DutyRosterAssignmentDto[]>([]);
   readonly myAssignments = computed(() => this.myAssignmentsState());

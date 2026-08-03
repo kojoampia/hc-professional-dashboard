@@ -49,7 +49,7 @@ That is the **only** form that works, and it is verified. Two commands this file
 - Dev API traffic is proxied by `webpack/proxy.conf.js` to `http://localhost:5505` (paths: `/api`, `/services`, `/management`, `/v3/api-docs`, `/auth`, `/health`, `/h2-console`). Verify the backend target is running before debugging API issues.
 - Build API URLs through `ApplicationConfigService.getEndpointFor(api, microservice?)` (`app/core/config/application-config.service.ts`) — never hardcode service paths.
   - `getEndpointFor('api/addresses')` → `/api/addresses` (gateway/monolith route)
-  - `getEndpointFor('api/...', 'professionalService')` → `/services/professionalService/api/...` (microservice route)
+  - `getEndpointFor('api/...', 'professionalservice')` → `/services/professionalservice/api/...` (microservice route)
 - Entity services (`app/entities/<ms>/<entity>/service/*.service.ts`) follow the JHipster pattern: typed model interface + `New*`/`PartialUpdate*` aliases, REST `Rest*` shapes (dayjs fields serialized to/from strings), and `createRequestOption` for query/pagination params. Match this pattern for new entities.
 
 ## Frontend architecture
@@ -59,7 +59,7 @@ That is the **only** form that works, and it is verified. Two commands this file
   - `core/` — authentication, HTTP interceptors, app config, low-level request/util helpers (singletons).
   - `shared/` — reusable UI helpers, pipes, sort/pagination/filter/date/language/alert utilities.
   - `entities/` — entity modules, split by microservice namespace:
-    - `entities/entity.routes.ts` registers all **20 generated entities** (13 `professionalService`, 7 `patientService`), inserted at the `/* jhipster-needle-add-entity-route */` marker when the JDL is applied. Regenerate with `./scripts/regenerate-entities.sh` — never by hand, and never with a bare `jhipster jdl`.
+    - `entities/entity.routes.ts` registers all **20 generated entities** (13 `professionalservice`, 7 `patientservice`), inserted at the `/* jhipster-needle-add-entity-route */` marker when the JDL is applied. Regenerate with `./scripts/regenerate-entities.sh` — never by hand, and never with a bare `jhipster jdl`.
   - `layouts/` — BridgeCare shell: `sidebar/` (navy sidebar; nav model in `shell-navigation.ts` drives sidebar groups, mobile tabbar, and topbar crumb/title), `main/` (cream topbar + content column), `tabbar/` (mobile bottom tabs), plus footer/error/profiles. There is no horizontal navbar.
   - `health-connect/` — clinician feature pages (dashboard, patients, case queue, duty roster, messages, about), charts, and API adapters.
   - `admin/` (health, metrics), `account/`, `home/`, `login/`, `config/`.

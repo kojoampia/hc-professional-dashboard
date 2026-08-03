@@ -1,0 +1,114 @@
+<div>
+  <h2 id="page-heading" data-cy="MetadataHeading">
+    <span jhiTranslate="professionalDashboardApp.professionalserviceMetadata.home.title">Metadata</span>
+
+    <div class="flex justify-end">
+      <button class="hpd-btn hpd-btn-ghost me-2" (click)="load()" [disabled]="isLoading()">
+        <mat-icon aria-hidden="true" class="!text-base" [class.animate-spin]="isLoading()">sync</mat-icon>
+        <span jhiTranslate="professionalDashboardApp.professionalserviceMetadata.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="hpd-btn hpd-btn-primary jh-create-entity create-metadata"
+        [routerLink]="['/metadata/new']"
+      >
+        <mat-icon aria-hidden="true" class="!text-base">add</mat-icon>
+        <span jhiTranslate="professionalDashboardApp.professionalserviceMetadata.home.createLabel">Create a new Metadata</span>
+      </button>
+    </div>
+  </h2>
+
+  <hpd-alert-error />
+
+  <hpd-alert />
+
+  @if (metadatas().length === 0) {
+  <div class="rounded-hpd-sm border border-[#eedfb9] bg-hpd-gold-tint px-4 py-3 text-sm text-hpd-muted" id="no-result">
+    <span jhiTranslate="professionalDashboardApp.professionalserviceMetadata.home.notFound">No Metadata found</span>
+  </div>
+  } @else {
+  <div class="overflow-x-auto rounded-hpd-sm border border-hpd-border table-entities" id="entities">
+    <table class="w-full text-left text-sm" aria-describedby="page-heading">
+      <thead>
+        <tr jhiSort [predicate]="sortState().predicate" [ascending]="sortState().ascending" (sortChange)="navigateToWithComponentValues($event)">
+          <th scope="col" jhiSortBy="id" #idSort="jhiSortBy">
+            <div class="flex">
+              <span jhiTranslate="professionalDashboardApp.professionalserviceMetadata.id">Id</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ idSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="createdBy" #createdBySort="jhiSortBy">
+            <div class="flex">
+              <span jhiTranslate="professionalDashboardApp.professionalserviceMetadata.createdBy">Created By</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ createdBySort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="modifiedBy" #modifiedBySort="jhiSortBy">
+            <div class="flex">
+              <span jhiTranslate="professionalDashboardApp.professionalserviceMetadata.modifiedBy">Modified By</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ modifiedBySort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="createdDate" #createdDateSort="jhiSortBy">
+            <div class="flex">
+              <span jhiTranslate="professionalDashboardApp.professionalserviceMetadata.createdDate">Created Date</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ createdDateSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="modifiedDate" #modifiedDateSort="jhiSortBy">
+            <div class="flex">
+              <span jhiTranslate="professionalDashboardApp.professionalserviceMetadata.modifiedDate">Modified Date</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ modifiedDateSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="data" #dataSort="jhiSortBy">
+            <div class="flex">
+              <span jhiTranslate="professionalDashboardApp.professionalserviceMetadata.data">Data</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ dataSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (metadata of metadatas(); track trackId(metadata)) {
+        <tr data-cy="entityTable">
+          <td><a [routerLink]="['/metadata', metadata.id, 'view']">{{ metadata.id }}</a></td>
+          <td>{{ metadata.createdBy }}</td>
+          <td>{{ metadata.modifiedBy }}</td>
+          <td>{{ metadata.createdDate | formatMediumDate }}</td>
+          <td>{{ metadata.modifiedDate | formatMediumDate }}</td>
+          <td>{{ metadata.data }}</td>
+          <td class="text-right">
+            <div class="flex flex-wrap items-center gap-2">
+              <a [routerLink]="['/metadata', metadata.id, 'view']" class="hpd-btn hpd-btn-ghost btn-sm" data-cy="entityDetailsButton">
+                <mat-icon aria-hidden="true" class="!text-base">visibility</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+              </a>
+
+              <a [routerLink]="['/metadata', metadata.id, 'edit']" class="hpd-btn hpd-btn-primary btn-sm" data-cy="entityEditButton">
+                <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+              </a>
+
+              <button type="submit" (click)="delete(metadata)" class="hpd-btn hpd-btn-danger btn-sm" data-cy="entityDeleteButton">
+                <mat-icon aria-hidden="true" class="!text-base">close</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+</div>

@@ -1,0 +1,130 @@
+<div>
+  <h2 id="page-heading" data-cy="StatHeading">
+    <span jhiTranslate="professionalDashboardApp.professionalserviceStat.home.title">Stats</span>
+
+    <div class="flex justify-end">
+      <button class="hpd-btn hpd-btn-ghost me-2" (click)="load()" [disabled]="isLoading()">
+        <mat-icon aria-hidden="true" class="!text-base" [class.animate-spin]="isLoading()">sync</mat-icon>
+        <span jhiTranslate="professionalDashboardApp.professionalserviceStat.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="hpd-btn hpd-btn-primary jh-create-entity create-stat"
+        [routerLink]="['/stat/new']"
+      >
+        <mat-icon aria-hidden="true" class="!text-base">add</mat-icon>
+        <span jhiTranslate="professionalDashboardApp.professionalserviceStat.home.createLabel">Create a new Stat</span>
+      </button>
+    </div>
+  </h2>
+
+  <hpd-alert-error />
+
+  <hpd-alert />
+
+  @if (stats().length === 0) {
+  <div class="rounded-hpd-sm border border-[#eedfb9] bg-hpd-gold-tint px-4 py-3 text-sm text-hpd-muted" id="no-result">
+    <span jhiTranslate="professionalDashboardApp.professionalserviceStat.home.notFound">No Stats found</span>
+  </div>
+  } @else {
+  <div class="overflow-x-auto rounded-hpd-sm border border-hpd-border table-entities" id="entities">
+    <table class="w-full text-left text-sm" aria-describedby="page-heading">
+      <thead>
+        <tr jhiSort [predicate]="sortState().predicate" [ascending]="sortState().ascending" (sortChange)="navigateToWithComponentValues($event)">
+          <th scope="col" jhiSortBy="id" #idSort="jhiSortBy">
+            <div class="flex">
+              <span jhiTranslate="professionalDashboardApp.professionalserviceStat.id">Id</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ idSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="type" #typeSort="jhiSortBy">
+            <div class="flex">
+              <span jhiTranslate="professionalDashboardApp.professionalserviceStat.type">Type</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ typeSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="name" #nameSort="jhiSortBy">
+            <div class="flex">
+              <span jhiTranslate="professionalDashboardApp.professionalserviceStat.name">Name</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ nameSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="description" #descriptionSort="jhiSortBy">
+            <div class="flex">
+              <span jhiTranslate="professionalDashboardApp.professionalserviceStat.description">Description</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ descriptionSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="value" #valueSort="jhiSortBy">
+            <div class="flex">
+              <span jhiTranslate="professionalDashboardApp.professionalserviceStat.value">Value</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ valueSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="note" #noteSort="jhiSortBy">
+            <div class="flex">
+              <span jhiTranslate="professionalDashboardApp.professionalserviceStat.note">Note</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ noteSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="createdDate" #createdDateSort="jhiSortBy">
+            <div class="flex">
+              <span jhiTranslate="professionalDashboardApp.professionalserviceStat.createdDate">Created Date</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ createdDateSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="createdBy" #createdBySort="jhiSortBy">
+            <div class="flex">
+              <span jhiTranslate="professionalDashboardApp.professionalserviceStat.createdBy">Created By</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ createdBySort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (stat of stats(); track trackId(stat)) {
+        <tr data-cy="entityTable">
+          <td><a [routerLink]="['/stat', stat.id, 'view']">{{ stat.id }}</a></td>
+          <td>{{ stat.type }}</td>
+          <td>{{ stat.name }}</td>
+          <td>{{ stat.description }}</td>
+          <td>{{ stat.value }}</td>
+          <td>{{ stat.note }}</td>
+          <td>{{ stat.createdDate | formatMediumDate }}</td>
+          <td>{{ stat.createdBy }}</td>
+          <td class="text-right">
+            <div class="flex flex-wrap items-center gap-2">
+              <a [routerLink]="['/stat', stat.id, 'view']" class="hpd-btn hpd-btn-ghost btn-sm" data-cy="entityDetailsButton">
+                <mat-icon aria-hidden="true" class="!text-base">visibility</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+              </a>
+
+              <a [routerLink]="['/stat', stat.id, 'edit']" class="hpd-btn hpd-btn-primary btn-sm" data-cy="entityEditButton">
+                <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+              </a>
+
+              <button type="submit" (click)="delete(stat)" class="hpd-btn hpd-btn-danger btn-sm" data-cy="entityDeleteButton">
+                <mat-icon aria-hidden="true" class="!text-base">close</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+</div>

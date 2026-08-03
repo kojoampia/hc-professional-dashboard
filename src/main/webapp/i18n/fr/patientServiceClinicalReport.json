@@ -1,6 +1,6 @@
 {
   "professionalDashboardApp": {
-    "patientServiceClinicalReport": {
+    "patientserviceClinicalReport": {
       "home": {
         "title": "ClinicalReports",
         "refreshListLabel": "Actualiser la liste",

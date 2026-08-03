@@ -54,7 +54,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "patientService",
+  "microserviceName": "patientservice",
   "name": "Patient",
   "pagination": "pagination",
   "readOnly": false,

@@ -1,6 +1,6 @@
 {
   "professionalDashboardApp": {
-    "patientServiceVisitation": {
+    "patientserviceVisitation": {
       "home": {
         "title": "Visitations",
         "refreshListLabel": "Refrescar lista",

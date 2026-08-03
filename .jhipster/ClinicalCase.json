@@ -44,7 +44,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "patientService",
+  "microserviceName": "patientservice",
   "name": "ClinicalCase",
   "pagination": "infinite-scroll",
   "relationships": [

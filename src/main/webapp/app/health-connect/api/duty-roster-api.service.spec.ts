@@ -18,7 +18,7 @@ describe('DutyRosterApiService', () => {
 
   it('lists duty rosters from the professionalService microservice', () => {
     service.list().subscribe();
-    const req = httpMock.expectOne(request => request.url.endsWith('services/professionalService/api/duty-rosters'));
+    const req = httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/duty-rosters'));
     expect(req.request.method).toBe('GET');
     req.flush([]);
   });
@@ -26,7 +26,7 @@ describe('DutyRosterApiService', () => {
   it('subscribes to a roster', () => {
     service.subscribe('ward-3-night').subscribe();
     const req = httpMock.expectOne(request =>
-      request.url.endsWith('services/professionalService/api/duty-rosters/ward-3-night/subscription'),
+      request.url.endsWith('services/professionalservice/api/duty-rosters/ward-3-night/subscription'),
     );
     expect(req.request.method).toBe('POST');
     req.flush(null);
@@ -35,7 +35,7 @@ describe('DutyRosterApiService', () => {
   it('unsubscribes from a roster', () => {
     service.unsubscribe('ward-3-night').subscribe();
     const req = httpMock.expectOne(request =>
-      request.url.endsWith('services/professionalService/api/duty-rosters/ward-3-night/subscription'),
+      request.url.endsWith('services/professionalservice/api/duty-rosters/ward-3-night/subscription'),
     );
     expect(req.request.method).toBe('DELETE');
     req.flush(null);

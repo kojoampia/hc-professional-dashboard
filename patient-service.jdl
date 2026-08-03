@@ -101,8 +101,8 @@ relationship ManyToMany {
   ClinicalCase{recommendation} to Recommendation{clinicalCase}
 }
 
-microservice ActivityLogEntry, ClinicalCase, ClinicalReport, MedicationRecord, Patient, Recommendation, Visitation with patientService
-clientRootFolder ActivityLogEntry, ClinicalCase, ClinicalReport, MedicationRecord, Patient, Recommendation, Visitation with patientService
+microservice ActivityLogEntry, ClinicalCase, ClinicalReport, MedicationRecord, Patient, Recommendation, Visitation with patientservice
+clientRootFolder ActivityLogEntry, ClinicalCase, ClinicalReport, MedicationRecord, Patient, Recommendation, Visitation with patientservice
 service ActivityLogEntry, ClinicalCase, ClinicalReport, MedicationRecord, Patient, Recommendation, Visitation with serviceClass
 search ActivityLogEntry, ClinicalCase, ClinicalReport, MedicationRecord, Patient, Recommendation, Visitation with no
 paginate ClinicalCase with infinite-scroll

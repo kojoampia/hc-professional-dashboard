@@ -1,0 +1,100 @@
+<div class="flex justify-center">
+  <div class="">
+    @if (profile(); as profileRef) {
+    <div>
+      <h2 data-cy="profileDetailsHeading">
+        <span jhiTranslate="professionalDashboardApp.professionalserviceProfile.detail.title">Profile</span>
+      </h2>
+
+      <hr />
+
+      <hpd-alert-error />
+
+      <hpd-alert />
+
+      <dl class="grid gap-4-md jh-entity-details">
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceProfile.id">Id</span></dt>
+        <dd>
+          <span>{{ profileRef.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceProfile.firstName">First Name</span></dt>
+        <dd>
+          <span>{{ profileRef.firstName }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceProfile.middleNames">Middle Names</span></dt>
+        <dd>
+          <span>{{ profileRef.middleNames }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceProfile.lastName">Last Name</span></dt>
+        <dd>
+          <span>{{ profileRef.lastName }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceProfile.team">Team</span></dt>
+        <dd>
+          <span>{{ profileRef.team }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceProfile.birthDate">Birth Date</span></dt>
+        <dd>
+          <span>{{ profileRef.birthDate | formatMediumDate }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceProfile.sex">Sex</span></dt>
+        <dd>
+          <span>{{ profileRef.sex }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceProfile.mobilePhone">Mobile Phone</span></dt>
+        <dd>
+          <span>{{ profileRef.mobilePhone }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceProfile.phoneNumber">Phone Number</span></dt>
+        <dd>
+          <span>{{ profileRef.phoneNumber }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceProfile.email">Email</span></dt>
+        <dd>
+          <span>{{ profileRef.email }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceProfile.idType">Id Type</span></dt>
+        <dd>
+          <span>{{ profileRef.idType }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceProfile.idNumber">Id Number</span></dt>
+        <dd>
+          <span>{{ profileRef.idNumber }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceProfile.documents">Documents</span></dt>
+        <dd>
+          <span>{{ profileRef.documents }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceProfile.address">Address</span></dt>
+        <dd>
+          <span>{{ profileRef.address }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceProfile.bankAccount">Bank Account</span></dt>
+        <dd>
+          <span>{{ profileRef.bankAccount }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceProfile.tenantId">Tenant Id</span></dt>
+        <dd>
+          <span>{{ profileRef.tenantId }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceProfile.rosterId">Roster Id</span></dt>
+        <dd>
+          <span>{{ profileRef.rosterId }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceProfile.teamId">Team Id</span></dt>
+        <dd>
+          <span>{{ profileRef.teamId }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="hpd-btn hpd-btn-ghost" data-cy="entityDetailsBackButton">
+        <mat-icon aria-hidden="true" class="!text-base">arrow_back</mat-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/profile', profileRef.id, 'edit']" class="hpd-btn hpd-btn-primary">
+        <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+    }
+  </div>
+</div>

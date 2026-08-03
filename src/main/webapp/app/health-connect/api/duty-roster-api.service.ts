@@ -14,7 +14,7 @@ import { DutyRosterDto } from './duty-roster-api.model';
 export class DutyRosterApiService {
   private readonly http = inject(HttpClient);
   private readonly applicationConfigService = inject(ApplicationConfigService);
-  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/duty-rosters', 'professionalService');
+  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/duty-rosters', 'professionalservice');
 
   list(): Observable<DutyRosterDto[]> {
     return this.http.get<DutyRosterDto[]>(this.resourceUrl);

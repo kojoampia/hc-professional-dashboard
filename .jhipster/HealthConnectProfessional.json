@@ -25,7 +25,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "professionalService",
+  "microserviceName": "professionalservice",
   "name": "HealthConnectProfessional",
   "pagination": "no",
   "readOnly": false,

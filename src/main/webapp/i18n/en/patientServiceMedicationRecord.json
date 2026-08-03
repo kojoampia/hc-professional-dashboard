@@ -1,6 +1,6 @@
 {
   "professionalDashboardApp": {
-    "patientServiceMedicationRecord": {
+    "patientserviceMedicationRecord": {
       "home": {
         "title": "Medication Records",
         "refreshListLabel": "Refresh list",

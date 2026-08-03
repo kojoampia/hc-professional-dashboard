@@ -1,0 +1,114 @@
+<div>
+  <h2 id="page-heading" data-cy="HealthConnectProfessionalHeading">
+    <span jhiTranslate="professionalDashboardApp.professionalserviceHealthConnectProfessional.home.title"
+      >Health Connect Professionals</span
+    >
+
+    <div class="flex justify-end">
+      <button class="hpd-btn hpd-btn-ghost me-2" (click)="load()" [disabled]="isLoading()">
+        <mat-icon aria-hidden="true" class="!text-base" [class.animate-spin]="isLoading()">sync</mat-icon>
+        <span jhiTranslate="professionalDashboardApp.professionalserviceHealthConnectProfessional.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="hpd-btn hpd-btn-primary jh-create-entity create-health-connect-professional"
+        [routerLink]="['/health-connect-professional/new']"
+      >
+        <mat-icon aria-hidden="true" class="!text-base">add</mat-icon>
+        <span jhiTranslate="professionalDashboardApp.professionalserviceHealthConnectProfessional.home.createLabel"
+          >Create a new Health Connect Professional</span
+        >
+      </button>
+    </div>
+  </h2>
+
+  <hpd-alert-error />
+
+  <hpd-alert />
+
+  @if (healthConnectProfessionals().length === 0) {
+  <div class="rounded-hpd-sm border border-[#eedfb9] bg-hpd-gold-tint px-4 py-3 text-sm text-hpd-muted" id="no-result">
+    <span jhiTranslate="professionalDashboardApp.professionalserviceHealthConnectProfessional.home.notFound"
+      >No Health Connect Professionals found</span
+    >
+  </div>
+  } @else {
+  <div class="overflow-x-auto rounded-hpd-sm border border-hpd-border table-entities" id="entities">
+    <table class="w-full text-left text-sm" aria-describedby="page-heading">
+      <thead>
+        <tr jhiSort [predicate]="sortState().predicate" [ascending]="sortState().ascending" (sortChange)="navigateToWithComponentValues($event)">
+          <th scope="col" jhiSortBy="id" #idSort="jhiSortBy">
+            <div class="flex">
+              <span jhiTranslate="professionalDashboardApp.professionalserviceHealthConnectProfessional.id">Id</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ idSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="accountLogin" #accountLoginSort="jhiSortBy">
+            <div class="flex">
+              <span jhiTranslate="professionalDashboardApp.professionalserviceHealthConnectProfessional.accountLogin">Account Login</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ accountLoginSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="name" #nameSort="jhiSortBy">
+            <div class="flex">
+              <span jhiTranslate="professionalDashboardApp.professionalserviceHealthConnectProfessional.name">Name</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ nameSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="role" #roleSort="jhiSortBy">
+            <div class="flex">
+              <span jhiTranslate="professionalDashboardApp.professionalserviceHealthConnectProfessional.role">Role</span>
+
+              <mat-icon aria-hidden="true" class="!text-base text-hpd-subtle">{{ roleSort.icon }}</mat-icon>
+            </div>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (healthConnectProfessional of healthConnectProfessionals(); track trackId(healthConnectProfessional)) {
+        <tr data-cy="entityTable">
+          <td>
+            <a [routerLink]="['/health-connect-professional', healthConnectProfessional.id, 'view']">{{ healthConnectProfessional.id }}</a>
+          </td>
+          <td>{{ healthConnectProfessional.accountLogin }}</td>
+          <td>{{ healthConnectProfessional.name }}</td>
+          <td>{{ healthConnectProfessional.role }}</td>
+          <td class="text-right">
+            <div class="flex flex-wrap items-center gap-2">
+              <a
+                [routerLink]="['/health-connect-professional', healthConnectProfessional.id, 'view']"
+                class="hpd-btn hpd-btn-ghost btn-sm"
+                data-cy="entityDetailsButton"
+              >
+                <mat-icon aria-hidden="true" class="!text-base">visibility</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+              </a>
+
+              <a
+                [routerLink]="['/health-connect-professional', healthConnectProfessional.id, 'edit']"
+                class="hpd-btn hpd-btn-primary btn-sm"
+                data-cy="entityEditButton"
+              >
+                <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+              </a>
+
+              <button type="submit" (click)="delete(healthConnectProfessional)" class="hpd-btn hpd-btn-danger btn-sm" data-cy="entityDeleteButton">
+                <mat-icon aria-hidden="true" class="!text-base">close</mat-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+</div>

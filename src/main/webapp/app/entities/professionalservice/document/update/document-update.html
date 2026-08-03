@@ -1,0 +1,153 @@
+<div class="flex justify-center">
+  <div class="">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="hpd-document-heading"
+        data-cy="DocumentCreateUpdateHeading"
+        jhiTranslate="professionalDashboardApp.professionalserviceDocument.home.createOrEditLabel"
+      >
+        Create or edit a Document
+      </h2>
+
+      <div>
+        <hpd-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_id" jhiTranslate="professionalDashboardApp.professionalserviceDocument.id">Id</label>
+          <input type="text" class="hpd-input" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
+        }
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_name" jhiTranslate="professionalDashboardApp.professionalserviceDocument.name">Name</label>
+          <input type="text" class="hpd-input" name="name" id="field_name" data-cy="name" formControlName="name" />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_profileId" jhiTranslate="professionalDashboardApp.professionalserviceDocument.profileId"
+            >Profile Id</label
+          >
+          <input type="text" class="hpd-input" name="profileId" id="field_profileId" data-cy="profileId" formControlName="profileId" />
+        </div>
+
+        @let dataRef = editForm.get('data')!;
+        <div class="mb-3">
+          <label class="hpd-label" for="field_data" jhiTranslate="professionalDashboardApp.professionalserviceDocument.data">Data</label>
+          <div>
+            @if (dataRef.value) {
+            <div class="text-sm text-hpd-muted text-danger clearfix">
+              <a
+                class="pull-start"
+                (click)="openFile(dataRef.value!, editForm.get('dataContentType')!.value!)"
+                jhiTranslate="entity.action.open"
+                >Open</a
+              ><br />
+              <span class="pull-start">{{ editForm.get('dataContentType')!.value }}, {{ byteSize(dataRef.value!) }}</span>
+              <button
+                type="button"
+                (click)="editForm.patchValue({ data: undefined, dataContentType: undefined });"
+                class="hpd-btn hpd-btn-ghost btn-xs pull-end"
+              >
+                <mat-icon aria-hidden="true" class="!text-base">close</mat-icon>
+              </button>
+            </div>
+            }
+            <input
+              type="file"
+              id="file_data"
+              data-cy="data"
+              (change)="setFileData($event, 'data', false)"
+              jhiTranslate="entity.action.addblob"
+            />
+          </div>
+          <input type="hidden" class="hpd-input" name="data" id="field_data" data-cy="data" formControlName="data" />
+          <input type="hidden" class="hpd-input" name="dataContentType" id="field_dataContentType" formControlName="dataContentType" />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_type" jhiTranslate="professionalDashboardApp.professionalserviceDocument.type">Type</label>
+          <select class="hpd-input" name="type" formControlName="type" id="field_type" data-cy="type">
+            <option [ngValue]="null">{{ 'professionalDashboardApp.DocumentType.null' | translate }}</option>
+            @for (documentType of documentTypeValues; track $index) {
+            <option [value]="documentType">{{ 'professionalDashboardApp.DocumentType.' + documentType | translate }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_createdDate" jhiTranslate="professionalDashboardApp.professionalserviceDocument.createdDate"
+            >Created Date</label
+          >
+          <div class="input-group">
+            <input
+              id="field_createdDate"
+              data-cy="createdDate"
+              type="date"
+              class="hpd-input"
+              name="createdDate"
+              formControlName="createdDate"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label
+            class="hpd-label"
+            for="field_modifiedDate"
+            jhiTranslate="professionalDashboardApp.professionalserviceDocument.modifiedDate"
+            >Modified Date</label
+          >
+          <div class="input-group">
+            <input
+              id="field_modifiedDate"
+              data-cy="modifiedDate"
+              type="date"
+              class="hpd-input"
+              name="modifiedDate"
+              formControlName="modifiedDate"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_createdBy" jhiTranslate="professionalDashboardApp.professionalserviceDocument.createdBy"
+            >Created By</label
+          >
+          <input type="text" class="hpd-input" name="createdBy" id="field_createdBy" data-cy="createdBy" formControlName="createdBy" />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_modifiedBy" jhiTranslate="professionalDashboardApp.professionalserviceDocument.modifiedBy"
+            >Modified By</label
+          >
+          <input
+            type="text"
+            class="hpd-input"
+            name="modifiedBy"
+            id="field_modifiedBy"
+            data-cy="modifiedBy"
+            formControlName="modifiedBy"
+          />
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="hpd-btn hpd-btn-ghost" (click)="previousState()">
+          <mat-icon aria-hidden="true" class="!text-base">cancel</mat-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving()"
+          class="hpd-btn hpd-btn-primary"
+        >
+          <mat-icon aria-hidden="true" class="!text-base">save</mat-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

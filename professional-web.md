@@ -191,7 +191,7 @@ Three known compromises in that HTTP implementation, all flagged in code:
 | **Messages has no backend**                               | `/messages` ships an intentionally empty inbox; no endpoint exists in `gateway/` or `api/`. Flagged in-code — do not fake data.                                                                                                                                                                     |
 | **"New patient" CTA is a stub**                           | The gold topbar button navigates to `/patients` because no patient-creation flow or endpoint exists. Retarget it when one lands.                                                                                                                                                                    |
 | **Recommendation labels show `translation-not-found[…]`** | The mock repository feeds literal labels where the checkbox list expects i18n keys. Pre-existing, cosmetic.                                                                                                                                                                                         |
-| **`MedCase.json` microservice name is wrong**             | Says `hcPatientService`; the real folder and every sibling file use `patientService`.                                                                                                                                                                                                               |
+| **`MedCase.json` microservice name is wrong**             | Says `hcPatientService`; the real folder and every sibling file use `patientservice`.                                                                                                                                                                                                               |
 | **~10 orphaned `.jhipster/*.json` specs**                 | Entity definitions whose Angular code was deleted before the migration. Harmless generator metadata, never cleaned up.                                                                                                                                                                              |
 
 ### What was finished
@@ -203,7 +203,7 @@ dashboard, patients, cases and patient-record. Bootstrap, ng-bootstrap and FontA
 removed — `styles.css` fell from 336 kB to 60 kB. Screenshot baselines for every phase, including
 a matched before/after pair, are in `docs/ui-baseline/`, reproducible via its `capture.py`.
 
-One notable rescue along the way: `entities/patientService/med-case` was unreachable from the
+One notable rescue along the way: `entities/patientservice/med-case` was unreachable from the
 compiled app (empty `entity.routes.ts`), so it had never been type-checked or tested. Wiring it in
 exposed ~10 real bugs from a mismatched JHipster blueprint. Fixing it additively extended
 `shared/sort` (`SortState`, `buildSortParam`, `parseSortParam`) and `core/util/parse-links.service.ts`

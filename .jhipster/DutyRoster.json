@@ -17,7 +17,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "professionalService",
+  "microserviceName": "professionalservice",
   "name": "DutyRoster",
   "pagination": "no",
   "readOnly": false,

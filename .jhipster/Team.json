@@ -25,7 +25,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "professionalService",
+  "microserviceName": "professionalservice",
   "name": "Team",
   "pagination": "no",
   "readOnly": false,

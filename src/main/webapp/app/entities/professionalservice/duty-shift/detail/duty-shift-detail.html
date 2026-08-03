@@ -1,0 +1,58 @@
+<div class="flex justify-center">
+  <div class="">
+    @if (dutyShift(); as dutyShiftRef) {
+    <div>
+      <h2 data-cy="dutyShiftDetailsHeading">
+        <span jhiTranslate="professionalDashboardApp.professionalserviceDutyShift.detail.title">Duty Shift</span>
+      </h2>
+
+      <hr />
+
+      <hpd-alert-error />
+
+      <hpd-alert />
+
+      <dl class="grid gap-4-md jh-entity-details">
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceDutyShift.id">Id</span></dt>
+        <dd>
+          <span>{{ dutyShiftRef.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceDutyShift.professionalId">Professional Id</span></dt>
+        <dd>
+          <span>{{ dutyShiftRef.professionalId }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceDutyShift.startsAt">Starts At</span></dt>
+        <dd>
+          <span>{{ dutyShiftRef.startsAt | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceDutyShift.endsAt">Ends At</span></dt>
+        <dd>
+          <span>{{ dutyShiftRef.endsAt | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceDutyShift.status">Status</span></dt>
+        <dd>
+          <span [jhiTranslate]="'professionalDashboardApp.DutyShiftStatus.' + (dutyShiftRef.status ?? 'null')"
+            >{{ {"null":"","UPCOMING":"UPCOMING","ACTIVE":"ACTIVE","COMPLETED":"COMPLETED"}[dutyShiftRef.status ?? 'null'] }}</span
+          >
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceDutyShift.roster">Roster</span></dt>
+        <dd>
+          @if (dutyShift()!.roster) {
+          <div>
+            <a [routerLink]="['/duty-roster', dutyShift()!.roster?.id, 'view']">{{ dutyShiftRef.roster?.id }}</a>
+          </div>
+          }
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="hpd-btn hpd-btn-ghost" data-cy="entityDetailsBackButton">
+        <mat-icon aria-hidden="true" class="!text-base">arrow_back</mat-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/duty-shift', dutyShiftRef.id, 'edit']" class="hpd-btn hpd-btn-primary">
+        <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+    }
+  </div>
+</div>

@@ -40,7 +40,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "professionalService",
+  "microserviceName": "professionalservice",
   "name": "Activity",
   "pagination": "no",
   "readOnly": false,

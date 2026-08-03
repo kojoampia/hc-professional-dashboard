@@ -1,0 +1,80 @@
+<div class="flex justify-center">
+  <div class="">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="hpd-health-connect-professional-heading"
+        data-cy="HealthConnectProfessionalCreateUpdateHeading"
+        jhiTranslate="professionalDashboardApp.professionalserviceHealthConnectProfessional.home.createOrEditLabel"
+      >
+        Create or edit a Health Connect Professional
+      </h2>
+
+      <div>
+        <hpd-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_id" jhiTranslate="professionalDashboardApp.professionalserviceHealthConnectProfessional.id"
+            >Id</label
+          >
+          <input type="text" class="hpd-input" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
+        }
+
+        <div class="mb-3">
+          <label
+            class="hpd-label"
+            for="field_accountLogin"
+            jhiTranslate="professionalDashboardApp.professionalserviceHealthConnectProfessional.accountLogin"
+            >Account Login</label
+          >
+          <input
+            type="text"
+            class="hpd-input"
+            name="accountLogin"
+            id="field_accountLogin"
+            data-cy="accountLogin"
+            formControlName="accountLogin"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label
+            class="hpd-label"
+            for="field_name"
+            jhiTranslate="professionalDashboardApp.professionalserviceHealthConnectProfessional.name"
+            >Name</label
+          >
+          <input type="text" class="hpd-input" name="name" id="field_name" data-cy="name" formControlName="name" />
+        </div>
+
+        <div class="mb-3">
+          <label
+            class="hpd-label"
+            for="field_role"
+            jhiTranslate="professionalDashboardApp.professionalserviceHealthConnectProfessional.role"
+            >Role</label
+          >
+          <input type="text" class="hpd-input" name="role" id="field_role" data-cy="role" formControlName="role" />
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="hpd-btn hpd-btn-ghost" (click)="previousState()">
+          <mat-icon aria-hidden="true" class="!text-base">cancel</mat-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving()"
+          class="hpd-btn hpd-btn-primary"
+        >
+          <mat-icon aria-hidden="true" class="!text-base">save</mat-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

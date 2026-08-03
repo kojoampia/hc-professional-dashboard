@@ -35,7 +35,7 @@ export interface OnboardingMetricsDto {
 export class ComplianceApiService {
   private readonly http = inject(HttpClient);
   private readonly applicationConfigService = inject(ApplicationConfigService);
-  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/onboarding/compliance', 'professionalService');
+  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/onboarding/compliance', 'professionalservice');
 
   metrics(): Observable<OnboardingMetricsDto> {
     return this.http.get<OnboardingMetricsDto>(`${this.resourceUrl}/metrics`);

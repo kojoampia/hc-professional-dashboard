@@ -1,6 +1,6 @@
 {
   "professionalDashboardApp": {
-    "patientServiceActivityLogEntry": {
+    "patientserviceActivityLogEntry": {
       "home": {
         "title": "Activity Log Entries",
         "refreshListLabel": "Refrescar lista",

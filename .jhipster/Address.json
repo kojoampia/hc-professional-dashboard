@@ -65,7 +65,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "professionalService",
+  "microserviceName": "professionalservice",
   "name": "Address",
   "pagination": "no",
   "readOnly": false,

@@ -199,8 +199,8 @@ relationship OneToMany {
   DutyRoster{shifts} to DutyShift{roster}
 }
 
-microservice Activity, Address, Document, DutyRoster, DutyShift, HealthConnectProfessional, Medication, Metadata, Profile, Report, Stat, Task, Team with professionalService
-clientRootFolder Activity, Address, Document, DutyRoster, DutyShift, HealthConnectProfessional, Medication, Metadata, Profile, Report, Stat, Task, Team with professionalService
+microservice Activity, Address, Document, DutyRoster, DutyShift, HealthConnectProfessional, Medication, Metadata, Profile, Report, Stat, Task, Team with professionalservice
+clientRootFolder Activity, Address, Document, DutyRoster, DutyShift, HealthConnectProfessional, Medication, Metadata, Profile, Report, Stat, Task, Team with professionalservice
 service Document, DutyRoster, DutyShift, HealthConnectProfessional, Profile with serviceClass
 search Activity, Address, Document, DutyRoster, DutyShift, HealthConnectProfessional, Medication, Metadata, Profile, Report, Stat, Task, Team with no
 paginate Profile with pagination

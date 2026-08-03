@@ -33,7 +33,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "professionalService",
+  "microserviceName": "professionalservice",
   "name": "Metadata",
   "pagination": "no",
   "readOnly": false,

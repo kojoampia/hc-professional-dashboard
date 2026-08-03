@@ -21,7 +21,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "patientService",
+  "microserviceName": "patientservice",
   "name": "Recommendation",
   "pagination": "no",
   "readOnly": false,

@@ -1,0 +1,191 @@
+<div class="flex justify-center">
+  <div class="">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="hpd-profile-heading"
+        data-cy="ProfileCreateUpdateHeading"
+        jhiTranslate="professionalDashboardApp.professionalserviceProfile.home.createOrEditLabel"
+      >
+        Create or edit a Profile
+      </h2>
+
+      <div>
+        <hpd-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_id" jhiTranslate="professionalDashboardApp.professionalserviceProfile.id">Id</label>
+          <input type="text" class="hpd-input" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
+        }
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_firstName" jhiTranslate="professionalDashboardApp.professionalserviceProfile.firstName"
+            >First Name</label
+          >
+          <input type="text" class="hpd-input" name="firstName" id="field_firstName" data-cy="firstName" formControlName="firstName" />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_middleNames" jhiTranslate="professionalDashboardApp.professionalserviceProfile.middleNames"
+            >Middle Names</label
+          >
+          <input
+            type="text"
+            class="hpd-input"
+            name="middleNames"
+            id="field_middleNames"
+            data-cy="middleNames"
+            formControlName="middleNames"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_lastName" jhiTranslate="professionalDashboardApp.professionalserviceProfile.lastName"
+            >Last Name</label
+          >
+          <input type="text" class="hpd-input" name="lastName" id="field_lastName" data-cy="lastName" formControlName="lastName" />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_team" jhiTranslate="professionalDashboardApp.professionalserviceProfile.team">Team</label>
+          <input type="text" class="hpd-input" name="team" id="field_team" data-cy="team" formControlName="team" />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_birthDate" jhiTranslate="professionalDashboardApp.professionalserviceProfile.birthDate"
+            >Birth Date</label
+          >
+          <div class="input-group">
+            <input
+              id="field_birthDate"
+              data-cy="birthDate"
+              type="date"
+              class="hpd-input"
+              name="birthDate"
+              formControlName="birthDate"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_sex" jhiTranslate="professionalDashboardApp.professionalserviceProfile.sex">Sex</label>
+          <input type="text" class="hpd-input" name="sex" id="field_sex" data-cy="sex" formControlName="sex" />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_mobilePhone" jhiTranslate="professionalDashboardApp.professionalserviceProfile.mobilePhone"
+            >Mobile Phone</label
+          >
+          <input
+            type="text"
+            class="hpd-input"
+            name="mobilePhone"
+            id="field_mobilePhone"
+            data-cy="mobilePhone"
+            formControlName="mobilePhone"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_phoneNumber" jhiTranslate="professionalDashboardApp.professionalserviceProfile.phoneNumber"
+            >Phone Number</label
+          >
+          <input
+            type="text"
+            class="hpd-input"
+            name="phoneNumber"
+            id="field_phoneNumber"
+            data-cy="phoneNumber"
+            formControlName="phoneNumber"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_email" jhiTranslate="professionalDashboardApp.professionalserviceProfile.email">Email</label>
+          <input type="text" class="hpd-input" name="email" id="field_email" data-cy="email" formControlName="email" />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_idType" jhiTranslate="professionalDashboardApp.professionalserviceProfile.idType"
+            >Id Type</label
+          >
+          <input type="text" class="hpd-input" name="idType" id="field_idType" data-cy="idType" formControlName="idType" />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_idNumber" jhiTranslate="professionalDashboardApp.professionalserviceProfile.idNumber"
+            >Id Number</label
+          >
+          <input type="text" class="hpd-input" name="idNumber" id="field_idNumber" data-cy="idNumber" formControlName="idNumber" />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_documents" jhiTranslate="professionalDashboardApp.professionalserviceProfile.documents"
+            >Documents</label
+          >
+          <input type="text" class="hpd-input" name="documents" id="field_documents" data-cy="documents" formControlName="documents" />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_address" jhiTranslate="professionalDashboardApp.professionalserviceProfile.address"
+            >Address</label
+          >
+          <input type="text" class="hpd-input" name="address" id="field_address" data-cy="address" formControlName="address" />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_bankAccount" jhiTranslate="professionalDashboardApp.professionalserviceProfile.bankAccount"
+            >Bank Account</label
+          >
+          <input
+            type="text"
+            class="hpd-input"
+            name="bankAccount"
+            id="field_bankAccount"
+            data-cy="bankAccount"
+            formControlName="bankAccount"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_tenantId" jhiTranslate="professionalDashboardApp.professionalserviceProfile.tenantId"
+            >Tenant Id</label
+          >
+          <input type="text" class="hpd-input" name="tenantId" id="field_tenantId" data-cy="tenantId" formControlName="tenantId" />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_rosterId" jhiTranslate="professionalDashboardApp.professionalserviceProfile.rosterId"
+            >Roster Id</label
+          >
+          <input type="text" class="hpd-input" name="rosterId" id="field_rosterId" data-cy="rosterId" formControlName="rosterId" />
+        </div>
+
+        <div class="mb-3">
+          <label class="hpd-label" for="field_teamId" jhiTranslate="professionalDashboardApp.professionalserviceProfile.teamId"
+            >Team Id</label
+          >
+          <input type="text" class="hpd-input" name="teamId" id="field_teamId" data-cy="teamId" formControlName="teamId" />
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="hpd-btn hpd-btn-ghost" (click)="previousState()">
+          <mat-icon aria-hidden="true" class="!text-base">cancel</mat-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving()"
+          class="hpd-btn hpd-btn-primary"
+        >
+          <mat-icon aria-hidden="true" class="!text-base">save</mat-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

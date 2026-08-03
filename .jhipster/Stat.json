@@ -41,7 +41,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "professionalService",
+  "microserviceName": "professionalservice",
   "name": "Stat",
   "pagination": "no",
   "readOnly": false,

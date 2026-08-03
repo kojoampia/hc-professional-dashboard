@@ -42,7 +42,7 @@ describe('DutyRosterAssignmentsService', () => {
     advanceTo(new Date('2026-07-30T09:30:00'));
 
     service.loadMyAssignments();
-    const request = httpMock.expectOne('services/professionalService/api/onboarding/duty-rosters/my');
+    const request = httpMock.expectOne('services/professionalservice/api/onboarding/duty-rosters/my');
     request.flush([assignment({})]);
     expect(service.myAssignments()).toHaveLength(1);
     expect(service.shiftLabel()).toEqual({ translationKey: 'healthConnect.roster.activeShift', translationParams: { time: '14:00' } });

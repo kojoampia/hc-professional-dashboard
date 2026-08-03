@@ -30,7 +30,7 @@
       "fieldValues": "UPCOMING,ACTIVE,COMPLETED"
     }
   ],
-  "microserviceName": "professionalService",
+  "microserviceName": "professionalservice",
   "name": "DutyShift",
   "pagination": "no",
   "readOnly": false,

@@ -1,0 +1,58 @@
+<div class="flex justify-center">
+  <div class="">
+    @if (stat(); as statRef) {
+    <div>
+      <h2 data-cy="statDetailsHeading"><span jhiTranslate="professionalDashboardApp.professionalserviceStat.detail.title">Stat</span></h2>
+
+      <hr />
+
+      <hpd-alert-error />
+
+      <hpd-alert />
+
+      <dl class="grid gap-4-md jh-entity-details">
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceStat.id">Id</span></dt>
+        <dd>
+          <span>{{ statRef.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceStat.type">Type</span></dt>
+        <dd>
+          <span>{{ statRef.type }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceStat.name">Name</span></dt>
+        <dd>
+          <span>{{ statRef.name }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceStat.description">Description</span></dt>
+        <dd>
+          <span>{{ statRef.description }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceStat.value">Value</span></dt>
+        <dd>
+          <span>{{ statRef.value }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceStat.note">Note</span></dt>
+        <dd>
+          <span>{{ statRef.note }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceStat.createdDate">Created Date</span></dt>
+        <dd>
+          <span>{{ statRef.createdDate | formatMediumDate }}</span>
+        </dd>
+        <dt><span jhiTranslate="professionalDashboardApp.professionalserviceStat.createdBy">Created By</span></dt>
+        <dd>
+          <span>{{ statRef.createdBy }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="hpd-btn hpd-btn-ghost" data-cy="entityDetailsBackButton">
+        <mat-icon aria-hidden="true" class="!text-base">arrow_back</mat-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/stat', statRef.id, 'edit']" class="hpd-btn hpd-btn-primary">
+        <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+    }
+  </div>
+</div>

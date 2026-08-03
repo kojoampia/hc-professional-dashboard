@@ -45,7 +45,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "professionalService",
+  "microserviceName": "professionalservice",
   "name": "Report",
   "pagination": "no",
   "readOnly": false,

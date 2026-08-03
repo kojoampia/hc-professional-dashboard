@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 
-import { ClinicalCaseService } from 'app/entities/patientService/clinical-case/service/clinical-case.service';
-import { IClinicalCase } from 'app/entities/patientService/clinical-case/clinical-case.model';
+import { ClinicalCaseService } from 'app/entities/patientservice/clinical-case/service/clinical-case.service';
+import { IClinicalCase } from 'app/entities/patientservice/clinical-case/clinical-case.model';
 
 import { DashboardApiService } from './api/dashboard-api.service';
 import { DutyRosterApiService } from './api/duty-roster-api.service';
@@ -203,7 +203,9 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
       diagnosis: changes.diagnosis ?? existing.diagnosis,
       // recommendations is a real ManyToMany relationship now, so the ids map
       // straight onto related objects — no comma-joined free-text column.
-      recommendations: changes.recommendationIds ? changes.recommendationIds.map(recommendationId => ({ id: recommendationId })) : existing.recommendations,
+      recommendations: changes.recommendationIds
+        ? changes.recommendationIds.map(recommendationId => ({ id: recommendationId }))
+        : existing.recommendations,
       status: changes.status ? (changes.status.toUpperCase() as IClinicalCase['status']) : existing.status,
     };
     this.clinicalCaseCache.update(cache => cache.map(candidate => (candidate.id === id ? updatedCase : candidate)));

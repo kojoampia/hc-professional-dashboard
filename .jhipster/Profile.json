@@ -82,7 +82,7 @@
       "fieldType": "String"
     }
   ],
-  "microserviceName": "professionalService",
+  "microserviceName": "professionalservice",
   "name": "Profile",
   "pagination": "pagination",
   "readOnly": false,
