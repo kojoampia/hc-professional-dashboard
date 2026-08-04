@@ -14,13 +14,16 @@ import { IPatient } from '../patient.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-patient-detail',
   templateUrl: './patient-detail.html',
-  imports: [AlertComponent,
+  imports: [
+    AlertComponent,
     AlertErrorComponent,
     TranslateDirective,
     TranslateModule,
     RouterLink,
     FormatMediumDatetimePipe,
-    FormatMediumDatePipe, MatIconModule],
+    FormatMediumDatePipe,
+    MatIconModule,
+  ],
 })
 export class PatientDetailComponent {
   readonly patient = input<IPatient | null>(null);

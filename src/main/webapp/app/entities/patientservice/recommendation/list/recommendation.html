@@ -32,7 +32,12 @@
   <div class="overflow-x-auto rounded-hpd-sm border border-hpd-border table-entities" id="entities">
     <table class="w-full text-left text-sm" aria-describedby="page-heading">
       <thead>
-        <tr jhiSort [predicate]="sortState().predicate" [ascending]="sortState().ascending" (sortChange)="navigateToWithComponentValues($event)">
+        <tr
+          jhiSort
+          [predicate]="sortState().predicate"
+          [ascending]="sortState().ascending"
+          (sortChange)="navigateToWithComponentValues($event)"
+        >
           <th scope="col" jhiSortBy="id" #idSort="jhiSortBy">
             <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientserviceRecommendation.id">Id</span>
@@ -65,12 +70,20 @@
           <td>{{ recommendation.category }}</td>
           <td class="text-right">
             <div class="flex flex-wrap items-center gap-2">
-              <a [routerLink]="['/recommendation', recommendation.id, 'view']" class="hpd-btn hpd-btn-ghost btn-sm" data-cy="entityDetailsButton">
+              <a
+                [routerLink]="['/recommendation', recommendation.id, 'view']"
+                class="hpd-btn hpd-btn-ghost btn-sm"
+                data-cy="entityDetailsButton"
+              >
                 <mat-icon aria-hidden="true" class="!text-base">visibility</mat-icon>
                 <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
               </a>
 
-              <a [routerLink]="['/recommendation', recommendation.id, 'edit']" class="hpd-btn hpd-btn-primary btn-sm" data-cy="entityEditButton">
+              <a
+                [routerLink]="['/recommendation', recommendation.id, 'edit']"
+                class="hpd-btn hpd-btn-primary btn-sm"
+                data-cy="entityEditButton"
+              >
                 <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>
                 <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
               </a>

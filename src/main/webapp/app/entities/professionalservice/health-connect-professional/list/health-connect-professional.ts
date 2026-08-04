@@ -20,14 +20,17 @@ import { HealthConnectProfessionalService } from '../service/health-connect-prof
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-health-connect-professional',
   templateUrl: './health-connect-professional.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
     SortDirective,
     SortByDirective,
     TranslateDirective,
-    TranslateModule, MatIconModule],
+    TranslateModule,
+    MatIconModule,
+  ],
 })
 export class HealthConnectProfessionalComponent implements OnInit {
   subscription: Subscription | null = null;

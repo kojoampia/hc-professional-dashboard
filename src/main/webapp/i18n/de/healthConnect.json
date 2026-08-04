@@ -188,8 +188,22 @@
     },
     "messages": {
       "title": "Nachrichten",
-      "empty": "Derzeit keine neuen Nachrichten von Patienten.",
-      "backendPending": "Die Nachrichtenfunktion wird aktiviert, sobald der Messaging-Dienst verbunden ist."
+      "empty": "Noch keine Nachrichten.",
+      "emptyThread": "Wählen Sie eine Unterhaltung aus, um sie zu lesen.",
+      "compose": "Neue Nachricht",
+      "subject": "Betreff",
+      "recipients": "Empfänger",
+      "recipientsHint": "Anmeldenamen, durch Kommas getrennt",
+      "broadcast": "Oder an eine Rolle senden",
+      "body": "Nachricht",
+      "send": "Senden",
+      "sending": "Wird gesendet…",
+      "threads": "Unterhaltungen",
+      "unreadOne": "1 ungelesen",
+      "unreadMany": "{{ count }} ungelesen",
+      "sent": "Gesendet",
+      "sendFailed": "Die Nachricht konnte nicht gesendet werden.",
+      "noRecipients": "Fügen Sie einen Empfänger hinzu oder wählen Sie eine Rolle."
     },
     "about": {
       "title": "Warum Abofonsa BridgeCare — Professional",
@@ -202,7 +216,8 @@
       "rosterUpdated": "Dienstplan aktualisiert",
       "markedRead": "Als gelesen markiert",
       "acknowledged": "Bestätigung gespeichert",
-      "sweepDone": "Prüfung abgeschlossen: {{suspended}} Bewerbung(en) eingeschränkt"
+      "sweepDone": "Prüfung abgeschlossen: {{suspended}} Bewerbung(en) eingeschränkt",
+      "messageSent": "Nachricht gesendet"
     },
     "onboarding": {
       "title": "Fachkräfte-Onboarding",

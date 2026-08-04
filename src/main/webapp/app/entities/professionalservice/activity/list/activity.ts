@@ -21,7 +21,8 @@ import { ActivityService } from '../service/activity.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-activity',
   templateUrl: './activity.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
@@ -29,7 +30,9 @@ import { ActivityService } from '../service/activity.service';
     SortByDirective,
     TranslateDirective,
     TranslateModule,
-    FormatMediumDatetimePipe, MatIconModule],
+    FormatMediumDatetimePipe,
+    MatIconModule,
+  ],
 })
 export class ActivityComponent implements OnInit {
   subscription: Subscription | null = null;

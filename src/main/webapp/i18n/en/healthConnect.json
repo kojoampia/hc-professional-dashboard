@@ -188,8 +188,22 @@
     },
     "messages": {
       "title": "Messages",
-      "empty": "No new messages from patients right now.",
-      "backendPending": "Messaging will activate once the messaging service is connected."
+      "empty": "No messages yet.",
+      "emptyThread": "Select a conversation to read it.",
+      "compose": "New message",
+      "subject": "Subject",
+      "recipients": "Recipients",
+      "recipientsHint": "Logins, separated by commas",
+      "broadcast": "Or send to a role",
+      "body": "Message",
+      "send": "Send",
+      "sending": "Sending…",
+      "threads": "Conversations",
+      "unreadOne": "1 unread",
+      "unreadMany": "{{ count }} unread",
+      "sent": "Sent",
+      "sendFailed": "The message could not be sent.",
+      "noRecipients": "Add a recipient or choose a role."
     },
     "about": {
       "title": "Why Abofonsa BridgeCare — Professional",
@@ -202,7 +216,8 @@
       "rosterUpdated": "Duty roster updated",
       "markedRead": "Marked as read",
       "acknowledged": "Acknowledgement recorded",
-      "sweepDone": "Sweep finished: {{suspended}} application(s) restricted"
+      "sweepDone": "Sweep finished: {{suspended}} application(s) restricted",
+      "messageSent": "Message sent"
     },
     "onboarding": {
       "title": "Professional onboarding",

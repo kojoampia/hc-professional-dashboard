@@ -21,7 +21,8 @@ import { MedicationRecordService } from '../service/medication-record.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-medication-record',
   templateUrl: './medication-record.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
@@ -29,7 +30,9 @@ import { MedicationRecordService } from '../service/medication-record.service';
     SortByDirective,
     TranslateDirective,
     TranslateModule,
-    FormatMediumDatetimePipe, MatIconModule],
+    FormatMediumDatetimePipe,
+    MatIconModule,
+  ],
 })
 export class MedicationRecordComponent implements OnInit {
   subscription: Subscription | null = null;

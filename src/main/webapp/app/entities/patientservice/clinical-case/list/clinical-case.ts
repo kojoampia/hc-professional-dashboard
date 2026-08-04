@@ -25,7 +25,8 @@ import { ClinicalCaseService } from '../service/clinical-case.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-clinical-case',
   templateUrl: './clinical-case.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
@@ -34,7 +35,9 @@ import { ClinicalCaseService } from '../service/clinical-case.service';
     TranslateDirective,
     TranslateModule,
     FormatMediumDatetimePipe,
-    InfiniteScrollDirective, MatIconModule],
+    InfiniteScrollDirective,
+    MatIconModule,
+  ],
 })
 export class ClinicalCaseComponent implements OnInit {
   subscription: Subscription | null = null;

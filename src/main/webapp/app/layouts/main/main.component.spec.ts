@@ -1,5 +1,7 @@
 jest.mock('app/core/auth/account.service');
 
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { waitForAsync, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Router, TitleStrategy } from '@angular/router';
 import { Title } from '@angular/platform-browser';
@@ -27,20 +29,34 @@ describe('MainComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot(), RouterTestingModule, MainComponent],
-      providers: [Title, AccountService, { provide: TitleStrategy, useClass: AppPageTitleStrategy }],
+      // HTTP providers are needed because MainComponent renders the sidebar, whose unread badge
+      // comes from MessagesApiService — which now talks to the messaging endpoints rather than
+      // holding an in-memory list. Same shape the sidebar and tabbar specs already use.
+      providers: [
+        Title,
+        AccountService,
+        { provide: TitleStrategy, useClass: AppPageTitleStrategy },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     })
       .overrideTemplate(MainComponent, '')
       .compileComponents();
   }));
 
   beforeEach(() => {
+    // AccountService is stubbed BEFORE the component is created, not after. MainComponent injects
+    // MessagesApiService, which subscribes to getAuthenticationState() in its constructor to open
+    // and close the notification socket — on the bare auto-mock that returns undefined, so the
+    // component would fail to construct.
+    mockAccountService = TestBed.inject(AccountService);
+    mockAccountService.identity = jest.fn(() => of(null));
+    mockAccountService.getAuthenticationState = jest.fn(() => of(null));
+
     fixture = TestBed.createComponent(MainComponent);
     comp = fixture.componentInstance;
     titleService = TestBed.inject(Title);
     translateService = TestBed.inject(TranslateService);
-    mockAccountService = TestBed.inject(AccountService);
-    mockAccountService.identity = jest.fn(() => of(null));
-    mockAccountService.getAuthenticationState = jest.fn(() => of(null));
     router = TestBed.inject(Router);
     document = TestBed.inject(DOCUMENT);
   });

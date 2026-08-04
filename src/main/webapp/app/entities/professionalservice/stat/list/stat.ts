@@ -21,7 +21,8 @@ import { IStat } from '../stat.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-stat',
   templateUrl: './stat.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
@@ -29,7 +30,9 @@ import { IStat } from '../stat.model';
     SortByDirective,
     TranslateDirective,
     TranslateModule,
-    FormatMediumDatePipe, MatIconModule],
+    FormatMediumDatePipe,
+    MatIconModule,
+  ],
 })
 export class StatComponent implements OnInit {
   subscription: Subscription | null = null;

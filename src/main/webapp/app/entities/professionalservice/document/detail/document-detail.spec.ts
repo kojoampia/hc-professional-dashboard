@@ -22,7 +22,9 @@ describe.skip('Document Management Detail Component', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot(), MatIconModule],
-      providers: [provideHttpClient(), provideHttpClientTesting(), 
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         provideRouter(
           [
             {

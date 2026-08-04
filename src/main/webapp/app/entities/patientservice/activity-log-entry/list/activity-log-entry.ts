@@ -21,7 +21,8 @@ import { ActivityLogEntryService } from '../service/activity-log-entry.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-activity-log-entry',
   templateUrl: './activity-log-entry.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
@@ -29,7 +30,9 @@ import { ActivityLogEntryService } from '../service/activity-log-entry.service';
     SortByDirective,
     TranslateDirective,
     TranslateModule,
-    FormatMediumDatetimePipe, MatIconModule],
+    FormatMediumDatetimePipe,
+    MatIconModule,
+  ],
 })
 export class ActivityLogEntryComponent implements OnInit {
   subscription: Subscription | null = null;

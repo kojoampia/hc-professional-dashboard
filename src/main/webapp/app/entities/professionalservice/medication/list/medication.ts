@@ -21,7 +21,8 @@ import { MedicationService } from '../service/medication.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-medication',
   templateUrl: './medication.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
@@ -29,7 +30,9 @@ import { MedicationService } from '../service/medication.service';
     SortByDirective,
     TranslateDirective,
     TranslateModule,
-    FormatMediumDatePipe, MatIconModule],
+    FormatMediumDatePipe,
+    MatIconModule,
+  ],
 })
 export class MedicationComponent implements OnInit {
   subscription: Subscription | null = null;

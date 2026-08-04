@@ -16,7 +16,9 @@ describe('Address routing resolve service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting(), 
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -90,7 +92,8 @@ describe('Address routing resolve service', () => {
 
     it('should route to error page if server returns an error other than 404', async () => {
       // GIVEN
-      jest.spyOn(service, 'find')
+      jest
+        .spyOn(service, 'find')
         .mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500, statusText: 'Internal Server Error' })));
       mockActivatedRouteSnapshot.params = { id: 'ABC' };
 

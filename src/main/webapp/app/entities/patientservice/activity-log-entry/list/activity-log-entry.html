@@ -32,7 +32,12 @@
   <div class="overflow-x-auto rounded-hpd-sm border border-hpd-border table-entities" id="entities">
     <table class="w-full text-left text-sm" aria-describedby="page-heading">
       <thead>
-        <tr jhiSort [predicate]="sortState().predicate" [ascending]="sortState().ascending" (sortChange)="navigateToWithComponentValues($event)">
+        <tr
+          jhiSort
+          [predicate]="sortState().predicate"
+          [ascending]="sortState().ascending"
+          (sortChange)="navigateToWithComponentValues($event)"
+        >
           <th scope="col" jhiSortBy="id" #idSort="jhiSortBy">
             <div class="flex">
               <span jhiTranslate="professionalDashboardApp.patientserviceActivityLogEntry.id">Id</span>

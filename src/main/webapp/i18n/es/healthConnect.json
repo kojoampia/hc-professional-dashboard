@@ -188,8 +188,22 @@
     },
     "messages": {
       "title": "Mensajes",
-      "empty": "No hay mensajes nuevos de pacientes en este momento.",
-      "backendPending": "La mensajería se activará cuando el servicio de mensajería esté conectado."
+      "empty": "Aún no hay mensajes.",
+      "emptyThread": "Seleccione una conversación para leerla.",
+      "compose": "Nuevo mensaje",
+      "subject": "Asunto",
+      "recipients": "Destinatarios",
+      "recipientsHint": "Usuarios, separados por comas",
+      "broadcast": "O enviar a un rol",
+      "body": "Mensaje",
+      "send": "Enviar",
+      "sending": "Enviando…",
+      "threads": "Conversaciones",
+      "unreadOne": "1 sin leer",
+      "unreadMany": "{{ count }} sin leer",
+      "sent": "Enviado",
+      "sendFailed": "No se pudo enviar el mensaje.",
+      "noRecipients": "Añada un destinatario o elija un rol."
     },
     "about": {
       "title": "Por qué Abofonsa BridgeCare — Professional",
@@ -202,7 +216,8 @@
       "rosterUpdated": "Cuadro de turnos actualizado",
       "markedRead": "Marcado como leído",
       "acknowledged": "Confirmación registrada",
-      "sweepDone": "Barrido completado: {{suspended}} solicitud(es) restringida(s)"
+      "sweepDone": "Barrido completado: {{suspended}} solicitud(es) restringida(s)",
+      "messageSent": "Mensaje enviado"
     },
     "onboarding": {
       "title": "Incorporación profesional",

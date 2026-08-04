@@ -21,7 +21,8 @@ import { DutyShiftService } from '../service/duty-shift.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-duty-shift',
   templateUrl: './duty-shift.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
@@ -29,7 +30,9 @@ import { DutyShiftService } from '../service/duty-shift.service';
     SortByDirective,
     TranslateDirective,
     TranslateModule,
-    FormatMediumDatetimePipe, MatIconModule],
+    FormatMediumDatetimePipe,
+    MatIconModule,
+  ],
 })
 export class DutyShiftComponent implements OnInit {
   subscription: Subscription | null = null;

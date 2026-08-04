@@ -21,7 +21,8 @@ import { MetadataService } from '../service/metadata.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-metadata',
   templateUrl: './metadata.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
@@ -29,7 +30,9 @@ import { MetadataService } from '../service/metadata.service';
     SortByDirective,
     TranslateDirective,
     TranslateModule,
-    FormatMediumDatePipe, MatIconModule],
+    FormatMediumDatePipe,
+    MatIconModule,
+  ],
 })
 export class MetadataComponent implements OnInit {
   subscription: Subscription | null = null;

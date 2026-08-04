@@ -26,7 +26,8 @@ describe('DutyRoster Management Update Component', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot(), MatIconModule],
-      providers: [provideHttpClient(), 
+      providers: [
+        provideHttpClient(),
         provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
@@ -53,15 +54,15 @@ describe('DutyRoster Management Update Component', () => {
       dutyRoster.subscribedProfessionals = subscribedProfessionals;
 
       const healthConnectProfessionalCollection: IHealthConnectProfessional[] = [{ id: '1b8b3e61-c30b-4db5-a04a-2f0b313a344d' }];
-      jest.spyOn(healthConnectProfessionalService, 'query')
+      jest
+        .spyOn(healthConnectProfessionalService, 'query')
         .mockReturnValue(of(new HttpResponse({ body: healthConnectProfessionalCollection })));
       const additionalHealthConnectProfessionals = [...subscribedProfessionals];
       const expectedCollection: IHealthConnectProfessional[] = [
         ...additionalHealthConnectProfessionals,
         ...healthConnectProfessionalCollection,
       ];
-      jest.spyOn(healthConnectProfessionalService, 'addHealthConnectProfessionalToCollectionIfMissing')
-        .mockReturnValue(expectedCollection);
+      jest.spyOn(healthConnectProfessionalService, 'addHealthConnectProfessionalToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ dutyRoster });
       comp.ngOnInit();

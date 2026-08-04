@@ -20,14 +20,17 @@ import { DutyRosterService } from '../service/duty-roster.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-duty-roster',
   templateUrl: './duty-roster.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
     SortDirective,
     SortByDirective,
     TranslateDirective,
-    TranslateModule, MatIconModule],
+    TranslateModule,
+    MatIconModule,
+  ],
 })
 export class DutyRosterComponent implements OnInit {
   subscription: Subscription | null = null;

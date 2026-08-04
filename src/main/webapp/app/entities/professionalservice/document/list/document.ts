@@ -22,7 +22,8 @@ import { DocumentService } from '../service/document.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-document',
   templateUrl: './document.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
@@ -30,7 +31,9 @@ import { DocumentService } from '../service/document.service';
     SortByDirective,
     TranslateDirective,
     TranslateModule,
-    FormatMediumDatePipe, MatIconModule],
+    FormatMediumDatePipe,
+    MatIconModule,
+  ],
 })
 export class DocumentComponent implements OnInit {
   subscription: Subscription | null = null;

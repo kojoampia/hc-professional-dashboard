@@ -21,7 +21,8 @@ import { ReportService } from '../service/report.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-report',
   templateUrl: './report.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
@@ -29,7 +30,9 @@ import { ReportService } from '../service/report.service';
     SortByDirective,
     TranslateDirective,
     TranslateModule,
-    FormatMediumDatePipe, MatIconModule],
+    FormatMediumDatePipe,
+    MatIconModule,
+  ],
 })
 export class ReportComponent implements OnInit {
   subscription: Subscription | null = null;

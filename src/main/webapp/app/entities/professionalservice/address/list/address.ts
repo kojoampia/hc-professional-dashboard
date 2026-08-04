@@ -21,7 +21,8 @@ import { AddressService } from '../service/address.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-address',
   templateUrl: './address.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
@@ -29,7 +30,9 @@ import { AddressService } from '../service/address.service';
     SortByDirective,
     TranslateDirective,
     TranslateModule,
-    FormatMediumDatePipe, MatIconModule],
+    FormatMediumDatePipe,
+    MatIconModule,
+  ],
 })
 export class AddressComponent implements OnInit {
   subscription: Subscription | null = null;

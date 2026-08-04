@@ -23,7 +23,8 @@ describe('ActivityLogEntry Management Update Component', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot(), MatIconModule],
-      providers: [provideHttpClient(), 
+      providers: [
+        provideHttpClient(),
         provideHttpClientTesting(),
         {
           provide: ActivatedRoute,

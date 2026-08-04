@@ -25,7 +25,8 @@ import { ProfileService } from '../service/profile.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-profile',
   templateUrl: './profile.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
@@ -35,7 +36,9 @@ import { ProfileService } from '../service/profile.service';
     TranslateModule,
     FormatMediumDatePipe,
     PaginationComponent,
-    ItemCountComponent, MatIconModule],
+    ItemCountComponent,
+    MatIconModule,
+  ],
 })
 export class ProfileComponent implements OnInit {
   subscription: Subscription | null = null;

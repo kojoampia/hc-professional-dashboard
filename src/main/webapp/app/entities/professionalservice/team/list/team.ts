@@ -20,14 +20,17 @@ import { ITeam } from '../team.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-team',
   templateUrl: './team.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
     SortDirective,
     SortByDirective,
     TranslateDirective,
-    TranslateModule, MatIconModule],
+    TranslateModule,
+    MatIconModule,
+  ],
 })
 export class TeamComponent implements OnInit {
   subscription: Subscription | null = null;

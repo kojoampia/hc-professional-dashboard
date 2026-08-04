@@ -21,7 +21,8 @@ import { IVisitation } from '../visitation.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-visitation',
   templateUrl: './visitation.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
@@ -29,7 +30,9 @@ import { IVisitation } from '../visitation.model';
     SortByDirective,
     TranslateDirective,
     TranslateModule,
-    FormatMediumDatetimePipe, MatIconModule],
+    FormatMediumDatetimePipe,
+    MatIconModule,
+  ],
 })
 export class VisitationComponent implements OnInit {
   subscription: Subscription | null = null;

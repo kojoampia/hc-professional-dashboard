@@ -21,7 +21,8 @@ import { ITask } from '../task.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-task',
   templateUrl: './task.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
@@ -29,7 +30,9 @@ import { ITask } from '../task.model';
     SortByDirective,
     TranslateDirective,
     TranslateModule,
-    FormatMediumDatePipe, MatIconModule],
+    FormatMediumDatePipe,
+    MatIconModule,
+  ],
 })
 export class TaskComponent implements OnInit {
   subscription: Subscription | null = null;

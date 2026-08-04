@@ -20,14 +20,17 @@ import { RecommendationService } from '../service/recommendation.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-recommendation',
   templateUrl: './recommendation.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
     SortDirective,
     SortByDirective,
     TranslateDirective,
-    TranslateModule, MatIconModule],
+    TranslateModule,
+    MatIconModule,
+  ],
 })
 export class RecommendationComponent implements OnInit {
   subscription: Subscription | null = null;

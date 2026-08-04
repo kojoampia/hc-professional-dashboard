@@ -1,9 +1,6 @@
 {
   "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "@angular-eslint/eslint-plugin",
-    "@typescript-eslint"
-  ],
+  "plugins": ["@angular-eslint/eslint-plugin", "@typescript-eslint"],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
@@ -20,20 +17,14 @@
   "parserOptions": {
     "ecmaVersion": 2018,
     "sourceType": "module",
-    "project": [
-      "./tsconfig.app.json",
-      "./tsconfig.spec.json"
-    ]
+    "project": ["./tsconfig.app.json", "./tsconfig.spec.json"]
   },
   "rules": {
     "@angular-eslint/component-selector": [
       "error",
       {
         "type": "element",
-        "prefix": [
-          "hpd",
-          "jhi"
-        ],
+        "prefix": ["hpd", "jhi"],
         "style": "kebab-case"
       }
     ],
@@ -41,10 +32,7 @@
       "error",
       {
         "type": "attribute",
-        "prefix": [
-          "hpd",
-          "jhi"
-        ],
+        "prefix": ["hpd", "jhi"],
         "style": "camelCase"
       }
     ],
@@ -68,9 +56,7 @@
     "@angular-eslint/no-output-on-prefix": "off",
     "@typescript-eslint/no-floating-promises": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
-    "@typescript-eslint/no-shadow": [
-      "error"
-    ],
+    "@typescript-eslint/no-shadow": ["error"],
     "@typescript-eslint/no-unsafe-argument": "off",
     "@typescript-eslint/no-unsafe-assignment": "off",
     "@typescript-eslint/no-unsafe-call": "off",
@@ -102,9 +88,6 @@
       }
     ],
     "radix": "error",
-    "spaced-comment": [
-      "warn",
-      "always"
-    ]
+    "spaced-comment": ["warn", "always"]
   }
 }

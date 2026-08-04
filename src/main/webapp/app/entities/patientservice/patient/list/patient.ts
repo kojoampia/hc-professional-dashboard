@@ -25,7 +25,8 @@ import { PatientService } from '../service/patient.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'hpd-patient',
   templateUrl: './patient.html',
-  imports: [RouterLink,
+  imports: [
+    RouterLink,
     FormsModule,
     AlertErrorComponent,
     AlertComponent,
@@ -36,7 +37,9 @@ import { PatientService } from '../service/patient.service';
     FormatMediumDatetimePipe,
     FormatMediumDatePipe,
     PaginationComponent,
-    ItemCountComponent, MatIconModule],
+    ItemCountComponent,
+    MatIconModule,
+  ],
 })
 export class PatientComponent implements OnInit {
   subscription: Subscription | null = null;
