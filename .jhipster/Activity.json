@@ -3,7 +3,7 @@
     "changelogDate": "20240326164027"
   },
   "applications": ["*"],
-  "clientRootFolder": "professionalService",
+  "clientRootFolder": "professionalservice",
   "databaseType": "mongodb",
   "entityTableName": "activity",
   "fields": [

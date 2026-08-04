@@ -1,0 +1,60 @@
+{
+  "annotations": {
+    "changelogDate": "20260804090100"
+  },
+  "applications": [
+    "*"
+  ],
+  "clientRootFolder": "professionalservice",
+  "databaseType": "mongodb",
+  "dto": "no",
+  "entityTableName": "message",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "senderId",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "senderName",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "body",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "sentAt",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "recipientRole",
+      "fieldType": "String"
+    }
+  ],
+  "microserviceName": "professionalservice",
+  "name": "Message",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "conversation",
+      "otherEntityRelationshipName": "messages",
+      "relationshipName": "conversation",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "messageRecipient",
+      "otherEntityRelationshipName": "message",
+      "relationshipName": "recipients",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

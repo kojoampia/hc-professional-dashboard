@@ -167,6 +167,57 @@ entity Team (team) {
   contact String
 }
 
+// --- Messaging (/messages) -------------------------------------------------
+//
+// Clinician-to-clinician messaging, threaded, with per-recipient read state.
+// Participants are gateway ACCOUNT ids, not HealthConnectProfessional ids: the
+// gateway owns users, and a message is addressed to whoever signs in, which is
+// also true before onboarding grants a clinical role.
+//
+// There is deliberately NO participant list on Conversation. Membership is
+// derived from MessageRecipient, so the two cannot drift and JDL's lack of an
+// array type never comes up. The service must therefore write a recipient row
+// for the SENDER too (read = true), or a conversation someone only ever sent
+// into disappears from their own list.
+
+@ChangelogDate("20260804090000")
+entity Conversation (conversation) {
+  id String
+  subject String
+  createdBy String
+  createdAt Instant
+  lastMessageAt Instant
+}
+
+// recipientRole records the INTENT of a role broadcast (e.g. ROLE_NURSE) and is
+// null for an explicitly addressed message. It is not what delivers the message:
+// the service expands the role into MessageRecipient rows at send time, so read
+// state exists per person and the audit of who it was aimed at survives later
+// staffing changes. A clinician who joins that role afterwards does not receive
+// it retroactively, which is the intended reading of "sent to the nurses on duty
+// that day".
+@ChangelogDate("20260804090100")
+entity Message (message) {
+  id String
+  senderId String
+  senderName String
+  body String
+  sentAt Instant
+  recipientRole String
+}
+
+// conversationId is denormalised here on purpose. Membership is a query over
+// this collection, and carrying the conversation makes "my conversations" a
+// single lookup by recipientId rather than a fan-out through Message.
+@ChangelogDate("20260804090200")
+entity MessageRecipient (messagerecipient) {
+  id String
+  recipientId String
+  conversationId String
+  read Boolean
+  readAt Instant
+}
+
 enum DocumentType {
   PASSPORT,
   CERTIFICATE,
@@ -199,8 +250,20 @@ relationship OneToMany {
   DutyRoster{shifts} to DutyShift{roster}
 }
 
-microservice Activity, Address, Document, DutyRoster, DutyShift, HealthConnectProfessional, Medication, Metadata, Profile, Report, Stat, Task, Team with professionalservice
-clientRootFolder Activity, Address, Document, DutyRoster, DutyShift, HealthConnectProfessional, Medication, Metadata, Profile, Report, Stat, Task, Team with professionalservice
-service Document, DutyRoster, DutyShift, HealthConnectProfessional, Profile with serviceClass
-search Activity, Address, Document, DutyRoster, DutyShift, HealthConnectProfessional, Medication, Metadata, Profile, Report, Stat, Task, Team with no
-paginate Profile with pagination
+// A conversation is a thread of messages; the relationship supplies what a
+// scalar conversationId on Message would have carried.
+relationship OneToMany {
+  Conversation{messages} to Message{conversation}
+}
+
+// Per-recipient rows hang off the message, which is what makes read state
+// per-person rather than a single flag on the message.
+relationship OneToMany {
+  Message{recipients} to MessageRecipient{message}
+}
+
+microservice Activity, Address, Conversation, Document, DutyRoster, DutyShift, HealthConnectProfessional, Medication, Message, MessageRecipient, Metadata, Profile, Report, Stat, Task, Team with professionalservice
+clientRootFolder Activity, Address, Conversation, Document, DutyRoster, DutyShift, HealthConnectProfessional, Medication, Message, MessageRecipient, Metadata, Profile, Report, Stat, Task, Team with professionalservice
+service Conversation, Document, DutyRoster, DutyShift, HealthConnectProfessional, Message, MessageRecipient, Profile with serviceClass
+search Activity, Address, Conversation, Document, DutyRoster, DutyShift, HealthConnectProfessional, Medication, Message, MessageRecipient, Metadata, Profile, Report, Stat, Task, Team with no
+paginate Conversation, Message, Profile with pagination

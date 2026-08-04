@@ -3,7 +3,7 @@
     "changelogDate": "20260724060500"
   },
   "applications": ["*"],
-  "clientRootFolder": "patientService",
+  "clientRootFolder": "patientservice",
   "databaseType": "mongodb",
   "dto": "no",
   "entityTableName": "medicationrecord",

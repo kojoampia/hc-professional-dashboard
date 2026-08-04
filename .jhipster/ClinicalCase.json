@@ -3,7 +3,7 @@
     "changelogDate": "20260730120000"
   },
   "applications": ["*"],
-  "clientRootFolder": "patientService",
+  "clientRootFolder": "patientservice",
   "entityTableName": "clinicalcase",
   "fields": [
     {

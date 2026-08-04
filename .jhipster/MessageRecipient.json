@@ -1,44 +1,45 @@
 {
   "annotations": {
-    "changelogDate": "20260724060100"
+    "changelogDate": "20260804090200"
   },
-  "applications": ["*"],
+  "applications": [
+    "*"
+  ],
   "clientRootFolder": "professionalservice",
   "databaseType": "mongodb",
   "dto": "no",
-  "entityTableName": "dutyshift",
+  "entityTableName": "messagerecipient",
   "fields": [
     {
       "fieldName": "id",
       "fieldType": "String"
     },
     {
-      "fieldName": "professionalId",
+      "fieldName": "recipientId",
       "fieldType": "String"
     },
     {
-      "fieldName": "startsAt",
-      "fieldType": "Instant"
+      "fieldName": "conversationId",
+      "fieldType": "String"
     },
     {
-      "fieldName": "endsAt",
-      "fieldType": "Instant"
+      "fieldName": "read",
+      "fieldType": "Boolean"
     },
     {
-      "fieldName": "status",
-      "fieldType": "DutyShiftStatus",
-      "fieldValues": "UPCOMING,ACTIVE,COMPLETED"
+      "fieldName": "readAt",
+      "fieldType": "Instant"
     }
   ],
   "microserviceName": "professionalservice",
-  "name": "DutyShift",
+  "name": "MessageRecipient",
   "pagination": "no",
   "readOnly": false,
   "relationships": [
     {
-      "otherEntityName": "dutyRoster",
-      "otherEntityRelationshipName": "shifts",
-      "relationshipName": "roster",
+      "otherEntityName": "message",
+      "otherEntityRelationshipName": "recipients",
+      "relationshipName": "message",
       "relationshipSide": "right",
       "relationshipType": "many-to-one"
     }

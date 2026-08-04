@@ -3,7 +3,7 @@
     "changelogDate": "20260724060000"
   },
   "applications": ["*"],
-  "clientRootFolder": "professionalService",
+  "clientRootFolder": "professionalservice",
   "databaseType": "mongodb",
   "dto": "no",
   "entityTableName": "dutyroster",

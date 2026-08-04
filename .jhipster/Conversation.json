@@ -1,0 +1,49 @@
+{
+  "annotations": {
+    "changelogDate": "20260804090000"
+  },
+  "applications": [
+    "*"
+  ],
+  "clientRootFolder": "professionalservice",
+  "databaseType": "mongodb",
+  "dto": "no",
+  "entityTableName": "conversation",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "subject",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "createdBy",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "createdAt",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "lastMessageAt",
+      "fieldType": "Instant"
+    }
+  ],
+  "microserviceName": "professionalservice",
+  "name": "Conversation",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "message",
+      "otherEntityRelationshipName": "conversation",
+      "relationshipName": "messages",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

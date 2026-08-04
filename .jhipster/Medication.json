@@ -4,7 +4,7 @@
   },
   "applications": ["*"],
   "changelogDate": "20240206215539",
-  "clientRootFolder": "professionalService",
+  "clientRootFolder": "professionalservice",
   "databaseType": "mongodb",
   "entityTableName": "medication",
   "fields": [
