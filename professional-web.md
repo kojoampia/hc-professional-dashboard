@@ -238,11 +238,11 @@ There is **no `e2e` script**; see §5.
 
 Contract documents live at the **workspace root**, because `api/` and `gateway/` need them too:
 
-- `../professional-onboarding-workflow.md` — the onboarding spec (roles, lifecycle, documents,
+- `../docs/professional-onboarding-workflow.md` — the onboarding spec (roles, lifecycle, documents,
   domain events, duty roster). Authoritative for anything onboarding-related.
-- `../professional-dashboard-migration-plan.md` — origin of the dashboard-aggregate, patient,
+- `../docs/professional-dashboard-migration-plan.md` — origin of the dashboard-aggregate, patient,
   med-case and duty-roster endpoint contracts `api/` still owes.
-- `../phase_4_contract_reconciliation.md` — every frontend model classified Existing / Missing /
+- `../docs/phase_4_contract_reconciliation.md` — every frontend model classified Existing / Missing /
   Awaiting confirmation. **Its `hc-professional-spec.md` §7.x citations now resolve to Appendix A
   below.**
 - `../docs/careers-handoff-contract.md` — the inbound careers link contract.

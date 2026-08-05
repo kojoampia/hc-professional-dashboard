@@ -75,7 +75,7 @@ Three distinct tiers — don't copy the wrong one onto a new route:
 
 ### Onboarding and the careers handoff
 
-`../professional-onboarding-workflow.md` (workspace root — it spans all three repos) is the authoritative cross-repo spec. On this side: the applicant wizard (`health-connect/pages/onboarding-page.*`), admin review queue/detail and compliance pages, the first-login acknowledgement interstitial (`health-connect/first-login/`), and the `health-connect/api/` adapters.
+`../docs/professional-onboarding-workflow.md` (workspace root — it spans all three repos) is the authoritative cross-repo spec. On this side: the applicant wizard (`health-connect/pages/onboarding-page.*`), admin review queue/detail and compliance pages, the first-login acknowledgement interstitial (`health-connect/first-login/`), and the `health-connect/api/` adapters.
 
 `core/careers/careers-handoff.service.ts` implements the inbound contract in `../docs/careers-handoff-contract.md`: `/register?track=&locale=&src=` from `web.abofonsa.com/careers`. Three things must not regress —
 
@@ -116,9 +116,9 @@ Also: `docs/ui-baseline/` — per-phase screenshot baselines plus the `capture.p
 
 These moved out of this repo because their subject is the backend or the whole stack. Java and TypeScript comments across all three repos cite them by bare filename:
 
-- `../professional-onboarding-workflow.md` — the onboarding spec: roles, data contracts, status model, domain events, work packages and a per-WP status log. The authority on anything onboarding-related.
-- `../professional-dashboard-migration-plan.md` — the original dashboard migration plan; **the origin of the backend endpoint contracts** (dashboard aggregates, patients, med-cases, duty-rosters) that `api/` still owes. Superseded as a _web_ plan, but retained as the contract and rationale reference.
-- `../phase_4_contract_reconciliation.md` — the Existing / Missing / Awaiting-confirmation map of every frontend model against a real backend contract. Its `hc-professional-spec.md` §7 citations now resolve to `professional-web.md` Appendix A.
+- `../docs/professional-onboarding-workflow.md` — the onboarding spec: roles, data contracts, status model, domain events, work packages and a per-WP status log. The authority on anything onboarding-related.
+- `../docs/professional-dashboard-migration-plan.md` — the original dashboard migration plan; **the origin of the backend endpoint contracts** (dashboard aggregates, patients, med-cases, duty-rosters) that `api/` still owes. Superseded as a _web_ plan, but retained as the contract and rationale reference.
+- `../docs/phase_4_contract_reconciliation.md` — the Existing / Missing / Awaiting-confirmation map of every frontend model against a real backend contract. Its `hc-professional-spec.md` §7 citations now resolve to `professional-web.md` Appendix A.
 - `../docs/careers-handoff-contract.md` — the inbound careers contract (see above).
 
 ## Deployment (WP8)
