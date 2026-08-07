@@ -72,7 +72,7 @@ this is why selectors are `hpd-`, not the `app-` prefix every spec proposed.
 
 ### BridgeCare non-goals (generation 3) — deliberately _not_ built
 
-The demo at `../Abofonsa_BridgeCare_Professional_Demo.html` contains theatrics that must stay out:
+The demo at `../docs/Abofonsa_BridgeCare_Professional_Demo.html` contains theatrics that must stay out:
 its demo badge and "Restart" chrome, pre-filled credentials, "Continue as guest clinician", the
 role selector, and fake pagers (`« 1 2 3 … 10 »`) — the real pagination components stay. Also: do
 not downgrade the data-table to the demo's simpler list; the table has sorting, row actions and
