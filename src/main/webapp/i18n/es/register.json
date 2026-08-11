@@ -10,7 +10,12 @@
           "required": "Su nombre de usuario es obligatorio.",
           "minlength": "Su nombre de usuario debe tener al menos 1 carácter.",
           "maxlength": "Su nombre de usuario no puede tener más de 50 caracteres.",
-          "pattern": "Su nombre de usuario no es válido."
+          "pattern": "Su nombre de usuario no es válido.",
+          "checking": "Comprobando disponibilidad…",
+          "available": "Ese nombre de usuario está disponible.",
+          "taken": "Ese nombre de usuario ya está en uso.",
+          "checkfailed": "No se pudo comprobar la disponibilidad; aún puede registrarse.",
+          "suggestions": "Pruebe con:"
         }
       },
       "success": "<strong>¡Registro guardado!</strong> Revise su correo electrónico para confirmarlo.",

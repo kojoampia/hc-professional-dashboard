@@ -117,6 +117,118 @@ describe('RegisterComponent', () => {
     }),
   ));
 
+  describe('login availability look-ahead', () => {
+    const type = (value: string): void => comp.registerForm.controls.login.setValue(value);
+
+    it('should mark a free login as available', inject(
+      [RegisterService],
+      fakeAsync((service: RegisterService) => {
+        jest.spyOn(service, 'checkLoginAvailability').mockReturnValue(of({ login: 'jdoe', available: true, suggestions: [] }));
+        comp.ngOnInit();
+
+        type('jdoe');
+        tick(350);
+
+        expect(comp.loginStatus).toBe('available');
+        expect(comp.loginSuggestions).toEqual([]);
+      }),
+    ));
+
+    it('should mark a taken login and offer the alternatives', inject(
+      [RegisterService],
+      fakeAsync((service: RegisterService) => {
+        jest
+          .spyOn(service, 'checkLoginAvailability')
+          .mockReturnValue(of({ login: 'jdoe', available: false, suggestions: ['jdoe1', 'jdoe2'] }));
+        comp.ngOnInit();
+
+        type('jdoe');
+        tick(350);
+
+        expect(comp.loginStatus).toBe('taken');
+        expect(comp.loginSuggestions).toEqual(['jdoe1', 'jdoe2']);
+      }),
+    ));
+
+    it('should debounce, so typing a name is one request and not one per keystroke', inject(
+      [RegisterService],
+      fakeAsync((service: RegisterService) => {
+        const check = jest
+          .spyOn(service, 'checkLoginAvailability')
+          .mockReturnValue(of({ login: 'jdoe', available: true, suggestions: [] }));
+        comp.ngOnInit();
+
+        type('j');
+        tick(100);
+        type('jd');
+        tick(100);
+        type('jdoe');
+        tick(350);
+
+        expect(check).toHaveBeenCalledTimes(1);
+        expect(check).toHaveBeenCalledWith('jdoe');
+      }),
+    ));
+
+    it('should not query a login the field itself rejects', inject(
+      [RegisterService],
+      fakeAsync((service: RegisterService) => {
+        const check = jest.spyOn(service, 'checkLoginAvailability');
+        comp.ngOnInit();
+
+        // Spaces and '!' fail the control's own pattern; the server would answer 400.
+        type('not valid!');
+        tick(350);
+
+        expect(check).not.toHaveBeenCalled();
+        expect(comp.loginStatus).toBe('idle');
+      }),
+    ));
+
+    it('should ignore an answer that no longer describes the field', inject(
+      [RegisterService],
+      fakeAsync((service: RegisterService) => {
+        // A slow reply for an earlier value must not paint a verdict for what is in the box now.
+        jest.spyOn(service, 'checkLoginAvailability').mockReturnValue(of({ login: 'stale', available: true, suggestions: [] }));
+        comp.ngOnInit();
+
+        type('jdoe');
+        tick(350);
+
+        expect(comp.loginStatus).toBe('checking');
+      }),
+    ));
+
+    it('should report a failed check as unknown rather than taken', inject(
+      [RegisterService],
+      fakeAsync((service: RegisterService) => {
+        // Colouring the field red on a network blip would push people into renaming a fine login.
+        jest.spyOn(service, 'checkLoginAvailability').mockReturnValue(throwError(() => new Error('offline')));
+        comp.ngOnInit();
+
+        type('jdoe');
+        tick(350);
+
+        expect(comp.loginStatus).toBe('error');
+        expect(comp.loginSuggestions).toEqual([]);
+      }),
+    ));
+
+    it('should adopt a suggestion into the field', inject(
+      [RegisterService],
+      fakeAsync((service: RegisterService) => {
+        jest.spyOn(service, 'checkLoginAvailability').mockReturnValue(of({ login: 'jdoe1', available: true, suggestions: [] }));
+        comp.ngOnInit();
+
+        comp.useSuggestion('jdoe1');
+        tick(350);
+
+        expect(comp.registerForm.controls.login.value).toBe('jdoe1');
+        expect(comp.loginStatus).toBe('available');
+      }),
+    ));
+  });
+
   it('should notify of generic error', inject(
     [RegisterService],
     fakeAsync((service: RegisterService) => {

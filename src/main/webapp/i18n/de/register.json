@@ -10,7 +10,12 @@
           "required": "Ihr Benutzername wird benötigt.",
           "minlength": "Ihr Benutzername muss mindestens ein Zeichen lang sein.",
           "maxlength": "Ihr Benutzername darf nicht länger als 50 Zeichen sein.",
-          "pattern": "Ihr Benutzername ist ungültig."
+          "pattern": "Ihr Benutzername ist ungültig.",
+          "checking": "Verfügbarkeit wird geprüft…",
+          "available": "Dieser Benutzername ist verfügbar.",
+          "taken": "Dieser Benutzername ist bereits vergeben.",
+          "checkfailed": "Verfügbarkeit konnte nicht geprüft werden — Sie können sich trotzdem registrieren.",
+          "suggestions": "Versuchen Sie stattdessen:"
         }
       },
       "success": "<strong>Registrierung gespeichert!</strong> Bitte überprüfen Sie Ihre E-Mails für die Bestätigung.",

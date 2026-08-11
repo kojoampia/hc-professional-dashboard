@@ -311,6 +311,21 @@ tone. Verified ratios: professional-web.md §3.
   box-shadow: 0 0 0 3.5px rgb(13 48 88 / 10%);
 }
 
+/*
+ * Registration look-ahead: the login is free. Success green rather than the focus navy, so the
+ * signal survives the field losing focus — the point is to be readable while the user moves on to
+ * the next input. Paired with text in the template, never colour alone.
+ */
+.hpd-input-available {
+  border-color: var(--hpd-color-success-accent);
+  background: var(--hpd-color-success-tint);
+}
+
+.hpd-input-available:focus {
+  border-color: var(--hpd-color-success-accent);
+  box-shadow: 0 0 0 3.5px rgb(42 117 84 / 12%);
+}
+
 /* Split-screen auth brand panel (demo .auth-brand radial glows). */
 .hpd-auth-brand {
   position: relative;

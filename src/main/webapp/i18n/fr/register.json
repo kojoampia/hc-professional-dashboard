@@ -10,7 +10,12 @@
           "required": "Votre nom d'utilisateur est obligatoire.",
           "minlength": "Votre nom d'utilisateur doit contenir plus d'un caractère.",
           "maxlength": "Votre nom d'utilisateur ne peut pas contenir plus de 50 caractères.",
-          "pattern": "Votre nom d'utilisateur est invalide."
+          "pattern": "Votre nom d'utilisateur est invalide.",
+          "checking": "Vérification de la disponibilité…",
+          "available": "Ce nom d'utilisateur est disponible.",
+          "taken": "Ce nom d'utilisateur est déjà pris.",
+          "checkfailed": "Impossible de vérifier la disponibilité — vous pouvez tout de même vous inscrire.",
+          "suggestions": "Essayez plutôt :"
         }
       },
       "success": "<strong>Compte enregistré !</strong> Merci de vérifier votre email de confirmation.",

@@ -55,14 +55,62 @@
           <label class="hpd-label" for="login" jhiTranslate="global.form.username.label">Username</label>
           <input
             class="hpd-focusable hpd-input"
+            [class.hpd-input-available]="loginStatus === 'available'"
             type="text"
             id="login"
             name="login"
             placeholder="{{ 'global.form.username.placeholder' | translate }}"
             formControlName="login"
             data-cy="username"
+            autocomplete="username"
+            [attr.aria-describedby]="loginStatus === 'idle' ? null : 'loginAvailability'"
             #login
           />
+
+          <!--
+            Look-ahead verdict. aria-live="polite" so a screen reader hears the result without the
+            focus being yanked out of the field mid-typing; the icons are aria-hidden because the
+            adjacent text already says the same thing.
+          -->
+          @if (loginStatus !== 'idle') {
+            <div id="loginAvailability" class="mt-1 text-xs" aria-live="polite" data-cy="loginAvailability">
+              @if (loginStatus === 'checking') {
+                <span class="text-hpd-muted" jhiTranslate="register.messages.validate.login.checking">Checking availability…</span>
+              }
+              @if (loginStatus === 'available') {
+                <span class="font-semibold text-hpd-success" data-cy="loginAvailable">
+                  <span aria-hidden="true">✓</span>
+                  <span jhiTranslate="register.messages.validate.login.available">That username is available.</span>
+                </span>
+              }
+              @if (loginStatus === 'taken') {
+                <span class="text-hpd-danger" data-cy="loginTaken" jhiTranslate="register.messages.validate.login.taken">
+                  That username is already taken.
+                </span>
+              }
+              @if (loginStatus === 'error') {
+                <span class="text-hpd-muted" jhiTranslate="register.messages.validate.login.checkfailed">
+                  Could not check availability — you can still register.
+                </span>
+              }
+            </div>
+          }
+
+          @if (loginStatus === 'taken' && loginSuggestions.length) {
+            <div class="mt-2 flex flex-wrap items-center gap-2">
+              <span class="text-xs text-hpd-muted" jhiTranslate="register.messages.validate.login.suggestions">Try instead:</span>
+              @for (suggestion of loginSuggestions; track suggestion) {
+                <button
+                  class="hpd-focusable rounded-hpd-sm border border-hpd-border bg-hpd-gold-tint px-2.5 py-1 text-xs font-semibold text-hpd-primary-dark"
+                  type="button"
+                  (click)="useSuggestion(suggestion)"
+                  data-cy="loginSuggestion"
+                >
+                  {{ suggestion }}
+                </button>
+              }
+            </div>
+          }
 
           @if (registerForm.get('login')!.invalid && (registerForm.get('login')!.dirty || registerForm.get('login')!.touched)) {
             <div>
