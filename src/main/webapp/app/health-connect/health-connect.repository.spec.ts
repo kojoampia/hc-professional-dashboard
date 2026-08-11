@@ -1,13 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 
-import { MockHealthConnectRepository } from './health-connect.repository';
+import { FakeHealthConnectRepository } from './testing/fake-health-connect.repository';
+import { HEALTH_CONNECT_REPOSITORY } from './health-connect.repository';
 
-describe('MockHealthConnectRepository', () => {
-  let repository: MockHealthConnectRepository;
+describe('FakeHealthConnectRepository', () => {
+  let repository: FakeHealthConnectRepository;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    repository = TestBed.inject(MockHealthConnectRepository);
+    TestBed.configureTestingModule({
+      providers: [{ provide: HEALTH_CONNECT_REPOSITORY, useExisting: FakeHealthConnectRepository }],
+    });
+    repository = TestBed.inject(FakeHealthConnectRepository);
     repository.reset();
   });
 

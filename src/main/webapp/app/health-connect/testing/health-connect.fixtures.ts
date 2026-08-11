@@ -1,4 +1,11 @@
-import { AuthorityRole, ClinicalCase, DutyRoster, HealthConnectProfessional, PatientRecord, Recommendation } from './health-connect.models';
+import {
+  AuthorityRole,
+  ClinicalCase,
+  DutyRoster,
+  HealthConnectProfessional,
+  PatientRecord,
+  Recommendation,
+} from '../health-connect.models';
 
 export const HEALTH_CONNECT_PROFESSIONALS: readonly HealthConnectProfessional[] = [
   {

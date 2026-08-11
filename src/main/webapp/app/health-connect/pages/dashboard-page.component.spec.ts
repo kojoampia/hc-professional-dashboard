@@ -2,7 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { MockHealthConnectRepository } from '../health-connect.repository';
+import { FakeHealthConnectRepository } from '../testing/fake-health-connect.repository';
+import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
 import DashboardPageComponent from './dashboard-page.component';
 
 describe('DashboardPageComponent', () => {
@@ -13,13 +14,16 @@ describe('DashboardPageComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [DashboardPageComponent, TranslateModule.forRoot()],
-      providers: [{ provide: Router, useValue: router }],
+      providers: [
+        { provide: HEALTH_CONNECT_REPOSITORY, useExisting: FakeHealthConnectRepository },
+        { provide: Router, useValue: router },
+      ],
     })
       .overrideComponent(DashboardPageComponent, { set: { template: '' } })
       .compileComponents();
     fixture = TestBed.createComponent(DashboardPageComponent);
     component = fixture.componentInstance;
-    TestBed.inject(MockHealthConnectRepository).reset();
+    TestBed.inject(FakeHealthConnectRepository).reset();
     fixture.detectChanges();
     router.navigate.mockClear();
   });

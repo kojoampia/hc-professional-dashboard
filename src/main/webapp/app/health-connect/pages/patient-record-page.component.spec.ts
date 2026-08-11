@@ -5,7 +5,8 @@ import { BehaviorSubject } from 'rxjs';
 
 import { AccountService } from 'app/core/auth/account.service';
 
-import { MockHealthConnectRepository } from '../health-connect.repository';
+import { FakeHealthConnectRepository } from '../testing/fake-health-connect.repository';
+import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
 import PatientRecordPageComponent from './patient-record-page.component';
 
 describe('PatientRecordPageComponent', () => {
@@ -26,6 +27,7 @@ describe('PatientRecordPageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [PatientRecordPageComponent, TranslateModule.forRoot()],
       providers: [
+        { provide: HEALTH_CONNECT_REPOSITORY, useExisting: FakeHealthConnectRepository },
         {
           provide: ActivatedRoute,
           useValue: { parent: { snapshot: { paramMap: convertToParamMap({ patientId: 'patient-kojo' }) } } },
@@ -36,7 +38,7 @@ describe('PatientRecordPageComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(PatientRecordPageComponent);
     component = fixture.componentInstance;
-    TestBed.inject(MockHealthConnectRepository).reset();
+    TestBed.inject(FakeHealthConnectRepository).reset();
     fixture.detectChanges();
   });
 
@@ -58,6 +60,6 @@ describe('PatientRecordPageComponent', () => {
 
     expect(component.canManageReports()).toBe(false);
     expect(fixture.nativeElement.querySelector('hpd-file-upload-trigger button').disabled).toBe(true);
-    expect(TestBed.inject(MockHealthConnectRepository).findPatient('patient-kojo')?.reports).toHaveLength(1);
+    expect(TestBed.inject(FakeHealthConnectRepository).findPatient('patient-kojo')?.reports).toHaveLength(1);
   });
 });

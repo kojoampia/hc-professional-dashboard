@@ -3,12 +3,14 @@ import { provideRouter, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import RouteDrivenOverlayHostComponent from './route-driven-overlay-host.component';
+import { FakeHealthConnectRepository } from '../testing/fake-health-connect.repository';
+import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
 
 describe('RouteDrivenOverlayHostComponent', () => {
   it('has dialog semantics and returns to the supplied route when closed', () => {
     TestBed.configureTestingModule({
       imports: [RouteDrivenOverlayHostComponent, TranslateModule.forRoot()],
-      providers: [provideRouter([])],
+      providers: [{ provide: HEALTH_CONNECT_REPOSITORY, useExisting: FakeHealthConnectRepository }, provideRouter([])],
     });
     const fixture: ComponentFixture<RouteDrivenOverlayHostComponent> = TestBed.createComponent(RouteDrivenOverlayHostComponent);
     const component = fixture.componentInstance;
@@ -28,7 +30,7 @@ describe('RouteDrivenOverlayHostComponent', () => {
   it('supports Escape, focus containment, and browser printing for route-driven patient and case flows', () => {
     TestBed.configureTestingModule({
       imports: [RouteDrivenOverlayHostComponent, TranslateModule.forRoot()],
-      providers: [provideRouter([])],
+      providers: [{ provide: HEALTH_CONNECT_REPOSITORY, useExisting: FakeHealthConnectRepository }, provideRouter([])],
     });
     const fixture: ComponentFixture<RouteDrivenOverlayHostComponent> = TestBed.createComponent(RouteDrivenOverlayHostComponent);
     const component = fixture.componentInstance;

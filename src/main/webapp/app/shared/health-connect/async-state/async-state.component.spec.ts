@@ -1,14 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { MockHealthConnectRepository } from 'app/health-connect/health-connect.repository';
+import { FakeHealthConnectRepository } from 'app/health-connect/testing/fake-health-connect.repository';
+import { HEALTH_CONNECT_REPOSITORY } from 'app/health-connect/health-connect.repository';
 
 import AsyncStateComponent from './async-state.component';
 import LoadingSkeletonComponent from './loading-skeleton.component';
 
 describe('HealthConnect asynchronous state components', () => {
   it('presents a labelled loading skeleton', () => {
-    TestBed.configureTestingModule({ imports: [LoadingSkeletonComponent, TranslateModule.forRoot()] });
+    TestBed.configureTestingModule({
+      providers: [{ provide: HEALTH_CONNECT_REPOSITORY, useExisting: FakeHealthConnectRepository }],
+      imports: [LoadingSkeletonComponent, TranslateModule.forRoot()],
+    });
     const fixture: ComponentFixture<LoadingSkeletonComponent> = TestBed.createComponent(LoadingSkeletonComponent);
     fixture.componentInstance.count = 2;
     fixture.detectChanges();
@@ -39,7 +43,7 @@ describe('HealthConnect asynchronous state components', () => {
 
   it('accepts loading and error state supplied by the mock repository boundary', () => {
     TestBed.configureTestingModule({ imports: [AsyncStateComponent, TranslateModule.forRoot()] });
-    const repository = TestBed.inject(MockHealthConnectRepository);
+    const repository = TestBed.inject(FakeHealthConnectRepository);
     const fixture: ComponentFixture<AsyncStateComponent> = TestBed.createComponent(AsyncStateComponent);
     repository.setLoading(true);
     fixture.componentInstance.status = repository.asyncState().status;

@@ -13,6 +13,8 @@ import { UserRouteAccessService } from 'app/core/auth/user-route-access.service'
 
 import { healthConnectRoleGuard } from './authority-role.guard';
 import routes from './health-connect.routes';
+import { FakeHealthConnectRepository } from './testing/fake-health-connect.repository';
+import { HEALTH_CONNECT_REPOSITORY } from './health-connect.repository';
 
 @Component({
   standalone: true,
@@ -62,6 +64,7 @@ describe('HealthConnect feature routes', () => {
     await TestBed.configureTestingModule({
       imports: [HealthConnectRouteTestHostComponent, TranslateModule.forRoot()],
       providers: [
+        { provide: HEALTH_CONNECT_REPOSITORY, useExisting: FakeHealthConnectRepository },
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter(routes),

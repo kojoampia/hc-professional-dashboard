@@ -24,20 +24,19 @@ import {
   RosterScope,
   ShiftLabel,
 } from './health-connect.models';
-import { HEALTH_CONNECT_RECOMMENDATIONS } from './health-connect.fixtures';
 import { HealthConnectRepository, PatientDirectoryFilters } from './health-connect.repository';
 
 /**
  * Real HttpClient-backed implementation of HealthConnectRepository, built
  * against the REST contracts specced in professional-web.md §5
  * (dashboard/patients/clinical-cases/duty-rosters). None of those endpoints exist
- * in a running backend yet, so this class is written and unit-tested against
- * HttpTestingController (see http-health-connect.repository.spec.ts) but is
- * NOT the active HEALTH_CONNECT_REPOSITORY provider — see health-connect.repository.ts,
- * where MockHealthConnectRepository stays the default until a backend exists.
- * Swapping it in later is a one-line DI override:
+ * in a running backend yet. It is nonetheless THE active HEALTH_CONNECT_REPOSITORY provider: the
+ * in-memory mock it replaced was serving invented patient records to production, and an empty or
+ * errored panel is preferable to a fabricated one on a clinical screen.
  *
- *   { provide: HEALTH_CONNECT_REPOSITORY, useClass: HttpHealthConnectRepository }
+ * Verified against production on 2026-08-11: clinical-cases returns 200 through the gateway, while
+ * patients, the dashboard aggregates and duty-rosters return 404 — those panels are empty until the
+ * endpoints exist. The shared JWT works, so this is a missing-endpoint problem, not an auth one.
  *
  * Architectural note: the shared HealthConnectRepository interface exposes
  * synchronous signals/methods (mirroring the in-memory mock), but real data
@@ -50,7 +49,10 @@ import { HealthConnectRepository, PatientDirectoryFilters } from './health-conne
  * `findPatient` re-evaluates once the response lands (the same reactivity
  * Mock gets from reading a signal internally).
  */
-@Injectable()
+// providedIn: 'root' because HEALTH_CONNECT_REPOSITORY's factory injects this directly. It was a
+// bare @Injectable() while it was only ever provided explicitly in specs; leaving it that way now
+// throws NullInjectorError the first time any dashboard route is opened.
+@Injectable({ providedIn: 'root' })
 export class HttpHealthConnectRepository implements HealthConnectRepository {
   private readonly dashboardApi = inject(DashboardApiService);
   private readonly patientApi = inject(PatientApiService);
@@ -176,7 +178,13 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
   recommendations(category?: string): readonly Recommendation[] {
     // No recommendation-catalog endpoint specced (professional-dashboard-migration-plan.md
     // treats it as a static reference list) — reuse the same fixture the mock uses.
-    return HEALTH_CONNECT_RECOMMENDATIONS.filter(recommendation => !category || recommendation.category === category);
+    // No endpoint serves the recommendation catalogue — phase_4_contract_reconciliation.md classes
+    // it Missing, and §4 Gap 7 notes the values were only ever fixture examples, never a backend
+    // enum. This returned those fixtures until they were removed from the application; an empty
+    // catalogue is the honest answer until the endpoint exists, and the picker renders empty rather
+    // than offering clinical guidance nobody configured.
+    void category;
+    return [];
   }
 
   professionalIdForAccount(_accountLogin: string): string | null {

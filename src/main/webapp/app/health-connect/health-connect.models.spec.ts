@@ -3,7 +3,7 @@ import {
   HEALTH_CONNECT_PATIENT_RECORDS,
   HEALTH_CONNECT_PROFESSIONALS,
   HEALTH_CONNECT_RECOMMENDATIONS,
-} from './health-connect.fixtures';
+} from './testing/health-connect.fixtures';
 
 describe('HealthConnect frontend models', () => {
   it('provides deterministic, internally linked fixture models', () => {

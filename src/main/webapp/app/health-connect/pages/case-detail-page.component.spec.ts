@@ -5,7 +5,8 @@ import { BehaviorSubject } from 'rxjs';
 
 import { AccountService } from 'app/core/auth/account.service';
 
-import { MockHealthConnectRepository } from '../health-connect.repository';
+import { FakeHealthConnectRepository } from '../testing/fake-health-connect.repository';
+import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
 import CaseDetailPageComponent from './case-detail-page.component';
 
 describe('CaseDetailPageComponent', () => {
@@ -27,6 +28,7 @@ describe('CaseDetailPageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [CaseDetailPageComponent, TranslateModule.forRoot()],
       providers: [
+        { provide: HEALTH_CONNECT_REPOSITORY, useExisting: FakeHealthConnectRepository },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ caseId: 'case-kojo-urgent' }) } } },
         { provide: Router, useValue: router },
         { provide: AccountService, useValue: { getAuthenticationState: () => authenticationState.asObservable() } },
@@ -34,7 +36,7 @@ describe('CaseDetailPageComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(CaseDetailPageComponent);
     component = fixture.componentInstance;
-    TestBed.inject(MockHealthConnectRepository).reset();
+    TestBed.inject(FakeHealthConnectRepository).reset();
     fixture.detectChanges();
     router.navigate.mockClear();
   });
@@ -46,7 +48,7 @@ describe('CaseDetailPageComponent', () => {
 
     component.save();
 
-    expect(TestBed.inject(MockHealthConnectRepository).findCase('case-kojo-urgent')).toEqual(
+    expect(TestBed.inject(FakeHealthConnectRepository).findCase('case-kojo-urgent')).toEqual(
       expect.objectContaining({
         symptoms: 'Updated symptom',
         diagnosis: 'Updated diagnosis',
@@ -65,7 +67,7 @@ describe('CaseDetailPageComponent', () => {
 
     expect(component.canManageCases()).toBe(false);
     expect(fixture.nativeElement.querySelector('button[type="submit"]').disabled).toBe(true);
-    expect(TestBed.inject(MockHealthConnectRepository).findCase('case-kojo-urgent')?.diagnosis).not.toBe('Attempted update');
+    expect(TestBed.inject(FakeHealthConnectRepository).findCase('case-kojo-urgent')?.diagnosis).not.toBe('Attempted update');
   });
 
   it('uses browser printing and preserves the print-friendly action hook', () => {

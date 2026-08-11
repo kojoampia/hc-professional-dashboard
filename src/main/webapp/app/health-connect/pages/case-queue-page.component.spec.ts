@@ -5,7 +5,8 @@ import { BehaviorSubject } from 'rxjs';
 
 import { AccountService } from 'app/core/auth/account.service';
 
-import { MockHealthConnectRepository } from '../health-connect.repository';
+import { FakeHealthConnectRepository } from '../testing/fake-health-connect.repository';
+import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
 import CaseQueuePageComponent from './case-queue-page.component';
 
 describe('CaseQueuePageComponent', () => {
@@ -36,6 +37,7 @@ describe('CaseQueuePageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [CaseQueuePageComponent, TranslateModule.forRoot()],
       providers: [
+        { provide: HEALTH_CONNECT_REPOSITORY, useExisting: FakeHealthConnectRepository },
         { provide: ActivatedRoute, useValue: route },
         { provide: Router, useValue: router },
         { provide: AccountService, useValue: { getAuthenticationState: () => authenticationState.asObservable() } },
@@ -43,7 +45,7 @@ describe('CaseQueuePageComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(CaseQueuePageComponent);
     component = fixture.componentInstance;
-    TestBed.inject(MockHealthConnectRepository).reset();
+    TestBed.inject(FakeHealthConnectRepository).reset();
     fixture.detectChanges();
     router.navigate.mockClear();
   });
@@ -91,10 +93,10 @@ describe('CaseQueuePageComponent', () => {
     const closedCase = component.rows()[0];
 
     component.handleAction({ actionId: 'reopen', row: closedCase });
-    expect(TestBed.inject(MockHealthConnectRepository).findCase(closedCase.id)?.status).toBe('open');
+    expect(TestBed.inject(FakeHealthConnectRepository).findCase(closedCase.id)?.status).toBe('open');
     expect(component.rows()).toHaveLength(2);
 
-    TestBed.inject(MockHealthConnectRepository).reset();
+    TestBed.inject(FakeHealthConnectRepository).reset();
     const archivedCase = component.rows()[0];
     component.handleAction({ actionId: 'archive', row: archivedCase });
     expect(component.rows()).toHaveLength(2);
@@ -102,6 +104,6 @@ describe('CaseQueuePageComponent', () => {
     authenticationState.next({ ...authenticationState.value, authorities: ['ROLE_USER'] });
     const protectedCase = component.rows()[0];
     component.handleAction({ actionId: 'reopen', row: protectedCase });
-    expect(TestBed.inject(MockHealthConnectRepository).findCase(protectedCase.id)?.status).toBe('closed');
+    expect(TestBed.inject(FakeHealthConnectRepository).findCase(protectedCase.id)?.status).toBe('closed');
   });
 });

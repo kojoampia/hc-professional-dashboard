@@ -4,7 +4,8 @@ import { ActivatedRoute, ParamMap, Router, convertToParamMap } from '@angular/ro
 import { BehaviorSubject } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { MockHealthConnectRepository } from '../health-connect.repository';
+import { FakeHealthConnectRepository } from '../testing/fake-health-connect.repository';
+import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
 import SearchInputComponent from '../../shared/health-connect/form-controls/search-input.component';
 import PatientDirectoryPageComponent from './patient-directory-page.component';
 
@@ -26,13 +27,14 @@ describe('PatientDirectoryPageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [PatientDirectoryPageComponent, TranslateModule.forRoot()],
       providers: [
+        { provide: HEALTH_CONNECT_REPOSITORY, useExisting: FakeHealthConnectRepository },
         { provide: ActivatedRoute, useValue: route },
         { provide: Router, useValue: router },
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(PatientDirectoryPageComponent);
     component = fixture.componentInstance;
-    TestBed.inject(MockHealthConnectRepository).reset();
+    TestBed.inject(FakeHealthConnectRepository).reset();
     fixture.detectChanges();
     router.navigate.mockClear();
   });

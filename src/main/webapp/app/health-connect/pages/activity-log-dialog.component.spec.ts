@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { MockHealthConnectRepository } from '../health-connect.repository';
+import { FakeHealthConnectRepository } from '../testing/fake-health-connect.repository';
+import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
 import ActivityLogDialogComponent from './activity-log-dialog.component';
 
 describe('ActivityLogDialogComponent', () => {
@@ -10,12 +11,13 @@ describe('ActivityLogDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: [{ provide: HEALTH_CONNECT_REPOSITORY, useExisting: FakeHealthConnectRepository }],
       imports: [ActivityLogDialogComponent, TranslateModule.forRoot()],
     }).compileComponents();
     fixture = TestBed.createComponent(ActivityLogDialogComponent);
     component = fixture.componentInstance;
     component.patientId = 'patient-kojo';
-    TestBed.inject(MockHealthConnectRepository).reset();
+    TestBed.inject(FakeHealthConnectRepository).reset();
     fixture.detectChanges();
   });
 
@@ -43,7 +45,7 @@ describe('ActivityLogDialogComponent', () => {
 
     component.save();
 
-    expect(TestBed.inject(MockHealthConnectRepository).findPatient('patient-kojo')?.activities).toEqual(
+    expect(TestBed.inject(FakeHealthConnectRepository).findPatient('patient-kojo')?.activities).toEqual(
       expect.arrayContaining([expect.objectContaining({ label: 'Follow up', description: 'Call next of kin.' })]),
     );
     expect(closed).toHaveBeenCalledTimes(1);
