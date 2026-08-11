@@ -1,7 +1,13 @@
 /**
- * Dashboard REST contracts — see professional-web.md §5
- * (REST contracts). Backed by the `patientService` microservice; none of
- * these endpoints exist yet, this is the spec they're built against.
+ * Dashboard REST contracts.
+ *
+ * `DashboardSummaryDto` is the wire shape the dashboard renders, but professionalservice only fills
+ * part of it: `patients`, `female`, `male` and `kids`. The case counts are absent from the response
+ * and filled in by `HttpHealthConnectRepository` from the clinical cases it already loaded — see
+ * `dashboard-api.service.ts` for why they are not served.
+ *
+ * The remaining three shapes are no longer fetched from anywhere; the charts are computed from the
+ * case cache. They are kept because the chart components type against them.
  */
 
 export interface DashboardSummaryDto {

@@ -18,7 +18,7 @@ describe('PatientApiService', () => {
 
   it('queries the patient list with paging params', () => {
     service.query({ query: 'kojo', page: 0, size: 20 }).subscribe();
-    const req = httpMock.expectOne(request => request.url.endsWith('services/patientservice/api/patients'));
+    const req = httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/patients'));
     expect(req.request.method).toBe('GET');
     expect(req.request.params.get('query')).toBe('kojo');
     expect(req.request.params.get('page')).toBe('0');
@@ -28,14 +28,14 @@ describe('PatientApiService', () => {
 
   it('fetches a single patient record', () => {
     service.find('patient-kojo').subscribe();
-    const req = httpMock.expectOne(request => request.url.endsWith('services/patientservice/api/patients/patient-kojo'));
+    const req = httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo'));
     expect(req.request.method).toBe('GET');
     req.flush({});
   });
 
   it('posts a new activity log entry', () => {
     service.appendActivity('patient-kojo', { title: 'Vitals recorded', description: 'BP 120/80' }).subscribe();
-    const req = httpMock.expectOne(request => request.url.endsWith('services/patientservice/api/patients/patient-kojo/activities'));
+    const req = httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo/activities'));
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ title: 'Vitals recorded', description: 'BP 120/80' });
     req.flush({});
@@ -43,7 +43,7 @@ describe('PatientApiService', () => {
 
   it('posts a new report', () => {
     service.appendReport('patient-kojo', { reportType: 'lab' }).subscribe();
-    const req = httpMock.expectOne(request => request.url.endsWith('services/patientservice/api/patients/patient-kojo/reports'));
+    const req = httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo/reports'));
     expect(req.request.method).toBe('POST');
     req.flush({});
   });

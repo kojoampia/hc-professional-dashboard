@@ -18,7 +18,7 @@ describe('HttpHealthConnectRepository', () => {
 
   const flushInitialLoad = () => {
     httpMock
-      .expectOne(request => request.url.endsWith('services/patientservice/api/patients'))
+      .expectOne(request => request.url.endsWith('services/professionalservice/api/patients'))
       .flush(
         [{ id: 'patient-kojo', patientName: 'Kojo Ampia-Addison', lastActivityAt: '2026-07-20T05:00:00Z', sex: 'male', isChild: false }],
         { headers: { 'X-Total-Count': '1' } },
@@ -41,9 +41,6 @@ describe('HttpHealthConnectRepository', () => {
         { headers: {} },
       );
     httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/duty-rosters')).flush([]);
-    httpMock.expectOne(request => request.url.endsWith('services/patientservice/api/dashboard/case-timeline')).flush([]);
-    httpMock.expectOne(request => request.url.endsWith('services/patientservice/api/dashboard/case-distribution')).flush([]);
-    httpMock.expectOne(request => request.url.endsWith('services/patientservice/api/dashboard/case-by-patient-group')).flush([]);
   };
 
   it('loads the patient list and case queue on construction', () => {
@@ -62,7 +59,7 @@ describe('HttpHealthConnectRepository', () => {
 
     expect(repository.findPatient('patient-kojo')).toBeUndefined();
 
-    const req = httpMock.expectOne(request => request.url.endsWith('services/patientservice/api/patients/patient-kojo'));
+    const req = httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo'));
     req.flush({
       id: 'patient-kojo',
       patientName: 'Kojo Ampia-Addison',

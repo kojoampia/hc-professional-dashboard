@@ -29,14 +29,18 @@ export interface PatientQuery {
  * med-case.service.ts and friends.
  *
  * Not wired into the app yet — see ../http-health-connect.repository.ts and
- * professional-web.md §5: no backend `Patient` resource exists in any microservice
+ * Served by professionalservice, not patientservice. patientservice has no Patient resource at all
+ * — patients are Profile documents there — so the generated `patient.service.ts` under
+ * entities/patientservice has always pointed at a path that does not exist. professionalservice owns
+ * the relation (which patients this clinician has worked with) and assembles the record by reading
+ * across, so this is the only patient endpoint the dashboard should call.
  * as of this migration.
  */
 @Injectable({ providedIn: 'root' })
 export class PatientApiService {
   private readonly http = inject(HttpClient);
   private readonly applicationConfigService = inject(ApplicationConfigService);
-  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/patients', 'patientservice');
+  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/patients', 'professionalservice');
 
   query(request: PatientQuery = {}): Observable<HttpResponse<PatientListItemDto[]>> {
     const options = createRequestOption(request);

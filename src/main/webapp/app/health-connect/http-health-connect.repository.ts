@@ -3,7 +3,6 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { ClinicalCaseService } from 'app/entities/patientservice/clinical-case/service/clinical-case.service';
 import { IClinicalCase } from 'app/entities/patientservice/clinical-case/clinical-case.model';
 
-import { DashboardApiService } from './api/dashboard-api.service';
 import { DutyRosterApiService } from './api/duty-roster-api.service';
 import { PatientListItemDto } from './api/patient-api.model';
 import { PatientApiService } from './api/patient-api.service';
@@ -54,7 +53,6 @@ import { HealthConnectRepository, PatientDirectoryFilters } from './health-conne
 // throws NullInjectorError the first time any dashboard route is opened.
 @Injectable({ providedIn: 'root' })
 export class HttpHealthConnectRepository implements HealthConnectRepository {
-  private readonly dashboardApi = inject(DashboardApiService);
   private readonly patientApi = inject(PatientApiService);
   private readonly dutyRosterApi = inject(DutyRosterApiService);
   private readonly clinicalCaseService = inject(ClinicalCaseService);
@@ -64,7 +62,6 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
   private readonly pendingRecordFetches = new Set<string>();
   private readonly clinicalCaseCache = signal<readonly IClinicalCase[]>([]);
   private readonly rosterCache = signal<readonly DutyRoster[]>([]);
-  private readonly chartCache = signal<ChartData>({ caseTimeline: [], caseDistribution: [], casesByPatient: [] });
   private readonly archivedCaseIds = signal<ReadonlySet<string>>(new Set());
   private readonly loading = signal(false);
   private readonly error = signal<string | null>(null);
@@ -84,7 +81,47 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
   readonly caseCounts = computed<Record<CaseStatus, number>>(() =>
     this.caseQueue().reduce((counts, item) => ({ ...counts, [item.status]: counts[item.status] + 1 }), { urgent: 0, open: 0, closed: 0 }),
   );
-  readonly charts = computed<ChartData>(() => this.chartCache());
+  /**
+   * Charts derived from the cases already loaded, not fetched.
+   *
+   * Every one of these is a pure function of the case collection, which this repository holds in a
+   * signal. Three round trips to a service that would only re-aggregate the same data bought
+   * nothing, and made each chart fail independently when that service was slow. As a `computed`
+   * they also update the moment a case changes, which the fetched version did not.
+   */
+  readonly charts = computed<ChartData>(() => {
+    const cases = this.clinicalCaseCache().filter(item => !this.archivedCaseIds().has(item.id ?? ''));
+
+    // Cases opened per month, oldest first. Keyed YYYY-MM so the sort is lexicographic.
+    const byMonth = new Map<string, number>();
+    for (const item of cases) {
+      const openedAt = item.openedAt;
+      if (!openedAt) {
+        continue;
+      }
+      const month = openedAt.format('YYYY-MM');
+      byMonth.set(month, (byMonth.get(month) ?? 0) + 1);
+    }
+    const caseTimeline = [...byMonth.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([month, count]) => ({ x: month, y: count }));
+
+    // Distribution over status, which is what the pie has always shown.
+    const byStatus = new Map<string, number>();
+    for (const item of cases) {
+      const status = (item.status ?? 'unknown').toLowerCase();
+      byStatus.set(status, (byStatus.get(status) ?? 0) + 1);
+    }
+    const caseDistribution = [...byStatus.entries()].map(([label, value]) => ({ label, value }));
+
+    return {
+      caseTimeline,
+      caseDistribution,
+      // Left empty deliberately. This chart split patients into "new" and "returning", and nothing
+      // in the data defines either — the old numbers came from fixtures, and any rule invented here
+      // (first case ever? first this month?) would be a clinical claim dressed as a computation.
+      // An empty chart is honest; a plausible one is not.
+      casesByPatient: [],
+    };
+  });
 
   constructor() {
     this.loadAll();
@@ -339,30 +376,6 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
     this.dutyRosterApi.list().subscribe({
       next: rosters => this.rosterCache.set(rosters),
       error: () => this.error.set('Failed to load duty rosters'),
-    });
-
-    this.dashboardApi.caseTimeline().subscribe({
-      next: points =>
-        this.chartCache.update(charts => ({
-          ...charts,
-          caseTimeline: points.map(point => ({ x: point.month, y: point.newCases })),
-        })),
-    });
-    this.dashboardApi.caseDistribution().subscribe({
-      next: segments => this.chartCache.update(charts => ({ ...charts, caseDistribution: segments })),
-    });
-    this.dashboardApi.caseByPatientGroup().subscribe({
-      next: groups =>
-        this.chartCache.update(charts => ({
-          ...charts,
-          casesByPatient: groups.map(group => ({
-            label: group.group,
-            bars: [
-              { label: 'new', value: group.new },
-              { label: 'returning', value: group.returning },
-            ],
-          })),
-        })),
     });
 
     this.loading.set(false);
