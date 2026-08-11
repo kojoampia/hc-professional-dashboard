@@ -7,7 +7,7 @@ import { DutyRosterAssignmentDto, DutyRosterAssignmentsService } from './duty-ro
 
 /**
  * WP6: the sidebar shift label is computed from real assignments returned by
- * `/api/onboarding/duty-rosters/my` using the shift windows
+ * `/api/duty-rosters/my` using the shift windows
  * MORNING 06–14, AFTERNOON 14–22, NIGHT 22–06.
  */
 describe('DutyRosterAssignmentsService', () => {
@@ -42,7 +42,7 @@ describe('DutyRosterAssignmentsService', () => {
     advanceTo(new Date('2026-07-30T09:30:00'));
 
     service.loadMyAssignments();
-    const request = httpMock.expectOne('services/professionalservice/api/onboarding/duty-rosters/my');
+    const request = httpMock.expectOne('services/professionalservice/api/duty-rosters/my');
     request.flush([assignment({})]);
     expect(service.myAssignments()).toHaveLength(1);
     expect(service.shiftLabel()).toEqual({ translationKey: 'healthConnect.roster.activeShift', translationParams: { time: '14:00' } });

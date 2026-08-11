@@ -26,7 +26,7 @@ const DUTIES: readonly string[] = [
 /**
  * Duty roster (WP6, admin-assignment-only decision): professionals see their
  * own assignments read-only; administrators additionally assign and unassign.
- * Backed by the real `/api/onboarding/duty-rosters` surface — the mock
+ * Backed by the real `/api/duty-rosters` surface — the mock
  * subscribe/unsubscribe flow is gone.
  */
 @Component({

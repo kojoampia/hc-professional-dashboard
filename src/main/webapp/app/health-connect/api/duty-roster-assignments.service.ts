@@ -38,7 +38,7 @@ const pad = (n: number): string => String(n).padStart(2, '0');
 
 /**
  * Real duty-roster assignments API (WP6) against the WP6
- * `/api/onboarding/duty-rosters` surface — replaces the mock repository path
+ * `/api/duty-rosters` surface — replaces the mock repository path
  * for the roster view and the sidebar shift label. Assignment-only policy:
  * professionals load their own assignments; administrators assign/unassign.
  */
@@ -46,7 +46,7 @@ const pad = (n: number): string => String(n).padStart(2, '0');
 export class DutyRosterAssignmentsService {
   private readonly http = inject(HttpClient);
   private readonly applicationConfigService = inject(ApplicationConfigService);
-  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/onboarding/duty-rosters', 'professionalservice');
+  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/duty-rosters', 'professionalservice');
 
   private readonly myAssignmentsState = signal<readonly DutyRosterAssignmentDto[]>([]);
   readonly myAssignments = computed(() => this.myAssignmentsState());
