@@ -11,7 +11,8 @@
       "menu": "Menu",
       "messages": "Messages",
       "about": "Why Abofonsa",
-      "onboarding": "Onboarding"
+      "onboarding": "Onboarding",
+      "earnings": "My earnings"
     },
     "roles": {
       "admin": "Admin",
@@ -370,6 +371,38 @@
       "expiringSoon": "Expiring soon",
       "noneExpiring": "No licenses lapsing in the next 30 days.",
       "auditFeed": "Recent onboarding audit events"
+    },
+    "earnings": {
+      "title": "My earnings",
+      "summary": "Earnings summary",
+      "totalAccrued": "Accrued",
+      "accruedThisPeriod": "Accrued this period",
+      "shiftsCompleted": "Shifts completed",
+      "shiftsCompletedCount": "{{count}} shifts completed",
+      "period": "Period",
+      "paidThrough": "Counts shifts up to yesterday.",
+      "granularity": "Group by",
+      "granularities": {
+        "DAILY": "Daily",
+        "WEEKLY": "Weekly",
+        "MONTHLY": "Monthly"
+      },
+      "series": "Earnings over time",
+      "seriesDescription": "Amount accrued in each period of the selected window.",
+      "accrued": "Amount accrued",
+      "periodStart": "Period",
+      "roster": "My shifts",
+      "payable": "Counted",
+      "notPayable": "Not counted",
+      "viewDetail": "View earnings",
+      "unpriced": "{{count}} of your shifts fall before any rate was set for your role, so they count as worked but add nothing to the total. Your administrator sets wage rates.",
+      "noRecord": "You do not have a professional record yet, so there are no shifts or earnings to show. This appears once your onboarding is approved.",
+      "shiftNames": {
+        "DAY": "Day",
+        "EVENING": "Evening",
+        "NIGHT": "Night",
+        "OFF": "Off"
+      }
     }
   }
 }
