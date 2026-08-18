@@ -11,7 +11,8 @@
       "menu": "Menú",
       "messages": "Mensajes",
       "about": "Por qué Abofonsa",
-      "onboarding": "Incorporación"
+      "onboarding": "Incorporación",
+      "earnings": "Mis ingresos"
     },
     "roles": {
       "admin": "Administrador",
@@ -370,6 +371,38 @@
       "expiringSoon": "Vence pronto",
       "noneExpiring": "Ninguna licencia vence en los próximos 30 días.",
       "auditFeed": "Últimos eventos de auditoría de incorporación"
+    },
+    "earnings": {
+      "title": "Mis ingresos",
+      "summary": "Resumen de ingresos",
+      "totalAccrued": "Acumulado",
+      "accruedThisPeriod": "Acumulado en este periodo",
+      "shiftsCompleted": "Turnos completados",
+      "shiftsCompletedCount": "{{count}} turnos completados",
+      "period": "Periodo",
+      "paidThrough": "Incluye los turnos hasta ayer.",
+      "granularity": "Agrupar por",
+      "granularities": {
+        "DAILY": "Diario",
+        "WEEKLY": "Semanal",
+        "MONTHLY": "Mensual"
+      },
+      "series": "Ingresos a lo largo del tiempo",
+      "seriesDescription": "Importe acumulado en cada periodo del intervalo seleccionado.",
+      "accrued": "Importe acumulado",
+      "periodStart": "Periodo",
+      "roster": "Mis turnos",
+      "payable": "Contabilizado",
+      "notPayable": "No contabilizado",
+      "viewDetail": "Ver ingresos",
+      "unpriced": "{{count}} de tus turnos son anteriores a la fijación de una tarifa para tu rol, por lo que cuentan como trabajados pero no suman al total. Tu administrador fija las tarifas.",
+      "noRecord": "Todavía no tienes un registro profesional, así que no hay turnos ni ingresos que mostrar. Aparecerán cuando se apruebe tu incorporación.",
+      "shiftNames": {
+        "DAY": "Día",
+        "EVENING": "Tarde",
+        "NIGHT": "Noche",
+        "OFF": "Libre"
+      }
     }
   }
 }

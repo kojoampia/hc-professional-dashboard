@@ -134,6 +134,14 @@ export const SHELL_NAV_GROUPS: ShellNavGroup[] = [
         dataCy: 'onboardingMenu',
       },
       {
+        path: '/earnings',
+        labelKey: 'healthConnect.navigation.earnings',
+        icon: 'payments',
+        crumbKey: 'global.menu.account.main',
+        requiresAuth: true,
+        dataCy: 'earningsMenu',
+      },
+      {
         path: '/messages',
         labelKey: 'healthConnect.navigation.messages',
         icon: 'chat',

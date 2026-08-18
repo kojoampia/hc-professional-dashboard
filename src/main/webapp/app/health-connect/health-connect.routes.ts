@@ -34,6 +34,7 @@ const patientRecordPage = (): Promise<typeof import('./pages/patient-record-page
 const caseDetailPage = (): Promise<typeof import('./pages/case-detail-page.component')> => import('./pages/case-detail-page.component');
 const caseQueuePage = (): Promise<typeof import('./pages/case-queue-page.component')> => import('./pages/case-queue-page.component');
 const dutyRosterPage = (): Promise<typeof import('./pages/duty-roster-page.component')> => import('./pages/duty-roster-page.component');
+const earningsPage = (): Promise<typeof import('./pages/earnings-page.component')> => import('./pages/earnings-page.component');
 const onboardingPage = (): Promise<typeof import('./pages/onboarding-page.component')> => import('./pages/onboarding-page.component');
 const reviewQueuePage = (): Promise<typeof import('./pages/review-queue-page.component')> => import('./pages/review-queue-page.component');
 const reviewDetailPage = (): Promise<typeof import('./pages/review-detail-page.component')> =>
@@ -99,6 +100,14 @@ const routes: Routes = [
     ...protectedFeatureRoute,
     loadComponent: dutyRosterPage,
     data: { ...protectedFeatureRoute.data, titleKey: 'healthConnect.navigation.dutyRoster' },
+  },
+  {
+    // Every clinical role, including the four that are read-only elsewhere: earnings are a
+    // professional's own record of their own work, and nothing on this surface mutates anything.
+    path: 'earnings',
+    ...protectedFeatureRoute,
+    loadComponent: earningsPage,
+    data: { ...protectedFeatureRoute.data, titleKey: 'healthConnect.earnings.title' },
   },
   {
     path: 'review',

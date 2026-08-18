@@ -11,7 +11,8 @@
       "menu": "Menu",
       "messages": "Messages",
       "about": "Pourquoi Abofonsa",
-      "onboarding": "Intégration"
+      "onboarding": "Intégration",
+      "earnings": "Mes revenus"
     },
     "roles": {
       "admin": "Administrateur",
@@ -370,6 +371,38 @@
       "expiringSoon": "Expire bientôt",
       "noneExpiring": "Aucune licence n’expire dans les 30 prochains jours.",
       "auditFeed": "Derniers événements d'audit d'intégration"
+    },
+    "earnings": {
+      "title": "Mes revenus",
+      "summary": "Récapitulatif des revenus",
+      "totalAccrued": "Cumulé",
+      "accruedThisPeriod": "Cumulé sur la période",
+      "shiftsCompleted": "Gardes effectuées",
+      "shiftsCompletedCount": "{{count}} gardes effectuées",
+      "period": "Période",
+      "paidThrough": "Comptabilise les gardes jusqu'à hier.",
+      "granularity": "Regrouper par",
+      "granularities": {
+        "DAILY": "Quotidien",
+        "WEEKLY": "Hebdomadaire",
+        "MONTHLY": "Mensuel"
+      },
+      "series": "Revenus dans le temps",
+      "seriesDescription": "Montant cumulé sur chaque période de l'intervalle sélectionné.",
+      "accrued": "Montant cumulé",
+      "periodStart": "Période",
+      "roster": "Mes gardes",
+      "payable": "Comptabilisée",
+      "notPayable": "Non comptabilisée",
+      "viewDetail": "Voir les revenus",
+      "unpriced": "{{count}} de vos gardes sont antérieures à la définition d'un tarif pour votre rôle : elles comptent comme travaillées mais n'ajoutent rien au total. Les tarifs sont fixés par votre administrateur.",
+      "noRecord": "Vous n'avez pas encore de dossier professionnel : il n'y a donc ni garde ni revenu à afficher. Cela apparaîtra une fois votre intégration validée.",
+      "shiftNames": {
+        "DAY": "Jour",
+        "EVENING": "Soirée",
+        "NIGHT": "Nuit",
+        "OFF": "Repos"
+      }
     }
   }
 }
