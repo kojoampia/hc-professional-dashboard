@@ -1,0 +1,224 @@
+<div class="rounded-hpd-lg border border-hpd-border bg-white p-8 shadow-hpd-sm">
+  <h2 class="text-lg font-extrabold tracking-tight text-hpd-primary-dark" jhiTranslate="healthConnect.profile.clinical.title">
+    Clinical profile
+  </h2>
+  <p class="mb-6 mt-1 text-sm text-hpd-muted" jhiTranslate="healthConnect.profile.clinical.subtitle">
+    The details your credentialing record is filed under.
+  </p>
+
+  @switch (loadState()) {
+    @case ('loading') {
+      <p class="text-sm text-hpd-muted" jhiTranslate="healthConnect.profile.clinical.loading">Loading your profile…</p>
+    }
+    @case ('error') {
+      <div class="rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger">
+        <span jhiTranslate="healthConnect.profile.clinical.loadError">Unable to load this information.</span>
+        <button class="hpd-focusable ml-2 font-bold underline" type="button" (click)="load()" jhiTranslate="healthConnect.actions.retry">
+          Retry
+        </button>
+      </div>
+    }
+    @case ('ready') {
+      <form class="grid gap-6" name="clinicalProfileForm" role="form" (ngSubmit)="save()" [formGroup]="form" novalidate>
+        <fieldset class="grid gap-4 sm:grid-cols-2">
+          <legend class="hpd-label mb-2 sm:col-span-2" jhiTranslate="healthConnect.profile.clinical.identity">Identity</legend>
+
+          <div>
+            <label class="hpd-label" for="cp-title" jhiTranslate="healthConnect.onboarding.fields.title">Title</label>
+            <input
+              class="hpd-focusable hpd-input"
+              type="text"
+              id="cp-title"
+              formControlName="title"
+              placeholder="{{ 'healthConnect.profile.clinical.titlePlaceholder' | translate }}"
+              data-cy="clinicalTitle"
+            />
+          </div>
+
+          <div>
+            <label class="hpd-label" for="cp-birthDate" jhiTranslate="healthConnect.onboarding.fields.birthDate">Date of birth</label>
+            <input class="hpd-focusable hpd-input" type="date" id="cp-birthDate" formControlName="birthDate" data-cy="clinicalBirthDate" />
+            @if (form.get('birthDate')!.invalid && form.get('birthDate')!.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+
+          <div>
+            <label class="hpd-label" for="cp-sex" jhiTranslate="healthConnect.onboarding.fields.sex">Sex</label>
+            <select class="hpd-focusable hpd-input" id="cp-sex" formControlName="sex" data-cy="clinicalSex">
+              <option value="">—</option>
+              <option value="female">{{ 'healthConnect.stats.female' | translate }}</option>
+              <option value="male">{{ 'healthConnect.stats.male' | translate }}</option>
+              <option value="unspecified">{{ 'healthConnect.stats.unspecified' | translate }}</option>
+            </select>
+            @if (form.get('sex')!.invalid && form.get('sex')!.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+
+          <div>
+            <label class="hpd-label" for="cp-mobilePhone" jhiTranslate="healthConnect.onboarding.fields.mobilePhone">Mobile phone</label>
+            <input
+              class="hpd-focusable hpd-input"
+              type="tel"
+              id="cp-mobilePhone"
+              formControlName="mobilePhone"
+              data-cy="clinicalMobilePhone"
+            />
+            @if (form.get('mobilePhone')!.invalid && form.get('mobilePhone')!.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+
+          <div>
+            <label class="hpd-label" for="cp-cardType" jhiTranslate="healthConnect.onboarding.fields.cardType">Identity card</label>
+            <select class="hpd-focusable hpd-input" id="cp-cardType" formControlName="cardType" data-cy="clinicalCardType">
+              @for (idType of identityTypes; track idType) {
+                <option [value]="idType">{{ 'healthConnect.onboarding.documentTypes.' + idType | translate }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label class="hpd-label" for="cp-cardNumber" jhiTranslate="healthConnect.onboarding.fields.cardNumber">Card number</label>
+            <input
+              class="hpd-focusable hpd-input"
+              type="text"
+              id="cp-cardNumber"
+              formControlName="cardNumber"
+              data-cy="clinicalCardNumber"
+            />
+            @if (form.get('cardNumber')!.invalid && form.get('cardNumber')!.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class="grid gap-4 sm:grid-cols-2">
+          <legend class="hpd-label mb-2 sm:col-span-2" jhiTranslate="healthConnect.profile.clinical.address">Address</legend>
+
+          <div>
+            <label class="hpd-label" for="cp-digitalAddress" jhiTranslate="healthConnect.onboarding.fields.digitalAddress"
+              >Digital address</label
+            >
+            <input
+              class="hpd-focusable hpd-input"
+              type="text"
+              id="cp-digitalAddress"
+              formControlName="digitalAddress"
+              data-cy="clinicalDigitalAddress"
+            />
+          </div>
+
+          <div>
+            <label class="hpd-label" for="cp-streetAddress" jhiTranslate="healthConnect.onboarding.fields.streetAddress">Street</label>
+            <input
+              class="hpd-focusable hpd-input"
+              type="text"
+              id="cp-streetAddress"
+              formControlName="streetAddress"
+              data-cy="clinicalStreetAddress"
+            />
+            @if (form.get('streetAddress')!.invalid && form.get('streetAddress')!.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+
+          <div>
+            <label class="hpd-label" for="cp-town" jhiTranslate="healthConnect.onboarding.fields.town">Town</label>
+            <input class="hpd-focusable hpd-input" type="text" id="cp-town" formControlName="town" data-cy="clinicalTown" />
+          </div>
+
+          <div>
+            <label class="hpd-label" for="cp-city" jhiTranslate="healthConnect.onboarding.fields.city">City</label>
+            <input class="hpd-focusable hpd-input" type="text" id="cp-city" formControlName="city" data-cy="clinicalCity" />
+            @if (form.get('city')!.invalid && form.get('city')!.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+
+          <div>
+            <label class="hpd-label" for="cp-district" jhiTranslate="healthConnect.onboarding.fields.district">District</label>
+            <input class="hpd-focusable hpd-input" type="text" id="cp-district" formControlName="district" data-cy="clinicalDistrict" />
+          </div>
+
+          <div>
+            <label class="hpd-label" for="cp-region" jhiTranslate="healthConnect.onboarding.fields.region">Region</label>
+            <input class="hpd-focusable hpd-input" type="text" id="cp-region" formControlName="region" data-cy="clinicalRegion" />
+            @if (form.get('region')!.invalid && form.get('region')!.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+
+          <div>
+            <label class="hpd-label" for="cp-country" jhiTranslate="healthConnect.onboarding.fields.country">Country</label>
+            <input class="hpd-focusable hpd-input" type="text" id="cp-country" formControlName="country" data-cy="clinicalCountry" />
+            @if (form.get('country')!.invalid && form.get('country')!.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class="grid gap-4 sm:grid-cols-3">
+          <legend class="hpd-label mb-2 sm:col-span-3" jhiTranslate="healthConnect.profile.clinical.emergencyContact">
+            Emergency contact
+          </legend>
+
+          <div>
+            <label class="hpd-label" for="cp-contactName" jhiTranslate="healthConnect.onboarding.fields.contactName">Name</label>
+            <input
+              class="hpd-focusable hpd-input"
+              type="text"
+              id="cp-contactName"
+              formControlName="contactName"
+              data-cy="clinicalContactName"
+            />
+            @if (form.get('contactName')!.invalid && form.get('contactName')!.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+
+          <div>
+            <label class="hpd-label" for="cp-contactRelationship" jhiTranslate="healthConnect.onboarding.fields.contactRelationship"
+              >Relationship</label
+            >
+            <input
+              class="hpd-focusable hpd-input"
+              type="text"
+              id="cp-contactRelationship"
+              formControlName="contactRelationship"
+              data-cy="clinicalContactRelationship"
+            />
+            @if (form.get('contactRelationship')!.invalid && form.get('contactRelationship')!.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+
+          <div>
+            <label class="hpd-label" for="cp-contactPhone" jhiTranslate="healthConnect.onboarding.fields.contactPhone">Phone</label>
+            <input
+              class="hpd-focusable hpd-input"
+              type="tel"
+              id="cp-contactPhone"
+              formControlName="contactPhone"
+              data-cy="clinicalContactPhone"
+            />
+            @if (form.get('contactPhone')!.invalid && form.get('contactPhone')!.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+        </fieldset>
+
+        <button
+          class="hpd-focusable hpd-btn hpd-btn-primary justify-self-start"
+          type="submit"
+          [disabled]="saving()"
+          jhiTranslate="healthConnect.profile.clinical.save"
+          data-cy="clinicalSubmit"
+        >
+          Save profile
+        </button>
+      </form>
+    }
+  }
+</div>

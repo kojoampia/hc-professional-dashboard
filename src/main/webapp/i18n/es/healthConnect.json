@@ -415,6 +415,30 @@
         "NIGHT": "Noche",
         "OFF": "Libre"
       }
+    },
+    "profile": {
+      "title": "Perfil",
+      "subtitle": "Tu cuenta, tus datos de acreditación y tu contraseña.",
+      "account": {
+        "title": "Cuenta",
+        "subtitle": "Cómo inicias sesión y cómo se dirige a ti el portal."
+      },
+      "password": {
+        "title": "Contraseña",
+        "subtitle": "Cambia la contraseña con la que inicias sesión."
+      },
+      "clinical": {
+        "title": "Perfil clínico",
+        "subtitle": "Los datos con los que consta tu expediente de acreditación.",
+        "identity": "Identidad",
+        "address": "Dirección",
+        "emergencyContact": "Contacto de emergencia",
+        "titlePlaceholder": "Dr / DUE / Téc. emerg.",
+        "loading": "Cargando tu perfil…",
+        "loadError": "No se puede cargar esta información.",
+        "save": "Guardar perfil",
+        "saved": "Perfil guardado"
+      }
     }
   }
 }

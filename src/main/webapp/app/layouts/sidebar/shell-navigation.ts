@@ -146,13 +146,6 @@ export const SHELL_NAV_GROUPS: ShellNavGroup[] = [
         badge: 'unreadMessages',
         dataCy: 'messagesMenu',
       },
-      {
-        path: '/account/password',
-        labelKey: 'global.menu.account.password',
-        icon: 'lock',
-        crumbKey: 'global.menu.account.main',
-        dataCy: 'passwordItem',
-      },
     ],
   },
 ];

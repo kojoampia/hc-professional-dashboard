@@ -203,17 +203,19 @@ describe('Sidebar Component', () => {
     const template = readFileSync(join(__dirname, 'sidebar.component.html'), 'utf8');
 
     expect(template).toContain('data-cy="accountMenu"');
-    expect(template).toContain('routerLink="/account/settings"');
+    expect(template).toContain('routerLink="/account/profile"');
   });
 
   /**
-   * Both were deliberately removed: settings is reached through the user card above, and the
-   * "Why Abofonsa" page is gone entirely. Re-adding either would resurrect a dead route.
+   * All three were deliberately removed. Settings and password are sections of the profile page
+   * reached through the user card above; the "Why Abofonsa" page is gone entirely. Re-adding any of
+   * them would resurrect a route that no longer exists.
    */
-  it('should not offer the removed about and settings destinations', () => {
+  it('should not offer the removed about, settings and password destinations', () => {
     const paths = SHELL_NAV_GROUPS.flatMap(group => group.items).map(item => item.path);
 
     expect(paths).not.toContain('/about');
     expect(paths).not.toContain('/account/settings');
+    expect(paths).not.toContain('/account/password');
   });
 });
