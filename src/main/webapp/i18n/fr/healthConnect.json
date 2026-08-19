@@ -185,7 +185,8 @@
       "product": "Professional",
       "tagline": "Espace clinicien",
       "description": "Le volet clinicien de BridgeCare — dossiers patients, triage et plannings de garde réunis au même endroit.",
-      "signInHint": "Connectez-vous à votre compte clinicien."
+      "signInHint": "Connectez-vous à votre compte clinicien.",
+      "portal": "Portail"
     },
     "messages": {
       "title": "Messages",

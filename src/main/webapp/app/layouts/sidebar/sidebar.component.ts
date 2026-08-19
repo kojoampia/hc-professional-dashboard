@@ -5,7 +5,6 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { StateStorageService } from 'app/core/auth/state-storage.service';
 import SharedModule from 'app/shared/shared.module';
-import { VERSION } from 'app/app.constants';
 import { LANGUAGES } from 'app/config/language.constants';
 import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
@@ -32,7 +31,6 @@ export default class SidebarComponent implements OnInit {
   inProduction?: boolean;
   readonly messagesApi = inject(MessagesApiService);
   languages = LANGUAGES;
-  version = '';
   account: Account | null = null;
   navGroups = SHELL_NAV_GROUPS;
 
@@ -44,11 +42,7 @@ export default class SidebarComponent implements OnInit {
     private profileService: ProfileService,
     private router: Router,
     private dutyRosterAssignments: DutyRosterAssignmentsService,
-  ) {
-    if (VERSION) {
-      this.version = VERSION.toLowerCase().startsWith('v') ? VERSION : `v${VERSION}`;
-    }
-  }
+  ) {}
 
   ngOnInit(): void {
     this.profileService.getProfileInfo().subscribe(profileInfo => {

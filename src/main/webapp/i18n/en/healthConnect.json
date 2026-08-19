@@ -185,7 +185,8 @@
       "product": "Professional",
       "tagline": "Clinician workspace",
       "description": "The clinician-facing side of BridgeCare — patient records, triage, and duty rosters in one place.",
-      "signInHint": "Sign in to your clinician account."
+      "signInHint": "Sign in to your clinician account.",
+      "portal": "Portal"
     },
     "messages": {
       "title": "Messages",
