@@ -185,7 +185,8 @@
       "product": "Professional",
       "tagline": "Arbeitsbereich für Fachkräfte",
       "description": "Die Fachkräfte-Seite von BridgeCare — Patientenakten, Triage und Dienstpläne an einem Ort.",
-      "signInHint": "Melden Sie sich bei Ihrem Fachkräfte-Konto an."
+      "signInHint": "Melden Sie sich bei Ihrem Fachkräfte-Konto an.",
+      "portal": "Portal"
     },
     "messages": {
       "title": "Nachrichten",
