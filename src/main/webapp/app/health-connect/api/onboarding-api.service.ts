@@ -196,8 +196,17 @@ export class OnboardingApiService {
     });
   }
 
+  /**
+   * 404 means "no application", which is the normal state for every clinician seeded or invited
+   * rather than hired through the careers page — both callers already handle it, the wizard by
+   * opening at the consent step and the first-login interstitial by a `catchError`. Opted out of
+   * the global error banner because it is polled from the shell on every navigation, so the
+   * untreated version put a red "Not found" over every page in the portal.
+   */
   getOwnApplication(): Observable<OnboardingApplicationDto> {
-    return this.http.get<OnboardingApplicationDto>(`${this.resourceUrl}/applications/me`);
+    return this.http.get<OnboardingApplicationDto>(`${this.resourceUrl}/applications/me`, {
+      context: new HttpContext().set(SKIP_ERROR_ALERT, true),
+    });
   }
 
   completeProfile(): Observable<OnboardingApplicationDto> {
