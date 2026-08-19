@@ -186,7 +186,17 @@
       "tagline": "Espace clinicien",
       "description": "Le volet clinicien de BridgeCare — dossiers patients, triage et plannings de garde réunis au même endroit.",
       "signInHint": "Connectez-vous à votre compte clinicien.",
-      "portal": "Portail"
+      "portal": "Portail",
+      "facts": {
+        "rolesValue": "9",
+        "roles": "Rôles cliniques",
+        "recordsValue": "1",
+        "records": "Dossier patient partagé",
+        "rostersValue": "24/7",
+        "rosters": "Couverture des gardes",
+        "languagesValue": "4",
+        "languages": "Langues"
+      }
     },
     "messages": {
       "title": "Messages",

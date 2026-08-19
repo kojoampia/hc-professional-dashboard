@@ -1,19 +1,15 @@
 import { Routes } from '@angular/router';
 
-import activateRoute from './activate/activate.route';
 import passwordRoute from './password/password.route';
-import passwordResetFinishRoute from './password-reset/finish/password-reset-finish.route';
-import passwordResetInitRoute from './password-reset/init/password-reset-init.route';
 import settingsRoute from './settings/settings.route';
-import registerRoute from './register/register.route';
 
-const accountRoutes: Routes = [
-  activateRoute,
-  passwordRoute,
-  passwordResetFinishRoute,
-  passwordResetInitRoute,
-  settingsRoute,
-  registerRoute,
-];
+/**
+ * The account screens that require an account: settings and password change.
+ *
+ * <p>Both carry their own guard, and both are children of the portal shell — someone changing their
+ * password is signed in and expects the navigation they had a moment ago. The public four live in
+ * {@link accountPublicRoutes}.
+ */
+const accountRoutes: Routes = [passwordRoute, settingsRoute];
 
 export default accountRoutes;

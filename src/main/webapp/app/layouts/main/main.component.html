@@ -1,63 +1,13 @@
 <hpd-page-ribbon></hpd-page-ribbon>
 
-<div class="flex min-h-screen bg-hpd-surface">
-  <hpd-sidebar [open]="sidebarOpen" (closeRequest)="closeSidebar()"></hpd-sidebar>
+<!--
+  A mount point, not a layout. The route chooses its own chrome: AuthShellComponent for the
+  signed-out screens and ShellComponent for the portal, so the sidebar cannot appear in front of
+  a visitor who has nowhere to navigate to.
 
-  <div class="flex min-w-0 flex-1 flex-col">
-    <header class="sticky top-0 z-20 flex items-center gap-3.5 border-b border-hpd-border bg-hpd-cream px-4 py-3 sm:px-6" data-cy="topbar">
-      <button
-        class="hpd-focusable grid h-9 w-9 flex-none cursor-pointer place-items-center rounded-[10px] border-0 bg-transparent text-hpd-primary hover:bg-black/5 lg:hidden"
-        type="button"
-        data-cy="navbarToggle"
-        [attr.aria-expanded]="sidebarOpen"
-        [attr.aria-label]="'healthConnect.navigation.menu' | translate"
-        (click)="toggleSidebar()"
-      >
-        <mat-icon aria-hidden="true">menu</mat-icon>
-      </button>
-      <div class="min-w-0">
-        @if (crumbKey) {
-          <div class="text-[11.5px] font-bold uppercase tracking-wider text-hpd-muted" data-cy="pageCrumb" [jhiTranslate]="crumbKey"></div>
-        }
-        <h1
-          class="truncate text-[19px] font-extrabold tracking-tight text-hpd-primary-dark"
-          data-cy="pageTitle"
-          [jhiTranslate]="titleKey"
-        ></h1>
-      </div>
-      <div class="ml-auto flex flex-none items-center gap-2">
-        @if (authenticated) {
-          <a
-            class="hpd-focusable relative grid h-9 w-9 place-items-center rounded-[10px] text-hpd-primary no-underline hover:bg-black/5"
-            routerLink="/messages"
-            data-cy="topbarMessages"
-            [attr.aria-label]="'healthConnect.navigation.messages' | translate"
-          >
-            <mat-icon aria-hidden="true">chat_bubble_outline</mat-icon>
-            @if (messagesApi.unreadCount() > 0) {
-              <span class="absolute right-1.5 top-1.5 h-[7px] w-[7px] rounded-full border-2 border-hpd-cream bg-hpd-danger"></span>
-            }
-          </a>
-        }
-        @if (canCreatePatients) {
-          <a class="hpd-focusable hpd-btn hpd-btn-gold !px-3.5 !py-2 !text-sm" routerLink="/patients" data-cy="topbarNewPatient">
-            <mat-icon aria-hidden="true" class="!h-4 !w-4 !text-base">add</mat-icon>
-            <span class="max-sm:hidden" [jhiTranslate]="'healthConnect.actions.newPatient'"></span>
-          </a>
-        }
-      </div>
-    </header>
-
-    <div class="flex-1 pb-20 lg:pb-0">
-      <router-outlet></router-outlet>
-    </div>
-
-    <hpd-footer></hpd-footer>
-  </div>
-</div>
-
-<hpd-tabbar></hpd-tabbar>
-
-<hpd-first-login-acknowledgement></hpd-first-login-acknowledgement>
+  The ribbon and the toast outlet stay here because they belong to every screen — a toast raised
+  by a failed sign-in has to render on the sign-in page, which is not inside either shell.
+-->
+<router-outlet></router-outlet>
 
 <hpd-toast-outlet></hpd-toast-outlet>

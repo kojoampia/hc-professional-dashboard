@@ -133,12 +133,20 @@ describe('Sidebar Component', () => {
     expect(comp.shiftLabel).toBeNull();
   });
 
-  it('should only offer the care Home entry and sign-in when logged out', () => {
+  /**
+   * There is no signed-out sidebar any more, so this asserts emptiness rather than the old
+   * Home-and-sign-in pair. The component only renders inside ShellComponent, which app.routes.ts
+   * guards as a whole — a visitor with no account gets AuthShellComponent, which carries no
+   * navigation at all.
+   *
+   * The visibility rules are kept and tested because they still run: the account resolves
+   * asynchronously, so the sidebar is briefly constructed with a null account on every cold start
+   * of the portal, and it must render nothing rather than a flash of the wrong menu.
+   */
+  it('should offer nothing at all when the account has not resolved', () => {
     comp.ngOnInit();
 
-    const care = groupByLabel('healthConnect.navigation.care');
-    expect(comp.groupVisible(care)).toBe(true);
-    expect(comp.visibleItems(care).map(item => item.labelKey)).toEqual(['global.menu.home']);
+    expect(comp.visibleItems(groupByLabel('healthConnect.navigation.care'))).toEqual([]);
     expect(comp.groupVisible(groupByLabel('global.menu.account.main'))).toBe(false);
     expect(comp.groupVisible(groupByLabel('global.menu.admin.main'))).toBe(false);
   });

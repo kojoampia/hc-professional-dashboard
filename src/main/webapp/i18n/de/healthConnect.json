@@ -186,7 +186,17 @@
       "tagline": "Arbeitsbereich für Fachkräfte",
       "description": "Die Fachkräfte-Seite von BridgeCare — Patientenakten, Triage und Dienstpläne an einem Ort.",
       "signInHint": "Melden Sie sich bei Ihrem Fachkräfte-Konto an.",
-      "portal": "Portal"
+      "portal": "Portal",
+      "facts": {
+        "rolesValue": "9",
+        "roles": "Klinische Rollen",
+        "recordsValue": "1",
+        "records": "Gemeinsame Patientenakte",
+        "rostersValue": "24/7",
+        "rosters": "Dienstplan-Abdeckung",
+        "languagesValue": "4",
+        "languages": "Sprachen"
+      }
     },
     "messages": {
       "title": "Nachrichten",

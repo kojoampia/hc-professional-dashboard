@@ -7,6 +7,7 @@ import { Authority } from 'app/config/authority.constants';
 import { GatewayAdminApiService } from '../api/gateway-admin-api.service';
 import { OnboardingApiService, OnboardingApplicationDto } from '../api/onboarding-api.service';
 import routes from '../health-connect.routes';
+import appRoutes from 'app/app.routes';
 import ReviewDetailPageComponent from './review-detail-page.component';
 import ReviewQueuePageComponent from './review-queue-page.component';
 
@@ -35,9 +36,15 @@ describe('Review pages (WP5 gate)', () => {
     it('review routes are ROLE_ADMIN only while the applicant wizard is plain-authenticated', () => {
       const review = routes.find(r => r.path === 'review')!;
       const reviewDetail = routes.find(r => r.path === 'review/:id')!;
-      const onboarding = routes.find(r => r.path === 'onboarding')!;
       expect(review.data?.['authorities']).toEqual([Authority.ADMIN]);
       expect(reviewDetail.data?.['authorities']).toEqual([Authority.ADMIN]);
+
+      // Onboarding moved out of these routes and into app.routes.ts, where it hangs off the
+      // signed-out shell behind the signed-in guard — an applicant holds only ROLE_USER, so the
+      // portal frame would offer them a sidebar that refuses them at every entry. The property
+      // under test is unchanged and still worth asserting: authenticated, but no clinical role.
+      const onboarding = appRoutes.find(r => r.path === 'onboarding')!;
+      expect(onboarding.canActivate).toBeDefined();
       expect(onboarding.data?.['authorities']).toBeUndefined();
     });
   });

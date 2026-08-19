@@ -40,19 +40,14 @@ export const SHELL_NAV_GROUPS: ShellNavGroup[] = [
     labelKey: 'healthConnect.navigation.care',
     items: [
       {
-        path: '/',
-        labelKey: 'global.menu.home',
-        icon: 'home',
-        crumbKey: 'healthConnect.navigation.overview',
-        exact: true,
-        unauthOnly: true,
-      },
-      {
-        path: '/',
+        // `/dashboard` rather than `/`, and no `exact`. The root is now a redirect to this path, so
+        // matching on `/` would highlight nothing once the redirect resolves. The signed-out `Home`
+        // entry that used to sit above this one is gone with the signed-out portal view — this
+        // sidebar only renders inside ShellComponent, which is guarded as a whole.
+        path: '/dashboard',
         labelKey: 'healthConnect.navigation.dashboard',
         icon: 'space_dashboard',
         crumbKey: 'healthConnect.navigation.overview',
-        exact: true,
         requiresAuth: true,
         tabbar: true,
       },
