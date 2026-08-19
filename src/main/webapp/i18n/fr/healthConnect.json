@@ -415,6 +415,30 @@
         "NIGHT": "Nuit",
         "OFF": "Repos"
       }
+    },
+    "profile": {
+      "title": "Profil",
+      "subtitle": "Votre compte, vos informations d'accréditation et votre mot de passe.",
+      "account": {
+        "title": "Compte",
+        "subtitle": "Comment vous vous connectez et comment le portail s'adresse à vous."
+      },
+      "password": {
+        "title": "Mot de passe",
+        "subtitle": "Modifiez le mot de passe avec lequel vous vous connectez."
+      },
+      "clinical": {
+        "title": "Profil clinique",
+        "subtitle": "Les informations sous lesquelles votre dossier d'accréditation est enregistré.",
+        "identity": "Identité",
+        "address": "Adresse",
+        "emergencyContact": "Contact d'urgence",
+        "titlePlaceholder": "Dr / IDE / Ambulancier",
+        "loading": "Chargement de votre profil…",
+        "loadError": "Impossible de charger ces informations.",
+        "save": "Enregistrer le profil",
+        "saved": "Profil enregistré"
+      }
     }
   }
 }

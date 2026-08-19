@@ -60,6 +60,15 @@ export interface OnboardingEventDto {
   at?: string | null;
 }
 
+/**
+ * The document types that count as proof of identity, as opposed to a credential.
+ *
+ * <p>Lives here rather than beside either screen that uses it: the onboarding wizard collects the
+ * card and the profile page edits it afterwards, and a list that disagreed between the two would
+ * let a clinician pick a type the wizard would not have accepted.
+ */
+export const IDENTITY_TYPES: OnboardingDocumentType[] = ['PASSPORT', 'GHANACARD', 'DRIVERLICENSE', 'VOTERCARD'];
+
 export interface OnboardingAddressDto {
   digitalAddress?: string | null;
   streetAddress?: string | null;

@@ -34,7 +34,6 @@
       },
       "account": {
         "main": "Cuenta",
-        "settings": "Ajustes",
         "password": "Contraseña",
         "sessions": "Sesiones",
         "login": "Iniciar sesión",

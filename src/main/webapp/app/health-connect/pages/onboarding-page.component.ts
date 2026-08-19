@@ -7,6 +7,7 @@ import { AlertService } from 'app/core/util/alert.service';
 import { CareersHandoffService } from 'app/core/careers/careers-handoff.service';
 import FileUploadTriggerComponent from '../../shared/health-connect/form-controls/file-upload-trigger.component';
 import {
+  IDENTITY_TYPES,
   OnboardingApiService,
   OnboardingApplicationDto,
   OnboardingDocumentDto,
@@ -29,7 +30,6 @@ const REQUESTABLE_ROLES = [
   'ROLE_TECHNICIAN',
 ] as const;
 
-const IDENTITY_TYPES: OnboardingDocumentType[] = ['PASSPORT', 'GHANACARD', 'DRIVERLICENSE', 'VOTERCARD'];
 const EDITABLE_STATUSES = new Set(['APPLICATION_STARTED', 'PROFILE_COMPLETED', 'RETURNED_FOR_CORRECTION']);
 
 /**

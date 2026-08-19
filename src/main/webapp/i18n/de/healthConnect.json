@@ -415,6 +415,30 @@
         "NIGHT": "Nacht",
         "OFF": "Frei"
       }
+    },
+    "profile": {
+      "title": "Profil",
+      "subtitle": "Ihr Konto, Ihre Zulassungsdaten und Ihr Passwort.",
+      "account": {
+        "title": "Konto",
+        "subtitle": "Wie Sie sich anmelden und wie das Portal Sie anspricht."
+      },
+      "password": {
+        "title": "Passwort",
+        "subtitle": "Ändern Sie das Passwort, mit dem Sie sich anmelden."
+      },
+      "clinical": {
+        "title": "Klinisches Profil",
+        "subtitle": "Die Angaben, unter denen Ihre Zulassungsakte geführt wird.",
+        "identity": "Identität",
+        "address": "Adresse",
+        "emergencyContact": "Notfallkontakt",
+        "titlePlaceholder": "Dr / Pflegefachkraft / Rettungssanitäter",
+        "loading": "Ihr Profil wird geladen…",
+        "loadError": "Diese Informationen können nicht geladen werden.",
+        "save": "Profil speichern",
+        "saved": "Profil gespeichert"
+      }
     }
   }
 }

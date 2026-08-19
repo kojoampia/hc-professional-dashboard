@@ -415,6 +415,30 @@
         "NIGHT": "Night",
         "OFF": "Off"
       }
+    },
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Your account, your credentialing details, and your password.",
+      "account": {
+        "title": "Account",
+        "subtitle": "How you sign in and how the portal addresses you."
+      },
+      "password": {
+        "title": "Password",
+        "subtitle": "Change the password you sign in with."
+      },
+      "clinical": {
+        "title": "Clinical profile",
+        "subtitle": "The details your credentialing record is filed under.",
+        "identity": "Identity",
+        "address": "Address",
+        "emergencyContact": "Emergency contact",
+        "titlePlaceholder": "Dr / RN / EMT",
+        "loading": "Loading your profile…",
+        "loadError": "Unable to load this information.",
+        "save": "Save profile",
+        "saved": "Profile saved"
+      }
     }
   }
 }

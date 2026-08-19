@@ -34,7 +34,6 @@
       },
       "account": {
         "main": "Zugang",
-        "settings": "Einstellungen",
         "password": "Passwort",
         "sessions": "Sitzungen",
         "login": "Anmelden",
