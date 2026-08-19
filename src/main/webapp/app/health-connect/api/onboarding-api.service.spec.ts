@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
+import { SKIP_ERROR_ALERT } from 'app/core/interceptor/error-handler.interceptor';
 import { OnboardingApiService } from './onboarding-api.service';
 
 describe('OnboardingApiService', () => {
@@ -83,5 +84,23 @@ describe('OnboardingApiService', () => {
     const req = httpMock.expectOne(`${base}/documents`);
     expect(req.request.method).toBe('GET');
     req.flush([]);
+  });
+
+  /**
+   * Both of these 404 as a matter of course — a clinician seeded or invited rather than hired
+   * through the careers page has neither an application nor, at first, a profile. Their callers
+   * treat that as an ordinary outcome, so the requests opt out of the interceptor's error banner.
+   * Untreated, `applications/me` is polled from the shell on every navigation and put a red
+   * "Not found" over every page in the portal.
+   */
+  it.each([
+    ['getOwnApplication', 'applications/me'],
+    ['getOwnProfile', 'profile'],
+  ])('should keep %s out of the global error banner', (method, path) => {
+    (service as any)[method]().subscribe({ error: () => undefined });
+
+    const req = httpMock.expectOne(`${base}/${path}`);
+    expect(req.request.context.get(SKIP_ERROR_ALERT)).toBe(true);
+    req.flush(null, { status: 404, statusText: 'Not Found' });
   });
 });
