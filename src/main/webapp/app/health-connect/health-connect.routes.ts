@@ -40,7 +40,6 @@ const reviewDetailPage = (): Promise<typeof import('./pages/review-detail-page.c
   import('./pages/review-detail-page.component');
 const compliancePage = (): Promise<typeof import('./pages/compliance-page.component')> => import('./pages/compliance-page.component');
 const messagesPage = (): Promise<typeof import('./pages/messages-page.component')> => import('./pages/messages-page.component');
-const aboutPage = (): Promise<typeof import('./pages/about-page.component')> => import('./pages/about-page.component');
 
 const routes: Routes = [
   {
@@ -131,12 +130,6 @@ const routes: Routes = [
     ...protectedFeatureRoute,
     loadComponent: messagesPage,
     data: { ...protectedFeatureRoute.data, titleKey: 'healthConnect.navigation.messages' },
-  },
-  {
-    path: 'about',
-    ...protectedFeatureRoute,
-    loadComponent: aboutPage,
-    data: { ...protectedFeatureRoute.data, titleKey: 'healthConnect.navigation.about' },
   },
 ];
 

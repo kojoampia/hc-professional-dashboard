@@ -147,21 +147,6 @@ export const SHELL_NAV_GROUPS: ShellNavGroup[] = [
         dataCy: 'messagesMenu',
       },
       {
-        path: '/about',
-        labelKey: 'healthConnect.navigation.about',
-        icon: 'help',
-        crumbKey: 'global.menu.account.main',
-        requiresAuth: true,
-        dataCy: 'aboutMenu',
-      },
-      {
-        path: '/account/settings',
-        labelKey: 'global.menu.account.settings',
-        icon: 'build',
-        crumbKey: 'global.menu.account.main',
-        dataCy: 'settings',
-      },
-      {
         path: '/account/password',
         labelKey: 'global.menu.account.password',
         icon: 'lock',
