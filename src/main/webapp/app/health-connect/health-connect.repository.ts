@@ -28,6 +28,12 @@ export interface PatientDirectoryFilters {
 export interface HealthConnectRepository {
   readonly patients: Signal<readonly PatientRecord[]>;
   readonly dutyRosters: Signal<readonly DutyRoster[]>;
+  /**
+   * Per-source load state. Screens should read the one they depend on; {@link #asyncState} is the
+   * aggregate for screens reading both, and errors only when every source failed.
+   */
+  readonly patientsState: Signal<AsyncViewState>;
+  readonly casesState: Signal<AsyncViewState>;
   readonly asyncState: Signal<AsyncViewState>;
   readonly patientRows: Signal<readonly PatientListRow[]>;
   readonly caseQueue: Signal<readonly CaseQueueRow[]>;

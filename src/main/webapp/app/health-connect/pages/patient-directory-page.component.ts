@@ -68,7 +68,11 @@ const isPatientSex = (value: string | null): value is PatientSex => value === 'f
           </div>
         </div>
 
-        <hpd-async-state [status]="repository.asyncState().status" [empty]="directoryPage().totalItems === 0" (retry)="repository.reset()">
+        <hpd-async-state
+          [status]="repository.patientsState().status"
+          [empty]="directoryPage().totalItems === 0"
+          (retry)="repository.reset()"
+        >
           <hpd-data-table
             [columns]="columns"
             [rows]="directoryPage().items"

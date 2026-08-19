@@ -52,7 +52,7 @@ const routes: Routes = [
     loadChildren: () => import('./professionalservice/activity/activity.routes'),
   },
   {
-    path: 'duty-roster',
+    path: 'entities/duty-roster',
     data: { pageTitle: 'professionalDashboardApp.professionalserviceDutyRoster.home.title' },
     loadChildren: () => import('./professionalservice/duty-roster/duty-roster.routes'),
   },

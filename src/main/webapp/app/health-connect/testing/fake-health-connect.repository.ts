@@ -89,6 +89,8 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
 
   readonly patients = this.records.asReadonly();
   readonly dutyRosters = this.rosters.asReadonly();
+  readonly patientsState = computed<AsyncViewState>(() => this.asyncState());
+  readonly casesState = computed<AsyncViewState>(() => this.asyncState());
   readonly asyncState = computed<AsyncViewState>(() => ({
     status: this.error() ? 'error' : this.loading() ? 'loading' : 'ready',
     error: this.error(),

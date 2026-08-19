@@ -51,6 +51,12 @@ import { HealthConnectRepository, PatientDirectoryFilters } from './health-conne
 // providedIn: 'root' because HEALTH_CONNECT_REPOSITORY's factory injects this directly. It was a
 // bare @Injectable() while it was only ever provided explicitly in specs; leaving it that way now
 // throws NullInjectorError the first time any dashboard route is opened.
+/** One place deciding what a (loading, error) pair means, so the per-source states cannot drift. */
+const toAsyncState = (loading: boolean, error: string | null): AsyncViewState => ({
+  status: error ? 'error' : loading ? 'loading' : 'ready',
+  error,
+});
+
 @Injectable({ providedIn: 'root' })
 export class HttpHealthConnectRepository implements HealthConnectRepository {
   private readonly patientApi = inject(PatientApiService);
@@ -63,15 +69,42 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
   private readonly clinicalCaseCache = signal<readonly IClinicalCase[]>([]);
   private readonly rosterCache = signal<readonly DutyRoster[]>([]);
   private readonly archivedCaseIds = signal<ReadonlySet<string>>(new Set());
-  private readonly loading = signal(false);
-  private readonly error = signal<string | null>(null);
+
+  /**
+   * One state per source, because they fail independently.
+   *
+   * <p>These used to be a single `loading`/`error` pair, which meant any one failure emptied every
+   * screen reading {@link #asyncState}. The dashboard is where it showed: the bootstrap fetched
+   * duty rosters from the admin-only collection, every non-admin got a 403, and `hpd-async-state`
+   * replaced the stat cards and both charts with "Unable to load this information." — while the
+   * patient and case data behind them had loaded perfectly well.
+   */
+  private readonly patientsLoading = signal(false);
+  private readonly patientsError = signal<string | null>(null);
+  private readonly casesLoading = signal(false);
+  private readonly casesError = signal<string | null>(null);
 
   readonly patients = computed<readonly PatientRecord[]>(() => Array.from(this.recordCache().values()));
   readonly dutyRosters = this.rosterCache.asReadonly();
-  readonly asyncState = computed<AsyncViewState>(() => ({
-    status: this.error() ? 'error' : this.loading() ? 'loading' : 'ready',
-    error: this.error(),
-  }));
+  readonly patientsState = computed<AsyncViewState>(() => toAsyncState(this.patientsLoading(), this.patientsError()));
+  readonly casesState = computed<AsyncViewState>(() => toAsyncState(this.casesLoading(), this.casesError()));
+
+  /**
+   * For screens that read both. Reports an error only when <b>everything</b> failed — one source
+   * down is a degraded page, not a blank one.
+   */
+  readonly asyncState = computed<AsyncViewState>(() => {
+    const patients = this.patientsState();
+    const cases = this.casesState();
+    if (patients.status === 'loading' || cases.status === 'loading') {
+      return { status: 'loading', error: null };
+    }
+    if (patients.status === 'error' && cases.status === 'error') {
+      return { status: 'error', error: patients.error ?? cases.error };
+    }
+    return { status: 'ready', error: null };
+  });
+
   readonly patientRows = computed(() => this.patientRowCache());
   readonly caseQueue = computed<readonly CaseQueueRow[]>(() =>
     this.clinicalCaseCache()
@@ -186,7 +219,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
       },
       error: () => {
         this.pendingRecordFetches.delete(id);
-        this.error.set(`Failed to load patient ${id}`);
+        this.patientsError.set(`Failed to load patient ${id}`);
       },
     });
     return undefined;
@@ -255,7 +288,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
     };
     this.clinicalCaseCache.update(cache => cache.map(candidate => (candidate.id === id ? updatedCase : candidate)));
     this.clinicalCaseService.partialUpdate(updatedCase).subscribe({
-      error: () => this.error.set(`Failed to save case ${id}`),
+      error: () => this.casesError.set(`Failed to save case ${id}`),
     });
     return toClinicalCase(updatedCase);
   }
@@ -290,7 +323,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
           }),
         );
       },
-      error: () => this.error.set(`Failed to log activity for patient ${patientId}`),
+      error: () => this.patientsError.set(`Failed to log activity for patient ${patientId}`),
     });
     return optimistic;
   }
@@ -321,7 +354,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
           new Map(cache).set(patientId, { ...current, reports: current.reports.map(item => (item.id === optimistic.id ? saved : item)) }),
         );
       },
-      error: () => this.error.set(`Failed to save report for patient ${patientId}`),
+      error: () => this.patientsError.set(`Failed to save report for patient ${patientId}`),
     });
     return optimistic;
   }
@@ -343,42 +376,59 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
     return true;
   }
 
+  /** Kept for the interface; drives both sources, since callers mean "the whole repository". */
   setLoading(loading: boolean): void {
-    this.loading.set(loading);
+    this.patientsLoading.set(loading);
+    this.casesLoading.set(loading);
   }
 
   setError(error: string | null): void {
-    this.error.set(error);
+    this.patientsError.set(error);
+    this.casesError.set(error);
   }
 
   reset(): void {
     this.recordCache.set(new Map());
     this.pendingRecordFetches.clear();
     this.archivedCaseIds.set(new Set());
-    this.error.set(null);
     this.loadAll();
   }
 
+  /**
+   * Patients and cases only.
+   *
+   * <p>This used to fetch duty rosters too, from {@code GET /api/duty-rosters} — the admin-only
+   * collection — on every dashboard load. Nothing on the dashboard renders rosters, so the call
+   * bought nothing and cost every non-admin a 403 that blanked the page. The roster surface that
+   * clinicians actually use is {@code DutyRosterAssignmentsService} against {@code /my}.
+   */
   private loadAll(): void {
-    this.loading.set(true);
-    this.error.set(null);
+    this.patientsLoading.set(true);
+    this.patientsError.set(null);
+    this.casesLoading.set(true);
+    this.casesError.set(null);
 
     this.patientApi.query({ page: 0, size: 200 }).subscribe({
-      next: response => this.patientRowCache.set((response.body ?? []).map(toPatientListRow)),
-      error: () => this.error.set('Failed to load patient directory'),
+      next: response => {
+        this.patientRowCache.set((response.body ?? []).map(toPatientListRow));
+        this.patientsLoading.set(false);
+      },
+      error: () => {
+        this.patientsError.set('Failed to load patient directory');
+        this.patientsLoading.set(false);
+      },
     });
 
     this.clinicalCaseService.query().subscribe({
-      next: response => this.clinicalCaseCache.set(response.body ?? []),
-      error: () => this.error.set('Failed to load case queue'),
+      next: response => {
+        this.clinicalCaseCache.set(response.body ?? []);
+        this.casesLoading.set(false);
+      },
+      error: () => {
+        this.casesError.set('Failed to load case queue');
+        this.casesLoading.set(false);
+      },
     });
-
-    this.dutyRosterApi.list().subscribe({
-      next: rosters => this.rosterCache.set(rosters),
-      error: () => this.error.set('Failed to load duty rosters'),
-    });
-
-    this.loading.set(false);
   }
 
   private updateRosterSubscription(professionalId: string, rosterId: string, subscribed: boolean): boolean {
@@ -399,7 +449,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
       ),
     );
     const request = subscribed ? this.dutyRosterApi.subscribe(rosterId) : this.dutyRosterApi.unsubscribe(rosterId);
-    request.subscribe({ error: () => this.error.set(`Failed to update roster subscription for ${rosterId}`) });
+    request.subscribe({ error: () => this.casesError.set(`Failed to update roster subscription for ${rosterId}`) });
     return true;
   }
 }

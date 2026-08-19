@@ -40,8 +40,19 @@ describe('HttpHealthConnectRepository', () => {
         ],
         { headers: {} },
       );
-    httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/duty-rosters')).flush([]);
   };
+
+  /**
+   * The bootstrap used to fetch duty rosters as well, from the admin-only collection. Nothing on
+   * the dashboard renders them, so the call bought nothing and cost every non-admin a 403 that
+   * blanked the page. `httpMock.verify()` in afterEach is what holds this: an unexpected request
+   * fails the suite, so the call cannot creep back in unnoticed.
+   */
+  it('should not fetch duty rosters on construction', () => {
+    flushInitialLoad();
+
+    httpMock.expectNone(request => request.url.includes('duty-roster'));
+  });
 
   it('loads the patient list and case queue on construction', () => {
     flushInitialLoad();
@@ -92,5 +103,53 @@ describe('HttpHealthConnectRepository', () => {
     // status goes to the wire in the generated enum's upper case; diagnosis is a real field now.
     expect(req.request.body).toMatchObject({ status: 'CLOSED', diagnosis: 'Resolved' });
     req.flush({ id: 'case-1', status: 'CLOSED', diagnosis: 'Resolved' });
+  });
+
+  /**
+   * The reason the dashboard went blank rather than losing one card. A single shared error signal
+   * meant one failing source emptied every screen reading `asyncState`; the aggregate now reports
+   * an error only when there is nothing left to show.
+   */
+  describe('error isolation', () => {
+    const failPatients = () =>
+      httpMock
+        .expectOne(request => request.url.endsWith('services/professionalservice/api/patients'))
+        .flush(null, { status: 403, statusText: 'Forbidden' });
+    const failCases = () =>
+      httpMock
+        .expectOne(request => request.url.endsWith('services/patientservice/api/clinical-cases'))
+        .flush(null, { status: 403, statusText: 'Forbidden' });
+
+    it('keeps the aggregate ready when only one source fails', () => {
+      failPatients();
+      httpMock.expectOne(request => request.url.endsWith('services/patientservice/api/clinical-cases')).flush([], { headers: {} });
+
+      expect(repository.patientsState().status).toBe('error');
+      expect(repository.casesState().status).toBe('ready');
+      expect(repository.asyncState().status).toBe('ready');
+    });
+
+    it('reports an error only once every source has failed', () => {
+      failPatients();
+      failCases();
+
+      expect(repository.asyncState().status).toBe('error');
+    });
+
+    it('does not let a failing case queue empty the patient directory', () => {
+      httpMock
+        .expectOne(request => request.url.endsWith('services/professionalservice/api/patients'))
+        .flush(
+          [{ id: 'patient-kojo', patientName: 'Kojo Ampia-Addison', lastActivityAt: '2026-07-20T05:00:00Z', sex: 'male', isChild: false }],
+          {
+            headers: { 'X-Total-Count': '1' },
+          },
+        );
+      failCases();
+
+      expect(repository.patientsState().status).toBe('ready');
+      expect(repository.patientRows()).toHaveLength(1);
+      expect(repository.casesState().status).toBe('error');
+    });
   });
 });

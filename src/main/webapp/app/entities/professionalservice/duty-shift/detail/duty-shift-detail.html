@@ -39,7 +39,7 @@
         <dd>
           @if (dutyShift()!.roster) {
           <div>
-            <a [routerLink]="['/duty-roster', dutyShift()!.roster?.id, 'view']">{{ dutyShiftRef.roster?.id }}</a>
+            <a [routerLink]="['/entities/duty-roster', dutyShift()!.roster?.id, 'view']">{{ dutyShiftRef.roster?.id }}</a>
           </div>
           }
         </dd>
