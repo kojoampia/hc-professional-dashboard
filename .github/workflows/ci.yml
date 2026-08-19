@@ -1,0 +1,74 @@
+# Quality gate for every pull request and every push to main.
+#
+# The counterpart to release.yml, which says of itself: "No quality gate here — this builds and
+# pushes; it does not run the test suite." That has been the whole of this repository's CI, so a
+# pull request could turn every screen blank and merge green.
+#
+# It is not hypothetical. On the day this was written, `prettier:check` had been failing on main for
+# some time and nothing said so, and the application rendered completely unstyled behind any real
+# Content-Security-Policy — both found by hand, both the kind of thing a gate notices immediately.
+#
+# No secrets are used, deliberately, so this runs on a fork's pull request.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: lint, test and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # 22 rather than the `>=18.18.2` in engines: that floor is what the app runs on, not what it
+      # is developed against, and pinning here keeps CI from drifting onto whatever ubuntu-latest
+      # ships next. The mobile repo pins the same major from its .nvmrc.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      # Checked, never applied. A job that reformats and pushes turns review into a moving target.
+      - name: Check formatting
+        run: npm run prettier:check
+
+      # `npm test` here is `ng test --coverage -w=2`. The worker cap matters on a two-core runner:
+      # Jest's default of one worker per core swaps and then times out.
+      - name: Test
+        run: npm test
+
+      # `ng build`, not `tsc`. Unrouted files are never type-checked by tsc alone — an entity
+      # component nothing routes to compiles as dead code and fails only when someone routes it.
+      # web/CLAUDE.md names this explicitly.
+      - name: Production build
+        run: npm run webapp:prod
+
+      # Everything below runs against the ARTEFACT. Each guards a failure that compiles, tests green
+      # and is invisible to the type checker.
+      - name: Check the built output
+        run: node scripts/check-build-output.mjs
+
+      # Four languages are a shipping condition, and ngx-translate gives no runtime signal when a
+      # key is missing — it renders the key itself. Fails on drift beyond the recorded baseline; see
+      # the script's header for why there is a baseline rather than a clean fail.
+      - name: Check i18n parity
+        run: node scripts/check-i18n-parity.mjs
