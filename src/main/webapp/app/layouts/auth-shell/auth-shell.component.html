@@ -1,0 +1,46 @@
+<div class="mx-auto grid min-h-screen max-w-6xl gap-6 px-4 py-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
+  <!--
+    The brand half. Hidden below `lg` on purpose: on a phone it would push the form below the fold,
+    and the form is the only reason anyone is on these screens.
+  -->
+  <section class="hpd-auth-brand hidden flex-col justify-center rounded-hpd-xl p-10 text-white shadow-hpd-lg lg:flex xl:p-14">
+    <div
+      class="mb-7 grid h-16 w-16 place-items-center rounded-2xl bg-hpd-gold-bright text-[22px] font-extrabold text-hpd-primary-deep shadow-hpd-lg"
+      aria-hidden="true"
+    >
+      AB
+    </div>
+    <p class="mb-5 text-[11.5px] font-bold uppercase tracking-[0.19em] text-hpd-gold-bright" jhiTranslate="healthConnect.brand.tagline">
+      Clinician workspace
+    </p>
+    <h2 class="mb-3.5 text-3xl font-extrabold leading-tight tracking-tight xl:text-4xl">
+      <span jhiTranslate="healthConnect.brand.name">Abofonsa</span> <span class="text-hpd-gold-bright">BridgeCare</span><br />
+      <span jhiTranslate="healthConnect.brand.product">Professional</span>
+    </h2>
+    <p class="max-w-[46ch] text-[15px] leading-relaxed text-hpd-on-navy-muted" jhiTranslate="healthConnect.brand.description">
+      The clinician-facing side of BridgeCare — patient records, triage, and duty rosters in one place.
+    </p>
+
+    <!--
+      What the portal is for, in four figures. The sibling portals both carry this row — hc-admin
+      fills it from live network totals, hc-patient from the record on screen. Neither source exists
+      before sign-in here, and inventing plausible numbers on a sign-in page would be a lie a
+      clinician could not check, so these describe the product rather than counting anything.
+    -->
+    <ul class="mt-9 grid list-none grid-cols-2 gap-x-6 gap-y-5 p-0 xl:grid-cols-4">
+      @for (fact of facts; track fact.labelKey) {
+        <li>
+          <b class="block text-[22px] font-extrabold leading-none text-hpd-gold-bright" [jhiTranslate]="fact.valueKey">—</b>
+          <span class="mt-1.5 block text-[12.5px] leading-snug text-hpd-on-navy-muted" [jhiTranslate]="fact.labelKey"></span>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <!-- Whatever form the route supplies: sign-in, registration, activation, password reset, onboarding. -->
+  <section class="flex items-center justify-center rounded-hpd-xl bg-hpd-cream px-6 py-10 sm:px-8">
+    <div class="w-full max-w-[380px]">
+      <router-outlet></router-outlet>
+    </div>
+  </section>
+</div>

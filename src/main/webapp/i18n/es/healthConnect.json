@@ -186,7 +186,17 @@
       "tagline": "Espacio del profesional clínico",
       "description": "El lado clínico de BridgeCare: expedientes de pacientes, triaje y cuadros de turnos en un solo lugar.",
       "signInHint": "Inicie sesión en su cuenta clínica.",
-      "portal": "Portal"
+      "portal": "Portal",
+      "facts": {
+        "rolesValue": "9",
+        "roles": "Roles clínicos",
+        "recordsValue": "1",
+        "records": "Expediente compartido",
+        "rostersValue": "24/7",
+        "rosters": "Cobertura de turnos",
+        "languagesValue": "4",
+        "languages": "Idiomas"
+      }
     },
     "messages": {
       "title": "Mensajes",

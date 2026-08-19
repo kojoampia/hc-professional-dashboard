@@ -186,7 +186,17 @@
       "tagline": "Clinician workspace",
       "description": "The clinician-facing side of BridgeCare — patient records, triage, and duty rosters in one place.",
       "signInHint": "Sign in to your clinician account.",
-      "portal": "Portal"
+      "portal": "Portal",
+      "facts": {
+        "rolesValue": "9",
+        "roles": "Clinical roles",
+        "recordsValue": "1",
+        "records": "Shared patient record",
+        "rostersValue": "24/7",
+        "rosters": "Duty roster cover",
+        "languagesValue": "4",
+        "languages": "Languages"
+      }
     },
     "messages": {
       "title": "Messages",
