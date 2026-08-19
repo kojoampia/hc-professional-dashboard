@@ -1,0 +1,73 @@
+{
+  "es": {
+    "missing": [
+      "user-management.json:userManagement.home.notFound",
+      "user-management.json:userManagement.id",
+      "user-management.json:userManagement.imageUrl"
+    ],
+    "extra": []
+  },
+  "fr": {
+    "missing": [
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.created",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.createdBy",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.createdDate",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.delete.question",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.deleted",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.description",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.detail.title",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.home.createLabel",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.home.createOrEditLabel",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.home.notFound",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.home.refreshListLabel",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.home.title",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.id",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.modifiedBy",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.modifiedDate",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.name",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.patientId",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.updated",
+      "health.json:health.status.OUT_OF_SERVICE",
+      "user-management.json:userManagement.home.notFound",
+      "user-management.json:userManagement.id",
+      "user-management.json:userManagement.imageUrl"
+    ],
+    "extra": []
+  },
+  "de": {
+    "missing": [
+      "global.json:entity.validation.patternLogin",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.created",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.createdBy",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.createdDate",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.delete.question",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.deleted",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.description",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.detail.title",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.home.createLabel",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.home.createOrEditLabel",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.home.notFound",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.home.refreshListLabel",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.home.title",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.id",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.modifiedBy",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.modifiedDate",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.name",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.patientId",
+      "hcProfessionalMsActivity.json:professionalDashboardApp.hcprofessionalserviceActivity.updated",
+      "health.json:health.status.OUT_OF_SERVICE",
+      "metrics.json:metrics.cache.averageGetTime",
+      "metrics.json:metrics.cache.averagePutTime",
+      "metrics.json:metrics.cache.averageRemoveTime",
+      "metrics.json:metrics.cache.gets",
+      "metrics.json:metrics.cache.hitPercent",
+      "metrics.json:metrics.cache.missPercent",
+      "metrics.json:metrics.cache.puts",
+      "metrics.json:metrics.cache.removals",
+      "user-management.json:userManagement.home.notFound",
+      "user-management.json:userManagement.id",
+      "user-management.json:userManagement.imageUrl"
+    ],
+    "extra": []
+  }
+}

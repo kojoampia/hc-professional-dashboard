@@ -104,20 +104,13 @@
     <noscript>
       <h1>You must enable JavaScript to view this page.</h1>
     </noscript>
-    <script type="text/javascript">
-      // necessary for sockjs-client
-      var global = window;
-      // show an error message if the app loading takes more than 4 sec
-      window.onload = function () {
-        setTimeout(showError, 4000);
-      };
-      function showError() {
-        var errorElm = document.getElementById('jhipster-error');
-        if (errorElm?.style) {
-          errorElm.style.display = 'block';
-        }
-      }
-    </script>
+    <!--
+      Was an inline <script>. Moved to a file so a Content-Security-Policy of `script-src 'self'`
+      can allow it: a policy strict enough to be worth setting blocks inline blocks, and the
+      alternative — adding 'unsafe-inline' — gives up most of what the policy is for. See
+      content/js/boot.js for what it does and why the ordering matters.
+    -->
+    <script src="content/js/boot.js"></script>
     <!-- Google Analytics: uncomment and change both instances of UA-XXXXX-X to be your site's ID.
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXX-X"></script>
     <script>
