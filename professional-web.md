@@ -105,7 +105,7 @@ Shared classes live in `global.scss`: `.hpd-btn{-primary,-gold,-ghost,-danger}`,
 `.hpd-input`, `.hpd-auth-brand`. Success confirmations go through `AlertService.showToast()`
 (bottom-centre navy pill); errors and validation stay in the `hpd-alert` banner.
 
-**Font: Inter, one family, everywhere.** Loaded via a Google Fonts `<link>` in `index.html`,
+**Font: Inter, one family, everywhere.** Self-hosted from `content/fonts/` and declared in `content/scss/fonts.scss`,
 applied on `body` from `--hpd-font-body`, mirrored as Tailwind's `--font-sans`, and matched by
 Material's M3 config. Use weight utilities (`font-medium`, `font-semibold`, …) for emphasis —
 never a second family.
