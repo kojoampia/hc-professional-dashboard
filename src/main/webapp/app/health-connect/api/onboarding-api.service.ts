@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
+import { SKIP_ERROR_ALERT } from 'app/core/interceptor/error-handler.interceptor';
 
 /**
  * Applicant-facing onboarding API (professional-onboarding-workflow.md WP4)
@@ -211,8 +212,15 @@ export class OnboardingApiService {
     return this.http.get<OnboardingEventDto[]>(`${this.resourceUrl}/applications/${encodeURIComponent(applicationId)}/events`);
   }
 
+  /**
+   * A 404 here means "no profile yet", which both callers handle — the wizard leaves its form
+   * blank and the profile page shows an empty one. Opted out of the global error banner so that
+   * ordinary outcome stops rendering as "Not found" over a page that is working.
+   */
   getOwnProfile(): Observable<OnboardingProfileDto> {
-    return this.http.get<OnboardingProfileDto>(`${this.resourceUrl}/profile`);
+    return this.http.get<OnboardingProfileDto>(`${this.resourceUrl}/profile`, {
+      context: new HttpContext().set(SKIP_ERROR_ALERT, true),
+    });
   }
 
   upsertProfile(profile: OnboardingProfileDto): Observable<OnboardingProfileDto> {
