@@ -60,7 +60,7 @@ const isRosterScope = (value: string | null): value is RosterScope => value === 
           </button>
         </section>
 
-        <hpd-async-state [status]="repository.asyncState().status" [empty]="rows().length === 0" (retry)="repository.reset()">
+        <hpd-async-state [status]="repository.casesState().status" [empty]="rows().length === 0" (retry)="repository.reset()">
           <hpd-data-table
             [columns]="columns"
             [rows]="rows()"

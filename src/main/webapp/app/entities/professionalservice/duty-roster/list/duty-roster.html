@@ -66,7 +66,7 @@
       <tbody>
         @for (dutyRoster of dutyRosters(); track trackId(dutyRoster)) {
         <tr data-cy="entityTable">
-          <td><a [routerLink]="['/duty-roster', dutyRoster.id, 'view']">{{ dutyRoster.id }}</a></td>
+          <td><a [routerLink]="['/entities/duty-roster', dutyRoster.id, 'view']">{{ dutyRoster.id }}</a></td>
           <td>{{ dutyRoster.name }}</td>
           <td>
             @for (subscribedProfessional of dutyRoster.subscribedProfessionals; track $index; let last = $last) {
@@ -79,12 +79,20 @@
           </td>
           <td class="text-right">
             <div class="flex flex-wrap items-center gap-2">
-              <a [routerLink]="['/duty-roster', dutyRoster.id, 'view']" class="hpd-btn hpd-btn-ghost btn-sm" data-cy="entityDetailsButton">
+              <a
+                [routerLink]="['/entities/duty-roster', dutyRoster.id, 'view']"
+                class="hpd-btn hpd-btn-ghost btn-sm"
+                data-cy="entityDetailsButton"
+              >
                 <mat-icon aria-hidden="true" class="!text-base">visibility</mat-icon>
                 <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
               </a>
 
-              <a [routerLink]="['/duty-roster', dutyRoster.id, 'edit']" class="hpd-btn hpd-btn-primary btn-sm" data-cy="entityEditButton">
+              <a
+                [routerLink]="['/entities/duty-roster', dutyRoster.id, 'edit']"
+                class="hpd-btn hpd-btn-primary btn-sm"
+                data-cy="entityEditButton"
+              >
                 <mat-icon aria-hidden="true" class="!text-base">edit</mat-icon>
                 <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
               </a>

@@ -87,12 +87,17 @@ const routes: Routes = [
         loadChildren: () => import('./account/account.route'),
       },
       {
+        // BEFORE the generated entities, deliberately. Both files declared `duty-roster` — their
+        // only collision, and entities won, so `/duty-roster` served the JHipster CRUD list (which
+        // calls the admin-only collection and 403s for clinicians) while the BridgeCare page it was
+        // shadowing had never been reachable. The generated route is now `entities/duty-roster`, so
+        // nothing collides today; this order is what stops the next regeneration re-introducing it.
         path: '',
-        loadChildren: () => import(`./entities/entity.routes`),
+        loadChildren: () => import('./health-connect/health-connect.routes'),
       },
       {
         path: '',
-        loadChildren: () => import('./health-connect/health-connect.routes'),
+        loadChildren: () => import(`./entities/entity.routes`),
       },
     ],
   },

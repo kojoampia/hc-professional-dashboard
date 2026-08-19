@@ -17,20 +17,20 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-echo "==> 1/4 clearing the generated entity trees"
+echo "==> 1/5 clearing the generated entity trees"
 rm -rf src/main/webapp/app/entities/patientService \
        src/main/webapp/app/entities/professionalService \
        src/main/webapp/app/entities/enumerations
 
-echo "==> 2/4 applying the JDL"
+echo "==> 2/5 applying the JDL"
 jhipster jdl professional-service.jdl patient-service.jdl --skip-install --force
 
-echo "==> 3/4 repairing generated code"
+echo "==> 3/5 repairing generated code"
 node scripts/postprocess-generated-entities.mjs
 node scripts/restyle-generated-entities.mjs
 node scripts/apply-enum-i18n.mjs
 
-echo "==> 4/4 dropping the generated user-management route"
+echo "==> 4/5 dropping the generated user-management route"
 # The generator adds a route for ./admin/user-management, a module this repo
 # deleted long ago; leaving it in fails the build on a missing lazy import.
 node --input-type=module -e "
@@ -43,6 +43,38 @@ const after = before.replace(
 );
 if (after !== before) writeFileSync(p, after);
 console.log('   routes registered:', (after.match(/path: '/g) ?? []).length);
+"
+
+
+echo "==> 5/5 moving the generated duty-roster CRUD aside"
+# `/duty-roster` belongs to the hand-built clinician page (see professional-web.md
+# "Duty roster: routing and the dashboard bootstrap"). The generator emits `duty-roster`, which
+# collides with it and — because the generated list calls the admin-only collection — 403s for
+# every clinician. Renaming the route is not enough: the generated templates link absolutely, so
+# their `['/duty-roster', ...]` links have to move with it or the CRUD's own view/edit buttons
+# land on the clinician page.
+node --input-type=module -e "
+import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+
+const routes = 'src/main/webapp/app/entities/entity.routes.ts';
+const before = readFileSync(routes, 'utf8');
+const after = before.replace(\"path: 'duty-roster',\", \"path: 'entities/duty-roster',\");
+if (after !== before) writeFileSync(routes, after);
+console.log('   duty-roster route:', after.includes(\"'entities/duty-roster'\") ? 'moved' : 'ALREADY MOVED OR MISSING');
+
+const walk = dir => readdirSync(dir).flatMap(name => {
+  const full = join(dir, name);
+  return statSync(full).isDirectory() ? walk(full) : [full];
+});
+let links = 0;
+for (const file of walk('src/main/webapp/app/entities').filter(f => f.endsWith('.html'))) {
+  const html = readFileSync(file, 'utf8');
+  if (!html.includes(\"'/duty-roster'\")) continue;
+  links += html.split(\"'/duty-roster'\").length - 1;
+  writeFileSync(file, html.replaceAll(\"'/duty-roster'\", \"'/entities/duty-roster'\"));
+}
+console.log('   absolute links rewritten:', links);
 "
 
 echo
