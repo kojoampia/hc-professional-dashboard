@@ -14,6 +14,9 @@ import { LoginService } from 'app/login/login.service';
 import { DutyRosterAssignmentsService } from 'app/health-connect/api/duty-roster-assignments.service';
 import { ShiftLabel } from 'app/health-connect/health-connect.models';
 
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import SidebarComponent from './sidebar.component';
 import { SHELL_NAV_GROUPS } from './shell-navigation';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -186,5 +189,31 @@ describe('Sidebar Component', () => {
     accountService.authenticate({ ...account, firstName: null, lastName: null });
     expect(comp.userInitials).toBe('JO');
     expect(comp.userDisplayName).toBe('john.doe');
+  });
+
+  /**
+   * The user card is now the <b>only</b> way into the account settings page — the "Settings" nav
+   * item was removed in favour of it, so a card that stops linking there strands the page with no
+   * entry point at all and nothing else in the suite would notice.
+   *
+   * <p>Asserted against the template source because this spec renders with an overridden (empty)
+   * template, so there is no DOM to query.
+   */
+  it('should route the user card to the account settings page', () => {
+    const template = readFileSync(join(__dirname, 'sidebar.component.html'), 'utf8');
+
+    expect(template).toContain('data-cy="accountMenu"');
+    expect(template).toContain('routerLink="/account/settings"');
+  });
+
+  /**
+   * Both were deliberately removed: settings is reached through the user card above, and the
+   * "Why Abofonsa" page is gone entirely. Re-adding either would resurrect a dead route.
+   */
+  it('should not offer the removed about and settings destinations', () => {
+    const paths = SHELL_NAV_GROUPS.flatMap(group => group.items).map(item => item.path);
+
+    expect(paths).not.toContain('/about');
+    expect(paths).not.toContain('/account/settings');
   });
 });
