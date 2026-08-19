@@ -8,18 +8,25 @@
 
 <aside
   data-cy="navbar"
-  class="fixed inset-y-0 left-0 z-50 flex w-[248px] flex-col bg-hpd-primary px-3.5 py-5 text-white shadow-hpd-lg transition-transform duration-200 lg:visible lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shadow-none"
+  class="fixed inset-y-0 left-0 z-50 flex w-[248px] flex-col bg-hpd-primary px-3.5 py-5 text-white shadow-hpd-lg transition-all duration-200 lg:visible lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shadow-none"
+  [ngClass]="railClass"
   [class.-translate-x-full]="!open"
   [class.invisible]="!open"
   [class.translate-x-0]="open"
 >
-  <a class="hpd-focusable flex items-center gap-2.5 rounded-[10px] px-2 pb-5 pt-1.5 no-underline" routerLink="/" (click)="requestClose()">
+  <a
+    class="hpd-focusable flex items-center gap-2.5 rounded-[10px] px-2 pb-5 pt-1.5 no-underline"
+    [ngClass]="rowClass"
+    routerLink="/"
+    [attr.aria-label]="collapsed ? ('healthConnect.navigation.dashboard' | translate) : null"
+    (click)="requestClose()"
+  >
     <span
       class="grid h-[38px] w-[38px] flex-none place-items-center rounded-[10px] bg-hpd-gold-bright text-[15px] font-extrabold text-hpd-primary-deep"
       aria-hidden="true"
       >AB</span
     >
-    <span class="min-w-0">
+    <span class="min-w-0" [ngClass]="labelClass">
       <span class="block truncate text-[15px] font-extrabold leading-tight">
         <span jhiTranslate="healthConnect.brand.name">Abofonsa</span>&nbsp;<span class="text-hpd-gold-bright">BridgeCare</span>
       </span>
@@ -35,22 +42,33 @@
       @if (groupVisible(group)) {
         <div
           class="mb-1.5 mt-4 px-2.5 text-[10.5px] font-bold uppercase tracking-wider text-hpd-on-navy-faint"
+          [ngClass]="labelClass"
           [attr.data-cy]="group.dataCy ?? null"
           [jhiTranslate]="group.labelKey"
         ></div>
         @for (item of visibleItems(group); track item.path + item.labelKey) {
           <a
             class="hpd-focusable relative flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-sm font-semibold no-underline text-hpd-on-navy-muted hover:bg-white/5 hover:text-white [&.active]:bg-hpd-gold/20 [&.active]:text-white [&.active_mat-icon]:text-hpd-gold-bright"
+            [ngClass]="rowClass"
             [routerLink]="item.path"
+            [attr.title]="collapsed ? (item.labelKey | translate) : null"
             routerLinkActive="active"
             [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
             [attr.data-cy]="item.dataCy ?? null"
             (click)="requestClose()"
           >
             <mat-icon aria-hidden="true" class="!h-[18px] !w-[18px] !text-[18px]">{{ item.icon }}</mat-icon>
-            <span [jhiTranslate]="item.labelKey"></span>
+            <span [ngClass]="labelClass" [jhiTranslate]="item.labelKey"></span>
             @if (badgeCount(item); as count) {
-              <span class="ml-auto rounded-full bg-hpd-gold px-1.5 py-px text-[10.5px] font-extrabold text-[#3a2a08]">{{ count }}</span>
+              <span
+                class="ml-auto rounded-full bg-hpd-gold px-1.5 py-px text-[10.5px] font-extrabold text-[#3a2a08]"
+                [ngClass]="labelClass"
+                >{{ count }}</span
+              >
+              @if (collapsed) {
+                <!-- The count will not fit a 50px rail, but its absence would read as "no messages". -->
+                <span class="absolute right-1 top-1 hidden h-2 w-2 rounded-full bg-hpd-gold lg:block" aria-hidden="true"></span>
+              }
             }
           </a>
         }
@@ -59,11 +77,22 @@
 
     <div
       class="mb-1.5 mt-4 px-2.5 text-[10.5px] font-bold uppercase tracking-wider text-hpd-on-navy-faint"
+      [ngClass]="labelClass"
       jhiTranslate="healthConnect.navigation.session"
     ></div>
     @if (languages && languages.length > 1) {
-      <div class="flex items-center gap-1 px-2.5 py-1" role="group" [attr.aria-label]="'global.menu.language' | translate">
-        <mat-icon aria-hidden="true" class="!h-[18px] !w-[18px] !text-[18px] text-hpd-on-navy-muted">translate</mat-icon>
+      <div
+        class="flex flex-wrap items-center gap-1 px-2.5 py-1"
+        [ngClass]="collapsed ? 'lg:justify-center lg:px-0' : ''"
+        role="group"
+        [attr.aria-label]="'global.menu.language' | translate"
+      >
+        <mat-icon
+          aria-hidden="true"
+          class="!h-[18px] !w-[18px] !text-[18px] text-hpd-on-navy-muted"
+          [ngClass]="collapsed ? 'lg:hidden' : ''"
+          >translate</mat-icon
+        >
         @for (language of languages; track language) {
           <button
             class="hpd-focusable cursor-pointer rounded-lg border-0 bg-transparent px-2 py-1 text-xs font-bold uppercase text-hpd-on-navy-muted hover:bg-white/5 hover:text-white [&.active]:bg-hpd-gold/20 [&.active]:text-hpd-gold-bright"
@@ -82,10 +111,12 @@
         type="button"
         id="logout"
         data-cy="logout"
+        [ngClass]="rowClass"
+        [attr.title]="collapsed ? ('global.menu.account.logout' | translate) : null"
         (click)="logout()"
       >
         <mat-icon aria-hidden="true" class="!h-[18px] !w-[18px] !text-[18px]">logout</mat-icon>
-        <span jhiTranslate="global.menu.account.logout">Sign out</span>
+        <span [ngClass]="labelClass" jhiTranslate="global.menu.account.logout">Sign out</span>
       </button>
     } @else {
       <button
@@ -93,10 +124,12 @@
         type="button"
         id="login"
         data-cy="login"
+        [ngClass]="rowClass"
+        [attr.title]="collapsed ? ('global.menu.account.login' | translate) : null"
         (click)="login()"
       >
         <mat-icon aria-hidden="true" class="!h-[18px] !w-[18px] !text-[18px]">login</mat-icon>
-        <span jhiTranslate="global.menu.account.login">Sign in</span>
+        <span [ngClass]="labelClass" jhiTranslate="global.menu.account.login">Sign in</span>
       </button>
     }
   </nav>
@@ -105,6 +138,8 @@
     <div class="mt-auto border-t border-white/10 pt-3.5">
       <a
         class="hpd-focusable flex w-full items-center gap-2.5 rounded-[10px] p-2 no-underline hover:bg-white/5"
+        [ngClass]="rowClass"
+        [attr.title]="collapsed ? userDisplayName : null"
         routerLink="/account/settings"
         data-cy="accountMenu"
         (click)="requestClose()"
@@ -118,7 +153,7 @@
         } @else {
           <img [src]="account.imageUrl" class="profile-image h-[34px] w-[34px] flex-none rounded-full object-cover" alt="" />
         }
-        <span class="min-w-0">
+        <span class="min-w-0" [ngClass]="labelClass">
           <span class="block truncate text-[13.5px] font-bold text-white">{{ userDisplayName }}</span>
           <span class="block truncate text-[11px] text-hpd-on-navy-soft">
             @if (roleBadgeTranslationKey; as roleKey) {

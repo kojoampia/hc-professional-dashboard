@@ -40,7 +40,12 @@ import { findShellNavItem } from '../sidebar/shell-navigation';
   ],
 })
 export default class ShellComponent implements OnInit {
+  private static readonly COLLAPSED_KEY = 'hpd-sidebar-collapsed';
+
   sidebarOpen = false;
+  /** Desktop icon-rail state. Persisted, because a preference that resets on every navigation is
+   * not a preference. */
+  sidebarCollapsed = false;
   crumbKey: string | null = null;
   titleKey = 'global.title';
   canCreatePatients = false;
@@ -54,6 +59,8 @@ export default class ShellComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.sidebarCollapsed = localStorage.getItem(ShellComponent.COLLAPSED_KEY) === 'true';
+
     this.accountService.getAuthenticationState().subscribe(account => {
       this.authenticated = account !== null;
       this.canCreatePatients = hasHealthConnectPermission(account?.authorities, 'managePatient');
@@ -74,6 +81,19 @@ export default class ShellComponent implements OnInit {
 
   toggleSidebar(): void {
     this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  /**
+   * Collapse or expand the desktop rail.
+   *
+   * <p>Separate from {@link toggleSidebar}, which opens the mobile drawer. They look like the same
+   * gesture and are not: one is a temporary overlay on a small screen, the other a persistent
+   * preference on a large one, and sharing state between them would mean opening the phone drawer
+   * silently narrowed the desktop sidebar for the next session.
+   */
+  toggleSidebarCollapsed(): void {
+    this.sidebarCollapsed = !this.sidebarCollapsed;
+    localStorage.setItem(ShellComponent.COLLAPSED_KEY, String(this.sidebarCollapsed));
   }
 
   closeSidebar(): void {

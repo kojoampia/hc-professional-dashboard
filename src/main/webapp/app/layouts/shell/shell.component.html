@@ -1,5 +1,5 @@
 <div class="flex min-h-screen bg-hpd-surface">
-  <hpd-sidebar [open]="sidebarOpen" (closeRequest)="closeSidebar()"></hpd-sidebar>
+  <hpd-sidebar [open]="sidebarOpen" [collapsed]="sidebarCollapsed" (closeRequest)="closeSidebar()"></hpd-sidebar>
 
   <div class="flex min-w-0 flex-1 flex-col">
     <header class="sticky top-0 z-20 flex items-center gap-3.5 border-b border-hpd-border bg-hpd-cream px-4 py-3 sm:px-6" data-cy="topbar">
@@ -12,6 +12,31 @@
         (click)="toggleSidebar()"
       >
         <mat-icon aria-hidden="true">menu</mat-icon>
+      </button>
+
+      <!--
+        The desktop rail toggle. The hamburger above is `lg:hidden` and this is its inverse, so
+        exactly one of the two is ever on screen: below `lg` the sidebar is an overlay you open, at
+        `lg` and up it is a column you narrow.
+
+        aria-expanded describes the sidebar, so it is the negation of "collapsed" — and the label
+        changes with the state, because a button that always says "collapse" is wrong half the time
+        to anyone reading it aloud.
+      -->
+      <button
+        class="hpd-focusable hidden h-9 w-9 flex-none cursor-pointer place-items-center rounded-[10px] border-0 bg-transparent text-hpd-primary hover:bg-black/5 lg:grid"
+        type="button"
+        data-cy="sidebarCollapseToggle"
+        [attr.aria-expanded]="!sidebarCollapsed"
+        [attr.aria-label]="
+          (sidebarCollapsed ? 'healthConnect.navigation.expandSidebar' : 'healthConnect.navigation.collapseSidebar') | translate
+        "
+        [attr.title]="
+          (sidebarCollapsed ? 'healthConnect.navigation.expandSidebar' : 'healthConnect.navigation.collapseSidebar') | translate
+        "
+        (click)="toggleSidebarCollapsed()"
+      >
+        <mat-icon aria-hidden="true">{{ sidebarCollapsed ? 'menu_open' : 'menu' }}</mat-icon>
       </button>
       <div class="min-w-0">
         @if (crumbKey) {
