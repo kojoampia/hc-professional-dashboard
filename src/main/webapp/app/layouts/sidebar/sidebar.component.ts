@@ -26,7 +26,30 @@ import { SHELL_NAV_GROUPS, ShellNavGroup, ShellNavItem } from './shell-navigatio
 export default class SidebarComponent implements OnInit {
   /** Mobile off-canvas state; ignored on lg+ where the sidebar is always visible. */
   @Input() open = false;
+
+  /**
+   * Collapsed to an icon rail. <b>Desktop only</b> — every class it drives is `lg:`-prefixed, so a
+   * phone still gets the full-width drawer whatever this says. A 50px rail on a phone would be a
+   * second, worse navigation competing with the one that already works there.
+   */
+  @Input() collapsed = false;
+
   @Output() closeRequest = new EventEmitter<void>();
+
+  /** Wide when open, 50px when collapsed. The mobile drawer keeps its own width regardless. */
+  get railClass(): string {
+    return this.collapsed ? 'lg:w-[50px] lg:px-1' : 'lg:w-[248px] lg:px-3.5';
+  }
+
+  /** Applied to every label the rail has no room for. Hidden at `lg` only, for the same reason. */
+  get labelClass(): string {
+    return this.collapsed ? 'lg:hidden' : '';
+  }
+
+  /** Centre the icons once the labels beside them are gone. */
+  get rowClass(): string {
+    return this.collapsed ? 'lg:justify-center lg:gap-0 lg:px-0' : '';
+  }
 
   inProduction?: boolean;
   readonly messagesApi = inject(MessagesApiService);

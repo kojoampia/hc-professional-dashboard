@@ -12,7 +12,9 @@
       "messages": "Nachrichten",
       "about": "Warum Abofonsa",
       "onboarding": "Onboarding",
-      "earnings": "Meine Vergütung"
+      "earnings": "Meine Vergütung",
+      "collapseSidebar": "Menü einklappen",
+      "expandSidebar": "Menü ausklappen"
     },
     "roles": {
       "admin": "Administrator",
