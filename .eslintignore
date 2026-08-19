@@ -8,3 +8,8 @@ node/
 coverage/
 postcss.config.js
 target/classes/static/
+
+# Static browser assets, not application source. content/js/boot.js is a classic script served
+# as-is — it is in no tsconfig, so the type-aware parser cannot resolve it and errors before any
+# rule runs. Linting it would mean adding a tsconfig for one shim.
+src/main/webapp/content/js/
