@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -7,7 +8,10 @@ import GroupedBarChartComponent from '../charts/grouped-bar-chart.component';
 import LineChartComponent from '../charts/line-chart.component';
 import PieChartComponent from '../charts/pie-chart.component';
 import { CaseStatus } from '../health-connect.models';
+import { Account } from 'app/core/auth/account.model';
+import { AccountService } from 'app/core/auth/account.service';
 import { OnboardingProgressService } from 'app/core/onboarding/onboarding-progress.service';
+import { hasClinicalAuthority } from '../authority-role';
 import { EarningsApiService } from '../api/earnings-api.service';
 import { ProfessionalEarningsDto } from '../api/earnings-api.model';
 import StatCardRowComponent, { StatCard } from '../../shared/health-connect/stat-card/stat-card-row.component';
@@ -109,12 +113,21 @@ export default class DashboardPageComponent implements OnInit {
   private readonly earningsApi = inject(EarningsApiService);
   private readonly translate = inject(TranslateService);
   private readonly progressService = inject(OnboardingProgressService);
+  private readonly accountService = inject(AccountService);
   private readonly destroyRef = inject(DestroyRef);
 
   /** Null until adminservice answers, and left null if it cannot — see the template. */
   readonly earnings = signal<ProfessionalEarningsDto | null>(null);
 
+  /** Tracked the way the sidebar tracks it, and read only by the redirect below. */
+  private account: Account | null = null;
+
   ngOnInit(): void {
+    this.accountService
+      .getAuthenticationState()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(account => (this.account = account));
+
     // Failure is swallowed on purpose. This is one card on a dashboard whose other panels come
     // from a different stack entirely; a 404 (no professional record yet) or an adminservice
     // outage must not surface as a dashboard-wide error.
@@ -134,20 +147,34 @@ export default class DashboardPageComponent implements OnInit {
    * being bounced instantly reads as a broken link, whereas a beat of dashboard then a move reads
    * as being taken somewhere.
    *
-   * <p>Three conditions guard it, and each has a failure it prevents:
+   * <p>Four conditions guard it, and each has a failure it prevents:
    *
    * <ul>
    *   <li><b>only when the server has answered</b> — {@code complete()} is null until then, and
    *       treating unknown as incomplete would bounce people whose profile is finished;
+   *   <li><b>only an account with no clinical authority</b> — see below;
    *   <li><b>only if still on the dashboard</b> — someone who clicked through in that beat has
    *       chosen where to be, and yanking them away is worse than not nudging at all;
    *   <li><b>cancelled on destroy</b> — otherwise the timer fires against a dead component and
    *       navigates whoever is now on screen.
    * </ul>
+   *
+   * <p>The authority test is the same rule {@code ShellNavGroup.clinicalOnly} keys on, and for the
+   * same reason: an incomplete application does <em>not</em> mean an incomplete clinician.
+   * {@code /api/onboarding/progress} answers {@code complete: false} at 0% for an account with no
+   * application at all — deliberately, so the profile page can render a meter for someone an admin
+   * invited — and every clinician seeded or invited rather than hired through the careers page is
+   * in exactly that state. Without this condition the redirect fires on all of them, and a
+   * {@code ROLE_DOCTOR} bounces off the dashboard two seconds after every arrival, with the whole
+   * sidebar visible and none of it reachable.
+   *
+   * <p>The route admits {@link Authority#USER}, so the nudge still has its intended target: an
+   * applicant who lands here holds nothing but {@code ROLE_USER}.
    */
   private scheduleIncompleteProfileRedirect(): void {
     const timer = setTimeout(() => {
-      if (this.progressService.complete() === false && this.router.url.startsWith('/dashboard')) {
+      const clinician = hasClinicalAuthority(this.account?.authorities);
+      if (this.progressService.complete() === false && !clinician && this.router.url.startsWith('/dashboard')) {
         void this.router.navigate(['/account/profile'], { queryParams: { tab: 'application' } });
       }
     }, INCOMPLETE_PROFILE_REDIRECT_MS);
