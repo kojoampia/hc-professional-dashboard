@@ -111,12 +111,6 @@ export const SHELL_NAV_GROUPS: ShellNavGroup[] = [
         dataCy: 'complianceMenu',
       },
       {
-        path: '/clinical-case',
-        labelKey: 'professionalDashboardApp.patientserviceClinicalCase.home.title',
-        icon: 'folder_shared',
-        crumbKey: 'global.menu.admin.main',
-      },
-      {
         path: '/admin/metrics',
         labelKey: 'global.menu.admin.metrics',
         icon: 'speed',

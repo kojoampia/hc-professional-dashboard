@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repository actually is
 
-A JHipster-generated **Angular 19 frontend** (`hc-professional-dashboard`) for the Health Connect / Abofonsa BridgeCare platform, restyled to the BridgeCare design system. Hand-built clinician screens live under `app/health-connect/`; generated entity CRUD lives under `app/entities/`. **`professional-web.md` is the consolidated planning document** — decisions that still bind, build traps (notably the hand-wired Tailwind v4 pipeline), and unfinished work.
+A JHipster-generated **Angular 19 frontend** (`hc-professional-dashboard`) for the Health Connect / Abofonsa BridgeCare platform, restyled to the BridgeCare design system. The whole UI is hand-built under `app/health-connect/`. **There is no generated entity layer** — `app/entities/`, the two JDL files and `scripts/regenerate-entities.sh` were removed on 2026-08-20 (see `professional-web.md`). **`professional-web.md` is the consolidated planning document** — decisions that still bind, build traps (notably the hand-wired Tailwind v4 pipeline), and unfinished work.
 
 **Important reality check:** `pom.xml` and `README.md` describe a full Spring Boot / Java backend (Controllers/Services/Repositories, Kafka, MinIO, Liquibase, etc.), but **there is no Java source in this repo** (`src/main/java` and `src/main/resources` do not exist; `.yo-rc.json` sets `"skipServer": true`). The backend microservices live in separate repositories. `pom.xml` is retained from the JHipster generator and is used primarily by the `frontend-maven-plugin` to build the Angular app. Do not assume Java/Spring code exists here — verify before referencing it.
 
@@ -50,7 +50,7 @@ That is the **only** form that works, and it is verified. Two commands this file
 - Build API URLs through `ApplicationConfigService.getEndpointFor(api, microservice?)` (`app/core/config/application-config.service.ts`) — never hardcode service paths.
   - `getEndpointFor('api/addresses')` → `/api/addresses` (gateway/monolith route)
   - `getEndpointFor('api/...', 'professionalservice')` → `/services/professionalservice/api/...` (microservice route)
-- Entity services (`app/entities/<ms>/<entity>/service/*.service.ts`) follow the JHipster pattern: typed model interface + `New*`/`PartialUpdate*` aliases, REST `Rest*` shapes (dayjs fields serialized to/from strings), and `createRequestOption` for query/pagination params. Match this pattern for new entities.
+- API adapters live in `app/health-connect/api/` — a typed `*Dto` model beside a small `*ApiService`, carrying only the calls the app makes. `RestOf`-style aliases appear only where a field changes shape on the wire (dayjs ↔ ISO string), as in `clinical-case-api.model.ts`. Do not reinstate the full JHipster CRUD surface for an endpoint that needs two methods.
 
 ## Frontend architecture
 
@@ -58,8 +58,6 @@ That is the **only** form that works, and it is verified. Two commands this file
 - Module/folder boundaries (keep responsibilities separated):
   - `core/` — authentication, HTTP interceptors, app config, low-level request/util helpers (singletons).
   - `shared/` — reusable UI helpers, pipes, sort/pagination/filter/date/language/alert utilities.
-  - `entities/` — entity modules, split by microservice namespace:
-    - `entities/entity.routes.ts` registers all **20 generated entities** (13 `professionalservice`, 7 `patientservice`), inserted at the `/* jhipster-needle-add-entity-route */` marker when the JDL is applied. Regenerate with `./scripts/regenerate-entities.sh` — never by hand, and never with a bare `jhipster jdl`.
   - `layouts/` — BridgeCare shell: `sidebar/` (navy sidebar; nav model in `shell-navigation.ts` drives sidebar groups, mobile tabbar, and topbar crumb/title), `main/` (cream topbar + content column), `tabbar/` (mobile bottom tabs), plus footer/error/profiles. There is no horizontal navbar.
   - `health-connect/` — clinician feature pages (dashboard, patients, case queue, duty roster, messages, about), charts, and API adapters.
   - `admin/` (health, metrics), `account/`, `home/`, `login/`, `config/`.

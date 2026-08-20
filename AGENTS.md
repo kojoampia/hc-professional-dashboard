@@ -39,24 +39,15 @@ Two commands earlier versions of this file recommended **do not work**, verified
 
 ## Architecture facts that matter
 
-- Source root is `src/main/webapp/app` (`core/`, `shared/`, `entities/`, `health-connect/` (clinician + onboarding feature pages, charts, API adapters), `layouts/`, `admin/`, `account/`, `home/`, `login/`, `config/`).
-- **The real UI is `health-connect/`; `entities/` is generated CRUD.** All **20 entities** are generated and routed — 13 under `entities/professionalservice/`, 7 under `entities/patientservice/` — from the two JDL files at the repo root. `MedCase` no longer exists; `ClinicalCase` replaced it.
-- **Never edit generated entity code by hand, and never run the generator bare.** Use:
+- Source root is `src/main/webapp/app` (`core/`, `shared/`, `health-connect/` (clinician + onboarding feature pages, charts, API adapters), `layouts/`, `admin/`, `account/`, `home/`, `login/`, `config/`).
+- **The whole UI is hand-built under `health-connect/`. There is no generated entity layer.** `app/entities/`, the two JDL files, `scripts/regenerate-entities.sh` and its three repair passes were removed on 2026-08-20 — 425 files and their ~100 specs. Nothing regenerates from JDL any more, so there is no generator step to run and no needle to preserve in `app.routes.ts`.
 
-  ```bash
-  ./scripts/regenerate-entities.sh
-  ```
+  Why it went: the layer was 20 entities of CRUD scaffolding that no user journey reached, it duplicated contracts the hand-built `health-connect/api/` adapters already owned, and its route registration actively broke the app — `entity.routes.ts` declared `path: 'duty-roster'` and was loaded first, so `/duty-roster` served the generated list (which calls an admin-only endpoint and told every clinician they were not authorised) while the real page sat unreachable.
 
-  It applies the JDL and then three repair passes, because generated JHipster code has never compiled against this repo as-emitted. Editing by hand loses the change on the next regeneration; running `jhipster jdl` alone leaves the build broken. The scripts document every repair:
+  The one piece worth keeping was ported rather than deleted: `ClinicalCaseService` and `IClinicalCase` became `health-connect/api/clinical-case-api.{service,model}.ts`, carrying the two methods the repository actually calls instead of the full generated surface. `MedCase` no longer exists; `ClinicalCase` replaced it.
 
-  - `scripts/postprocess-generated-entities.mjs` — Bootstrap/ng-bootstrap/Font Awesome are gone (dialogs → Material, pagination → `hpd-pagination`, datepicker → native, icons → Material Icons); alert components are `*Component` in `*.component.ts` while the error model is `AlertError`; `shared/sort` uses `{ predicate, ascending }` and `startSort(property, order)`; the generator derives directive selectors from `jhiPrefix`, emitting `hpdTranslate`/`hpdSort`/`hpdSortBy`, none of which exist (the real ones are `jhi*`); specs arrive written for Vitest and Angular 20.
-  - `scripts/restyle-generated-entities.mjs` — Bootstrap classes → BridgeCare tokens.
-  - `scripts/apply-enum-i18n.mjs` — enum translations otherwise echo the constant in every locale.
-
-- **`tsc` is not a sufficient gate for entity code.** Unrouted files are unreachable from `main.ts` and are never type-checked, so `tsc` reports clean on templates that are comprehensively broken. Verify with `npm run lint` **and** `npx ng build` (the only gate that checks templates) **and** `npx ng test`.
-- **40 generated specs are `describe.skip`ped**, all the `list/` and `detail/` ones. JHipster 9.1 emits components built on `httpResource` with specs that drive them via Angular 20's `TestBed.tick()`; on Angular 19.2 `flushEffects()` does not issue the resource request and awaiting `whenStable()` deadlocks. The reason is in each file. They should pass on the Angular 20 upgrade.
 - Build API URLs with `ApplicationConfigService.getEndpointFor(api, microservice?)` — never hardcode `/services/...` paths. Everything in the `api/` repo needs the `'professionalservice'` second argument; the adapters in `health-connect/api/` are the examples to copy.
-- Entity services follow the JHipster pattern (typed model + `New*`/`PartialUpdate*` aliases, `Rest*` wire types with dayjs↔string conversion, `createRequestOption`). Match it for new entities.
+- API adapters live in `health-connect/api/`: a typed `*Dto` model beside a small `*ApiService` carrying only the calls the app makes. A `Rest*` alias appears only where a field changes shape on the wire (dayjs ↔ ISO string) — see `clinical-case-api.model.ts`. Don't rebuild the full JHipster CRUD surface for an endpoint that needs two methods; that is what was just removed.
 - Route guards use `UserRouteAccessService` + `Authority` constants; auth is JWT against the gateway.
 
 ### Route authority tiers (`health-connect/health-connect.routes.ts`)

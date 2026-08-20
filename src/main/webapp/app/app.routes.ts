@@ -94,10 +94,11 @@ const routes: Routes = [
         loadChildren: () => import('./account/account.route'),
       },
       {
-        path: '',
-        loadChildren: () => import(`./entities/entity.routes`),
-      },
-      {
+        // The generated entity CRUD layer used to be registered here, ahead of this, and that
+        // ordering was a live bug rather than a preference: it declared `path: 'duty-roster'` too,
+        // Angular matches the first route that fits, and so /duty-roster served the generated list
+        // — which calls an admin-only endpoint and told every clinician they were not authorised —
+        // while the hand-built duty-roster page sat unreachable. The whole layer is gone now.
         path: '',
         loadChildren: () => import('./health-connect/health-connect.routes'),
       },
