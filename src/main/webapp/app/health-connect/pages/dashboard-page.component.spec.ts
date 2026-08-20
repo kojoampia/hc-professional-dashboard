@@ -4,6 +4,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { Account } from 'app/core/auth/account.model';
+import { AccountService } from 'app/core/auth/account.service';
 import { FakeHealthConnectRepository } from '../testing/fake-health-connect.repository';
 import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
 import DashboardPageComponent from './dashboard-page.component';
@@ -165,6 +167,39 @@ describe('DashboardPageComponent', () => {
       settle();
 
       expect(router.navigate).not.toHaveBeenCalled();
+    });
+
+    /**
+     * The regression this guard exists for, and it reached production-adjacent quality before a
+     * browser caught it: `/api/onboarding/progress` answers `complete: false` at 0% for an account
+     * with **no application at all**, which is every clinician seeded or invited rather than hired
+     * through the careers page. Keyed on completion alone, the nudge fired on all of them and a
+     * ROLE_DOCTOR bounced off the dashboard two seconds after every arrival.
+     *
+     * <p>Each clinical authority is checked, not just one: the rule is "holds anything beyond a
+     * bare ROLE_USER", and `resolveAuthorityRole` returns USER rather than null for that account,
+     * so a null check here would silently match nobody.
+     */
+    it.each([['ROLE_DOCTOR'], ['ROLE_NURSE'], ['ROLE_CARER'], ['ROLE_ADMIN']])(
+      'leaves a clinician holding %s alone, however incomplete their application',
+      authority => {
+        TestBed.inject(AccountService).authenticate(new Account(true, [authority, 'ROLE_USER'], '', null, 'en', null, 'someone', null));
+        flushProgress(false);
+
+        settle();
+
+        expect(router.navigate).not.toHaveBeenCalled();
+      },
+    );
+
+    /** And the applicant it is actually for — ROLE_USER and nothing else — still moves. */
+    it('still moves an applicant holding only ROLE_USER', () => {
+      TestBed.inject(AccountService).authenticate(new Account(true, ['ROLE_USER'], '', null, 'en', null, 'applicant', null));
+      flushProgress(false);
+
+      settle();
+
+      expect(router.navigate).toHaveBeenCalledWith(['/account/profile'], { queryParams: { tab: 'application' } });
     });
 
     it('does not yank someone who has already navigated away', () => {
