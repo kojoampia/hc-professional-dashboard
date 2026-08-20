@@ -127,14 +127,23 @@ describe('FakeHealthConnectRepository', () => {
     expect(repository.asyncState()).toEqual({ status: 'ready', error: null });
   });
 
-  it('updates roster subscriptions and derives the optional shift label', () => {
+  /**
+   * This replaced a test of `subscribeProfessionalToRoster` / `unsubscribeProfessionalFromRoster`,
+   * removed in DR1 along with the endpoints they called — which were never built on either side.
+   * The roster is assignment-only, so what is left to assert is that the label follows the
+   * assignment and that an account holding none gets nothing rather than someone else's.
+   */
+  it('derives the optional shift label from the account’s own assignments', () => {
     expect(repository.shiftLabelForAccount('doctor')).toEqual({
-      translationKey: 'healthConnect.roster.activeShift',
-      translationParams: { time: '20:00' },
+      translationKey: 'healthConnect.roster.nextShift',
+      translationParams: { time: '2026-07-20 23:00' },
     });
-    expect(repository.unsubscribeProfessionalFromRoster('professional-doctor', 'ward-3-night')).toBe(true);
-    expect(repository.shiftLabelForAccount('doctor')).toBeNull();
-    expect(repository.subscribeProfessionalToRoster('professional-doctor', 'ward-3-night')).toBe(true);
-    expect(repository.subscribeProfessionalToRoster('professional-doctor', 'ward-3-night')).toBe(false);
+    expect(repository.shiftLabelForAccount('nobody')).toBeNull();
+  });
+
+  it('scopes "my roster" to cases on the caller’s own assignments', () => {
+    expect(repository.listCases(undefined, 'mine', 'professional-doctor').length).toBeGreaterThan(0);
+    // clinic-a-day belongs to another professional, so none of its cases are the doctor's.
+    expect(repository.listCases(undefined, 'mine', 'professional-nurse')).toEqual([]);
   });
 });

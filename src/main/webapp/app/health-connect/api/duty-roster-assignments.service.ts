@@ -3,9 +3,15 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { ShiftLabel } from '../health-connect.models';
+import { DutyRosterShift, SHIFT_WINDOWS, ShiftLabel, shiftStartHour } from '../health-connect.models';
 
-export type DutyRosterShift = 'MORNING' | 'AFTERNOON' | 'NIGHT' | 'DAY' | 'FLEXIBLE';
+/**
+ * Re-exported so callers of this adapter get the shift union from the adapter they already import.
+ * It is *defined* in `health-connect.models`, not here — the mirror of
+ * `api/domain/enumeration/ShiftType` is a cross-repo invariant and one copy of it in this repo is
+ * hard enough to keep in step with the enum and the four i18n catalogues without a second.
+ */
+export type { DutyRosterShift };
 
 export interface DutyRosterAssignmentDto {
   id?: string;
@@ -17,36 +23,19 @@ export interface DutyRosterAssignmentDto {
   description?: string | null;
 }
 
-/**
- * Local shift windows (hour of day, 24h): NIGHT wraps past midnight. FLEXIBLE
- * deliberately has no window — it stands for individually agreed 2–4 hour time
- * blocks on the assignment date and is labelled separately.
- */
-const SHIFT_WINDOWS: Partial<Record<DutyRosterShift, { start: number; end: number }>> = {
-  MORNING: { start: 6, end: 14 },
-  AFTERNOON: { start: 14, end: 22 },
-  NIGHT: { start: 22, end: 6 },
-  DAY: { start: 8, end: 17 },
-};
-
-/** Sorting anchor for windowless (FLEXIBLE) shifts. */
-const DEFAULT_START_HOUR = 8;
-
-const startHour = (shift: DutyRosterShift): number => SHIFT_WINDOWS[shift]?.start ?? DEFAULT_START_HOUR;
-
 const pad = (n: number): string => String(n).padStart(2, '0');
 
 /**
- * Real duty-roster assignments API (WP6) against the WP6
- * `/api/duty-rosters` surface — replaces the mock repository path
- * for the roster view and the sidebar shift label. Assignment-only policy:
- * professionals load their own assignments; administrators assign/unassign.
+ * Real duty-roster assignments API, against `/api/duty-roster` — the singular resource whose bare
+ * GET is the caller's own roster (DR1; `/my` is gone, and the admin's whole-estate list moved to
+ * `/all`). Drives the roster view and the sidebar shift label. Assignment-only policy:
+ * professionals load their own assignments; administrators assign and unassign.
  */
 @Injectable({ providedIn: 'root' })
 export class DutyRosterAssignmentsService {
   private readonly http = inject(HttpClient);
   private readonly applicationConfigService = inject(ApplicationConfigService);
-  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/duty-rosters', 'professionalservice');
+  private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/duty-roster', 'professionalservice');
 
   private readonly myAssignmentsState = signal<readonly DutyRosterAssignmentDto[]>([]);
   readonly myAssignments = computed(() => this.myAssignmentsState());
@@ -55,14 +44,14 @@ export class DutyRosterAssignmentsService {
   readonly shiftLabel = computed<ShiftLabel | null>(() => this.computeShiftLabel(this.myAssignmentsState(), new Date()));
 
   loadMyAssignments(): void {
-    this.http.get<DutyRosterAssignmentDto[]>(`${this.resourceUrl}/my`).subscribe({
+    this.http.get<DutyRosterAssignmentDto[]>(this.resourceUrl).subscribe({
       next: assignments => this.myAssignmentsState.set(assignments),
       error: () => this.myAssignmentsState.set([]),
     });
   }
 
   listAll(): Observable<DutyRosterAssignmentDto[]> {
-    return this.http.get<DutyRosterAssignmentDto[]>(this.resourceUrl);
+    return this.http.get<DutyRosterAssignmentDto[]>(`${this.resourceUrl}/all`);
   }
 
   assign(assignment: DutyRosterAssignmentDto): Observable<DutyRosterAssignmentDto> {
@@ -98,15 +87,15 @@ export class DutyRosterAssignmentsService {
     }
 
     const upcoming = assignments
-      .filter(a => a.date > today || (a.date === today && hour < startHour(a.shift)))
-      .sort((a, b) => (a.date === b.date ? startHour(a.shift) - startHour(b.shift) : a.date < b.date ? -1 : 1))[0];
+      .filter(a => a.date > today || (a.date === today && hour < shiftStartHour(a.shift)))
+      .sort((a, b) => (a.date === b.date ? shiftStartHour(a.shift) - shiftStartHour(b.shift) : a.date < b.date ? -1 : 1))[0];
     if (upcoming) {
       if (upcoming.shift === 'FLEXIBLE') {
         return { translationKey: 'healthConnect.roster.nextFlexibleShift', translationParams: { date: upcoming.date } };
       }
       return {
         translationKey: 'healthConnect.roster.nextShift',
-        translationParams: { time: `${upcoming.date} ${pad(startHour(upcoming.shift))}:00` },
+        translationParams: { time: `${upcoming.date} ${pad(shiftStartHour(upcoming.shift))}:00` },
       };
     }
     return null;

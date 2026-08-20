@@ -119,17 +119,11 @@
       "description": "Detailed description of event."
     },
     "roster": {
-      "subtitle": "Subscribe to rosters to route their urgent and open cases to your \"My roster\" queue.",
+      "subtitle": "Cases on the rosters you are assigned to appear in your \"My roster\" queue.",
       "allCases": "All cases",
       "myRoster": "My roster",
-      "subscribed": "My subscribed rosters",
-      "available": "Available rosters",
-      "shifts": "Shifts",
       "activeShift": "On duty until {{time}}",
       "nextShift": "Next shift: {{time}}",
-      "upcoming": "Upcoming",
-      "active": "Active",
-      "completed": "Completed",
       "myAssignments": "My duty assignments",
       "notAssigned": "No duty assignments yet. A roster administrator assigns your shifts.",
       "assignmentOnly": "Duty rosters are assigned by administrators. Contact your coordinator for changes.",
@@ -142,10 +136,9 @@
       "assign": "Assign shift",
       "unassign": "Unassign",
       "shiftNames": {
-        "MORNING": "Morning (06:00–14:00)",
-        "AFTERNOON": "Afternoon (14:00–22:00)",
-        "NIGHT": "Night (22:00–06:00)",
-        "DAY": "Day (08:00–17:00)",
+        "DAY": "Day (07:00–15:00)",
+        "EVENING": "Evening (15:00–23:00)",
+        "NIGHT": "Night (23:00–07:00)",
         "FLEXIBLE": "Flexible (2–4 h blocks)"
       },
       "duties": {

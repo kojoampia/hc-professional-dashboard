@@ -3,7 +3,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { ClinicalCaseApiService } from './api/clinical-case-api.service';
 import { ClinicalCaseDto } from './api/clinical-case-api.model';
 
-import { DutyRosterApiService } from './api/duty-roster-api.service';
+import { DutyRosterAssignmentDto, DutyRosterAssignmentsService } from './api/duty-roster-assignments.service';
 import { PatientListItemDto } from './api/patient-api.model';
 import { PatientApiService } from './api/patient-api.service';
 import {
@@ -28,14 +28,20 @@ import { HealthConnectRepository, PatientDirectoryFilters } from './health-conne
 /**
  * Real HttpClient-backed implementation of HealthConnectRepository, built
  * against the REST contracts specced in professional-web.md §5
- * (dashboard/patients/clinical-cases/duty-rosters). None of those endpoints exist
+ * (dashboard/patients/clinical-cases/duty-roster). Most of those endpoints do not exist
  * in a running backend yet. It is nonetheless THE active HEALTH_CONNECT_REPOSITORY provider: the
  * in-memory mock it replaced was serving invented patient records to production, and an empty or
  * errored panel is preferable to a fabricated one on a clinical screen.
  *
  * Verified against production on 2026-08-11: clinical-cases returns 200 through the gateway, while
- * patients, the dashboard aggregates and duty-rosters return 404 — those panels are empty until the
- * endpoints exist. The shared JWT works, so this is a missing-endpoint problem, not an auth one.
+ * patients and the dashboard aggregates return 404 — those panels are empty until the endpoints
+ * exist. The shared JWT works, so this is a missing-endpoint problem, not an auth one.
+ *
+ * The roster read was the exception and is fixed in DR1. It went through `DutyRosterApiService`,
+ * whose docstring said "Not wired into the app yet" while this class injected it, and which asked
+ * for the whole-estate collection — so every clinician opening the dashboard got a **403**, not a
+ * 404, and a red error panel with it. Rosters now come from {@link DutyRosterAssignmentsService},
+ * which reads the caller's own assignments and is the client the roster page already used.
  *
  * Architectural note: the shared HealthConnectRepository interface exposes
  * synchronous signals/methods (mirroring the in-memory mock), but real data
@@ -54,20 +60,23 @@ import { HealthConnectRepository, PatientDirectoryFilters } from './health-conne
 @Injectable({ providedIn: 'root' })
 export class HttpHealthConnectRepository implements HealthConnectRepository {
   private readonly patientApi = inject(PatientApiService);
-  private readonly dutyRosterApi = inject(DutyRosterApiService);
+  private readonly rosterApi = inject(DutyRosterAssignmentsService);
   private readonly clinicalCaseService = inject(ClinicalCaseApiService);
 
   private readonly patientRowCache = signal<readonly PatientListRow[]>([]);
   private readonly recordCache = signal<ReadonlyMap<string, PatientRecord>>(new Map());
   private readonly pendingRecordFetches = new Set<string>();
   private readonly clinicalCaseCache = signal<readonly ClinicalCaseDto[]>([]);
-  private readonly rosterCache = signal<readonly DutyRoster[]>([]);
   private readonly archivedCaseIds = signal<ReadonlySet<string>>(new Set());
   private readonly loading = signal(false);
   private readonly error = signal<string | null>(null);
 
   readonly patients = computed<readonly PatientRecord[]>(() => Array.from(this.recordCache().values()));
-  readonly dutyRosters = this.rosterCache.asReadonly();
+  /**
+   * Derived from {@link DutyRosterAssignmentsService}'s signal rather than cached here, so the
+   * dashboard and the sidebar user card cannot disagree about what the caller is on duty for.
+   */
+  readonly dutyRosters = computed<readonly DutyRoster[]>(() => this.rosterApi.myAssignments().map(toDutyRoster));
   readonly asyncState = computed<AsyncViewState>(() => ({
     status: this.error() ? 'error' : this.loading() ? 'loading' : 'ready',
     error: this.error(),
@@ -197,18 +206,24 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
     return clinicalCase && toClinicalCase(clinicalCase);
   }
 
+  /**
+   * "My roster" means *assigned to me*, not *subscribed to by me* — the subscription model is gone
+   * (DR1). `dutyRosters` is already the caller's own, so the `professionalId` match is a consistency
+   * check rather than the filter doing the work; without an id the scope selects nothing, which is
+   * the safe reading of "mine" when we do not know who "me" is.
+   */
   listCases(status?: CaseStatus, rosterScope: RosterScope = 'all', professionalId?: string): readonly CaseQueueRow[] {
-    const subscribedRosterIds = new Set(
+    const myRosterIds = new Set(
       professionalId
-        ? this.rosterCache()
-            .filter(roster => roster.subscribedProfessionalIds.includes(professionalId))
+        ? this.dutyRosters()
+            .filter(roster => roster.professionalId === professionalId)
             .map(roster => roster.id)
         : [],
     );
     return this.caseQueue().filter(
       item =>
         (!status || item.status === status) &&
-        (rosterScope === 'all' || (item.assignedRosterId !== undefined && subscribedRosterIds.has(item.assignedRosterId))),
+        (rosterScope === 'all' || (item.assignedRosterId !== undefined && myRosterIds.has(item.assignedRosterId))),
     );
   }
 
@@ -326,14 +341,6 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
     return optimistic;
   }
 
-  subscribeProfessionalToRoster(professionalId: string, rosterId: string): boolean {
-    return this.updateRosterSubscription(professionalId, rosterId, true);
-  }
-
-  unsubscribeProfessionalFromRoster(professionalId: string, rosterId: string): boolean {
-    return this.updateRosterSubscription(professionalId, rosterId, false);
-  }
-
   archiveCase(id: string): boolean {
     // No archive endpoint specced — same client-side-only behavior as the mock.
     if (!this.findCase(id) || this.archivedCaseIds().has(id)) {
@@ -373,36 +380,29 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
       error: () => this.error.set('Failed to load case queue'),
     });
 
-    this.dutyRosterApi.list().subscribe({
-      next: rosters => this.rosterCache.set(rosters),
-      error: () => this.error.set('Failed to load duty rosters'),
-    });
+    // Owns its own load rather than relying on the sidebar having run first — same request count as
+    // before, since this class already made one of its own. The service swallows its errors into an
+    // empty list, so a roster outage empties the "my roster" scope instead of erroring the page.
+    this.rosterApi.loadMyAssignments();
 
     this.loading.set(false);
   }
-
-  private updateRosterSubscription(professionalId: string, rosterId: string, subscribed: boolean): boolean {
-    const roster = this.rosterCache().find(candidate => candidate.id === rosterId);
-    if (!roster || roster.subscribedProfessionalIds.includes(professionalId) === subscribed) {
-      return false;
-    }
-    this.rosterCache.update(rosters =>
-      rosters.map(candidate =>
-        candidate.id === rosterId
-          ? {
-              ...candidate,
-              subscribedProfessionalIds: subscribed
-                ? [...candidate.subscribedProfessionalIds, professionalId]
-                : candidate.subscribedProfessionalIds.filter(id => id !== professionalId),
-            }
-          : candidate,
-      ),
-    );
-    const request = subscribed ? this.dutyRosterApi.subscribe(rosterId) : this.dutyRosterApi.unsubscribe(rosterId);
-    request.subscribe({ error: () => this.error.set(`Failed to update roster subscription for ${rosterId}`) });
-    return true;
-  }
 }
+
+/**
+ * The wire shape and the feature model differ in one place: a DTO that has not been saved yet has no
+ * id, and the feature model requires one. Only saved assignments are ever read back here, so the
+ * fallback is unreachable in practice — it is there so the types do not have to lie.
+ */
+const toDutyRoster = (dto: DutyRosterAssignmentDto): DutyRoster => ({
+  id: dto.id ?? '',
+  date: dto.date,
+  duty: dto.duty,
+  professionalId: dto.professionalId,
+  shift: dto.shift,
+  name: dto.name,
+  description: dto.description,
+});
 
 const toPatientListRow = (dto: PatientListItemDto): PatientListRow => ({
   id: dto.id,

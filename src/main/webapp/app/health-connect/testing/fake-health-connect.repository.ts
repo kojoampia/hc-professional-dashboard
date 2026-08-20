@@ -17,6 +17,7 @@ import {
   Recommendation,
   RosterScope,
   ShiftLabel,
+  shiftStartHour,
 } from '../health-connect.models';
 import { HealthConnectRepository, PatientDirectoryFilters } from '../health-connect.repository';
 import {
@@ -50,12 +51,7 @@ const copyRecords = (): PatientRecord[] =>
     reports: record.reports.map(report => ({ ...report })),
   }));
 
-const copyRosters = (): DutyRoster[] =>
-  HEALTH_CONNECT_DUTY_ROSTERS.map(roster => ({
-    ...roster,
-    subscribedProfessionalIds: [...roster.subscribedProfessionalIds],
-    shifts: roster.shifts.map(shift => ({ ...shift })),
-  }));
+const copyRosters = (): DutyRoster[] => HEALTH_CONNECT_DUTY_ROSTERS.map(roster => ({ ...roster }));
 
 const page = <T>(items: readonly T[], pageRequest: PageRequest): Page<T> => {
   const totalItems = items.length;
@@ -158,17 +154,17 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
   }
 
   listCases(status?: CaseStatus, rosterScope: RosterScope = 'all', professionalId?: string): readonly CaseQueueRow[] {
-    const subscribedRosterIds = new Set(
+    const myRosterIds = new Set(
       professionalId
         ? this.rosters()
-            .filter(roster => roster.subscribedProfessionalIds.includes(professionalId))
+            .filter(roster => roster.professionalId === professionalId)
             .map(roster => roster.id)
         : [],
     );
     return this.caseQueue().filter(
       item =>
         (!status || item.status === status) &&
-        (rosterScope === 'all' || (item.assignedRosterId !== undefined && subscribedRosterIds.has(item.assignedRosterId))),
+        (rosterScope === 'all' || (item.assignedRosterId !== undefined && myRosterIds.has(item.assignedRosterId))),
     );
   }
 
@@ -180,22 +176,36 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     return HEALTH_CONNECT_PROFESSIONALS.find(candidate => candidate.accountLogin === accountLogin)?.id ?? null;
   }
 
+  /**
+   * The caller's earliest assignment, reported as their next shift.
+   *
+   * <p>It does **not** consult the clock, and that is the point: the old version keyed off a
+   * `status: 'active' | 'upcoming'` field baked into the fixtures, which the assignment model has no
+   * equivalent of. Deriving "active" here instead would make every spec that touches this pass or
+   * fail by the hour it ran at — the same trap `duty-roster-assignments.service.spec` has to hold off
+   * with `advanceTo`. Real active/next resolution lives in
+   * {@link DutyRosterAssignmentsService.computeShiftLabel} and is tested there against a pinned clock.
+   */
   shiftLabelForAccount(accountLogin: string): ShiftLabel | null {
     const professionalId = this.professionalIdForAccount(accountLogin);
     if (!professionalId) {
       return null;
     }
-    const shifts = this.rosters()
-      .filter(roster => roster.subscribedProfessionalIds.includes(professionalId))
-      .flatMap(roster => roster.shifts)
-      .filter(shift => shift.professionalId === professionalId);
-    const shift = shifts.find(candidate => candidate.status === 'active') ?? shifts.find(candidate => candidate.status === 'upcoming');
-    if (!shift) {
+    // filter() already returns a fresh array, so sorting it in place does not touch the signal.
+    const next = this.rosters()
+      .filter(roster => roster.professionalId === professionalId)
+      .sort((left, right) =>
+        left.date === right.date ? shiftStartHour(left.shift) - shiftStartHour(right.shift) : left.date < right.date ? -1 : 1,
+      )[0];
+    if (!next) {
       return null;
     }
+    if (next.shift === 'FLEXIBLE') {
+      return { translationKey: 'healthConnect.roster.nextFlexibleShift', translationParams: { date: next.date } };
+    }
     return {
-      translationKey: shift.status === 'active' ? 'healthConnect.roster.activeShift' : 'healthConnect.roster.nextShift',
-      translationParams: { time: shift.endsAt.slice(11, 16) },
+      translationKey: 'healthConnect.roster.nextShift',
+      translationParams: { time: `${next.date} ${String(shiftStartHour(next.shift)).padStart(2, '0')}:00` },
     };
   }
 
@@ -269,14 +279,6 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     return clinicalReport;
   }
 
-  subscribeProfessionalToRoster(professionalId: string, rosterId: string): boolean {
-    return this.updateRosterSubscription(professionalId, rosterId, true);
-  }
-
-  unsubscribeProfessionalFromRoster(professionalId: string, rosterId: string): boolean {
-    return this.updateRosterSubscription(professionalId, rosterId, false);
-  }
-
   archiveCase(id: string): boolean {
     if (!this.findCase(id) || this.archivedCaseIds().has(id)) {
       return false;
@@ -299,26 +301,5 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     this.archivedCaseIds.set(new Set());
     this.loading.set(false);
     this.error.set(null);
-  }
-
-  private updateRosterSubscription(professionalId: string, rosterId: string, subscribed: boolean): boolean {
-    const roster = this.rosters().find(candidate => candidate.id === rosterId);
-    if (!roster || roster.subscribedProfessionalIds.includes(professionalId) === subscribed) {
-      return false;
-    }
-    this.rosters.update(rosters =>
-      rosters.map(candidate => {
-        if (candidate.id !== rosterId) {
-          return candidate;
-        }
-        return {
-          ...candidate,
-          subscribedProfessionalIds: subscribed
-            ? [...candidate.subscribedProfessionalIds, professionalId]
-            : candidate.subscribedProfessionalIds.filter(id => id !== professionalId),
-        };
-      }),
-    );
-    return true;
   }
 }

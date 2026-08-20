@@ -119,17 +119,11 @@
       "description": "Description détaillée de l'événement."
     },
     "roster": {
-      "subtitle": "Abonnez-vous à des plannings pour acheminer leurs cas urgents et ouverts vers votre file « Mon planning ».",
+      "subtitle": "Les dossiers des gardes qui vous sont attribuées apparaissent dans votre file « Ma garde ».",
       "allCases": "Tous les cas",
       "myRoster": "Mon planning",
-      "subscribed": "Mes plannings abonnés",
-      "available": "Plannings disponibles",
-      "shifts": "Services",
       "activeShift": "En service jusqu'à {{time}}",
       "nextShift": "Prochain service : {{time}}",
-      "upcoming": "À venir",
-      "active": "Actif",
-      "completed": "Terminé",
       "myAssignments": "Mes affectations de garde",
       "notAssigned": "Aucune affectation pour le moment. Un administrateur du planning attribue vos gardes.",
       "assignmentOnly": "Les plannings de garde sont attribués par les administrateurs. Contactez votre coordinateur pour toute modification.",
@@ -142,10 +136,9 @@
       "assign": "Attribuer la garde",
       "unassign": "Retirer",
       "shiftNames": {
-        "MORNING": "Matin (06:00–14:00)",
-        "AFTERNOON": "Après-midi (14:00–22:00)",
-        "NIGHT": "Nuit (22:00–06:00)",
-        "DAY": "Journée (08:00–17:00)",
+        "DAY": "Journée (07:00–15:00)",
+        "EVENING": "Soirée (15:00–23:00)",
+        "NIGHT": "Nuit (23:00–07:00)",
         "FLEXIBLE": "Flexible (blocs de 2–4 h)"
       },
       "duties": {

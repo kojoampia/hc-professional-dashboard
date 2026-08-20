@@ -119,17 +119,11 @@
       "description": "Descripción detallada del evento."
     },
     "roster": {
-      "subtitle": "Suscríbase a los turnos para dirigir sus casos urgentes y abiertos a su cola «Mi turno».",
+      "subtitle": "Los casos de los turnos que tienes asignados aparecen en tu cola «Mi turno».",
       "allCases": "Todos los casos",
       "myRoster": "Mi turno",
-      "subscribed": "Mis turnos suscritos",
-      "available": "Turnos disponibles",
-      "shifts": "Turnos",
       "activeShift": "De guardia hasta {{time}}",
       "nextShift": "Próximo turno: {{time}}",
-      "upcoming": "Próximo",
-      "active": "Activo",
-      "completed": "Completado",
       "myAssignments": "Mis turnos asignados",
       "notAssigned": "Aún no hay turnos asignados. Un administrador de turnos asigna sus guardias.",
       "assignmentOnly": "Los turnos los asignan los administradores. Contacte con su coordinador para cambios.",
@@ -142,10 +136,9 @@
       "assign": "Asignar turno",
       "unassign": "Quitar",
       "shiftNames": {
-        "MORNING": "Mañana (06:00–14:00)",
-        "AFTERNOON": "Tarde (14:00–22:00)",
-        "NIGHT": "Noche (22:00–06:00)",
-        "DAY": "Día (08:00–17:00)",
+        "DAY": "Día (07:00–15:00)",
+        "EVENING": "Tarde (15:00–23:00)",
+        "NIGHT": "Noche (23:00–07:00)",
         "FLEXIBLE": "Flexible (bloques de 2–4 h)"
       },
       "duties": {

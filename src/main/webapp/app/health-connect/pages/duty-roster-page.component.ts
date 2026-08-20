@@ -9,7 +9,8 @@ import { Authority } from 'app/config/authority.constants';
 
 import { DutyRosterAssignmentDto, DutyRosterAssignmentsService, DutyRosterShift } from '../api/duty-roster-assignments.service';
 
-const SHIFTS: readonly DutyRosterShift[] = ['MORNING', 'AFTERNOON', 'NIGHT', 'DAY', 'FLEXIBLE'];
+/** Offered in window order, so the select reads down the day. FLEXIBLE last — it spans all of it. */
+const SHIFTS: readonly DutyRosterShift[] = ['DAY', 'EVENING', 'NIGHT', 'FLEXIBLE'];
 const DUTIES: readonly string[] = [
   'DOCTOR',
   'NURSE',
@@ -26,8 +27,8 @@ const DUTIES: readonly string[] = [
 /**
  * Duty roster (WP6, admin-assignment-only decision): professionals see their
  * own assignments read-only; administrators additionally assign and unassign.
- * Backed by the real `/api/duty-rosters` surface — the mock
- * subscribe/unsubscribe flow is gone.
+ * Backed by the real `/api/duty-roster` surface — the bare GET for the
+ * caller's own assignments, `/all` for the administrator's estate view (DR1).
  */
 @Component({
   standalone: true,
@@ -164,7 +165,7 @@ export default class DutyRosterPageComponent implements OnInit {
   readonly assignForm = new FormGroup({
     professionalId: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),
     date: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),
-    shift: new FormControl<DutyRosterShift>('MORNING', { nonNullable: true, validators: Validators.required }),
+    shift: new FormControl<DutyRosterShift>('DAY', { nonNullable: true, validators: Validators.required }),
     duty: new FormControl<string>('NURSE', { nonNullable: true, validators: Validators.required }),
     name: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),
   });
