@@ -67,11 +67,22 @@ export default class FirstLoginAcknowledgementComponent implements OnInit {
           if (!account) {
             return of(false);
           }
-          // interstitial only once the application is ACTIVE and not yet acknowledged
+          // Interstitial only once the application is ACTIVE and not yet acknowledged.
+          //
+          // The ACTIVE test reads `progress.status`, not `progress.complete`: completeness is the
+          // applicant's half and ACTIVE additionally requires admin vetting, so gating on
+          // `complete` would show this to a clinician who has finished their profile and holds no
+          // clinical authority yet.
+          //
+          // `progress` rather than `applications/me`, which this used to call: this component
+          // lives in the shell and therefore runs on every navigation, and that endpoint 404s for
+          // every account without an application — which is most of them. `progress` answers for
+          // those accounts instead of 404ing, so the recurring miss is gone rather than merely
+          // silenced.
           return forkJoin({
-            status: this.api.acknowledgementStatus(),
-            application: this.api.getOwnApplication().pipe(catchError(() => of(null))),
-          }).pipe(map(({ status, application }) => application?.status === 'ACTIVE' && !status.acknowledged));
+            acknowledgement: this.api.acknowledgementStatus(),
+            progress: this.api.progress(),
+          }).pipe(map(({ acknowledgement, progress }) => progress.status === 'ACTIVE' && !acknowledgement.acknowledged));
         }),
         catchError(() => of(false)),
       )

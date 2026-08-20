@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 
-import { ClinicalCaseService } from 'app/entities/patientservice/clinical-case/service/clinical-case.service';
-import { IClinicalCase } from 'app/entities/patientservice/clinical-case/clinical-case.model';
+import { ClinicalCaseApiService } from './api/clinical-case-api.service';
+import { ClinicalCaseDto } from './api/clinical-case-api.model';
 
 import { DutyRosterApiService } from './api/duty-roster-api.service';
 import { PatientListItemDto } from './api/patient-api.model';
@@ -55,12 +55,12 @@ import { HealthConnectRepository, PatientDirectoryFilters } from './health-conne
 export class HttpHealthConnectRepository implements HealthConnectRepository {
   private readonly patientApi = inject(PatientApiService);
   private readonly dutyRosterApi = inject(DutyRosterApiService);
-  private readonly clinicalCaseService = inject(ClinicalCaseService);
+  private readonly clinicalCaseService = inject(ClinicalCaseApiService);
 
   private readonly patientRowCache = signal<readonly PatientListRow[]>([]);
   private readonly recordCache = signal<ReadonlyMap<string, PatientRecord>>(new Map());
   private readonly pendingRecordFetches = new Set<string>();
-  private readonly clinicalCaseCache = signal<readonly IClinicalCase[]>([]);
+  private readonly clinicalCaseCache = signal<readonly ClinicalCaseDto[]>([]);
   private readonly rosterCache = signal<readonly DutyRoster[]>([]);
   private readonly archivedCaseIds = signal<ReadonlySet<string>>(new Set());
   private readonly loading = signal(false);
@@ -242,7 +242,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
     if (!existing) {
       return null;
     }
-    const updatedCase: IClinicalCase = {
+    const updatedCase: ClinicalCaseDto = {
       ...existing,
       symptoms: changes.symptoms ?? existing.symptoms,
       diagnosis: changes.diagnosis ?? existing.diagnosis,
@@ -251,7 +251,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
       recommendations: changes.recommendationIds
         ? changes.recommendationIds.map(recommendationId => ({ id: recommendationId }))
         : existing.recommendations,
-      status: changes.status ? (changes.status.toUpperCase() as IClinicalCase['status']) : existing.status,
+      status: changes.status ? (changes.status.toUpperCase() as ClinicalCaseDto['status']) : existing.status,
     };
     this.clinicalCaseCache.update(cache => cache.map(candidate => (candidate.id === id ? updatedCase : candidate)));
     this.clinicalCaseService.partialUpdate(updatedCase).subscribe({
@@ -413,9 +413,9 @@ const toPatientListRow = (dto: PatientListItemDto): PatientListRow => ({
 });
 
 /** The generated enum is upper-case; the feature model's CaseStatus is lower-case. */
-const toCaseStatus = (status: IClinicalCase['status']): CaseStatus => (status ? (status.toLowerCase() as CaseStatus) : 'open');
+const toCaseStatus = (status: ClinicalCaseDto['status']): CaseStatus => (status ? (status.toLowerCase() as CaseStatus) : 'open');
 
-const toCaseQueueRow = (clinicalCase: IClinicalCase): CaseQueueRow => ({
+const toCaseQueueRow = (clinicalCase: ClinicalCaseDto): CaseQueueRow => ({
   id: clinicalCase.id,
   patientId: clinicalCase.patientId ?? '',
   date: clinicalCase.openedAt?.toISOString() ?? new Date(0).toISOString(),
@@ -425,7 +425,7 @@ const toCaseQueueRow = (clinicalCase: IClinicalCase): CaseQueueRow => ({
   assignedRosterId: clinicalCase.assignedRosterId ?? undefined,
 });
 
-const toClinicalCase = (clinicalCase: IClinicalCase): ClinicalCase => ({
+const toClinicalCase = (clinicalCase: ClinicalCaseDto): ClinicalCase => ({
   id: clinicalCase.id,
   patientId: clinicalCase.patientId ?? '',
   openedAt: clinicalCase.openedAt?.toISOString() ?? new Date(0).toISOString(),

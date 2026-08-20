@@ -10,7 +10,7 @@
       "session": "Session",
       "menu": "Menu",
       "messages": "Messages",
-      "earnings": "Mes revenus",
+      "earnings": "Revenus",
       "collapseSidebar": "Réduire le menu",
       "expandSidebar": "Développer le menu",
       "profile": "Profil"
@@ -80,7 +80,7 @@
       }
     },
     "patient": {
-      "directory": "Répertoire des patients",
+      "directory": "Patients",
       "search": "Rechercher des patients",
       "filters": "Filtres des patients",
       "gender": "Genre",

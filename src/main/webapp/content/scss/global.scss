@@ -154,6 +154,47 @@ bars, chart fills).
 }
 
 /* ==============================================================
+Box model and page reset
+
+This project imports tailwindcss/theme + tailwindcss/utilities but NOT
+tailwindcss/preflight (see content/css/tailwind.css), so the two resets
+every Tailwind layout silently assumes are absent. Both bit us:
+
+  * `box-sizing: border-box`. Without it every element is content-box,
+    so `w-full` (width:100%) plus `px-4` is the container's width PLUS
+    32px — and `md:px-8` plus 64px. Nine page-level
+    `<main class="w-full px-4 py-8 md:px-8">` elements were therefore
+    wider than the column holding them, and the portal scrolled
+    horizontally on the dashboard, patient directory, case queue, duty
+    roster, earnings, messages, compliance and both review pages. The
+    same arithmetic makes every `w-full` input and menu button overflow
+    its own panel by its padding, which reads as a stray few pixels
+    rather than as a bug.
+
+  * `body { margin: 0 }`. The browser default of 8px was still in force,
+    which is the pale gutter around the whole application.
+
+Declared here rather than by adding preflight, which is excluded on
+purpose: it also resets headings, lists, tables and form controls, and
+this app's hand-built components and Angular Material M3 theme are
+styled on top of the browser defaults it would remove. The other
+preflight rules this project needs have been re-added one at a time as
+they were missed — the button reset and form-control font below, and
+the fieldset border in clinical-profile — and these two are the rest of
+that same debt.
+===============================================================*/
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+/* ==============================================================
 Typography
 
 Uniform application-wide font: Inter (declared via --hpd-font-body in

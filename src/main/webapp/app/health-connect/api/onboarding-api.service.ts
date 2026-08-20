@@ -97,6 +97,14 @@ export interface OnboardingEmergencyContactDto {
 export interface OnboardingProgressDto {
   percent: number;
   complete: boolean;
+  /**
+   * Where the application has got to, or null for an account with no application at all.
+   *
+   * <p>Not derivable from {@link complete}: ACTIVE requires completeness <em>and</em> admin vetting,
+   * so a finished profile nobody has reviewed is `complete: true` with a status well short of
+   * ACTIVE. Anything asking "is this clinician live" must read this.
+   */
+  status: OnboardingStatus | null;
   requirements: { key: OnboardingRequirementKey; done: boolean }[];
 }
 

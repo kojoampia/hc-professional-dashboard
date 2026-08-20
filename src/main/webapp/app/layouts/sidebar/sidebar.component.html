@@ -6,9 +6,16 @@
   (click)="requestClose()"
 ></div>
 
+<!--
+  The rail is 276px, not 248: that width now includes its 28px of horizontal padding (px-3.5),
+  because the app sets box-sizing: border-box globally (content/scss/global.scss). Before that reset
+  existed this element was content-box and rendered at 248 + 28, and the brand "Abofonsa BridgeCare"
+  was sized against the wider box. At 248 the wordmark truncates mid-word to "Abofonsa BridgeC".
+  Same arithmetic for the collapsed rail in railClass: 50 + 8 = 58.
+-->
 <aside
   data-cy="navbar"
-  class="fixed inset-y-0 left-0 z-50 flex w-[248px] flex-col bg-hpd-primary px-3.5 py-5 text-white shadow-hpd-lg transition-all duration-200 lg:visible lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shadow-none"
+  class="fixed inset-y-0 left-0 z-50 flex w-[276px] flex-col bg-hpd-primary px-3.5 py-5 text-white shadow-hpd-lg transition-all duration-200 lg:visible lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shadow-none"
   [ngClass]="railClass"
   [class.-translate-x-full]="!open"
   [class.invisible]="!open"

@@ -38,7 +38,9 @@ export default class SidebarComponent implements OnInit {
 
   /** Wide when open, 50px when collapsed. The mobile drawer keeps its own width regardless. */
   get railClass(): string {
-    return this.collapsed ? 'lg:w-[50px] lg:px-1' : 'lg:w-[248px] lg:px-3.5';
+    // Widths include their own padding — the app is box-sizing: border-box (see the note on the
+    // <aside> in sidebar.component.html). 58 = 50 + 8 (px-1), 276 = 248 + 28 (px-3.5).
+    return this.collapsed ? 'lg:w-[58px] lg:px-1' : 'lg:w-[276px] lg:px-3.5';
   }
 
   /** Applied to every label the rail has no room for. Hidden at `lg` only, for the same reason. */
