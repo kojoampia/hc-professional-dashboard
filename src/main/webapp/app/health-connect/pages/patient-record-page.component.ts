@@ -23,7 +23,7 @@ const PAGE_SIZE = 3;
   imports: [ActivityLogDialogComponent, CommonModule, FileUploadTriggerComponent, MatIconModule, PaginationComponent, TranslateModule],
   template: `
     @if (record(); as patientRecord) {
-      <article class="hpd-record mx-auto max-w-6xl">
+      <article class="hpd-record w-full">
         <section class="hpd-identity mb-6 flex items-start gap-4" aria-labelledby="hpd-patient-identity-heading">
           @if (patientRecord.patient.avatarUrl) {
             <img

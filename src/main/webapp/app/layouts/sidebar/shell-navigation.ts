@@ -32,12 +32,26 @@ export interface ShellNavGroup {
   requiresAuth?: boolean;
   /** Restrict the whole group to these authorities (e.g. ROLE_ADMIN). */
   authorities?: string[];
+  /**
+   * Hide the group from an account holding no clinical authority at all.
+   *
+   * <p>An applicant holds only ROLE_USER until their credentials are approved, and every
+   * destination in such a group refuses them. Onboarding used to avoid this by rendering on the
+   * signed-out shell; now that it is a tab on the profile page inside the portal, the sidebar has
+   * to do it instead — otherwise an applicant reads a list of rooms they cannot enter.
+   *
+   * <p>Deliberately keyed on <em>authority</em>, not on the application reaching ACTIVE. Clinicians
+   * seeded or created before onboarding existed hold a clinical role and no application at all;
+   * gating on the application would take the whole portal away from them.
+   */
+  clinicalOnly?: boolean;
   dataCy?: string;
 }
 
 export const SHELL_NAV_GROUPS: ShellNavGroup[] = [
   {
     labelKey: 'healthConnect.navigation.care',
+    clinicalOnly: true,
     items: [
       {
         // `/dashboard` rather than `/`, and no `exact`. The root is now a redirect to this path, so
@@ -121,12 +135,15 @@ export const SHELL_NAV_GROUPS: ShellNavGroup[] = [
     requiresAuth: true,
     items: [
       {
-        path: '/onboarding',
-        labelKey: 'healthConnect.navigation.onboarding',
-        icon: 'assignment_ind',
+        // Was "Onboarding" pointing at the standalone wizard. The wizard's steps are tabs on the
+        // profile page now, so one destination covers both what onboarding asked for and what a
+        // clinician edits afterwards.
+        path: '/account/profile',
+        labelKey: 'healthConnect.navigation.profile',
+        icon: 'badge',
         crumbKey: 'global.menu.account.main',
         requiresAuth: true,
-        dataCy: 'onboardingMenu',
+        dataCy: 'profileMenu',
       },
       {
         path: '/earnings',

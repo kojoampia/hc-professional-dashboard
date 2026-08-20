@@ -54,6 +54,22 @@ export const resolveAuthorityRole = (authorities: readonly string[] | null | und
   };
 };
 
+/**
+ * Does this account hold any role beyond a bare {@code ROLE_USER}?
+ *
+ * <p>The distinction that matters for an applicant: they hold {@code ROLE_USER} and nothing else
+ * until their credentials are approved, so every clinical destination refuses them. Note that
+ * {@link resolveAuthorityRole} returns {@code USER} rather than {@code null} for such an account —
+ * {@code ROLE_USER} is last in the precedence list — so "no clinical role" is <em>not</em> a null
+ * check, and writing it as one silently matches nobody.
+ *
+ * <p>ROLE_ADMIN counts: an administrator works the review queue and needs the portal around them.
+ */
+export const hasClinicalAuthority = (authorities: readonly string[] | null | undefined): boolean => {
+  const { primaryRole } = resolveAuthorityRole(authorities);
+  return primaryRole !== null && primaryRole !== AuthorityRole.USER;
+};
+
 export const hasHealthConnectRole = (
   authorities: readonly string[] | null | undefined,
   roles: AuthorityRole | readonly AuthorityRole[],

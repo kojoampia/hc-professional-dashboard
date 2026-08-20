@@ -24,7 +24,7 @@ const isPatientSex = (value: string | null): value is PatientSex => value === 'f
   selector: 'hpd-patient-directory-page',
   imports: [AsyncStateComponent, DataTableComponent, FormsModule, PaginationComponent, SearchInputComponent, TranslateModule],
   template: `
-    <main class="mx-auto max-w-7xl px-4 py-8 md:px-8">
+    <main class="w-full px-4 py-8 md:px-8">
       <div class="rounded-hpd border border-hpd-border bg-white p-6 shadow-hpd-sm">
         <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
           <h1 class="sr-only">{{ 'healthConnect.patient.directory' | translate }}</h1>

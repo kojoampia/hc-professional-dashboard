@@ -34,7 +34,7 @@ const DUTIES: readonly string[] = [
   selector: 'hpd-duty-roster-page',
   imports: [ReactiveFormsModule, TranslateModule],
   template: `
-    <main class="mx-auto max-w-5xl px-4 py-8 md:px-8">
+    <main class="w-full px-4 py-8 md:px-8">
       <h1 class="sr-only">{{ 'healthConnect.navigation.dutyRoster' | translate }}</h1>
 
       <section class="mb-4 overflow-hidden rounded-hpd border border-hpd-border bg-white shadow-hpd-sm" data-cy="myAssignments">

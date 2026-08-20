@@ -211,6 +211,41 @@ describe('Sidebar Component', () => {
    * reached through the user card above; the "Why Abofonsa" page is gone entirely. Re-adding any of
    * them would resurrect a route that no longer exists.
    */
+  /**
+   * An applicant holds only ROLE_USER until their credentials are approved, and every clinical
+   * destination refuses them. Onboarding used to sidestep this by rendering on the signed-out
+   * shell; now that it is a tab on the profile page inside the portal, the sidebar has to hide the
+   * group instead — otherwise they read a list of rooms they cannot enter.
+   */
+  it('should hide the clinical group from an account with no clinical role', () => {
+    accountService.authenticate({ ...account, authorities: ['ROLE_USER'] });
+
+    comp.ngOnInit();
+
+    expect(comp.groupVisible(groupByLabel('healthConnect.navigation.care'))).toBe(false);
+    expect(comp.groupVisible(groupByLabel('global.menu.account.main'))).toBe(true);
+  });
+
+  /**
+   * The counterpart, and the reason this is keyed on authority rather than on the application
+   * reaching ACTIVE: clinicians seeded or created before onboarding existed hold a clinical role
+   * and no application at all, and gating on the application would take the portal away from them.
+   */
+  it('should keep the clinical group for a clinician with no application', () => {
+    accountService.authenticate({ ...account, authorities: ['ROLE_USER', 'ROLE_DOCTOR'] });
+
+    comp.ngOnInit();
+
+    expect(comp.groupVisible(groupByLabel('healthConnect.navigation.care'))).toBe(true);
+  });
+
+  it('should point the account group at the profile page rather than the retired wizard', () => {
+    const paths = SHELL_NAV_GROUPS.flatMap(group => group.items).map(item => item.path);
+
+    expect(paths).toContain('/account/profile');
+    expect(paths).not.toContain('/onboarding');
+  });
+
   it('should not offer the removed about, settings and password destinations', () => {
     const paths = SHELL_NAV_GROUPS.flatMap(group => group.items).map(item => item.path);
 

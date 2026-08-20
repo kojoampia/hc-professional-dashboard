@@ -1,4 +1,5 @@
-import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { Router, Routes } from '@angular/router';
 
 import { Authority } from 'app/config/authority.constants';
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
@@ -61,13 +62,19 @@ const routes: Routes = [
     ],
   },
   {
-    // Authenticated, but with no clinical role yet — an applicant holds only ROLE_USER until their
-    // credentials are approved. On the signed-out shell behind the signed-in guard, because the
-    // portal frame would show them a sidebar of destinations that all refuse them.
+    // The wizard's steps are tabs on the profile page now, so this redirects rather than 404s: it
+    // was the applicant's bookmark, the destination of the old sidebar item, and where the
+    // activation email's "continue your application" lands.
+    //
+    // It used to render on the signed-out shell so an applicant holding only ROLE_USER never saw a
+    // sidebar of destinations that all refuse them. That concern did not go away — it moved into
+    // the sidebar itself, which now hides the clinical group from accounts with no clinical role
+    // (see shell-navigation.ts and sidebar.component.ts).
     path: 'onboarding',
-    component: AuthShellComponent,
-    canActivate: [UserRouteAccessService],
-    loadChildren: () => import('./health-connect/onboarding.routes'),
+    // A function, not a string: `redirectTo` treats a string as a path, so 'account/profile?tab=…'
+    // would be matched literally as a segment rather than carrying the query parameter.
+    redirectTo: () => inject(Router).createUrlTree(['/account/profile'], { queryParams: { tab: 'application' } }),
+    pathMatch: 'full',
   },
   {
     path: '',

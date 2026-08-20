@@ -1,0 +1,105 @@
+<div class="rounded-hpd-lg border border-hpd-border bg-white p-8 shadow-hpd-sm">
+  <h2 class="text-lg font-extrabold tracking-tight text-hpd-primary-dark" jhiTranslate="healthConnect.profile.application.title">
+    Application
+  </h2>
+  <p class="mb-6 mt-1 text-sm text-hpd-muted" jhiTranslate="healthConnect.onboarding.consentIntro">
+    Apply for verified professional access.
+  </p>
+
+  @switch (loadState()) {
+    @case ('loading') {
+      <p class="text-sm text-hpd-muted" jhiTranslate="healthConnect.profile.application.loading">Loading your application…</p>
+    }
+    @case ('error') {
+      <div class="rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger">
+        <span jhiTranslate="healthConnect.profile.application.loadError">Unable to load your application.</span>
+        <button class="hpd-focusable ml-2 font-bold underline" type="button" (click)="load()" jhiTranslate="healthConnect.actions.retry">
+          Retry
+        </button>
+      </div>
+    }
+    @case ('ready') {
+      @if (application(); as app) {
+        <dl class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <dt class="hpd-label" jhiTranslate="healthConnect.profile.application.status">Status</dt>
+            <dd
+              class="text-sm font-extrabold text-hpd-primary-dark"
+              data-cy="applicationStatus"
+              [jhiTranslate]="'healthConnect.onboarding.statuses.' + app.status"
+            ></dd>
+          </div>
+          <div>
+            <dt class="hpd-label" jhiTranslate="healthConnect.onboarding.requestedRole">Requested clinical role</dt>
+            <dd class="text-sm font-semibold text-hpd-primary-dark">
+              @if (app.requestedRole) {
+                <span [jhiTranslate]="'healthConnect.roles.' + app.requestedRole.replace('ROLE_', '').toLowerCase()"></span>
+              }
+            </dd>
+          </div>
+        </dl>
+
+        @if (app.status === 'RETURNED_FOR_CORRECTION') {
+          <div class="mt-4 rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger">
+            <strong jhiTranslate="healthConnect.onboarding.correctionRequired">Your application was returned for correction</strong>
+            @if (app.correctionNotes) {
+              <p class="mt-1">{{ app.correctionNotes }}</p>
+            }
+          </div>
+        }
+
+        <p class="mt-6 text-sm text-hpd-muted" jhiTranslate="healthConnect.onboarding.reviewIntro">
+          Check your details, then submit your application for credential review.
+        </p>
+
+        @if (canSubmit) {
+          <button
+            class="hpd-focusable hpd-btn hpd-btn-primary mt-3"
+            type="button"
+            (click)="submit()"
+            data-cy="submitApplication"
+            jhiTranslate="healthConnect.onboarding.actions.submit"
+          >
+            Submit for review
+          </button>
+        } @else if (progressService.complete() === false) {
+          <p class="mt-3 text-sm font-semibold text-hpd-danger" jhiTranslate="healthConnect.profile.application.finishFirst">
+            Finish every requirement above before submitting.
+          </p>
+        }
+      } @else {
+        <form class="grid gap-4" [formGroup]="consentForm" (ngSubmit)="start()" novalidate>
+          <div>
+            <label class="hpd-label" for="app-role" jhiTranslate="healthConnect.onboarding.requestedRole">Requested clinical role</label>
+            <select class="hpd-focusable hpd-input" id="app-role" formControlName="requestedRole" data-cy="requestedRole">
+              <option value="">{{ 'healthConnect.onboarding.chooseRole' | translate }}</option>
+              @for (role of roles; track role) {
+                <option [value]="role">{{ 'healthConnect.roles.' + role.replace('ROLE_', '').toLowerCase() | translate }}</option>
+              }
+            </select>
+            @if (consentForm.controls.requestedRole.invalid && consentForm.controls.requestedRole.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+
+          <label class="flex items-start gap-3 text-sm text-hpd-primary-dark">
+            <input class="hpd-focusable mt-1" type="checkbox" formControlName="consentAccepted" data-cy="consentAccepted" />
+            <span jhiTranslate="healthConnect.onboarding.consentText"
+              >I consent to the processing of my information for credentialing.</span
+            >
+          </label>
+
+          <button
+            class="hpd-focusable hpd-btn hpd-btn-primary justify-self-start"
+            type="submit"
+            [disabled]="busy()"
+            data-cy="startApplication"
+            jhiTranslate="healthConnect.onboarding.actions.start"
+          >
+            Start application
+          </button>
+        </form>
+      }
+    }
+  }
+</div>

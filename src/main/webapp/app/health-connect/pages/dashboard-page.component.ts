@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal, DestroyRef } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -7,10 +7,17 @@ import GroupedBarChartComponent from '../charts/grouped-bar-chart.component';
 import LineChartComponent from '../charts/line-chart.component';
 import PieChartComponent from '../charts/pie-chart.component';
 import { CaseStatus } from '../health-connect.models';
+import { OnboardingProgressService } from 'app/core/onboarding/onboarding-progress.service';
 import { EarningsApiService } from '../api/earnings-api.service';
 import { ProfessionalEarningsDto } from '../api/earnings-api.model';
 import StatCardRowComponent, { StatCard } from '../../shared/health-connect/stat-card/stat-card-row.component';
 import AsyncStateComponent from '../../shared/health-connect/async-state/async-state.component';
+
+/**
+ * The beat between landing on the dashboard and being moved to the profile. Long enough that the
+ * move reads as deliberate, short enough that nobody starts reading.
+ */
+const INCOMPLETE_PROFILE_REDIRECT_MS = 2000;
 
 @Component({
   standalone: true,
@@ -25,7 +32,7 @@ import AsyncStateComponent from '../../shared/health-connect/async-state/async-s
     TranslateModule,
   ],
   template: `
-    <main class="mx-auto max-w-7xl space-y-6 px-4 py-8 md:px-8">
+    <main class="w-full space-y-6 px-4 py-8 md:px-8">
       <h1 class="sr-only">{{ 'healthConnect.navigation.dashboard' | translate }}</h1>
 
       <section aria-labelledby="hpd-dashboard-demographics">
@@ -101,6 +108,8 @@ export default class DashboardPageComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly earningsApi = inject(EarningsApiService);
   private readonly translate = inject(TranslateService);
+  private readonly progressService = inject(OnboardingProgressService);
+  private readonly destroyRef = inject(DestroyRef);
 
   /** Null until adminservice answers, and left null if it cannot — see the template. */
   readonly earnings = signal<ProfessionalEarningsDto | null>(null);
@@ -113,6 +122,37 @@ export default class DashboardPageComponent implements OnInit {
       next: earnings => this.earnings.set(earnings),
       error: () => this.earnings.set(null),
     });
+
+    this.progressService.load();
+    this.scheduleIncompleteProfileRedirect();
+  }
+
+  /**
+   * Send a clinician with an unfinished profile to it, two seconds after they land here.
+   *
+   * <p>Two seconds rather than immediately so the dashboard is seen rather than flickered past —
+   * being bounced instantly reads as a broken link, whereas a beat of dashboard then a move reads
+   * as being taken somewhere.
+   *
+   * <p>Three conditions guard it, and each has a failure it prevents:
+   *
+   * <ul>
+   *   <li><b>only when the server has answered</b> — {@code complete()} is null until then, and
+   *       treating unknown as incomplete would bounce people whose profile is finished;
+   *   <li><b>only if still on the dashboard</b> — someone who clicked through in that beat has
+   *       chosen where to be, and yanking them away is worse than not nudging at all;
+   *   <li><b>cancelled on destroy</b> — otherwise the timer fires against a dead component and
+   *       navigates whoever is now on screen.
+   * </ul>
+   */
+  private scheduleIncompleteProfileRedirect(): void {
+    const timer = setTimeout(() => {
+      if (this.progressService.complete() === false && this.router.url.startsWith('/dashboard')) {
+        void this.router.navigate(['/account/profile'], { queryParams: { tab: 'application' } });
+      }
+    }, INCOMPLETE_PROFILE_REDIRECT_MS);
+
+    this.destroyRef.onDestroy(() => clearTimeout(timer));
   }
 
   /** Same reasoning as the earnings page: `Intl` directly, because four locales ship. */

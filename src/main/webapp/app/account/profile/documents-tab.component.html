@@ -1,0 +1,117 @@
+<div class="rounded-hpd-lg border border-hpd-border bg-white p-8 shadow-hpd-sm">
+  <h2 class="text-lg font-extrabold tracking-tight text-hpd-primary-dark" jhiTranslate="healthConnect.profile.documents.title">
+    Documents
+  </h2>
+  <p class="mb-6 mt-1 text-sm text-hpd-muted" jhiTranslate="healthConnect.profile.documents.subtitle">
+    Your credentials, checked by the credentialing team.
+  </p>
+
+  @if (mandatory().length) {
+    <ul class="mb-6 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+      @for (requirement of mandatory(); track requirement.key) {
+        <li class="flex items-center gap-2 text-sm" [attr.data-cy]="'mandatory-' + requirement.key">
+          <span
+            class="grid h-5 w-5 flex-none place-items-center rounded-full text-[11px] font-extrabold"
+            [class]="requirement.done ? 'bg-hpd-success-tint text-hpd-success' : 'bg-hpd-danger-tint text-hpd-danger'"
+            aria-hidden="true"
+            >{{ requirement.done ? '✓' : '!' }}</span
+          >
+          <span [jhiTranslate]="'healthConnect.onboarding.mandatory.' + requirement.key"></span>
+        </li>
+      }
+    </ul>
+  }
+
+  <form
+    class="mb-6 grid gap-4 rounded-hpd-sm border border-hpd-border bg-hpd-surface p-4 sm:grid-cols-2 xl:grid-cols-3"
+    [formGroup]="uploadForm"
+  >
+    <div>
+      <label class="hpd-label" for="doc-type" jhiTranslate="healthConnect.onboarding.fields.documentType">Document type</label>
+      <select class="hpd-focusable hpd-input" id="doc-type" formControlName="type" data-cy="documentType">
+        @for (type of uploadableTypes; track type) {
+          <option [value]="type">{{ 'healthConnect.onboarding.documentTypes.' + type | translate }}</option>
+        }
+      </select>
+    </div>
+
+    @if (expiryRequired) {
+      <div>
+        <label class="hpd-label" for="doc-expiry" jhiTranslate="healthConnect.onboarding.fields.expiryDate">Expiry date</label>
+        <input class="hpd-focusable hpd-input" type="date" id="doc-expiry" formControlName="expiryDate" data-cy="documentExpiry" />
+        @if (!uploadForm.controls.expiryDate.value && uploadForm.controls.expiryDate.touched) {
+          <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+        }
+      </div>
+    }
+
+    @if (otherLabelRequired) {
+      <div>
+        <label class="hpd-label" for="doc-label" jhiTranslate="healthConnect.onboarding.fields.otherLabel">Label</label>
+        <input class="hpd-focusable hpd-input" type="text" id="doc-label" formControlName="otherLabel" data-cy="documentLabel" />
+        @if (!uploadForm.controls.otherLabel.value && uploadForm.controls.otherLabel.touched) {
+          <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+        }
+      </div>
+    }
+
+    <div class="sm:col-span-2 xl:col-span-3">
+      <hpd-file-upload-trigger
+        labelKey="healthConnect.profile.documents.choose"
+        [acceptedTypes]="['application/pdf', 'image/png', 'image/jpeg']"
+        [disabled]="uploading()"
+        (filesSelected)="upload($event)"
+        (invalidFiles)="rejectedUpload()"
+      ></hpd-file-upload-trigger>
+      <p class="mt-2 text-xs text-hpd-muted" jhiTranslate="healthConnect.profile.documents.accepted">PDF, PNG or JPEG, up to 5 MB.</p>
+    </div>
+  </form>
+
+  @switch (loadState()) {
+    @case ('loading') {
+      <p class="text-sm text-hpd-muted" jhiTranslate="healthConnect.profile.documents.loading">Loading your documents…</p>
+    }
+    @case ('error') {
+      <div class="rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger">
+        <span jhiTranslate="healthConnect.profile.documents.loadError">Unable to load your documents.</span>
+        <button class="hpd-focusable ml-2 font-bold underline" type="button" (click)="load()" jhiTranslate="healthConnect.actions.retry">
+          Retry
+        </button>
+      </div>
+    }
+    @case ('ready') {
+      @if (documents().length === 0) {
+        <p class="text-sm text-hpd-muted" jhiTranslate="healthConnect.profile.documents.empty">You have not uploaded anything yet.</p>
+      } @else {
+        <ul class="grid gap-2">
+          @for (document of documents(); track document.id) {
+            <li class="flex flex-wrap items-center justify-between gap-2 rounded-hpd-sm border border-hpd-border px-4 py-3">
+              <span class="text-sm font-semibold text-hpd-primary-dark">
+                <span [jhiTranslate]="'healthConnect.onboarding.documentTypes.' + document.type"></span>
+                @if (document.otherLabel) {
+                  <span class="font-normal text-hpd-muted"> · {{ document.otherLabel }}</span>
+                }
+              </span>
+              <span class="flex items-center gap-3 text-xs">
+                @if (document.expiryDate) {
+                  <span class="text-hpd-muted">{{ document.expiryDate }}</span>
+                }
+                <span
+                  class="rounded-full px-2.5 py-1 font-bold"
+                  [class]="
+                    document.verificationStatus === 'VERIFIED'
+                      ? 'bg-hpd-success-tint text-hpd-success'
+                      : document.verificationStatus === 'REJECTED'
+                        ? 'bg-hpd-danger-tint text-hpd-danger'
+                        : 'bg-hpd-border/50 text-hpd-muted'
+                  "
+                  [jhiTranslate]="'healthConnect.onboarding.verification.' + document.verificationStatus"
+                ></span>
+              </span>
+            </li>
+          }
+        </ul>
+      }
+    }
+  }
+</div>

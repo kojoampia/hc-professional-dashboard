@@ -3,6 +3,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 
 import SharedModule from 'app/shared/shared.module';
 import { AlertService } from 'app/core/util/alert.service';
+import { OnboardingProgressService } from 'app/core/onboarding/onboarding-progress.service';
 import { IDENTITY_TYPES, OnboardingApiService, OnboardingProfileDto } from 'app/health-connect/api/onboarding-api.service';
 
 /**
@@ -36,6 +37,7 @@ import { IDENTITY_TYPES, OnboardingApiService, OnboardingProfileDto } from 'app/
 export default class ClinicalProfileComponent implements OnInit {
   private readonly api = inject(OnboardingApiService);
   private readonly alertService = inject(AlertService);
+  private readonly progressService = inject(OnboardingProgressService);
 
   readonly identityTypes = IDENTITY_TYPES;
   readonly loadState = signal<'loading' | 'ready' | 'error'>('loading');
@@ -110,6 +112,9 @@ export default class ClinicalProfileComponent implements OnInit {
         this.prefill(profile);
         this.saving.set(false);
         this.alertService.showToast('healthConnect.profile.clinical.saved');
+        // Personal details, address and next of kin are three of the eight requirements, so the
+        // meter has to move on save; one that only updated on reload would read as broken.
+        this.progressService.refresh();
       },
       error: () => this.saving.set(false),
     });

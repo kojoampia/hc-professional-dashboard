@@ -20,8 +20,10 @@
     }
     @case ('ready') {
       <form class="grid gap-6" name="clinicalProfileForm" role="form" (ngSubmit)="save()" [formGroup]="form" novalidate>
-        <fieldset class="m-0 min-w-0 border-0 p-0 grid gap-4 sm:grid-cols-2">
-          <legend class="hpd-label mb-2 sm:col-span-2" jhiTranslate="healthConnect.profile.clinical.identity">Identity</legend>
+        <fieldset class="m-0 grid min-w-0 gap-4 border-0 p-0 sm:grid-cols-2 xl:grid-cols-3">
+          <legend class="hpd-label mb-2 sm:col-span-2 xl:col-span-3" jhiTranslate="healthConnect.profile.clinical.identity">
+            Identity
+          </legend>
 
           <div>
             <label class="hpd-label" for="cp-title" jhiTranslate="healthConnect.onboarding.fields.title">Title</label>
@@ -94,8 +96,8 @@
           </div>
         </fieldset>
 
-        <fieldset class="m-0 min-w-0 border-0 p-0 grid gap-4 sm:grid-cols-2">
-          <legend class="hpd-label mb-2 sm:col-span-2" jhiTranslate="healthConnect.profile.clinical.address">Address</legend>
+        <fieldset class="m-0 grid min-w-0 gap-4 border-0 p-0 sm:grid-cols-2 xl:grid-cols-3">
+          <legend class="hpd-label mb-2 sm:col-span-2 xl:col-span-3" jhiTranslate="healthConnect.profile.clinical.address">Address</legend>
 
           <div>
             <label class="hpd-label" for="cp-digitalAddress" jhiTranslate="healthConnect.onboarding.fields.digitalAddress"

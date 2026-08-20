@@ -10,10 +10,10 @@
       "session": "Sesión",
       "menu": "Menú",
       "messages": "Mensajes",
-      "onboarding": "Incorporación",
       "earnings": "Mis ingresos",
       "collapseSidebar": "Contraer el menú",
-      "expandSidebar": "Expandir el menú"
+      "expandSidebar": "Expandir el menú",
+      "profile": "Perfil"
     },
     "roles": {
       "admin": "Administrador",
@@ -438,6 +438,39 @@
         "loadError": "No se puede cargar esta información.",
         "save": "Guardar perfil",
         "saved": "Perfil guardado"
+      },
+      "tabs": "Secciones del perfil",
+      "completion": {
+        "title": "Perfil completado",
+        "complete": "Está todo. A continuación, un administrador revisará tus credenciales.",
+        "incomplete": "Tu perfil se activará cuando esto esté completo y un administrador lo haya verificado.",
+        "requirements": {
+          "consent": "Consentimiento y rol solicitado",
+          "profile": "Datos personales",
+          "address": "Dirección",
+          "nextOfKin": "Contacto de emergencia",
+          "certificate": "Certificado de titulación",
+          "license": "Licencia de ejercicio",
+          "identity": "Documento de identidad",
+          "photo": "Foto tipo pasaporte"
+        }
+      },
+      "documents": {
+        "title": "Documentos",
+        "subtitle": "Tus credenciales, verificadas por el equipo de acreditación.",
+        "choose": "Elegir un archivo",
+        "accepted": "PDF, PNG o JPEG, hasta 5 MB.",
+        "loading": "Cargando tus documentos…",
+        "loadError": "No se pueden cargar tus documentos.",
+        "empty": "Todavía no has subido nada.",
+        "rejected": "No se aceptó ese archivo: usa un PDF, PNG o JPEG de menos de 5 MB."
+      },
+      "application": {
+        "title": "Solicitud",
+        "loading": "Cargando tu solicitud…",
+        "loadError": "No se puede cargar tu solicitud.",
+        "status": "Estado",
+        "finishFirst": "Completa todos los requisitos anteriores antes de enviar."
       }
     }
   }

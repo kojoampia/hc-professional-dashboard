@@ -10,10 +10,10 @@
       "session": "Session",
       "menu": "Menu",
       "messages": "Messages",
-      "onboarding": "Intégration",
       "earnings": "Mes revenus",
       "collapseSidebar": "Réduire le menu",
-      "expandSidebar": "Développer le menu"
+      "expandSidebar": "Développer le menu",
+      "profile": "Profil"
     },
     "roles": {
       "admin": "Administrateur",
@@ -438,6 +438,39 @@
         "loadError": "Impossible de charger ces informations.",
         "save": "Enregistrer le profil",
         "saved": "Profil enregistré"
+      },
+      "tabs": "Sections du profil",
+      "completion": {
+        "title": "Profil complété",
+        "complete": "Tout y est. Un administrateur va maintenant vérifier vos justificatifs.",
+        "incomplete": "Votre profil sera activé une fois ces éléments complétés et vérifiés par un administrateur.",
+        "requirements": {
+          "consent": "Consentement et rôle demandé",
+          "profile": "Informations personnelles",
+          "address": "Adresse",
+          "nextOfKin": "Contact d'urgence",
+          "certificate": "Diplôme",
+          "license": "Licence d'exercice",
+          "identity": "Pièce d'identité",
+          "photo": "Photo d'identité"
+        }
+      },
+      "documents": {
+        "title": "Documents",
+        "subtitle": "Vos justificatifs, vérifiés par l'équipe d'accréditation.",
+        "choose": "Choisir un fichier",
+        "accepted": "PDF, PNG ou JPEG, jusqu'à 5 Mo.",
+        "loading": "Chargement de vos documents…",
+        "loadError": "Impossible de charger vos documents.",
+        "empty": "Vous n'avez encore rien téléversé.",
+        "rejected": "Ce fichier n'a pas été accepté — utilisez un PDF, PNG ou JPEG de moins de 5 Mo."
+      },
+      "application": {
+        "title": "Candidature",
+        "loading": "Chargement de votre candidature…",
+        "loadError": "Impossible de charger votre candidature.",
+        "status": "Statut",
+        "finishFirst": "Complétez toutes les exigences ci-dessus avant de soumettre."
       }
     }
   }

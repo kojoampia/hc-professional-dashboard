@@ -12,7 +12,7 @@ import { ConversationDto, MessagesApiService } from '../api/messages-api.service
   selector: 'hpd-messages-page',
   imports: [DatePipe, FormsModule, MatIconModule, TranslateModule],
   template: `
-    <main class="mx-auto max-w-7xl px-4 py-8 md:px-8">
+    <main class="w-full px-4 py-8 md:px-8">
       <div class="mb-4 flex items-center justify-between gap-3">
         <h1 class="m-0 text-xl font-semibold text-hpd-primary">{{ 'healthConnect.messages.title' | translate }}</h1>
         <div class="flex items-center gap-2">

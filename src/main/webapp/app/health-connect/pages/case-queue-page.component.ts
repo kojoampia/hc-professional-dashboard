@@ -25,7 +25,7 @@ const isRosterScope = (value: string | null): value is RosterScope => value === 
   selector: 'hpd-case-queue-page',
   imports: [AsyncStateComponent, DataTableComponent, MatIconModule, StatCardRowComponent, TranslateModule],
   template: `
-    <main class="mx-auto max-w-7xl px-4 py-8 md:px-8">
+    <main class="w-full px-4 py-8 md:px-8">
       <h1 class="sr-only">{{ 'healthConnect.case.queue' | translate }}</h1>
 
       <hpd-stat-card-row [cards]="statusCards()" [columns]="3" [selectedId]="statusFilter() ?? null" (selected)="setStatus($event)" />
