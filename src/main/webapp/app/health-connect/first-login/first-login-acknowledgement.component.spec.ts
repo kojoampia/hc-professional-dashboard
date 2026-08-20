@@ -16,7 +16,7 @@ import FirstLoginAcknowledgementComponent from './first-login-acknowledgement.co
  */
 describe('FirstLoginAcknowledgementComponent', () => {
   let fixture: ComponentFixture<FirstLoginAcknowledgementComponent>;
-  let api: { acknowledgementStatus: jest.Mock; getOwnApplication: jest.Mock; acknowledge: jest.Mock };
+  let api: { acknowledgementStatus: jest.Mock; progress: jest.Mock; acknowledge: jest.Mock };
   const authenticationState = new BehaviorSubject<Account | null>(null);
   const account: Account = {
     activated: true,
@@ -45,7 +45,7 @@ describe('FirstLoginAcknowledgementComponent', () => {
   beforeEach(() => {
     api = {
       acknowledgementStatus: jest.fn(() => of({ acknowledged: false })),
-      getOwnApplication: jest.fn(() => of({ id: 'app-1', accountId: 'nurse', status: 'ACTIVE' })),
+      progress: jest.fn(() => of({ percent: 100, complete: true, status: 'ACTIVE', requirements: [] })),
       acknowledge: jest.fn(() => of({})),
     };
   });
@@ -57,7 +57,7 @@ describe('FirstLoginAcknowledgementComponent', () => {
   });
 
   it('stays hidden while the application is not yet ACTIVE', async () => {
-    api.getOwnApplication.mockReturnValue(of({ id: 'app-1', accountId: 'nurse', status: 'CREDENTIAL_REVIEW' }));
+    api.progress.mockReturnValue(of({ percent: 100, complete: true, status: 'CREDENTIAL_REVIEW', requirements: [] }));
     authenticationState.next(account);
     await configure();
     expect(fixture.nativeElement.querySelector('[data-cy="firstLoginInterstitial"]')).toBeNull();
@@ -69,7 +69,8 @@ describe('FirstLoginAcknowledgementComponent', () => {
     await configure();
     expect(fixture.nativeElement.querySelector('[data-cy="firstLoginInterstitial"]')).toBeNull();
 
-    api.getOwnApplication.mockReturnValue(throwError(() => new Error('404')));
+    // No application at all: progress answers rather than 404ing, and status is null.
+    api.progress.mockReturnValue(of({ percent: 0, complete: false, status: null, requirements: [] }));
     api.acknowledgementStatus.mockReturnValue(of({ acknowledged: false }));
     authenticationState.next(account);
     fixture.detectChanges();
