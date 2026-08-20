@@ -86,6 +86,23 @@ export interface OnboardingEmergencyContactDto {
   phone?: string | null;
 }
 
+/**
+ * Server-computed onboarding completion (professional-onboarding-workflow.md § "Onboarding state
+ * events and the completion contract").
+ *
+ * <p>Deliberately not derived in the browser: the same figure gates the transition to ACTIVE and
+ * the post-sign-in redirect, and a client-side percentage can read 100% while the service still
+ * refuses to advance the application. The client's job is to render this, not to reproduce it.
+ */
+export interface OnboardingProgressDto {
+  percent: number;
+  complete: boolean;
+  requirements: { key: OnboardingRequirementKey; done: boolean }[];
+}
+
+/** Keys the server sends; each maps to a translated label in all four catalogues. */
+export type OnboardingRequirementKey = 'consent' | 'profile' | 'address' | 'nextOfKin' | 'certificate' | 'license' | 'identity' | 'photo';
+
 export interface OnboardingProfileDto {
   id?: string | null;
   accountId?: string | null;
@@ -219,6 +236,14 @@ export class OnboardingApiService {
 
   events(applicationId: string): Observable<OnboardingEventDto[]> {
     return this.http.get<OnboardingEventDto[]>(`${this.resourceUrl}/applications/${encodeURIComponent(applicationId)}/events`);
+  }
+
+  /**
+   * Always answers, including for an account that has no application yet, so it needs no opt-out
+   * from the error banner the way the 404-prone lookups below do.
+   */
+  progress(): Observable<OnboardingProgressDto> {
+    return this.http.get<OnboardingProgressDto>(`${this.resourceUrl}/progress`);
   }
 
   /**

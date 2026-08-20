@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { Route } from '@angular/router';
 
 import accountRoutes from 'app/account/account.route';
+import appRoutes from 'app/app.routes';
 
 /**
  * The page is a composition and a set of redirects, so this checks those two things rather than
@@ -10,12 +11,27 @@ import accountRoutes from 'app/account/account.route';
  * them through a layer of indirection.
  */
 describe('Profile Page', () => {
-  it('should stack all three sections', () => {
+  it('should carry every section, including the folded-in onboarding steps', () => {
     const template = readFileSync(join(__dirname, 'profile-page.component.html'), 'utf8');
 
+    expect(template).toContain('<hpd-completion-meter>');
     expect(template).toContain('<hpd-settings>');
     expect(template).toContain('<hpd-clinical-profile>');
+    expect(template).toContain('<hpd-documents-tab>');
+    expect(template).toContain('<hpd-application-tab>');
     expect(template).toContain('<hpd-password>');
+  });
+
+  /**
+   * The wizard is gone, but the path outlives it: it was the sidebar item, the applicant's
+   * bookmark, and where the activation email lands. A function rather than a string because
+   * `redirectTo` treats a string as a path, so the query parameter would be matched literally.
+   */
+  it('should redirect the retired /onboarding path to the application tab', () => {
+    const onboarding = appRoutes.find((route: Route) => route.path === 'onboarding');
+
+    expect(onboarding).toBeDefined();
+    expect(typeof onboarding!.redirectTo).toBe('function');
   });
 
   /**

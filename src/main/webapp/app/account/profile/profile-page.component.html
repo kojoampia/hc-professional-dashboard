@@ -1,4 +1,4 @@
-<div class="mx-auto grid max-w-3xl gap-6 px-4 py-10">
+<div class="grid gap-6 px-4 py-8 sm:px-6 lg:px-8">
   <header>
     <h1 class="text-2xl font-extrabold tracking-tight text-hpd-primary-dark" jhiTranslate="healthConnect.profile.title">Profile</h1>
     <p class="mt-1 text-sm text-hpd-muted" jhiTranslate="healthConnect.profile.subtitle">
@@ -6,7 +6,38 @@
     </p>
   </header>
 
-  <hpd-settings></hpd-settings>
-  <hpd-clinical-profile></hpd-clinical-profile>
-  <hpd-password></hpd-password>
+  <hpd-completion-meter></hpd-completion-meter>
+
+  <nav class="flex flex-wrap gap-1 border-b border-hpd-border" [attr.aria-label]="'healthConnect.profile.tabs' | translate">
+    @for (tab of tabs; track tab.id) {
+      <button
+        class="hpd-focusable -mb-px rounded-t-hpd-sm border-b-2 px-4 py-2.5 text-sm transition-colors"
+        type="button"
+        role="tab"
+        [class]="tabClass(tab.id)"
+        [attr.aria-selected]="activeTab() === tab.id"
+        [attr.data-cy]="'tab-' + tab.id"
+        (click)="select(tab.id)"
+        [jhiTranslate]="tab.labelKey"
+      ></button>
+    }
+  </nav>
+
+  @switch (activeTab()) {
+    @case ('account') {
+      <hpd-settings></hpd-settings>
+    }
+    @case ('clinical') {
+      <hpd-clinical-profile></hpd-clinical-profile>
+    }
+    @case ('documents') {
+      <hpd-documents-tab></hpd-documents-tab>
+    }
+    @case ('application') {
+      <hpd-application-tab></hpd-application-tab>
+    }
+    @case ('password') {
+      <hpd-password></hpd-password>
+    }
+  }
 </div>

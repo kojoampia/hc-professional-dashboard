@@ -20,7 +20,7 @@ const FILTERS: (OnboardingStatus | 'ALL')[] = ['CREDENTIAL_REVIEW', 'RETURNED_FO
   selector: 'hpd-review-queue-page',
   imports: [DataTableComponent, TranslateModule],
   template: `
-    <main class="mx-auto max-w-7xl px-4 py-8 md:px-8">
+    <main class="w-full px-4 py-8 md:px-8">
       <h1 class="sr-only">{{ 'healthConnect.review.title' | translate }}</h1>
 
       <div class="mb-4 flex flex-wrap gap-2" role="group" [attr.aria-label]="'healthConnect.review.filter' | translate">

@@ -10,10 +10,10 @@
       "session": "Sitzung",
       "menu": "Menü",
       "messages": "Nachrichten",
-      "onboarding": "Onboarding",
       "earnings": "Meine Vergütung",
       "collapseSidebar": "Menü einklappen",
-      "expandSidebar": "Menü ausklappen"
+      "expandSidebar": "Menü ausklappen",
+      "profile": "Profil"
     },
     "roles": {
       "admin": "Administrator",
@@ -438,6 +438,39 @@
         "loadError": "Diese Informationen können nicht geladen werden.",
         "save": "Profil speichern",
         "saved": "Profil gespeichert"
+      },
+      "tabs": "Profilbereiche",
+      "completion": {
+        "title": "Profil vollständig",
+        "complete": "Alles vorhanden. Als Nächstes prüft eine Administratorin oder ein Administrator Ihre Nachweise.",
+        "incomplete": "Ihr Profil wird aktiv, sobald dies vollständig ist und von der Administration geprüft wurde.",
+        "requirements": {
+          "consent": "Einwilligung und gewünschte Rolle",
+          "profile": "Persönliche Angaben",
+          "address": "Adresse",
+          "nextOfKin": "Notfallkontakt",
+          "certificate": "Qualifikationsnachweis",
+          "license": "Berufszulassung",
+          "identity": "Amtlicher Ausweis",
+          "photo": "Passfoto"
+        }
+      },
+      "documents": {
+        "title": "Dokumente",
+        "subtitle": "Ihre Nachweise, geprüft vom Zulassungsteam.",
+        "choose": "Datei auswählen",
+        "accepted": "PDF, PNG oder JPEG, bis 5 MB.",
+        "loading": "Ihre Dokumente werden geladen…",
+        "loadError": "Ihre Dokumente können nicht geladen werden.",
+        "empty": "Sie haben noch nichts hochgeladen.",
+        "rejected": "Diese Datei wurde nicht akzeptiert — verwenden Sie PDF, PNG oder JPEG unter 5 MB."
+      },
+      "application": {
+        "title": "Antrag",
+        "loading": "Ihr Antrag wird geladen…",
+        "loadError": "Ihr Antrag kann nicht geladen werden.",
+        "status": "Status",
+        "finishFirst": "Erfüllen Sie alle oben genannten Anforderungen, bevor Sie absenden."
       }
     }
   }

@@ -32,7 +32,7 @@ const GRANULARITIES: readonly EarningsGranularity[] = ['DAILY', 'WEEKLY', 'MONTH
   selector: 'hpd-earnings-page',
   imports: [LineChartComponent, TranslateModule],
   template: `
-    <main class="mx-auto max-w-7xl space-y-6 px-4 py-8 md:px-8">
+    <main class="w-full space-y-6 px-4 py-8 md:px-8">
       <h1 class="sr-only">{{ 'healthConnect.earnings.title' | translate }}</h1>
 
       @if (loading()) {

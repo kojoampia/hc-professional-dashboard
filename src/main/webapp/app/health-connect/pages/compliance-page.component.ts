@@ -17,7 +17,7 @@ import { OnboardingEventDto } from '../api/onboarding-api.service';
   selector: 'hpd-compliance-page',
   imports: [RouterModule, TranslateModule],
   template: `
-    <main class="mx-auto max-w-7xl px-4 py-8 md:px-8">
+    <main class="w-full px-4 py-8 md:px-8">
       <h1 class="sr-only">{{ 'healthConnect.compliance.title' | translate }}</h1>
 
       @if (loading()) {

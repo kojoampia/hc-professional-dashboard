@@ -11,7 +11,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { LoginService } from 'app/login/login.service';
 import { ProfileService } from 'app/layouts/profiles/profile.service';
 import ActiveMenuDirective from './active-menu.directive';
-import { resolveAuthorityRole } from 'app/health-connect/authority-role';
+import { hasClinicalAuthority, resolveAuthorityRole } from 'app/health-connect/authority-role';
 import { DutyRosterAssignmentsService } from 'app/health-connect/api/duty-roster-assignments.service';
 import { MessagesApiService } from 'app/health-connect/api/messages-api.service';
 import { ShiftLabel } from 'app/health-connect/health-connect.models';
@@ -99,6 +99,11 @@ export default class SidebarComponent implements OnInit {
 
   groupVisible(group: ShellNavGroup): boolean {
     if (group.requiresAuth && this.account === null) {
+      return false;
+    }
+    // An applicant holds only ROLE_USER, and every clinical destination refuses them. Hiding the
+    // group is what lets onboarding live inside the portal at all — see ShellNavGroup.clinicalOnly.
+    if (group.clinicalOnly && !hasClinicalAuthority(this.account?.authorities)) {
       return false;
     }
     if (group.authorities && !this.accountService.hasAnyAuthority(group.authorities)) {

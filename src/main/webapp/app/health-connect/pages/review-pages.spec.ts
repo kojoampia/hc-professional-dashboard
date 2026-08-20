@@ -39,13 +39,16 @@ describe('Review pages (WP5 gate)', () => {
       expect(review.data?.['authorities']).toEqual([Authority.ADMIN]);
       expect(reviewDetail.data?.['authorities']).toEqual([Authority.ADMIN]);
 
-      // Onboarding moved out of these routes and into app.routes.ts, where it hangs off the
-      // signed-out shell behind the signed-in guard — an applicant holds only ROLE_USER, so the
-      // portal frame would offer them a sidebar that refuses them at every entry. The property
-      // under test is unchanged and still worth asserting: authenticated, but no clinical role.
+      // Onboarding is no longer a screen: its steps are tabs on /account/profile, and this path
+      // survives only as a redirect for the bookmarks and emails that still point at it. What has
+      // to stay true is that reaching it requires no clinical role — an applicant holds only
+      // ROLE_USER, and the profile page they land on is guarded by authentication alone.
       const onboarding = appRoutes.find(r => r.path === 'onboarding')!;
-      expect(onboarding.canActivate).toBeDefined();
+      expect(onboarding.redirectTo).toBeDefined();
       expect(onboarding.data?.['authorities']).toBeUndefined();
+
+      const profileHost = appRoutes.find(r => r.path === '' && r.children?.some(child => child.path === 'account'))!;
+      expect(profileHost.data?.['authorities']).toBeUndefined();
     });
   });
 

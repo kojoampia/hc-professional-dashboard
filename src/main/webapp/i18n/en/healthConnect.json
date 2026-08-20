@@ -10,10 +10,10 @@
       "session": "Session",
       "menu": "Menu",
       "messages": "Messages",
-      "onboarding": "Onboarding",
       "earnings": "My earnings",
       "collapseSidebar": "Collapse the menu",
-      "expandSidebar": "Expand the menu"
+      "expandSidebar": "Expand the menu",
+      "profile": "Profile"
     },
     "roles": {
       "admin": "Admin",
@@ -438,6 +438,39 @@
         "loadError": "Unable to load this information.",
         "save": "Save profile",
         "saved": "Profile saved"
+      },
+      "tabs": "Profile sections",
+      "completion": {
+        "title": "Profile completion",
+        "complete": "Everything is in. An administrator reviews your credentials next.",
+        "incomplete": "Your profile becomes active once these are complete and an administrator has vetted them.",
+        "requirements": {
+          "consent": "Consent and requested role",
+          "profile": "Personal details",
+          "address": "Address",
+          "nextOfKin": "Emergency contact",
+          "certificate": "Qualification certificate",
+          "license": "Practising licence",
+          "identity": "Government identity card",
+          "photo": "Passport photo"
+        }
+      },
+      "documents": {
+        "title": "Documents",
+        "subtitle": "Your credentials, checked by the credentialing team.",
+        "choose": "Choose a file",
+        "accepted": "PDF, PNG or JPEG, up to 5 MB.",
+        "loading": "Loading your documents…",
+        "loadError": "Unable to load your documents.",
+        "empty": "You have not uploaded anything yet.",
+        "rejected": "That file was not accepted — use a PDF, PNG or JPEG under 5 MB."
+      },
+      "application": {
+        "title": "Application",
+        "loading": "Loading your application…",
+        "loadError": "Unable to load your application.",
+        "status": "Status",
+        "finishFirst": "Finish every requirement above before submitting."
       }
     }
   }
