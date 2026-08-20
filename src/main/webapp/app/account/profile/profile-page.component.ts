@@ -13,16 +13,23 @@ import ApplicationTabComponent from './application-tab.component';
 
 export type ProfileTab = 'account' | 'clinical' | 'documents' | 'application' | 'password';
 
+/**
+ * Left to right, this is the order an applicant meets them in: apply, describe yourself, upload the
+ * evidence — then the account and password settings, which are housekeeping rather than
+ * credentialing and are the same for everyone. The array is the single source of that order: the
+ * nav renders from it and the panel `@switch` keys off the selected id, so nothing else needs
+ * touching to reorder them.
+ */
 const TABS: { id: ProfileTab; labelKey: string }[] = [
-  { id: 'account', labelKey: 'healthConnect.profile.account.title' },
+  { id: 'application', labelKey: 'healthConnect.profile.application.title' },
   { id: 'clinical', labelKey: 'healthConnect.profile.clinical.title' },
   { id: 'documents', labelKey: 'healthConnect.profile.documents.title' },
-  { id: 'application', labelKey: 'healthConnect.profile.application.title' },
+  { id: 'account', labelKey: 'healthConnect.profile.account.title' },
   { id: 'password', labelKey: 'healthConnect.profile.password.title' },
 ];
 
 /**
- * Everything about you, in one place: account, credentialing profile, documents, application,
+ * Everything about you, in one place: application, credentialing profile, documents, account,
  * password — with the server's completion figure above them all.
  *
  * <p>This replaces the separate {@code /onboarding} wizard. The wizard's steps were a sequence you
