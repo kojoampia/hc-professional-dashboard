@@ -204,6 +204,17 @@
           "dayAbsenceRequested": "{{date}}: {{absence}}, beantragt, aber noch nicht genehmigt. Weiterhin eingeteilt: {{shifts}}",
           "shiftAssigned": "Eingeteilt: {{shift}}",
           "shiftFree": "Nicht eingeteilt"
+        },
+        "day": {
+          "close": "Schließen",
+          "trail": "Letzte Aktivitäten",
+          "trailEmpty": "Keine Aktivitäten in den letzten 7 Tagen.",
+          "trailForbidden": "Sie können die letzten Aktivitäten nur für Kundinnen und Kunden aus Ihrem eigenen Dienstplan sehen, innerhalb von 30 Tagen vor oder nach heute.",
+          "trailFailed": "Die letzten Aktivitäten konnten nicht geladen werden.",
+          "detailsNotHeld": "Für diesen Besuch werden keine Kundendaten mehr vorgehalten.",
+          "noVisits": "Keine Besuche in dieser Schicht.",
+          "nothing": "An diesem Tag ist nichts eingeteilt.",
+          "loadFailed": "Dieser Tag konnte nicht geladen werden. Bitte versuchen Sie es gleich erneut."
         }
       }
     },

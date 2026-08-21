@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { DAYS_IN_WEEK, addDays, monthOf, startOfIsoWeek, startOfMonth } from './calendar-date.util';
@@ -71,39 +71,45 @@ const MAX_WEEKS = 6;
             </th>
             @for (day of week.days; track day.date) {
               <td
-                class="h-16 border border-hpd-border p-1 align-top md:h-20"
+                class="h-16 border border-hpd-border p-0 align-top md:h-20"
                 [class]="day.classes"
                 [class.opacity-40]="!day.inMonth"
-                [attr.data-cy]="'day-' + day.date"
                 [attr.aria-current]="day.isToday ? 'date' : null"
               >
-                <span class="sr-only">{{ day.descriptionKey | translate: day.descriptionParams }}</span>
-                <div aria-hidden="true" class="flex h-full flex-col gap-0.5">
-                  <span class="flex items-center justify-between">
-                    <span
-                      class="text-xs font-semibold"
-                      [class.rounded-full]="day.isToday"
-                      [class.bg-hpd-primary]="day.isToday"
-                      [class.text-white]="day.isToday"
-                      [class.px-1.5]="day.isToday"
-                    >
-                      {{ day.dayOfMonth }}
+                <button
+                  type="button"
+                  class="hpd-focusable h-full w-full cursor-pointer bg-transparent p-1 text-left align-top text-inherit"
+                  [attr.data-cy]="'day-' + day.date"
+                  (click)="daySelected.emit(day.date)"
+                >
+                  <span class="sr-only">{{ day.descriptionKey | translate: day.descriptionParams }}</span>
+                  <span aria-hidden="true" class="flex h-full flex-col gap-0.5">
+                    <span class="flex items-center justify-between">
+                      <span
+                        class="text-xs font-semibold"
+                        [class.rounded-full]="day.isToday"
+                        [class.bg-hpd-primary]="day.isToday"
+                        [class.text-white]="day.isToday"
+                        [class.px-1.5]="day.isToday"
+                      >
+                        {{ day.dayOfMonth }}
+                      </span>
+                      @if (day.glyph) {
+                        <span class="text-[10px] leading-none">{{ day.glyph }}</span>
+                      }
                     </span>
-                    @if (day.glyph) {
-                      <span class="text-[10px] leading-none">{{ day.glyph }}</span>
+                    @if (day.absence) {
+                      <span class="truncate text-[10px] font-semibold uppercase tracking-wide">
+                        {{ 'healthConnect.roster.calendar.absenceTypes.' + day.absence.type | translate }}
+                      </span>
+                    }
+                    @for (shift of day.shifts; track $index) {
+                      <span class="truncate text-[10px] leading-tight">
+                        {{ 'healthConnect.roster.calendar.shiftShort.' + shift | translate }}
+                      </span>
                     }
                   </span>
-                  @if (day.absence) {
-                    <span class="truncate text-[10px] font-semibold uppercase tracking-wide">
-                      {{ 'healthConnect.roster.calendar.absenceTypes.' + day.absence.type | translate }}
-                    </span>
-                  }
-                  @for (shift of day.shifts; track $index) {
-                    <span class="truncate text-[10px] leading-tight">
-                      {{ 'healthConnect.roster.calendar.shiftShort.' + shift | translate }}
-                    </span>
-                  }
-                </div>
+                </button>
               </td>
             }
           </tr>
@@ -130,6 +136,15 @@ export class MonthGridComponent {
    */
   readonly shiftNames = input<Record<string, string | undefined>>({});
   readonly toneNames = input<Record<string, string | undefined>>({});
+
+  /**
+   * The day a reader picked (DR6).
+   *
+   * <p>The cell is a real `<button>` rather than a clickable `<td>`, so it is reachable by Tab and
+   * activates on Enter and Space without any of that being re-implemented. Its accessible name is the
+   * whole day description, which is what makes the grid navigable by keyboard alone.
+   */
+  readonly daySelected = output<string>();
 
   /**
    * Weekday column headers in the viewer's own language and the ISO order Monday-first.

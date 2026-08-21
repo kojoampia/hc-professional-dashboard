@@ -204,6 +204,17 @@
           "dayAbsenceRequested": "{{date}} : {{absence}}, demandé mais pas encore approuvé. Toujours affecté : {{shifts}}",
           "shiftAssigned": "Affecté : {{shift}}",
           "shiftFree": "Non affecté"
+        },
+        "day": {
+          "close": "Fermer",
+          "trail": "Activité récente",
+          "trailEmpty": "Aucune activité au cours des 7 derniers jours.",
+          "trailForbidden": "Vous ne pouvez consulter l’activité récente que des clients de votre propre planning, dans les 30 jours avant ou après aujourd’hui.",
+          "trailFailed": "L’activité récente n’a pas pu être chargée.",
+          "detailsNotHeld": "Les coordonnées du client ne sont plus conservées pour cette visite.",
+          "noVisits": "Aucune visite sur ce poste.",
+          "nothing": "Rien de prévu ce jour-là.",
+          "loadFailed": "Cette journée n’a pas pu être chargée. Réessayez dans un instant."
         }
       }
     },

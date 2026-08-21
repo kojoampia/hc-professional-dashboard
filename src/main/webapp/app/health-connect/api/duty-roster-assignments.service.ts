@@ -4,6 +4,7 @@ import { Observable, tap } from 'rxjs';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { DutyRosterShift, SHIFT_WINDOWS, ShiftLabel, shiftStartHour } from '../health-connect.models';
+import { ActivityLogEntryDto } from './patient-api.model';
 
 /**
  * Re-exported so callers of this adapter get the shift union from the adapter they already import.
@@ -13,6 +14,29 @@ import { DutyRosterShift, SHIFT_WINDOWS, ShiftLabel, shiftStartHour } from '../h
  */
 export type { DutyRosterShift };
 
+/**
+ * One visit inside a round (DR2), as the day view receives it.
+ *
+ * <p>`customerId` is the **patient stack's `Profile.patientId`**, not its profile id — the same
+ * identifier the activity trail is asked for. The three snapshot fields are copied from `hc-patient`
+ * when the round is built and refreshed when a day is opened, and they are **cleared after 90 days**
+ * by the retention sweep, so a round older than that has ids and times and no customer. That is a
+ * normal state to render, not a loading failure.
+ *
+ * <p>`id` exists only so a single visit can be named for reassignment (DR4). It carries no meaning
+ * and is not a customer identifier — two visits to the same person on one day have different ids.
+ */
+export interface VisitDto {
+  id?: string;
+  customerId: string;
+  /** `HH:mm[:ss]` local to the shift's date. NIGHT wraps: 01:00 belongs to the previous date's shift. */
+  startTime: string;
+  endTime: string;
+  customerName?: string | null;
+  customerAddress?: string | null;
+  customerPhone?: string | null;
+}
+
 export interface DutyRosterAssignmentDto {
   id?: string;
   date: string;
@@ -21,6 +45,12 @@ export interface DutyRosterAssignmentDto {
   shift: DutyRosterShift;
   name: string;
   description?: string | null;
+  /**
+   * Present on the day read (DR6) and on the write path's response; **absent from the range read's
+   * usable content**, which the calendar grid uses to draw shift names and never renders a customer
+   * from. Treat it as optional at every call site.
+   */
+  visits?: VisitDto[] | null;
 }
 
 const pad = (n: number): string => String(n).padStart(2, '0');
@@ -65,6 +95,32 @@ export class DutyRosterAssignmentsService {
   range(from: string, to: string): Observable<DutyRosterAssignmentDto[]> {
     const params = new HttpParams().set('from', from).set('to', to);
     return this.http.get<DutyRosterAssignmentDto[]>(this.resourceUrl, { params });
+  }
+
+  /**
+   * The caller's rounds for one date, with their customer snapshots refreshed server-side (DR6).
+   *
+   * <p><b>This is the only call that brings customer names, addresses and phone numbers into the
+   * browser</b>, and it is made when a clinician deliberately opens a day. The range read draws a
+   * grid of shift names and needs none of them, which is why the day view has its own endpoint rather
+   * than filtering what the calendar already holds.
+   */
+  day(date: string): Observable<DutyRosterAssignmentDto[]> {
+    return this.http.get<DutyRosterAssignmentDto[]>(`${this.resourceUrl}/day/${encodeURIComponent(date)}`);
+  }
+
+  /**
+   * A customer's last 7 days of activity, if this clinician is entitled to see it (DR3).
+   *
+   * <p>The entitlement is the caller's own roster within ±30 days, checked server-side on every read.
+   * **A 403 is not an empty list and must not be rendered as one** — "nothing happened this week" and
+   * "you may not look" are different answers, and collapsing the second into the first hides an
+   * authorization failure behind a plausible blank panel. The caller distinguishes them; this method
+   * lets the error through rather than swallowing it, which is the opposite of what
+   * `AbsenceApiService` does and deliberately so.
+   */
+  customerTrail(customerId: string): Observable<ActivityLogEntryDto[]> {
+    return this.http.get<ActivityLogEntryDto[]>(`${this.resourceUrl}/customers/${encodeURIComponent(customerId)}/trail`);
   }
 
   listAll(): Observable<DutyRosterAssignmentDto[]> {

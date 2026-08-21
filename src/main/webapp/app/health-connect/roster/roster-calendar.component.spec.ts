@@ -183,6 +183,47 @@ describe('RosterCalendarComponent (DR5)', () => {
     }
   });
 
+  describe('the day popup (DR6)', () => {
+    it('is absent until a cell is activated, then opens for that day', async () => {
+      await build();
+      expect((fixture.nativeElement as HTMLElement).querySelector('hpd-day-list')).toBeNull();
+
+      // The cell is a real <button>, so it is reachable by Tab and activates on Enter and Space
+      // without any of that being re-implemented.
+      const cell = (fixture.nativeElement as HTMLElement).querySelector('[data-cy="day-2026-08-21"]') as HTMLButtonElement;
+      expect(cell.tagName).toBe('BUTTON');
+      cell.click();
+      fixture.detectChanges();
+
+      expect(component.openDate()).toBe('2026-08-21');
+      expect((fixture.nativeElement as HTMLElement).querySelector('hpd-day-list')).not.toBeNull();
+    });
+
+    it('opens from a week-view column header too', async () => {
+      await build();
+      component.view.set('week');
+      fixture.detectChanges();
+
+      ((fixture.nativeElement as HTMLElement).querySelector('[data-cy="weekday-2026-08-19"]') as HTMLButtonElement).click();
+      fixture.detectChanges();
+
+      expect(component.openDate()).toBe('2026-08-19');
+    });
+
+    it('destroys the popup on close, so the next day opens clean', async () => {
+      // The day read happens on create, and the trail panels live on the popup — carrying either
+      // into the next day the reader picks would show one day's customers under another's heading.
+      await build();
+      component.openDay('2026-08-21');
+      fixture.detectChanges();
+      component.closeDay();
+      fixture.detectChanges();
+
+      expect(component.openDate()).toBeNull();
+      expect((fixture.nativeElement as HTMLElement).querySelector('hpd-day-list')).toBeNull();
+    });
+  });
+
   it('never builds a Tailwind class name at runtime', async () => {
     // Tailwind v4 finds classes by scanning source text, so an assembled name is one it never emits
     // — the swatch renders transparent and nothing fails. This repo already lost that bet once,

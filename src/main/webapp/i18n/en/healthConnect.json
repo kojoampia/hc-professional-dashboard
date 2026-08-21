@@ -204,6 +204,17 @@
           "dayAbsenceRequested": "{{date}}: {{absence}}, requested but not yet approved. Still rostered: {{shifts}}",
           "shiftAssigned": "Assigned: {{shift}}",
           "shiftFree": "Not assigned"
+        },
+        "day": {
+          "close": "Close",
+          "trail": "Recent activity",
+          "trailEmpty": "No activity in the last 7 days.",
+          "trailForbidden": "You can only see recent activity for customers on your own roster, within 30 days either side of today.",
+          "trailFailed": "Recent activity could not be loaded.",
+          "detailsNotHeld": "Customer details are no longer held for this visit.",
+          "noVisits": "No visits on this shift.",
+          "nothing": "Nothing rostered on this day.",
+          "loadFailed": "This day could not be loaded. Try again shortly."
         }
       }
     },

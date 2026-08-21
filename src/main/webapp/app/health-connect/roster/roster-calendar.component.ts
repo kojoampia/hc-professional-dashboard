@@ -7,6 +7,7 @@ import { AbsenceApiService } from '../api/absence-api.service';
 import { DutyRosterAssignmentsService } from '../api/duty-roster-assignments.service';
 import { DutyRosterShift } from '../health-connect.models';
 import { DAYS_IN_WEEK, addDays, addMonths, startOfIsoWeek, startOfMonth, todayIsoDate } from './calendar-date.util';
+import { DayListComponent } from './day-list.component';
 import { MonthGridComponent } from './month-grid.component';
 import { RosterDay, RosterDayTone, buildRosterDays } from './roster-day.model';
 import { WeekGridComponent } from './week-grid.component';
@@ -54,7 +55,7 @@ const LEGEND_SWATCH_CLASSES: Record<RosterDayTone, string> = {
 @Component({
   standalone: true,
   selector: 'hpd-roster-calendar',
-  imports: [TranslateModule, MonthGridComponent, WeekGridComponent],
+  imports: [TranslateModule, MonthGridComponent, WeekGridComponent, DayListComponent],
   template: `
     <section class="overflow-hidden rounded-hpd border border-hpd-border bg-white shadow-hpd-sm" data-cy="rosterCalendar">
       <header class="flex flex-wrap items-center justify-between gap-3 border-b border-hpd-border bg-hpd-cream px-5 py-3">
@@ -115,6 +116,7 @@ const LEGEND_SWATCH_CLASSES: Record<RosterDayTone, string> = {
             [locale]="locale()"
             [shiftNames]="shiftNames()"
             [toneNames]="absenceNames()"
+            (daySelected)="openDay($event)"
           />
         } @else {
           <hpd-week-grid
@@ -124,6 +126,7 @@ const LEGEND_SWATCH_CLASSES: Record<RosterDayTone, string> = {
             [locale]="locale()"
             [shiftNames]="shiftNames()"
             [toneNames]="absenceNames()"
+            (daySelected)="openDay($event)"
           />
         }
         @if (failed()) {
@@ -169,6 +172,14 @@ const LEGEND_SWATCH_CLASSES: Record<RosterDayTone, string> = {
         </span>
       </footer>
     </section>
+
+    <!--
+      Created only while a day is open, and destroyed on close, so the day read happens on open and
+      the trail panels do not survive into the next day the reader picks.
+    -->
+    @if (openDate(); as date) {
+      <hpd-day-list [date]="date" [heading]="dayHeading()" (closed)="closeDay()" />
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -185,6 +196,9 @@ export class RosterCalendarComponent {
   readonly anchor = signal(todayIsoDate());
   readonly days = signal<Map<string, RosterDay>>(new Map());
   readonly failed = signal(false);
+
+  /** The day whose popup is open, or null. Drives creation of `hpd-day-list` (DR6). */
+  readonly openDate = signal<string | null>(null);
 
   /**
    * Re-resolved on every language change, because `TranslateService.instant` is a snapshot.
@@ -262,6 +276,29 @@ export class RosterCalendarComponent {
       });
       onCleanup(() => subscription.unsubscribe());
     });
+  }
+
+  /**
+   * The popup's heading, formatted here rather than inside it.
+   *
+   * <p>`DayListComponent` does no locale work at all: this component already holds the resolved
+   * language and the `Intl` formatters, and a second copy of that plumbing is a second thing to
+   * forget to update on a language change.
+   */
+  readonly dayHeading = computed(() => {
+    const date = this.openDate();
+    if (!date) {
+      return '';
+    }
+    return new Intl.DateTimeFormat(this.locale(), { dateStyle: 'full', timeZone: 'UTC' }).format(new Date(`${date}T00:00:00Z`));
+  });
+
+  openDay(date: string): void {
+    this.openDate.set(date);
+  }
+
+  closeDay(): void {
+    this.openDate.set(null);
   }
 
   /** Move one period in `direction`: a month in month view, a week in week view. */

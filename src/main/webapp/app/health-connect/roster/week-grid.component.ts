@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { DutyRosterShift } from '../health-connect.models';
@@ -62,32 +62,38 @@ const SHIFT_ROWS: readonly DutyRosterShift[] = ['DAY', 'EVENING', 'NIGHT', 'FLEX
           @for (column of columns(); track column.date) {
             <th
               scope="col"
-              class="border border-hpd-border px-1 py-2 text-center align-top"
+              class="border border-hpd-border p-0 text-center align-top"
               [class]="column.classes"
-              [attr.data-cy]="'weekday-' + column.date"
               [attr.aria-current]="column.isToday ? 'date' : null"
             >
-              <span class="sr-only">{{ column.descriptionKey | translate: column.descriptionParams }}</span>
-              <span aria-hidden="true" class="flex flex-col items-center gap-0.5">
-                <span class="text-[11px] font-bold uppercase tracking-wider">{{ column.weekdayShort }}</span>
-                <span
-                  class="text-xs font-semibold"
-                  [class.rounded-full]="column.isToday"
-                  [class.bg-hpd-primary]="column.isToday"
-                  [class.text-white]="column.isToday"
-                  [class.px-1.5]="column.isToday"
-                >
-                  {{ column.dayOfMonth }}
-                </span>
-                @if (column.day.absence) {
-                  <span class="truncate text-[10px] font-semibold uppercase tracking-wide">
-                    {{ 'healthConnect.roster.calendar.absenceTypes.' + column.day.absence.type | translate }}
+              <button
+                type="button"
+                class="hpd-focusable w-full cursor-pointer bg-transparent px-1 py-2 text-center text-inherit"
+                [attr.data-cy]="'weekday-' + column.date"
+                (click)="daySelected.emit(column.date)"
+              >
+                <span class="sr-only">{{ column.descriptionKey | translate: column.descriptionParams }}</span>
+                <span aria-hidden="true" class="flex flex-col items-center gap-0.5">
+                  <span class="text-[11px] font-bold uppercase tracking-wider">{{ column.weekdayShort }}</span>
+                  <span
+                    class="text-xs font-semibold"
+                    [class.rounded-full]="column.isToday"
+                    [class.bg-hpd-primary]="column.isToday"
+                    [class.text-white]="column.isToday"
+                    [class.px-1.5]="column.isToday"
+                  >
+                    {{ column.dayOfMonth }}
                   </span>
-                }
-                @if (column.glyph) {
-                  <span class="text-[10px] leading-none">{{ column.glyph }}</span>
-                }
-              </span>
+                  @if (column.day.absence) {
+                    <span class="truncate text-[10px] font-semibold uppercase tracking-wide">
+                      {{ 'healthConnect.roster.calendar.absenceTypes.' + column.day.absence.type | translate }}
+                    </span>
+                  }
+                  @if (column.glyph) {
+                    <span class="text-[10px] leading-none">{{ column.glyph }}</span>
+                  }
+                </span>
+              </button>
             </th>
           }
         </tr>
@@ -135,6 +141,9 @@ export class WeekGridComponent {
   readonly locale = input<string>('en');
   readonly shiftNames = input<Record<string, string | undefined>>({});
   readonly toneNames = input<Record<string, string | undefined>>({});
+
+  /** The day a reader picked (DR6) — see the note on `MonthGridComponent.daySelected`. */
+  readonly daySelected = output<string>();
 
   readonly shiftRows = computed<ShiftRow[]>(() => {
     const columns = this.columns();

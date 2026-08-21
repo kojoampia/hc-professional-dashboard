@@ -204,6 +204,17 @@
           "dayAbsenceRequested": "{{date}}: {{absence}}, solicitado pero aún no aprobado. Sigue asignado: {{shifts}}",
           "shiftAssigned": "Asignado: {{shift}}",
           "shiftFree": "Sin asignar"
+        },
+        "day": {
+          "close": "Cerrar",
+          "trail": "Actividad reciente",
+          "trailEmpty": "Sin actividad en los últimos 7 días.",
+          "trailForbidden": "Solo puedes ver la actividad reciente de los clientes de tu propio cuadrante, dentro de los 30 días anteriores o posteriores a hoy.",
+          "trailFailed": "No se ha podido cargar la actividad reciente.",
+          "detailsNotHeld": "Ya no se conservan los datos del cliente para esta visita.",
+          "noVisits": "Sin visitas en este turno.",
+          "nothing": "Nada asignado este día.",
+          "loadFailed": "No se ha podido cargar este día. Vuelve a intentarlo en breve."
         }
       }
     },
