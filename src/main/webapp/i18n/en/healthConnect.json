@@ -119,17 +119,11 @@
       "description": "Detailed description of event."
     },
     "roster": {
-      "subtitle": "Subscribe to rosters to route their urgent and open cases to your \"My roster\" queue.",
+      "subtitle": "Cases on the rosters you are assigned to appear in your \"My roster\" queue.",
       "allCases": "All cases",
       "myRoster": "My roster",
-      "subscribed": "My subscribed rosters",
-      "available": "Available rosters",
-      "shifts": "Shifts",
       "activeShift": "On duty until {{time}}",
       "nextShift": "Next shift: {{time}}",
-      "upcoming": "Upcoming",
-      "active": "Active",
-      "completed": "Completed",
       "myAssignments": "My duty assignments",
       "notAssigned": "No duty assignments yet. A roster administrator assigns your shifts.",
       "assignmentOnly": "Duty rosters are assigned by administrators. Contact your coordinator for changes.",
@@ -142,10 +136,9 @@
       "assign": "Assign shift",
       "unassign": "Unassign",
       "shiftNames": {
-        "MORNING": "Morning (06:00–14:00)",
-        "AFTERNOON": "Afternoon (14:00–22:00)",
-        "NIGHT": "Night (22:00–06:00)",
-        "DAY": "Day (08:00–17:00)",
+        "DAY": "Day (07:00–15:00)",
+        "EVENING": "Evening (15:00–23:00)",
+        "NIGHT": "Night (23:00–07:00)",
         "FLEXIBLE": "Flexible (2–4 h blocks)"
       },
       "duties": {
@@ -161,7 +154,111 @@
         "OTHER": "Other"
       },
       "flexibleShift": "Flexible duty today (2–4 h blocks)",
-      "nextFlexibleShift": "Next flexible shift: {{date}}"
+      "nextFlexibleShift": "Next flexible shift: {{date}}",
+      "calendar": {
+        "legend": "Legend",
+        "monthGrid": "Duty roster, month view",
+        "weekGrid": "Duty roster, week view",
+        "viewSwitcher": "Calendar view",
+        "previous": "Previous",
+        "next": "Next",
+        "today": "Today",
+        "loadFailed": "Your roster could not be loaded. Try again shortly.",
+        "weekNumberAbbrev": "Wk",
+        "weekNumberFull": "Week number",
+        "weekOf": "Week {{week}} of {{year}}",
+        "weekTitle": "Week {{week}} · {{range}}",
+        "views": {
+          "month": "Month",
+          "week": "Week",
+          "year": "Year"
+        },
+        "tones": {
+          "working": "On duty",
+          "holiday": "Holiday",
+          "sick": "Sick leave",
+          "other": "Other leave",
+          "off": "Off",
+          "pending": "Requested, not yet approved"
+        },
+        "absenceTypes": {
+          "HOLIDAY": "Holiday",
+          "SICK": "Sick",
+          "OTHER": "Leave"
+        },
+        "shiftShort": {
+          "DAY": "Day",
+          "EVENING": "Evening",
+          "NIGHT": "Night",
+          "FLEXIBLE": "Flexible"
+        },
+        "shiftWindow": {
+          "DAY": "07:00–15:00",
+          "EVENING": "15:00–23:00",
+          "NIGHT": "23:00–07:00",
+          "FLEXIBLE": "Any time"
+        },
+        "a11y": {
+          "dayWorking": "{{date}}: on duty, {{shifts}}",
+          "dayOff": "{{date}}: off",
+          "dayAbsenceApproved": "{{date}}: {{absence}}, approved. Still rostered: {{shifts}}",
+          "dayAbsenceRequested": "{{date}}: {{absence}}, requested but not yet approved. Still rostered: {{shifts}}",
+          "shiftAssigned": "Assigned: {{shift}}",
+          "shiftFree": "Not assigned"
+        },
+        "day": {
+          "close": "Close",
+          "trail": "Recent activity",
+          "trailEmpty": "No activity in the last 7 days.",
+          "trailForbidden": "You can only see recent activity for customers on your own roster, within 30 days either side of today.",
+          "trailFailed": "Recent activity could not be loaded.",
+          "detailsNotHeld": "Customer details are no longer held for this visit.",
+          "noVisits": "No visits on this shift.",
+          "nothing": "Nothing rostered on this day.",
+          "loadFailed": "This day could not be loaded. Try again shortly."
+        },
+        "yearGrid": "Duty roster, year view"
+      },
+      "absence": {
+        "title": "My time off",
+        "from": "From",
+        "to": "To",
+        "type": "Type",
+        "request": "Request time off",
+        "withdraw": "Withdraw",
+        "none": "No time off requested or booked.",
+        "noBackdating": "Time off cannot start in the past. Ask a roster administrator to record sickness that has already begun.",
+        "requested": "Time off requested.",
+        "withdrawn": "Request withdrawn.",
+        "queue": "Time-off requests",
+        "queueEmpty": "No requests waiting.",
+        "showAll": "Show all",
+        "showPending": "Show pending only",
+        "approve": "Approve",
+        "decline": "Decline",
+        "approved": "Time off approved.",
+        "declined": "Request declined.",
+        "conflict": "Still rostered on {{count}} round(s) in this range:",
+        "conflictHint": "Reassign these rounds, then approve again.",
+        "statuses": {
+          "REQUESTED": "Requested",
+          "APPROVED": "Approved"
+        }
+      },
+      "builder": {
+        "visits": "Visits",
+        "addVisit": "Add visit",
+        "removeVisit": "Remove",
+        "noVisits": "No visits — a shift with none is still a shift (ward cover, on call, administrative time).",
+        "customerId": "Customer ID",
+        "startTime": "Start",
+        "endTime": "End",
+        "onLeave": "This professional is on approved leave from {{from}} to {{to}}. You can still assign the shift.",
+        "reassign": "Reassign",
+        "reassignTo": "Reassign to professional profile ID",
+        "reassignRound": "Move whole round",
+        "reassignVisit": "Move {{time}} visit"
+      }
     },
     "states": {
       "loading": "Loading...",

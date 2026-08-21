@@ -69,6 +69,31 @@ bars, chart fills).
   --hpd-color-row-urgent: #fbeae7;
   --hpd-color-row-open: #fdf3e2;
   --hpd-color-row-closed: #e7f3ed;
+
+  /* Duty-roster calendar day states (docs/duty-roster.md § Colour, DR5).
+     fix.md asked for light red when working, light green on holiday, light blue when sick and white
+     when off. Three of those four are honoured; "off" is not, and deliberately — the page background
+     is cream, so a white cell reads as a filled state rather than an empty one. Off is the page
+     background, and a fill means something is true of that day.
+     These are named for the roster rather than reusing danger-tint/success-tint: a rostered day is
+     not an error and a holiday is not a success, and a semantic token borrowed for an unrelated
+     meaning is how the next person changes one and breaks the other.
+     They are also deliberately a step deeper than the existing *-tint values. Those measure
+     1.00–1.04 against the cream page, which is no luminance step at all; at 1.04–1.18 these at least
+     read as filled. Measured AA of each accent on its own tint: working 5.03, holiday 5.34, sick
+     6.36, other 5.10. The ink token clears 12.6 on all four.
+     NOTE the four tints are only 1.02–1.10 against EACH OTHER, and that is inherent to four pale
+     fills rather than a value that can be tuned away — they are distinguished by hue, so in
+     greyscale, or to a fully colour-blind reader, they are one colour. Colour is therefore never the
+     only channel: every filled cell carries a glyph and a text label, and there is a legend. */
+  --hpd-color-roster-working: #f7dcd7;
+  --hpd-color-roster-working-accent: #a5392a;
+  --hpd-color-roster-holiday: #daeee3;
+  --hpd-color-roster-holiday-accent: #256a4c;
+  --hpd-color-roster-sick: #d8e8f5;
+  --hpd-color-roster-sick-accent: #1b5482;
+  --hpd-color-roster-other: #f7ebd0;
+  --hpd-color-roster-other-accent: #8a580d;
   --hpd-font-body: Inter, ui-sans-serif, system-ui, sans-serif;
   --hpd-focus-ring: 0 0 0 3px rgb(13 48 88 / 45%);
   --hpd-r-sm: 8px;
@@ -365,6 +390,28 @@ tone. Verified ratios: professional-web.md §3.
 .hpd-input-available:focus {
   border-color: var(--hpd-color-success-accent);
   box-shadow: 0 0 0 3.5px rgb(42 117 84 / 12%);
+}
+
+/* Requested-but-not-granted absence (docs/duty-roster.md § 8, DR5).
+   A REQUESTED absence renders hatched where an APPROVED one renders solid, so a clinician can see
+   that time off is *asked for* rather than granted. Getting that wrong in either direction is a
+   person turning up, or not turning up, on the strength of a fill.
+   The hatch is drawn over whatever fill the cell already has, so it composes with all four state
+   tokens instead of needing a pending variant of each. `currentColor` at 22% picks up the cell's own
+   accent, which keeps the stripes legible on a light tint without inventing a fifth colour.
+   It is a texture, not a meaning: the cell still carries a glyph and a label, because a hatch is
+   invisible to a screen reader and easy to miss at a month grid's cell size. */
+.hpd-roster-pending {
+  background-image: repeating-linear-gradient(-45deg, rgb(0 0 0 / 0%) 0, rgb(0 0 0 / 0%) 4px, currentcolor 4px, currentcolor 5px);
+  opacity: 0.999; /* stops Safari dropping the gradient layer when the cell also animates */
+}
+
+@media (prefers-contrast: more) {
+  /* Denser stripes when the reader has asked for more contrast — the default hatch is deliberately
+     quiet, and quiet is the wrong answer for someone who has said they cannot see it. */
+  .hpd-roster-pending {
+    background-image: repeating-linear-gradient(-45deg, rgb(0 0 0 / 0%) 0, rgb(0 0 0 / 0%) 3px, currentcolor 3px, currentcolor 5px);
+  }
 }
 
 /* Split-screen auth brand panel (demo .auth-brand radial glows). */

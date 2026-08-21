@@ -119,17 +119,11 @@
       "description": "Description détaillée de l'événement."
     },
     "roster": {
-      "subtitle": "Abonnez-vous à des plannings pour acheminer leurs cas urgents et ouverts vers votre file « Mon planning ».",
+      "subtitle": "Les dossiers des gardes qui vous sont attribuées apparaissent dans votre file « Ma garde ».",
       "allCases": "Tous les cas",
       "myRoster": "Mon planning",
-      "subscribed": "Mes plannings abonnés",
-      "available": "Plannings disponibles",
-      "shifts": "Services",
       "activeShift": "En service jusqu'à {{time}}",
       "nextShift": "Prochain service : {{time}}",
-      "upcoming": "À venir",
-      "active": "Actif",
-      "completed": "Terminé",
       "myAssignments": "Mes affectations de garde",
       "notAssigned": "Aucune affectation pour le moment. Un administrateur du planning attribue vos gardes.",
       "assignmentOnly": "Les plannings de garde sont attribués par les administrateurs. Contactez votre coordinateur pour toute modification.",
@@ -142,10 +136,9 @@
       "assign": "Attribuer la garde",
       "unassign": "Retirer",
       "shiftNames": {
-        "MORNING": "Matin (06:00–14:00)",
-        "AFTERNOON": "Après-midi (14:00–22:00)",
-        "NIGHT": "Nuit (22:00–06:00)",
-        "DAY": "Journée (08:00–17:00)",
+        "DAY": "Journée (07:00–15:00)",
+        "EVENING": "Soirée (15:00–23:00)",
+        "NIGHT": "Nuit (23:00–07:00)",
         "FLEXIBLE": "Flexible (blocs de 2–4 h)"
       },
       "duties": {
@@ -161,7 +154,111 @@
         "OTHER": "Autre"
       },
       "flexibleShift": "Garde flexible aujourd'hui (blocs de 2–4 h)",
-      "nextFlexibleShift": "Prochaine garde flexible : {{date}}"
+      "nextFlexibleShift": "Prochaine garde flexible : {{date}}",
+      "calendar": {
+        "legend": "Légende",
+        "monthGrid": "Planning de garde, vue mensuelle",
+        "weekGrid": "Planning de garde, vue hebdomadaire",
+        "viewSwitcher": "Vue du calendrier",
+        "previous": "Précédent",
+        "next": "Suivant",
+        "today": "Aujourd’hui",
+        "loadFailed": "Votre planning n’a pas pu être chargé. Réessayez dans un instant.",
+        "weekNumberAbbrev": "Sem",
+        "weekNumberFull": "Numéro de semaine",
+        "weekOf": "Semaine {{week}} de {{year}}",
+        "weekTitle": "Semaine {{week}} · {{range}}",
+        "views": {
+          "month": "Mois",
+          "week": "Semaine",
+          "year": "Année"
+        },
+        "tones": {
+          "working": "De service",
+          "holiday": "Congés",
+          "sick": "Arrêt maladie",
+          "other": "Autre absence",
+          "off": "Repos",
+          "pending": "Demandé, pas encore approuvé"
+        },
+        "absenceTypes": {
+          "HOLIDAY": "Congés",
+          "SICK": "Maladie",
+          "OTHER": "Absence"
+        },
+        "shiftShort": {
+          "DAY": "Jour",
+          "EVENING": "Soir",
+          "NIGHT": "Nuit",
+          "FLEXIBLE": "Flexible"
+        },
+        "shiftWindow": {
+          "DAY": "07:00–15:00",
+          "EVENING": "15:00–23:00",
+          "NIGHT": "23:00–07:00",
+          "FLEXIBLE": "À tout moment"
+        },
+        "a11y": {
+          "dayWorking": "{{date}} : de service, {{shifts}}",
+          "dayOff": "{{date}} : repos",
+          "dayAbsenceApproved": "{{date}} : {{absence}}, approuvé. Toujours affecté : {{shifts}}",
+          "dayAbsenceRequested": "{{date}} : {{absence}}, demandé mais pas encore approuvé. Toujours affecté : {{shifts}}",
+          "shiftAssigned": "Affecté : {{shift}}",
+          "shiftFree": "Non affecté"
+        },
+        "day": {
+          "close": "Fermer",
+          "trail": "Activité récente",
+          "trailEmpty": "Aucune activité au cours des 7 derniers jours.",
+          "trailForbidden": "Vous ne pouvez consulter l’activité récente que des clients de votre propre planning, dans les 30 jours avant ou après aujourd’hui.",
+          "trailFailed": "L’activité récente n’a pas pu être chargée.",
+          "detailsNotHeld": "Les coordonnées du client ne sont plus conservées pour cette visite.",
+          "noVisits": "Aucune visite sur ce poste.",
+          "nothing": "Rien de prévu ce jour-là.",
+          "loadFailed": "Cette journée n’a pas pu être chargée. Réessayez dans un instant."
+        },
+        "yearGrid": "Planning de garde, vue annuelle"
+      },
+      "absence": {
+        "title": "Mes absences",
+        "from": "Du",
+        "to": "Au",
+        "type": "Type",
+        "request": "Demander une absence",
+        "withdraw": "Retirer",
+        "none": "Aucune absence demandée ni accordée.",
+        "noBackdating": "Une absence ne peut pas commencer dans le passé. Demandez à un administrateur du planning d’enregistrer un arrêt déjà commencé.",
+        "requested": "Absence demandée.",
+        "withdrawn": "Demande retirée.",
+        "queue": "Demandes d’absence",
+        "queueEmpty": "Aucune demande en attente.",
+        "showAll": "Tout afficher",
+        "showPending": "Afficher les demandes en attente",
+        "approve": "Approuver",
+        "decline": "Refuser",
+        "approved": "Absence approuvée.",
+        "declined": "Demande refusée.",
+        "conflict": "Toujours affecté à {{count}} tournée(s) sur cette période :",
+        "conflictHint": "Réaffectez ces tournées, puis approuvez à nouveau.",
+        "statuses": {
+          "REQUESTED": "Demandée",
+          "APPROVED": "Approuvée"
+        }
+      },
+      "builder": {
+        "visits": "Visites",
+        "addVisit": "Ajouter une visite",
+        "removeVisit": "Retirer",
+        "noVisits": "Aucune visite : un poste sans visite reste un poste (couverture de service, astreinte, tâches administratives).",
+        "customerId": "ID client",
+        "startTime": "Début",
+        "endTime": "Fin",
+        "onLeave": "Ce professionnel est en congé approuvé du {{from}} au {{to}}. Vous pouvez tout de même affecter le poste.",
+        "reassign": "Réaffecter",
+        "reassignTo": "Réaffecter à l’ID de profil professionnel",
+        "reassignRound": "Déplacer toute la tournée",
+        "reassignVisit": "Déplacer la visite de {{time}}"
+      }
     },
     "states": {
       "loading": "Chargement...",

@@ -27,6 +27,13 @@ export interface PatientDirectoryFilters {
 
 export interface HealthConnectRepository {
   readonly patients: Signal<readonly PatientRecord[]>;
+  /**
+   * The caller's own duty assignments — not the estate's.
+   *
+   * <p>`subscribeProfessionalToRoster` / `unsubscribeProfessionalFromRoster` sat here until DR1 and
+   * are gone: the roster is assignment-only, administrators assign and professionals read, and the
+   * `/{id}/subscription` endpoints they called were never built on either side.
+   */
   readonly dutyRosters: Signal<readonly DutyRoster[]>;
   readonly asyncState: Signal<AsyncViewState>;
   readonly patientRows: Signal<readonly PatientListRow[]>;
@@ -53,8 +60,6 @@ export interface HealthConnectRepository {
     patientId: string,
     report: Omit<ClinicalReport, 'id' | 'occurredAt' | 'label'> & { id?: string; occurredAt?: string; label?: string },
   ): ClinicalReport | null;
-  subscribeProfessionalToRoster(professionalId: string, rosterId: string): boolean;
-  unsubscribeProfessionalFromRoster(professionalId: string, rosterId: string): boolean;
   archiveCase(id: string): boolean;
   setLoading(loading: boolean): void;
   setError(error: string | null): void;

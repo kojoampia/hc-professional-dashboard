@@ -119,17 +119,11 @@
       "description": "Detaillierte Ereignisbeschreibung."
     },
     "roster": {
-      "subtitle": "Abonnieren Sie Dienstpläne, um deren dringende und offene Fälle an Ihre Warteschlange „Mein Dienstplan“ weiterzuleiten.",
+      "subtitle": "Fälle aus den dir zugeteilten Schichten erscheinen in deiner Liste „Meine Schicht“.",
       "allCases": "Alle Fälle",
       "myRoster": "Mein Dienstplan",
-      "subscribed": "Meine abonnierten Dienstpläne",
-      "available": "Verfügbare Dienstpläne",
-      "shifts": "Schichten",
       "activeShift": "Im Dienst bis {{time}}",
       "nextShift": "Nächste Schicht: {{time}}",
-      "upcoming": "Bevorstehend",
-      "active": "Aktiv",
-      "completed": "Abgeschlossen",
       "myAssignments": "Meine Diensteinteilungen",
       "notAssigned": "Noch keine Diensteinteilungen. Ein Dienstplan-Administrator teilt Ihre Schichten zu.",
       "assignmentOnly": "Dienstpläne werden von Administratoren zugeteilt. Wenden Sie sich für Änderungen an Ihre Koordination.",
@@ -142,10 +136,9 @@
       "assign": "Schicht zuteilen",
       "unassign": "Entfernen",
       "shiftNames": {
-        "MORNING": "Früh (06:00–14:00)",
-        "AFTERNOON": "Spät (14:00–22:00)",
-        "NIGHT": "Nacht (22:00–06:00)",
-        "DAY": "Tag (08:00–17:00)",
+        "DAY": "Tag (07:00–15:00)",
+        "EVENING": "Abend (15:00–23:00)",
+        "NIGHT": "Nacht (23:00–07:00)",
         "FLEXIBLE": "Flexibel (2–4-h-Blöcke)"
       },
       "duties": {
@@ -161,7 +154,111 @@
         "OTHER": "Sonstige"
       },
       "flexibleShift": "Heute flexibler Dienst (2–4-h-Blöcke)",
-      "nextFlexibleShift": "Nächste flexible Schicht: {{date}}"
+      "nextFlexibleShift": "Nächste flexible Schicht: {{date}}",
+      "calendar": {
+        "legend": "Legende",
+        "monthGrid": "Dienstplan, Monatsansicht",
+        "weekGrid": "Dienstplan, Wochenansicht",
+        "viewSwitcher": "Kalenderansicht",
+        "previous": "Zurück",
+        "next": "Weiter",
+        "today": "Heute",
+        "loadFailed": "Ihr Dienstplan konnte nicht geladen werden. Bitte versuchen Sie es gleich erneut.",
+        "weekNumberAbbrev": "KW",
+        "weekNumberFull": "Kalenderwoche",
+        "weekOf": "Kalenderwoche {{week}} in {{year}}",
+        "weekTitle": "KW {{week}} · {{range}}",
+        "views": {
+          "month": "Monat",
+          "week": "Woche",
+          "year": "Jahr"
+        },
+        "tones": {
+          "working": "Im Dienst",
+          "holiday": "Urlaub",
+          "sick": "Krankmeldung",
+          "other": "Sonstige Abwesenheit",
+          "off": "Frei",
+          "pending": "Beantragt, noch nicht genehmigt"
+        },
+        "absenceTypes": {
+          "HOLIDAY": "Urlaub",
+          "SICK": "Krank",
+          "OTHER": "Abwesend"
+        },
+        "shiftShort": {
+          "DAY": "Tag",
+          "EVENING": "Abend",
+          "NIGHT": "Nacht",
+          "FLEXIBLE": "Flexibel"
+        },
+        "shiftWindow": {
+          "DAY": "07:00–15:00",
+          "EVENING": "15:00–23:00",
+          "NIGHT": "23:00–07:00",
+          "FLEXIBLE": "Jederzeit"
+        },
+        "a11y": {
+          "dayWorking": "{{date}}: im Dienst, {{shifts}}",
+          "dayOff": "{{date}}: frei",
+          "dayAbsenceApproved": "{{date}}: {{absence}}, genehmigt. Weiterhin eingeteilt: {{shifts}}",
+          "dayAbsenceRequested": "{{date}}: {{absence}}, beantragt, aber noch nicht genehmigt. Weiterhin eingeteilt: {{shifts}}",
+          "shiftAssigned": "Eingeteilt: {{shift}}",
+          "shiftFree": "Nicht eingeteilt"
+        },
+        "day": {
+          "close": "Schließen",
+          "trail": "Letzte Aktivitäten",
+          "trailEmpty": "Keine Aktivitäten in den letzten 7 Tagen.",
+          "trailForbidden": "Sie können die letzten Aktivitäten nur für Kundinnen und Kunden aus Ihrem eigenen Dienstplan sehen, innerhalb von 30 Tagen vor oder nach heute.",
+          "trailFailed": "Die letzten Aktivitäten konnten nicht geladen werden.",
+          "detailsNotHeld": "Für diesen Besuch werden keine Kundendaten mehr vorgehalten.",
+          "noVisits": "Keine Besuche in dieser Schicht.",
+          "nothing": "An diesem Tag ist nichts eingeteilt.",
+          "loadFailed": "Dieser Tag konnte nicht geladen werden. Bitte versuchen Sie es gleich erneut."
+        },
+        "yearGrid": "Dienstplan, Jahresansicht"
+      },
+      "absence": {
+        "title": "Meine Abwesenheiten",
+        "from": "Von",
+        "to": "Bis",
+        "type": "Art",
+        "request": "Abwesenheit beantragen",
+        "withdraw": "Zurückziehen",
+        "none": "Keine Abwesenheiten beantragt oder genehmigt.",
+        "noBackdating": "Eine Abwesenheit kann nicht in der Vergangenheit beginnen. Bitten Sie eine Dienstplan-Administration, eine bereits begonnene Krankmeldung zu erfassen.",
+        "requested": "Abwesenheit beantragt.",
+        "withdrawn": "Antrag zurückgezogen.",
+        "queue": "Abwesenheitsanträge",
+        "queueEmpty": "Keine offenen Anträge.",
+        "showAll": "Alle anzeigen",
+        "showPending": "Nur offene anzeigen",
+        "approve": "Genehmigen",
+        "decline": "Ablehnen",
+        "approved": "Abwesenheit genehmigt.",
+        "declined": "Antrag abgelehnt.",
+        "conflict": "Weiterhin für {{count}} Runde(n) in diesem Zeitraum eingeteilt:",
+        "conflictHint": "Teilen Sie diese Runden neu zu und genehmigen Sie erneut.",
+        "statuses": {
+          "REQUESTED": "Beantragt",
+          "APPROVED": "Genehmigt"
+        }
+      },
+      "builder": {
+        "visits": "Besuche",
+        "addVisit": "Besuch hinzufügen",
+        "removeVisit": "Entfernen",
+        "noVisits": "Keine Besuche – eine Schicht ohne Besuche ist trotzdem eine Schicht (Stationsdienst, Rufbereitschaft, Verwaltung).",
+        "customerId": "Kunden-ID",
+        "startTime": "Beginn",
+        "endTime": "Ende",
+        "onLeave": "Diese Fachkraft hat vom {{from}} bis {{to}} genehmigten Urlaub. Sie können die Schicht dennoch zuteilen.",
+        "reassign": "Neu zuteilen",
+        "reassignTo": "Neu zuteilen an Profil-ID",
+        "reassignRound": "Ganze Runde verschieben",
+        "reassignVisit": "Besuch um {{time}} verschieben"
+      }
     },
     "states": {
       "loading": "Wird geladen...",

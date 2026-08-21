@@ -40,7 +40,10 @@ describe('HttpHealthConnectRepository', () => {
         ],
         { headers: {} },
       );
-    httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/duty-rosters')).flush([]);
+    // Singular, and NOT /all: the dashboard reads the caller's own roster. Reaching for the
+    // admin-only estate collection is what returned 403 to every clinician before DR1, so this is
+    // matched exactly — the whole point of the fix is which of the two URLs gets called.
+    httpMock.expectOne('services/professionalservice/api/duty-roster').flush([]);
   };
 
   it('loads the patient list and case queue on construction', () => {
@@ -52,6 +55,35 @@ describe('HttpHealthConnectRepository', () => {
     expect(repository.caseQueue()).toHaveLength(1);
     expect(repository.caseQueue()[0]).toMatchObject({ id: 'case-1', status: 'urgent', brief: 'High fever', patientId: 'patient-kojo' });
     expect(repository.caseCounts()).toEqual({ urgent: 1, open: 0, closed: 0 });
+  });
+
+  it('reads the caller’s own roster and scopes "my roster" to assignments held by that professional', () => {
+    httpMock
+      .expectOne(request => request.url.endsWith('services/professionalservice/api/patients'))
+      .flush([], { headers: { 'X-Total-Count': '0' } });
+    httpMock
+      .expectOne(request => request.url.endsWith('services/patientservice/api/clinical-cases'))
+      .flush(
+        [
+          { id: 'case-mine', patientId: 'p-1', status: 'open', brief: 'Mine', assignedRosterId: 'r-mine' },
+          { id: 'case-theirs', patientId: 'p-2', status: 'open', brief: 'Theirs', assignedRosterId: 'r-theirs' },
+        ],
+        { headers: {} },
+      );
+    httpMock
+      .expectOne('services/professionalservice/api/duty-roster')
+      .flush([{ id: 'r-mine', date: '2026-08-20', duty: 'NURSE', professionalId: 'prof-1', shift: 'NIGHT', name: 'Ward 3' }]);
+
+    expect(repository.dutyRosters()).toEqual([expect.objectContaining({ id: 'r-mine', shift: 'NIGHT', professionalId: 'prof-1' })]);
+    expect(repository.listCases(undefined, 'mine', 'prof-1').map(row => row.id)).toEqual(['case-mine']);
+    expect(
+      repository
+        .listCases(undefined, 'all')
+        .map(row => row.id)
+        .sort(),
+    ).toEqual(['case-mine', 'case-theirs']);
+    // Without an id we do not know who "me" is, so "mine" selects nothing rather than everything.
+    expect(repository.listCases(undefined, 'mine')).toEqual([]);
   });
 
   it('lazily fetches a patient record on findPatient and populates it once the response lands', () => {

@@ -6,9 +6,9 @@ import { advanceTo, clear } from 'jest-date-mock';
 import { DutyRosterAssignmentDto, DutyRosterAssignmentsService } from './duty-roster-assignments.service';
 
 /**
- * WP6: the sidebar shift label is computed from real assignments returned by
- * `/api/duty-rosters/my` using the shift windows
- * MORNING 06–14, AFTERNOON 14–22, NIGHT 22–06.
+ * The sidebar shift label is computed from real assignments returned by the bare
+ * `/api/duty-roster` — the caller's own roster since DR1, `/my` before it — using the four
+ * contiguous windows DAY 07–15, EVENING 15–23, NIGHT 23–07 (wraps) and FLEXIBLE, the whole day.
  */
 describe('DutyRosterAssignmentsService', () => {
   let service: DutyRosterAssignmentsService;
@@ -19,7 +19,7 @@ describe('DutyRosterAssignmentsService', () => {
     date: '2026-07-30',
     duty: 'NURSE',
     professionalId: 'prof-1',
-    shift: 'MORNING',
+    shift: 'DAY',
     name: 'Ward 3',
     ...partial,
   });
@@ -35,36 +35,67 @@ describe('DutyRosterAssignmentsService', () => {
     httpMock.verify();
   });
 
-  it('targets the professionalService onboarding duty-roster surface', () => {
-    // `shiftLabel` is a computed over the real clock, so pin "now" inside the
-    // fixture's MORNING window — otherwise this passes only between 06:00 and
-    // 14:00 on the fixture date and fails every day after it.
+  it('reads the caller’s own roster from the bare professionalservice duty-roster URL', () => {
+    // `shiftLabel` is a computed over the real clock, so pin "now" inside the fixture's DAY window —
+    // otherwise this passes only between 07:00 and 15:00 on the fixture date and fails every day
+    // after it.
     advanceTo(new Date('2026-07-30T09:30:00'));
 
     service.loadMyAssignments();
-    const request = httpMock.expectOne('services/professionalservice/api/duty-rosters/my');
+    // Exactly this URL: `/all` is the admin's estate view and 403s for a clinician, which is what
+    // the dashboard used to hit.
+    const request = httpMock.expectOne('services/professionalservice/api/duty-roster');
     request.flush([assignment({})]);
     expect(service.myAssignments()).toHaveLength(1);
-    expect(service.shiftLabel()).toEqual({ translationKey: 'healthConnect.roster.activeShift', translationParams: { time: '14:00' } });
+    expect(service.shiftLabel()).toEqual({ translationKey: 'healthConnect.roster.activeShift', translationParams: { time: '15:00' } });
   });
 
   describe('computeShiftLabel', () => {
     const at = (iso: string): Date => new Date(iso);
 
     it('reports the active shift with its end time', () => {
-      const label = service.computeShiftLabel([assignment({ date: '2026-07-30', shift: 'MORNING' })], at('2026-07-30T09:30:00'));
-      expect(label).toEqual({ translationKey: 'healthConnect.roster.activeShift', translationParams: { time: '14:00' } });
+      const label = service.computeShiftLabel([assignment({ date: '2026-07-30', shift: 'EVENING' })], at('2026-07-30T16:30:00'));
+      expect(label).toEqual({ translationKey: 'healthConnect.roster.activeShift', translationParams: { time: '23:00' } });
     });
 
     it('treats a night shift as active past midnight into the next day', () => {
       const label = service.computeShiftLabel([assignment({ date: '2026-07-30', shift: 'NIGHT' })], at('2026-07-31T03:00:00'));
-      expect(label).toEqual({ translationKey: 'healthConnect.roster.activeShift', translationParams: { time: '06:00' } });
+      expect(label).toEqual({ translationKey: 'healthConnect.roster.activeShift', translationParams: { time: '07:00' } });
     });
 
-    it('reports an active DAY shift within the 08:00-17:00 window', () => {
+    it('starts a night shift at 23:00 on its own date, not at 22:00', () => {
+      // The DR1 boundary move. Under the old 22:00 start this hour was already on duty; the shift
+      // now begins an hour later, and 22:30 belongs to the EVENING that precedes it.
+      expect(service.computeShiftLabel([assignment({ date: '2026-07-30', shift: 'NIGHT' })], at('2026-07-30T22:30:00'))).toEqual({
+        translationKey: 'healthConnect.roster.nextShift',
+        translationParams: { time: '2026-07-30 23:00' },
+      });
+      expect(service.computeShiftLabel([assignment({ date: '2026-07-30', shift: 'NIGHT' })], at('2026-07-30T23:30:00'))).toEqual({
+        translationKey: 'healthConnect.roster.activeShift',
+        translationParams: { time: '07:00' },
+      });
+    });
+
+    it('reports an active DAY shift within the 07:00-15:00 window', () => {
       const label = service.computeShiftLabel([assignment({ date: '2026-07-30', shift: 'DAY' })], at('2026-07-30T12:00:00'));
-      expect(label).toEqual({ translationKey: 'healthConnect.roster.activeShift', translationParams: { time: '17:00' } });
-      expect(service.computeShiftLabel([assignment({ date: '2026-07-30', shift: 'DAY' })], at('2026-07-30T18:00:00'))).toBeNull();
+      expect(label).toEqual({ translationKey: 'healthConnect.roster.activeShift', translationParams: { time: '15:00' } });
+      expect(service.computeShiftLabel([assignment({ date: '2026-07-30', shift: 'DAY' })], at('2026-07-30T16:00:00'))).toBeNull();
+    });
+
+    it('covers the whole day across the four shifts, with no hour belonging to none of them', () => {
+      // The property the enum was reshaped for: DAY 07-15, EVENING 15-23, NIGHT 23-07 tile the 24
+      // hours exactly, with no overlap. The retired set could not — DAY 08-17 sat across both
+      // MORNING 06-14 and AFTERNOON 14-22, so which shift owned 10:00 depended on iteration order.
+      const roster = [
+        assignment({ id: 'd', date: '2026-07-30', shift: 'DAY' }),
+        assignment({ id: 'e', date: '2026-07-30', shift: 'EVENING' }),
+        assignment({ id: 'n', date: '2026-07-30', shift: 'NIGHT' }),
+        assignment({ id: 'n-prev', date: '2026-07-29', shift: 'NIGHT' }),
+      ];
+      for (let hour = 0; hour < 24; hour++) {
+        const label = service.computeShiftLabel(roster, at(`2026-07-30T${String(hour).padStart(2, '0')}:00:00`));
+        expect(label?.translationKey).toBe('healthConnect.roster.activeShift');
+      }
     });
 
     it('labels a FLEXIBLE assignment on the current date as flexible duty regardless of the hour', () => {
@@ -84,7 +115,7 @@ describe('DutyRosterAssignmentsService', () => {
         [assignment({ date: '2026-07-30', shift: 'FLEXIBLE' }), assignment({ id: 'a-2', date: '2026-07-30', shift: 'DAY' })],
         at('2026-07-30T12:00:00'),
       );
-      expect(label).toEqual({ translationKey: 'healthConnect.roster.activeShift', translationParams: { time: '17:00' } });
+      expect(label).toEqual({ translationKey: 'healthConnect.roster.activeShift', translationParams: { time: '15:00' } });
     });
 
     it('announces an upcoming FLEXIBLE assignment by date without a fixed start time', () => {
@@ -94,15 +125,15 @@ describe('DutyRosterAssignmentsService', () => {
 
     it('falls back to the next upcoming shift start', () => {
       const label = service.computeShiftLabel(
-        [assignment({ date: '2026-07-31', shift: 'AFTERNOON' }), assignment({ id: 'a-2', date: '2026-07-30', shift: 'NIGHT' })],
-        at('2026-07-30T10:00:00'),
+        [assignment({ date: '2026-07-31', shift: 'EVENING' }), assignment({ id: 'a-2', date: '2026-07-30', shift: 'NIGHT' })],
+        at('2026-07-30T16:00:00'),
       );
-      expect(label).toEqual({ translationKey: 'healthConnect.roster.nextShift', translationParams: { time: '2026-07-30 22:00' } });
+      expect(label).toEqual({ translationKey: 'healthConnect.roster.nextShift', translationParams: { time: '2026-07-30 23:00' } });
     });
 
     it('returns null when there are no current or future assignments', () => {
       expect(service.computeShiftLabel([], at('2026-07-30T10:00:00'))).toBeNull();
-      expect(service.computeShiftLabel([assignment({ date: '2026-07-01', shift: 'MORNING' })], at('2026-07-30T10:00:00'))).toBeNull();
+      expect(service.computeShiftLabel([assignment({ date: '2026-07-01', shift: 'DAY' })], at('2026-07-30T10:00:00'))).toBeNull();
     });
   });
 });

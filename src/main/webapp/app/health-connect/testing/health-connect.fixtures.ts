@@ -17,43 +17,33 @@ export const HEALTH_CONNECT_PROFESSIONALS: readonly HealthConnectProfessional[] 
   },
 ];
 
+/**
+ * Duty assignments, not rosters-with-subscribers.
+ *
+ * <p>These used to be `{ name, subscribedProfessionalIds, shifts[] }` — a subscription model neither
+ * side ever built. DR1 replaced it with the assignment the backend actually stores: one professional,
+ * one date, one shift. The ids are kept (`ward-3-night`, `clinic-a-day`) because the clinical-case
+ * fixtures below reference them by `assignedRosterId`, and `health-connect.models.spec` asserts that
+ * link resolves.
+ *
+ * <p>`clinic-a-day` belongs to nobody, which is what gives the specs a roster the doctor is *not* on.
+ */
 export const HEALTH_CONNECT_DUTY_ROSTERS: readonly DutyRoster[] = [
   {
     id: 'ward-3-night',
+    date: '2026-07-20',
+    duty: 'DOCTOR',
+    professionalId: 'professional-doctor',
+    shift: 'NIGHT',
     name: 'Ward 3 — Night Shift',
-    subscribedProfessionalIds: ['professional-doctor'],
-    shifts: [
-      {
-        id: 'ward-3-active',
-        rosterId: 'ward-3-night',
-        professionalId: 'professional-doctor',
-        startsAt: '2026-07-20T08:00:00Z',
-        endsAt: '2026-07-20T20:00:00Z',
-        status: 'active',
-      },
-      {
-        id: 'ward-3-next',
-        rosterId: 'ward-3-night',
-        professionalId: 'professional-doctor',
-        startsAt: '2026-07-21T08:00:00Z',
-        endsAt: '2026-07-21T20:00:00Z',
-        status: 'upcoming',
-      },
-      {
-        id: 'ward-3-completed',
-        rosterId: 'ward-3-night',
-        professionalId: 'professional-doctor',
-        startsAt: '2026-07-19T08:00:00Z',
-        endsAt: '2026-07-19T20:00:00Z',
-        status: 'completed',
-      },
-    ],
   },
   {
     id: 'clinic-a-day',
+    date: '2026-07-21',
+    duty: 'NURSE',
+    professionalId: 'professional-nurse',
+    shift: 'DAY',
     name: 'Clinic A — Day Shift',
-    subscribedProfessionalIds: [],
-    shifts: [],
   },
 ];
 

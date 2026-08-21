@@ -97,12 +97,30 @@ Tokens are `--hpd-*` custom properties in `content/scss/global.scss`, mapped int
 The demo's original hues survive as `*-accent` tokens for non-text use. Radii are
 `--hpd-r-sm/r/r-lg/r-xl` = 8/14/20/28px; shadows `--hpd-sh-sm/sh/sh-lg` are navy-tinted.
 
+**Duty-roster day states (DR5, 2026-08-21)** add eight more, `--hpd-color-roster-{working,holiday,sick,other}`
+each with an `-accent`: `#F7DCD7`/`#A5392A`, `#DAEEE3`/`#256A4C`, `#D8E8F5`/`#1B5482`,
+`#F7EBD0`/`#8A580D`. Each accent clears AA on its own tint (5.03 / 5.34 / 6.36 / 5.10) and the ink
+token clears 12.6 on all four. They are **named for the roster rather than reusing `danger-tint` and
+`success-tint`**, whose values two of them nearly share — a rostered day is not an error and a holiday
+is not a success, and a semantic token borrowed for an unrelated meaning is how the next person
+changes one and breaks the other. There is deliberately **no token for "off"**: the page is cream, so
+a white cell reads as filled, and off is the page showing through.
+
+**They are a step deeper than the older `*-tint` values on purpose.** Those measure 1.00–1.04 against
+the cream page — no lightness step at all; these sit at 1.04–1.18. But all four are still only
+1.02–1.10 against _each other_, which no value can fix: four pale fills are separated by hue, not
+lightness, so in greyscale or to a fully colour-blind reader they are one colour. **Colour is
+therefore never the only channel in the calendar** — every filled cell carries a glyph, a text label
+and a full accessible name, and there is a legend. `.hpd-roster-pending` hatches a requested-but-not-
+granted absence in `currentColor` over whatever fill the cell has, and densifies under
+`prefers-contrast: more`.
+
 **The one hard contrast rule: never put white text on gold — it measures 2.74:1 and fails.** Use
 the dark tone `#3A2A08`, as `.hpd-btn-gold` does. Passing pairs for reference: gold on navy 4.85,
 gold-300 on navy 7.04, white on navy 13.28, navy on cream 12.10.
 
 Shared classes live in `global.scss`: `.hpd-btn{-primary,-gold,-ghost,-danger}`, `.hpd-label`,
-`.hpd-input`, `.hpd-auth-brand`. Success confirmations go through `AlertService.showToast()`
+`.hpd-input`, `.hpd-auth-brand`, `.hpd-roster-pending`. Success confirmations go through `AlertService.showToast()`
 (bottom-centre navy pill); errors and validation stay in the `hpd-alert` banner.
 
 **Font: Inter, one family, everywhere.** Self-hosted from `content/fonts/` and declared in `content/scss/fonts.scss`,
@@ -113,6 +131,21 @@ never a second family.
 ## 4. Build and tooling traps
 
 These cost real debugging time to find. Each is load-bearing; none is obvious from the code.
+
+### A Tailwind class assembled at runtime is a class that does not exist
+
+`` `bg-hpd-roster-${tone}` `` is the natural way to write a swatch and it is silently broken.
+Tailwind v4 finds classes by **scanning source text**, so a name that only ever exists as a
+concatenation at runtime is never emitted — the element carries the class, the stylesheet has no rule
+for it, and it renders unstyled. **Nothing fails**: no build error, no failing test, and the class is
+right there in devtools, which is what makes it cost an afternoon.
+
+This is the same failure mode as the `@source` problem below — classes present in the DOM, rules
+absent from the stylesheet — reached by a different route, so the repo has now hit it twice. Write
+class names as literals, keep the tone→class mapping as a lookup table, and when adding a family of
+them **grep the built stylesheet** (`target/classes/static/styles.*.css`) for each name rather than
+trusting the page. DR5 does both; `roster-calendar.component.spec.ts` asserts the mapping returns
+literals.
 
 ### Tailwind v4 does not work through Angular's built-in support — the pipeline is hand-wired
 
@@ -182,17 +215,20 @@ Three known compromises in that HTTP implementation, all flagged in code:
 
 ### Open follow-ups
 
-| Item                                                      | Detail                                                                                                                                                                                                                                                                                                         |
-| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Cypress is entirely non-functional**                    | There is no `cypress` dependency, no `cypress.config.*`, and no `e2e` npm script. The specs under `src/test/javascript/cypress/e2e/` are dead code. `npm run e2e` — documented for a long time, including by me — **does not exist**. Either restore the config and dependency or delete the specs.            |
-| **Two dead dependencies**                                 | `@swimlane/ngx-charts` (^23.1.0) and `@ngu/carousel` (^19.0.0) are installed with **zero references** in `app/`. Charts are Chart.js + ng2-charts. Removal is a small, safe win.                                                                                                                               |
-| **Stale Angular pin in `package.json`**                   | A leftover `"resolutions"` block pins Angular **17** while dependencies are on 19. Inert under npm (a Yarn field), but converting it to npm `overrides` would silently downgrade the app.                                                                                                                      |
-| **`.yo-rc.json` omits Spanish**                           | Lists `languages: ["en","fr","de"]` though `es` is complete in code and `i18n/`. A regeneration would not know about it.                                                                                                                                                                                       |
-| **`npm install` cannot run as-is**                        | `browser-sync-webpack-plugin@2.3.0` requires `browser-sync@^2` and the repo has `3.0.4`, so a bare `npm install` — with no new package at all — fails ERESOLVE. The tree has to be built with `--legacy-peer-deps`. Pre-existing, and it blocks adding any dependency until the plugin is dropped or upgraded. |
-| **"New patient" CTA is a stub**                           | The gold topbar button navigates to `/patients` because no patient-creation flow or endpoint exists. Retarget it when one lands.                                                                                                                                                                               |
-| **Recommendation labels show `translation-not-found[…]`** | The mock repository feeds literal labels where the checkbox list expects i18n keys. Pre-existing, cosmetic.                                                                                                                                                                                                    |
-| **`MedCase.json` microservice name is wrong**             | Says `hcPatientService`; the real folder and every sibling file use `patientservice`.                                                                                                                                                                                                                          |
-| **~10 orphaned `.jhipster/*.json` specs**                 | Entity definitions whose Angular code was deleted before the migration. Harmless generator metadata, never cleaned up.                                                                                                                                                                                         |
+| Item                                                      | Detail                                                                                                                                                                                                                                                                                                                                                                                                                |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Cypress is entirely non-functional**                    | There is no `cypress` dependency, no `cypress.config.*`, and no `e2e` npm script. The specs under `src/test/javascript/cypress/e2e/` are dead code. `npm run e2e` — documented for a long time, including by me — **does not exist**. Either restore the config and dependency or delete the specs.                                                                                                                   |
+| **Two dead dependencies**                                 | `@swimlane/ngx-charts` (^23.1.0) and `@ngu/carousel` (^19.0.0) are installed with **zero references** in `app/`. Charts are Chart.js + ng2-charts. Removal is a small, safe win.                                                                                                                                                                                                                                      |
+| **Stale Angular pin in `package.json`**                   | A leftover `"resolutions"` block pins Angular **17** while dependencies are on 19. Inert under npm (a Yarn field), but converting it to npm `overrides` would silently downgrade the app.                                                                                                                                                                                                                             |
+| **`.yo-rc.json` omits Spanish**                           | Lists `languages: ["en","fr","de"]` though `es` is complete in code and `i18n/`. A regeneration would not know about it.                                                                                                                                                                                                                                                                                              |
+| **`npm install` cannot run as-is**                        | `browser-sync-webpack-plugin@2.3.0` requires `browser-sync@^2` and the repo has `3.0.4`, so a bare `npm install` — with no new package at all — fails ERESOLVE. The tree has to be built with `--legacy-peer-deps`. Pre-existing, and it blocks adding any dependency until the plugin is dropped or upgraded.                                                                                                        |
+| **"New patient" CTA is a stub**                           | The gold topbar button navigates to `/patients` because no patient-creation flow or endpoint exists. Retarget it when one lands.                                                                                                                                                                                                                                                                                      |
+| **Recommendation labels show `translation-not-found[…]`** | The mock repository feeds literal labels where the checkbox list expects i18n keys. Pre-existing, cosmetic.                                                                                                                                                                                                                                                                                                           |
+| **`MedCase.json` microservice name is wrong**             | Says `hcPatientService`; the real folder and every sibling file use `patientservice`.                                                                                                                                                                                                                                                                                                                                 |
+| **~10 orphaned `.jhipster/*.json` specs**                 | Entity definitions whose Angular code was deleted before the migration. Harmless generator metadata, never cleaned up.                                                                                                                                                                                                                                                                                                |
+| **The day popup is the portal's only PII surface**        | `roster/day-list.component` is the one screen that renders a patient's name, address and phone; everything else works in identifiers. It has its own endpoint (`/api/duty-roster/day/{date}`) rather than filtering what the calendar holds, precisely so six weeks of addresses never reach a browser to draw coloured squares. Keep it that way — and keep the snapshot out of logs, analytics and span attributes. |
+| **No i18n gate of any kind**                              | Four `i18n/` directories kept in step by hand. `mobile/` gates this three ways — `catalogues.spec.ts` (key parity), `untranslated-literals.spec.ts` (visible text that is not a translation) and a render against the real catalogues in all four languages — and needed all three. `untranslated-literals.spec.ts` is portable here. DR5 verified parity by hand at 413 keys; that is not a substitute.              |
+| **`#e7eef6` is an unnamed token, used in four places**    | DR8 removed the roster page's use of it, but the same raw hex is still in `review-queue-page`, `case-queue-page` and `review-detail-page.component.html` — a selected/active navy wash. Four uses of one value is a token nobody named. The obvious name collides with DR5's sick tint at 1.07, so naming them apart is a real decision; make it once, for all four, rather than per screen.                          |
 
 ### What was finished
 
