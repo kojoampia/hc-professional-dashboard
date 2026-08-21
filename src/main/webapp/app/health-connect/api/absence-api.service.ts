@@ -57,4 +57,69 @@ export class AbsenceApiService {
     const params = new HttpParams().set('from', from).set('to', to);
     return this.http.get<AbsenceDto[]>(this.resourceUrl, { params }).pipe(catchError(() => of<AbsenceDto[]>([])));
   }
+
+  /**
+   * The caller's own absences, unbounded — the "my time off" list (DR8).
+   *
+   * <p>Unlike {@link mine} this does **not** swallow its errors. That method decorates a calendar
+   * which must draw shifts either way; this one *is* the screen, and a list that silently shows
+   * nothing would tell a clinician their approved leave had vanished.
+   */
+  own(): Observable<AbsenceDto[]> {
+    return this.http.get<AbsenceDto[]>(this.resourceUrl);
+  }
+
+  /**
+   * Every absence on the estate — the approval queue's read. Admin only; a clinician gets a 403.
+   */
+  all(): Observable<AbsenceDto[]> {
+    return this.http.get<AbsenceDto[]>(`${this.resourceUrl}/all`);
+  }
+
+  /**
+   * One professional's absences overlapping a range — what the assign form's warning reads (DR8).
+   *
+   * <p>Admin only in practice: the server refuses an id that is not the caller's own with a 403. The
+   * warning treats a failure as "no known leave" rather than blocking the form, because this is
+   * advice and the administrator is allowed to proceed regardless.
+   */
+  forProfessional(professionalId: string, from: string, to: string): Observable<AbsenceDto[]> {
+    const params = new HttpParams().set('professionalId', professionalId).set('from', from).set('to', to);
+    return this.http.get<AbsenceDto[]>(this.resourceUrl, { params }).pipe(catchError(() => of<AbsenceDto[]>([])));
+  }
+
+  /**
+   * Ask for time off.
+   *
+   * <p>**The first write a professional has against their own roster** — a deliberate, scoped
+   * exception to the assignment-only policy. The server ignores any `professionalId` or `status` in
+   * the body for a non-administrator and forces both, so this sends neither: a client that appears to
+   * choose whose absence it is, or that it is already approved, invites the next reader to believe it
+   * can.
+   */
+  request(absence: Pick<AbsenceDto, 'fromDate' | 'toDate' | 'type'>): Observable<AbsenceDto> {
+    return this.http.post<AbsenceDto>(this.resourceUrl, absence);
+  }
+
+  /**
+   * Grant a request. Admin only, and **409 while the days are still rostered**.
+   *
+   * <p>Errors are not swallowed, and the 409 in particular must reach the caller intact: its body
+   * names the rounds in the way, which is the whole point of refusing rather than warning. See
+   * {@link AbsenceConflict}.
+   */
+  approve(id: string): Observable<AbsenceDto> {
+    return this.http.put<AbsenceDto>(`${this.resourceUrl}/${encodeURIComponent(id)}/approve`, null);
+  }
+
+  /** An administrator declining, or a professional withdrawing their own pending request. */
+  remove(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
+  }
+}
+
+/** The 409 body from {@link AbsenceApiService.approve} — a message and the rounds that clash. */
+export interface AbsenceConflict {
+  message: string;
+  conflictingRosterIds: string[];
 }

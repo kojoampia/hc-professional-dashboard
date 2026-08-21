@@ -218,6 +218,46 @@
           "loadFailed": "This day could not be loaded. Try again shortly."
         },
         "yearGrid": "Duty roster, year view"
+      },
+      "absence": {
+        "title": "My time off",
+        "from": "From",
+        "to": "To",
+        "type": "Type",
+        "request": "Request time off",
+        "withdraw": "Withdraw",
+        "none": "No time off requested or booked.",
+        "noBackdating": "Time off cannot start in the past. Ask a roster administrator to record sickness that has already begun.",
+        "requested": "Time off requested.",
+        "withdrawn": "Request withdrawn.",
+        "queue": "Time-off requests",
+        "queueEmpty": "No requests waiting.",
+        "showAll": "Show all",
+        "showPending": "Show pending only",
+        "approve": "Approve",
+        "decline": "Decline",
+        "approved": "Time off approved.",
+        "declined": "Request declined.",
+        "conflict": "Still rostered on {{count}} round(s) in this range:",
+        "conflictHint": "Reassign these rounds, then approve again.",
+        "statuses": {
+          "REQUESTED": "Requested",
+          "APPROVED": "Approved"
+        }
+      },
+      "builder": {
+        "visits": "Visits",
+        "addVisit": "Add visit",
+        "removeVisit": "Remove",
+        "noVisits": "No visits — a shift with none is still a shift (ward cover, on call, administrative time).",
+        "customerId": "Customer ID",
+        "startTime": "Start",
+        "endTime": "End",
+        "onLeave": "This professional is on approved leave from {{from}} to {{to}}. You can still assign the shift.",
+        "reassign": "Reassign",
+        "reassignTo": "Reassign to professional profile ID",
+        "reassignRound": "Move whole round",
+        "reassignVisit": "Move {{time}} visit"
       }
     },
     "states": {

@@ -218,6 +218,46 @@
           "loadFailed": "Cette journée n’a pas pu être chargée. Réessayez dans un instant."
         },
         "yearGrid": "Planning de garde, vue annuelle"
+      },
+      "absence": {
+        "title": "Mes absences",
+        "from": "Du",
+        "to": "Au",
+        "type": "Type",
+        "request": "Demander une absence",
+        "withdraw": "Retirer",
+        "none": "Aucune absence demandée ni accordée.",
+        "noBackdating": "Une absence ne peut pas commencer dans le passé. Demandez à un administrateur du planning d’enregistrer un arrêt déjà commencé.",
+        "requested": "Absence demandée.",
+        "withdrawn": "Demande retirée.",
+        "queue": "Demandes d’absence",
+        "queueEmpty": "Aucune demande en attente.",
+        "showAll": "Tout afficher",
+        "showPending": "Afficher les demandes en attente",
+        "approve": "Approuver",
+        "decline": "Refuser",
+        "approved": "Absence approuvée.",
+        "declined": "Demande refusée.",
+        "conflict": "Toujours affecté à {{count}} tournée(s) sur cette période :",
+        "conflictHint": "Réaffectez ces tournées, puis approuvez à nouveau.",
+        "statuses": {
+          "REQUESTED": "Demandée",
+          "APPROVED": "Approuvée"
+        }
+      },
+      "builder": {
+        "visits": "Visites",
+        "addVisit": "Ajouter une visite",
+        "removeVisit": "Retirer",
+        "noVisits": "Aucune visite : un poste sans visite reste un poste (couverture de service, astreinte, tâches administratives).",
+        "customerId": "ID client",
+        "startTime": "Début",
+        "endTime": "Fin",
+        "onLeave": "Ce professionnel est en congé approuvé du {{from}} au {{to}}. Vous pouvez tout de même affecter le poste.",
+        "reassign": "Réaffecter",
+        "reassignTo": "Réaffecter à l’ID de profil professionnel",
+        "reassignRound": "Déplacer toute la tournée",
+        "reassignVisit": "Déplacer la visite de {{time}}"
       }
     },
     "states": {

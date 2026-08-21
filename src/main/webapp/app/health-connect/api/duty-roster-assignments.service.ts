@@ -166,6 +166,33 @@ export class DutyRosterAssignmentsService {
     return this.http.post<DutyRosterAssignmentDto>(this.resourceUrl, assignment).pipe(tap(() => this.loadMyAssignments()));
   }
 
+  /**
+   * Move a whole round to another professional, visits and all (DR4's endpoint, DR8's caller).
+   *
+   * <p>The default form of cover, and one auditable action: the customers, their times and their
+   * order move together, because they are a coherent plan and splitting them by hand loses it. This
+   * is what unblocks an absence approval the server has just refused with a 409.
+   */
+  reassignRound(id: string, professionalId: string): Observable<DutyRosterAssignmentDto> {
+    return this.http.put<DutyRosterAssignmentDto>(`${this.resourceUrl}/${encodeURIComponent(id)}/reassign`, null, {
+      params: new HttpParams().set('professionalId', professionalId),
+    });
+  }
+
+  /**
+   * Move a single visit to another professional — the fallback, for when one person cannot take the
+   * whole round.
+   *
+   * <p>Returns the **target** round, since that is where the visit now is.
+   */
+  reassignVisit(id: string, visitId: string, professionalId: string): Observable<DutyRosterAssignmentDto> {
+    return this.http.put<DutyRosterAssignmentDto>(
+      `${this.resourceUrl}/${encodeURIComponent(id)}/visits/${encodeURIComponent(visitId)}/reassign`,
+      null,
+      { params: new HttpParams().set('professionalId', professionalId) },
+    );
+  }
+
   unassign(id: string): Observable<void> {
     return this.http.delete<void>(`${this.resourceUrl}/${encodeURIComponent(id)}`).pipe(tap(() => this.loadMyAssignments()));
   }

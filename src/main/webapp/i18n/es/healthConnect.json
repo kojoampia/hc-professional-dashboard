@@ -218,6 +218,46 @@
           "loadFailed": "No se ha podido cargar este día. Vuelve a intentarlo en breve."
         },
         "yearGrid": "Cuadrante de turnos, vista anual"
+      },
+      "absence": {
+        "title": "Mis ausencias",
+        "from": "Desde",
+        "to": "Hasta",
+        "type": "Tipo",
+        "request": "Solicitar ausencia",
+        "withdraw": "Retirar",
+        "none": "No hay ausencias solicitadas ni concedidas.",
+        "noBackdating": "Una ausencia no puede empezar en el pasado. Pide a un administrador del cuadrante que registre una baja ya iniciada.",
+        "requested": "Ausencia solicitada.",
+        "withdrawn": "Solicitud retirada.",
+        "queue": "Solicitudes de ausencia",
+        "queueEmpty": "No hay solicitudes pendientes.",
+        "showAll": "Ver todas",
+        "showPending": "Ver solo pendientes",
+        "approve": "Aprobar",
+        "decline": "Denegar",
+        "approved": "Ausencia aprobada.",
+        "declined": "Solicitud denegada.",
+        "conflict": "Sigue asignado a {{count}} ronda(s) en este intervalo:",
+        "conflictHint": "Reasigna estas rondas y vuelve a aprobar.",
+        "statuses": {
+          "REQUESTED": "Solicitada",
+          "APPROVED": "Aprobada"
+        }
+      },
+      "builder": {
+        "visits": "Visitas",
+        "addVisit": "Añadir visita",
+        "removeVisit": "Quitar",
+        "noVisits": "Sin visitas: un turno sin ellas sigue siendo un turno (cobertura de planta, guardia, tareas administrativas).",
+        "customerId": "ID de cliente",
+        "startTime": "Inicio",
+        "endTime": "Fin",
+        "onLeave": "Este profesional tiene una ausencia aprobada del {{from}} al {{to}}. Aun así puedes asignar el turno.",
+        "reassign": "Reasignar",
+        "reassignTo": "Reasignar al ID de perfil profesional",
+        "reassignRound": "Mover la ronda entera",
+        "reassignVisit": "Mover la visita de las {{time}}"
       }
     },
     "states": {

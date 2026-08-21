@@ -218,6 +218,46 @@
           "loadFailed": "Dieser Tag konnte nicht geladen werden. Bitte versuchen Sie es gleich erneut."
         },
         "yearGrid": "Dienstplan, Jahresansicht"
+      },
+      "absence": {
+        "title": "Meine Abwesenheiten",
+        "from": "Von",
+        "to": "Bis",
+        "type": "Art",
+        "request": "Abwesenheit beantragen",
+        "withdraw": "Zurückziehen",
+        "none": "Keine Abwesenheiten beantragt oder genehmigt.",
+        "noBackdating": "Eine Abwesenheit kann nicht in der Vergangenheit beginnen. Bitten Sie eine Dienstplan-Administration, eine bereits begonnene Krankmeldung zu erfassen.",
+        "requested": "Abwesenheit beantragt.",
+        "withdrawn": "Antrag zurückgezogen.",
+        "queue": "Abwesenheitsanträge",
+        "queueEmpty": "Keine offenen Anträge.",
+        "showAll": "Alle anzeigen",
+        "showPending": "Nur offene anzeigen",
+        "approve": "Genehmigen",
+        "decline": "Ablehnen",
+        "approved": "Abwesenheit genehmigt.",
+        "declined": "Antrag abgelehnt.",
+        "conflict": "Weiterhin für {{count}} Runde(n) in diesem Zeitraum eingeteilt:",
+        "conflictHint": "Teilen Sie diese Runden neu zu und genehmigen Sie erneut.",
+        "statuses": {
+          "REQUESTED": "Beantragt",
+          "APPROVED": "Genehmigt"
+        }
+      },
+      "builder": {
+        "visits": "Besuche",
+        "addVisit": "Besuch hinzufügen",
+        "removeVisit": "Entfernen",
+        "noVisits": "Keine Besuche – eine Schicht ohne Besuche ist trotzdem eine Schicht (Stationsdienst, Rufbereitschaft, Verwaltung).",
+        "customerId": "Kunden-ID",
+        "startTime": "Beginn",
+        "endTime": "Ende",
+        "onLeave": "Diese Fachkraft hat vom {{from}} bis {{to}} genehmigten Urlaub. Sie können die Schicht dennoch zuteilen.",
+        "reassign": "Neu zuteilen",
+        "reassignTo": "Neu zuteilen an Profil-ID",
+        "reassignRound": "Ganze Runde verschieben",
+        "reassignVisit": "Besuch um {{time}} verschieben"
       }
     },
     "states": {
