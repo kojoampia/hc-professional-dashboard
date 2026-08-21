@@ -170,7 +170,8 @@
         "weekTitle": "Semana {{week}} · {{range}}",
         "views": {
           "month": "Mes",
-          "week": "Semana"
+          "week": "Semana",
+          "year": "Año"
         },
         "tones": {
           "working": "De servicio",
@@ -215,7 +216,8 @@
           "noVisits": "Sin visitas en este turno.",
           "nothing": "Nada asignado este día.",
           "loadFailed": "No se ha podido cargar este día. Vuelve a intentarlo en breve."
-        }
+        },
+        "yearGrid": "Cuadrante de turnos, vista anual"
       }
     },
     "states": {

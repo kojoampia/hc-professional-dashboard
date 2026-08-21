@@ -1,5 +1,5 @@
 import { AbsenceDto, AbsenceStatus, AbsenceType } from '../api/absence-api.service';
-import { DutyRosterAssignmentDto } from '../api/duty-roster-assignments.service';
+import { DaySummaryDto, DutyRosterAssignmentDto } from '../api/duty-roster-assignments.service';
 import { DutyRosterShift, shiftStartHour } from '../health-connect.models';
 import { isIsoDate } from './calendar-date.util';
 
@@ -103,3 +103,22 @@ export const buildRosterDays = (
 
   return days;
 };
+
+/**
+ * Index a year summary by ISO date (DR7).
+ *
+ * <p>Deliberately **not** {@link buildRosterDays}. The summary already arrives one record per day
+ * with its absence resolved server-side — including the APPROVED-beats-REQUESTED rule and the
+ * range-to-days expansion — so re-deriving any of that here would be a second implementation of the
+ * same decision, free to drift from `DutyRosterService.summariseYear` and colour the same day
+ * differently from the month view. This maps and nothing else.
+ *
+ * <p>Days with nothing on them are simply absent from the result, as the endpoint intends; the grid
+ * renders a missing day as off, which is the same thing the page background says.
+ */
+export const indexDaySummaries = (summaries: readonly DaySummaryDto[]): Map<string, RosterDay> =>
+  new Map(
+    summaries
+      .filter(summary => isIsoDate(summary.date))
+      .map(summary => [summary.date, { date: summary.date, shifts: [...(summary.shifts ?? [])], absence: summary.absence ?? null }]),
+  );

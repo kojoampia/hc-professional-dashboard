@@ -1,6 +1,6 @@
 import { AbsenceDto } from '../api/absence-api.service';
 import { DutyRosterAssignmentDto } from '../api/duty-roster-assignments.service';
-import { buildRosterDays, isPending, toneOf } from './roster-day.model';
+import { buildRosterDays, indexDaySummaries, isPending, toneOf } from './roster-day.model';
 
 /**
  * What colour a day is, which is the whole of DR5's product logic and the only part of it that can
@@ -101,6 +101,34 @@ describe('roster day model', () => {
       // check would paint every day in the grid.
       const days = buildRosterDays(dates, [], [absence({ fromDate: '' as string, toDate: '2026-08-19' })]);
       expect([...days.values()].every(day => day.absence === null)).toBe(true);
+    });
+  });
+
+  describe('indexDaySummaries', () => {
+    it('maps the summary through without re-deriving anything', () => {
+      // The server has already expanded absence ranges to days and applied APPROVED-beats-REQUESTED.
+      // Re-deriving either here would be a second implementation of the same decision, free to drift
+      // from summariseYear and colour the same day differently from the month view.
+      const days = indexDaySummaries([
+        { date: '2026-03-04', shifts: ['DAY', 'NIGHT'], visits: 3, absence: null },
+        { date: '2026-03-05', shifts: [], visits: 0, absence: { type: 'HOLIDAY', status: 'APPROVED' } },
+      ]);
+
+      expect(days.get('2026-03-04')).toEqual({ date: '2026-03-04', shifts: ['DAY', 'NIGHT'], absence: null });
+      expect(days.get('2026-03-05')!.absence).toEqual({ type: 'HOLIDAY', status: 'APPROVED' });
+      // Days with nothing on them are absent from the endpoint's result by design; the grid renders a
+      // missing day as off, which is what the page background already says.
+      expect(days.has('2026-03-06')).toBe(false);
+    });
+
+    it('drops a record with a malformed date rather than keying the map on it', () => {
+      const days = indexDaySummaries([{ date: 'not-a-date', shifts: ['DAY'], visits: 1, absence: null }]);
+      expect(days.size).toBe(0);
+    });
+
+    it('tolerates a null shifts array from the wire', () => {
+      const days = indexDaySummaries([{ date: '2026-03-04', shifts: null as never, visits: 0, absence: null }]);
+      expect(days.get('2026-03-04')!.shifts).toEqual([]);
     });
   });
 

@@ -4,6 +4,7 @@ import { Observable, tap } from 'rxjs';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { DutyRosterShift, SHIFT_WINDOWS, ShiftLabel, shiftStartHour } from '../health-connect.models';
+import { AbsenceStatus, AbsenceType } from './absence-api.service';
 import { ActivityLogEntryDto } from './patient-api.model';
 
 /**
@@ -35,6 +36,24 @@ export interface VisitDto {
   customerName?: string | null;
   customerAddress?: string | null;
   customerPhone?: string | null;
+}
+
+/**
+ * One rostered or absent day, as the year summary returns it (`DutyRosterService.DaySummary`).
+ *
+ * <p><b>A day can carry both a round and an absence, and neither suppresses the other</b> — leave
+ * asked for over a shift that has not been reassigned is precisely the day an administrator needs to
+ * see, and it is what DR4's 409 refuses to approve. The year view colours it as leave and still
+ * counts the shift.
+ *
+ * <p>Carries no customer: shift names and a visit count. That is what makes a year of it safe to hold
+ * in a browser, unlike the day read.
+ */
+export interface DaySummaryDto {
+  date: string;
+  shifts: DutyRosterShift[];
+  visits: number;
+  absence: { type: AbsenceType; status: AbsenceStatus } | null;
 }
 
 export interface DutyRosterAssignmentDto {
@@ -121,6 +140,22 @@ export class DutyRosterAssignmentsService {
    */
   customerTrail(customerId: string): Observable<ActivityLogEntryDto[]> {
     return this.http.get<ActivityLogEntryDto[]>(`${this.resourceUrl}/customers/${encodeURIComponent(customerId)}/trail`);
+  }
+
+  /**
+   * One record per day the caller has something on, for a whole year (DR2's endpoint, DR7's caller).
+   *
+   * <p><b>Days with nothing on them are absent from the result, and that is deliberate.</b> Returning
+   * all 365 would make the empty days look like data and triple the payload to say nothing; a year
+   * grid renders the gaps as off. Since DR4 an absent day *is* something, so approved leave appears
+   * here with no shifts and no visits — which is exactly what the year view colours green.
+   *
+   * <p>One call for a year, against twelve range reads or 365 day reads. The summary carries no
+   * customer at all — shift names and a visit count — which is what makes a year's worth of it safe
+   * to hold in a browser.
+   */
+  summary(year: number): Observable<DaySummaryDto[]> {
+    return this.http.get<DaySummaryDto[]>(`${this.resourceUrl}/summary`, { params: new HttpParams().set('year', year) });
   }
 
   listAll(): Observable<DutyRosterAssignmentDto[]> {

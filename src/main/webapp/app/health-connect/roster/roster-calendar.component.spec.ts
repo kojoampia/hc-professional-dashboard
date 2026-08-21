@@ -20,6 +20,7 @@ describe('RosterCalendarComponent (DR5)', () => {
   let component: RosterCalendarComponent;
   let range: jest.Mock;
   let mine: jest.Mock;
+  let summary: jest.Mock;
 
   const assignment = (partial: Partial<DutyRosterAssignmentDto>): DutyRosterAssignmentDto => ({
     id: 'a-1',
@@ -44,7 +45,7 @@ describe('RosterCalendarComponent (DR5)', () => {
     await TestBed.configureTestingModule({
       imports: [RosterCalendarComponent, TranslateModule.forRoot()],
       providers: [
-        { provide: DutyRosterAssignmentsService, useValue: { range } },
+        { provide: DutyRosterAssignmentsService, useValue: { range, summary } },
         { provide: AbsenceApiService, useValue: { mine } },
       ],
     }).compileComponents();
@@ -59,6 +60,7 @@ describe('RosterCalendarComponent (DR5)', () => {
     advanceTo(new Date(2026, 7, 21, 9, 0));
     range = jest.fn(() => of([assignment({})]));
     mine = jest.fn(() => of([absence({})]));
+    summary = jest.fn(() => of([{ date: '2026-03-04', shifts: ['DAY'], visits: 2, absence: null }]));
   });
 
   afterEach(() => clear());
@@ -221,6 +223,79 @@ describe('RosterCalendarComponent (DR5)', () => {
 
       expect(component.openDate()).toBeNull();
       expect((fixture.nativeElement as HTMLElement).querySelector('hpd-day-list')).toBeNull();
+    });
+  });
+
+  describe('the year view (DR7)', () => {
+    it('reads the summary endpoint rather than a year of range reads', async () => {
+      // The summary already resolves each day's absence server-side, including the range-to-days
+      // expansion and the APPROVED-beats-REQUESTED rule. Joining 365 days of assignments against
+      // every absence record client-side would be a much larger payload for an answer the server
+      // already computes, and a second implementation of a rule that must not drift.
+      await build();
+      range.mockClear();
+      mine.mockClear();
+
+      component.view.set('year');
+      fixture.detectChanges();
+
+      expect(summary).toHaveBeenCalledWith(2026);
+      expect(range).not.toHaveBeenCalled();
+      expect(mine).not.toHaveBeenCalled();
+      expect((fixture.nativeElement as HTMLElement).querySelector('hpd-year-grid')).not.toBeNull();
+    });
+
+    it('titles itself with the year and steps a year at a time', async () => {
+      await build();
+      component.view.set('year');
+      fixture.detectChanges();
+      expect(component.title()).toBe('2026');
+
+      component.step(1);
+      fixture.detectChanges();
+      expect(component.anchorYear()).toBe(2027);
+      expect(summary).toHaveBeenCalledWith(2027);
+
+      component.step(-2);
+      fixture.detectChanges();
+      expect(component.anchorYear()).toBe(2025);
+    });
+
+    it('steps by twelve months rather than 365 days, so a leap year does not drift the anchor', async () => {
+      // 2028 is a leap year. Adding 365 days twice would land on 30 December 2027 and then drift
+      // again; addMonths clamps and stays on the same day-of-month.
+      await build();
+      component.view.set('year');
+      component.anchor.set('2027-08-21');
+      fixture.detectChanges();
+
+      component.step(1);
+      expect(component.anchor()).toBe('2028-08-21');
+      component.step(1);
+      expect(component.anchor()).toBe('2029-08-21');
+    });
+
+    it('opens the same day popup the month and week views open', async () => {
+      await build();
+      component.view.set('year');
+      fixture.detectChanges();
+
+      ((fixture.nativeElement as HTMLElement).querySelector('[data-cy="yearDay-2026-03-04"]') as HTMLButtonElement).click();
+      fixture.detectChanges();
+
+      expect(component.openDate()).toBe('2026-03-04');
+      expect((fixture.nativeElement as HTMLElement).querySelector('hpd-day-list')).not.toBeNull();
+    });
+
+    it('reports a failed summary read the same way a failed range read is reported', async () => {
+      summary = jest.fn(() => throwError(() => new Error('boom')));
+      await build();
+
+      component.view.set('year');
+      fixture.detectChanges();
+
+      expect(component.failed()).toBe(true);
+      expect((fixture.nativeElement as HTMLElement).querySelector('[data-cy="calendarError"]')).not.toBeNull();
     });
   });
 

@@ -170,7 +170,8 @@
         "weekTitle": "KW {{week}} · {{range}}",
         "views": {
           "month": "Monat",
-          "week": "Woche"
+          "week": "Woche",
+          "year": "Jahr"
         },
         "tones": {
           "working": "Im Dienst",
@@ -215,7 +216,8 @@
           "noVisits": "Keine Besuche in dieser Schicht.",
           "nothing": "An diesem Tag ist nichts eingeteilt.",
           "loadFailed": "Dieser Tag konnte nicht geladen werden. Bitte versuchen Sie es gleich erneut."
-        }
+        },
+        "yearGrid": "Dienstplan, Jahresansicht"
       }
     },
     "states": {

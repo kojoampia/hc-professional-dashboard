@@ -170,7 +170,8 @@
         "weekTitle": "Week {{week}} · {{range}}",
         "views": {
           "month": "Month",
-          "week": "Week"
+          "week": "Week",
+          "year": "Year"
         },
         "tones": {
           "working": "On duty",
@@ -215,7 +216,8 @@
           "noVisits": "No visits on this shift.",
           "nothing": "Nothing rostered on this day.",
           "loadFailed": "This day could not be loaded. Try again shortly."
-        }
+        },
+        "yearGrid": "Duty roster, year view"
       }
     },
     "states": {

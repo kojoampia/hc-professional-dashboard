@@ -170,7 +170,8 @@
         "weekTitle": "Semaine {{week}} · {{range}}",
         "views": {
           "month": "Mois",
-          "week": "Semaine"
+          "week": "Semaine",
+          "year": "Année"
         },
         "tones": {
           "working": "De service",
@@ -215,7 +216,8 @@
           "noVisits": "Aucune visite sur ce poste.",
           "nothing": "Rien de prévu ce jour-là.",
           "loadFailed": "Cette journée n’a pas pu être chargée. Réessayez dans un instant."
-        }
+        },
+        "yearGrid": "Planning de garde, vue annuelle"
       }
     },
     "states": {

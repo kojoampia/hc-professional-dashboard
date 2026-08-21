@@ -1,19 +1,20 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { forkJoin } from 'rxjs';
+import { Observable, forkJoin, map } from 'rxjs';
 
 import { AbsenceApiService } from '../api/absence-api.service';
 import { DutyRosterAssignmentsService } from '../api/duty-roster-assignments.service';
 import { DutyRosterShift } from '../health-connect.models';
-import { DAYS_IN_WEEK, addDays, addMonths, startOfIsoWeek, startOfMonth, todayIsoDate } from './calendar-date.util';
+import { DAYS_IN_WEEK, addDays, addMonths, startOfIsoWeek, startOfMonth, todayIsoDate, yearOf } from './calendar-date.util';
 import { DayListComponent } from './day-list.component';
 import { MonthGridComponent } from './month-grid.component';
-import { RosterDay, RosterDayTone, buildRosterDays } from './roster-day.model';
+import { RosterDay, RosterDayTone, buildRosterDays, indexDaySummaries } from './roster-day.model';
 import { WeekGridComponent } from './week-grid.component';
+import { YearGridComponent } from './year-grid.component';
 import { isoWeekOf } from './week-number.util';
 
-export type CalendarView = 'month' | 'week';
+export type CalendarView = 'month' | 'week' | 'year';
 
 /** Every tone that takes a fill. `off` is the page showing through and has no legend swatch of its own. */
 const LEGEND_TONES: readonly RosterDayTone[] = ['working', 'holiday', 'sick', 'other'];
@@ -22,6 +23,7 @@ const ABSENCE_TYPES = ['HOLIDAY', 'SICK', 'OTHER'] as const;
 
 /** A month grid draws at most six weeks; fetch the whole span it might show, not just the month. */
 const MAX_MONTH_GRID_WEEKS = 6;
+const MONTHS_IN_YEAR = 12;
 
 /** Written out because Tailwind scans for literals — see {@link RosterCalendarComponent.legendSwatchClass}. */
 const LEGEND_SWATCH_CLASSES: Record<RosterDayTone, string> = {
@@ -55,7 +57,7 @@ const LEGEND_SWATCH_CLASSES: Record<RosterDayTone, string> = {
 @Component({
   standalone: true,
   selector: 'hpd-roster-calendar',
-  imports: [TranslateModule, MonthGridComponent, WeekGridComponent, DayListComponent],
+  imports: [TranslateModule, MonthGridComponent, WeekGridComponent, YearGridComponent, DayListComponent],
   template: `
     <section class="overflow-hidden rounded-hpd border border-hpd-border bg-white shadow-hpd-sm" data-cy="rosterCalendar">
       <header class="flex flex-wrap items-center justify-between gap-3 border-b border-hpd-border bg-hpd-cream px-5 py-3">
@@ -118,9 +120,19 @@ const LEGEND_SWATCH_CLASSES: Record<RosterDayTone, string> = {
             [toneNames]="absenceNames()"
             (daySelected)="openDay($event)"
           />
-        } @else {
+        } @else if (view() === 'week') {
           <hpd-week-grid
             [anchorDate]="anchor()"
+            [days]="days()"
+            [today]="today()"
+            [locale]="locale()"
+            [shiftNames]="shiftNames()"
+            [toneNames]="absenceNames()"
+            (daySelected)="openDay($event)"
+          />
+        } @else {
+          <hpd-year-grid
+            [year]="anchorYear()"
             [days]="days()"
             [today]="today()"
             [locale]="locale()"
@@ -188,7 +200,7 @@ export class RosterCalendarComponent {
   private readonly absenceService = inject(AbsenceApiService);
   private readonly translate = inject(TranslateService);
 
-  readonly views: readonly CalendarView[] = ['month', 'week'];
+  readonly views: readonly CalendarView[] = ['month', 'week', 'year'];
   readonly legendTones = LEGEND_TONES;
 
   readonly view = signal<CalendarView>('month');
@@ -243,9 +255,15 @@ export class RosterCalendarComponent {
     return { from, to: addDays(from, MAX_MONTH_GRID_WEEKS * DAYS_IN_WEEK - 1) };
   });
 
+  /** The calendar year the year view draws. Not the ISO week year — see `week-number.util`. */
+  readonly anchorYear = computed(() => yearOf(this.anchor()));
+
   readonly title = computed(() => {
     const anchor = this.anchor();
     const utc = new Date(`${anchor}T00:00:00Z`);
+    if (this.view() === 'year') {
+      return String(this.anchorYear());
+    }
     if (this.view() === 'week') {
       const { week, weekYear } = isoWeekOf(anchor);
       return this.translate.instant('healthConnect.roster.calendar.weekTitle', {
@@ -259,14 +277,10 @@ export class RosterCalendarComponent {
 
   constructor() {
     effect(onCleanup => {
-      const { from, to } = this.visibleRange();
-      const subscription = forkJoin({
-        assignments: this.rosterService.range(from, to),
-        absences: this.absenceService.mine(from, to),
-      }).subscribe({
-        next: ({ assignments, absences }) => {
+      const subscription = this.loadVisible().subscribe({
+        next: days => {
           this.failed.set(false);
-          this.days.set(buildRosterDays(this.datesBetween(from, to), assignments, absences));
+          this.days.set(days);
         },
         // Only the roster read can get here — the absence read swallows its own errors by contract.
         error: () => {
@@ -301,9 +315,20 @@ export class RosterCalendarComponent {
     this.openDate.set(null);
   }
 
-  /** Move one period in `direction`: a month in month view, a week in week view. */
+  /** Move one period in `direction`: a year, a month or a week, matching the current view. */
   step(direction: number): void {
-    this.anchor.update(current => (this.view() === 'week' ? addDays(current, direction * DAYS_IN_WEEK) : addMonths(current, direction)));
+    this.anchor.update(current => {
+      switch (this.view()) {
+        case 'week':
+          return addDays(current, direction * DAYS_IN_WEEK);
+        case 'year':
+          // Twelve months, not 365 days — a leap year would otherwise drift the anchor by a day
+          // every time it is crossed, and addMonths already clamps 29 February to the 28th.
+          return addMonths(current, direction * MONTHS_IN_YEAR);
+        default:
+          return addMonths(current, direction);
+      }
+    });
   }
 
   goToday(): void {
@@ -330,6 +355,31 @@ export class RosterCalendarComponent {
     const sunday = addDays(monday, DAYS_IN_WEEK - 1);
     const format = new Intl.DateTimeFormat(this.locale(), { day: 'numeric', month: 'short', timeZone: 'UTC' });
     return `${format.format(new Date(`${monday}T00:00:00Z`))} – ${format.format(new Date(`${sunday}T00:00:00Z`))}`;
+  }
+
+  /**
+   * The read behind the current view.
+   *
+   * <p><b>The year takes a different shape, and has to.</b> Month and week ask for a range and join
+   * the absences in themselves; a year asks the summary endpoint, which already returns one record
+   * per day with its absence resolved — including the range-to-days expansion and the
+   * APPROVED-beats-REQUESTED rule. Reusing the range read for a year would mean 365 days of
+   * assignments and every absence record, joined client-side, to draw twelve small grids: a much
+   * larger payload for an answer the server already computes, and a second implementation of a rule
+   * that must not drift from `summariseYear`.
+   *
+   * <p>The summary carries no customer at all — shift names and a count — which is also what makes a
+   * year of it safe to hold in a browser, unlike the day read.
+   */
+  private loadVisible(): Observable<Map<string, RosterDay>> {
+    if (this.view() === 'year') {
+      return this.rosterService.summary(this.anchorYear()).pipe(map(indexDaySummaries));
+    }
+    const { from, to } = this.visibleRange();
+    return forkJoin({
+      assignments: this.rosterService.range(from, to),
+      absences: this.absenceService.mine(from, to),
+    }).pipe(map(({ assignments, absences }) => buildRosterDays(this.datesBetween(from, to), assignments, absences)));
   }
 
   private datesBetween(from: string, to: string): string[] {
