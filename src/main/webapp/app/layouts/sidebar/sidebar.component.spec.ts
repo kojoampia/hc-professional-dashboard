@@ -6,10 +6,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { ProfileInfo } from 'app/layouts/profiles/profile-info.model';
 import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
-import { ProfileService } from 'app/layouts/profiles/profile.service';
 import { LoginService } from 'app/login/login.service';
 import { DutyRosterAssignmentsService } from 'app/health-connect/api/duty-roster-assignments.service';
 import { ShiftLabel } from 'app/health-connect/health-connect.models';
@@ -25,7 +23,6 @@ describe('Sidebar Component', () => {
   let comp: SidebarComponent;
   let fixture: ComponentFixture<SidebarComponent>;
   let accountService: AccountService;
-  let profileService: ProfileService;
   const account: Account = {
     activated: true,
     authorities: [],
@@ -61,18 +58,14 @@ describe('Sidebar Component', () => {
     fixture = TestBed.createComponent(SidebarComponent);
     comp = fixture.componentInstance;
     accountService = TestBed.inject(AccountService);
-    profileService = TestBed.inject(ProfileService);
   });
 
-  it('Should call profileService.getProfileInfo on init', () => {
-    // GIVEN
-    jest.spyOn(profileService, 'getProfileInfo').mockReturnValue(of(new ProfileInfo()));
-
-    // WHEN
+  it('asks the server nothing about which profiles are active', () => {
+    // The sidebar used to read `inProduction` off GET /management/info via ProfileService, and then
+    // never use it — a management call from a browser, for a field with no consumer. Both are gone.
     comp.ngOnInit();
 
-    // THEN
-    expect(profileService.getProfileInfo).toHaveBeenCalled();
+    expect(comp).not.toHaveProperty('inProduction');
   });
 
   it('Should hold current authenticated user in variable account', () => {

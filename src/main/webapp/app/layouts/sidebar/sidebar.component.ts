@@ -9,7 +9,6 @@ import { LANGUAGES } from 'app/config/language.constants';
 import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
 import { LoginService } from 'app/login/login.service';
-import { ProfileService } from 'app/layouts/profiles/profile.service';
 import ActiveMenuDirective from './active-menu.directive';
 import { hasClinicalAuthority, resolveAuthorityRole } from 'app/health-connect/authority-role';
 import { DutyRosterAssignmentsService } from 'app/health-connect/api/duty-roster-assignments.service';
@@ -53,7 +52,6 @@ export default class SidebarComponent implements OnInit {
     return this.collapsed ? 'lg:justify-center lg:gap-0 lg:px-0' : '';
   }
 
-  inProduction?: boolean;
   readonly messagesApi = inject(MessagesApiService);
   languages = LANGUAGES;
   account: Account | null = null;
@@ -64,16 +62,11 @@ export default class SidebarComponent implements OnInit {
     private translateService: TranslateService,
     private stateStorageService: StateStorageService,
     private accountService: AccountService,
-    private profileService: ProfileService,
     private router: Router,
     private dutyRosterAssignments: DutyRosterAssignmentsService,
   ) {}
 
   ngOnInit(): void {
-    this.profileService.getProfileInfo().subscribe(profileInfo => {
-      this.inProduction = profileInfo.inProduction;
-    });
-
     this.accountService.getAuthenticationState().subscribe(account => {
       this.account = account;
       if (account) {
