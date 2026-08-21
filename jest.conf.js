@@ -16,6 +16,10 @@ module.exports = {
     // the sidebar or main layout) fails to run at all rather than failing an assertion.
     // '' is what a development build gets, and it disables the exporter.
     __RUM_ENDPOINT__: '',
+    // Same story: computed from the build mode in webpack.custom.js, so Jest has no value for it and
+    // app.constants.ts would throw at import time without one. 'dev' is what a development build
+    // gets, which is also the case worth exercising — the ribbon renders.
+    __RIBBON_ENV__: 'dev',
   },
   roots: ['<rootDir>', `<rootDir>/${baseUrl}`],
   modulePaths: [`<rootDir>/${baseUrl}`],

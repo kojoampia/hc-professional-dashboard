@@ -121,6 +121,20 @@ module.exports = async (config, options, targetOptions) => {
       // collector's browser receiver. NOT gated on __DEBUG_INFO_ENABLED__ above: that is hardcoded
       // true in environment.js, so it is true in production builds too.
       __RUM_ENDPOINT__: JSON.stringify(config.mode === 'development' ? '' : '/v1/traces'),
+      // Which environment ribbon to draw, or '' for none — decided HERE, at build time, because the
+      // browser has no business asking the server about it.
+      //
+      // This used to come from GET /management/info: the SPA read `activeProfiles` and
+      // `display-ribbon-on-profiles` off the actuator on every page load. That is a management
+      // endpoint, and a management endpoint should not be reachable from a browser at all — the
+      // production nginx returns 404 for /management precisely so it is not. Which meant the call
+      // returned no usable body in production and the SPA threw a TypeError reading `activeProfiles`
+      // of null on every single load.
+      //
+      // A build already knows whether it is a development build. Same reasoning as __RUM_ENDPOINT__
+      // above, and deliberately NOT __DEBUG_INFO_ENABLED__, which is hardcoded true in
+      // environment.js and is therefore true in production too.
+      __RIBBON_ENV__: JSON.stringify(config.mode === 'development' ? 'dev' : ''),
       // The root URL for API calls, ending with a '/' - for example: `"https://www.jhipster.tech:8081/myservice/"`.
       // If this URL is left empty (""), then it will be relative to the current context.
       // If you use an API server, in `prod` mode, you will need to enable CORS
