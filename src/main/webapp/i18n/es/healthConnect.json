@@ -154,7 +154,58 @@
         "OTHER": "Otro"
       },
       "flexibleShift": "Turno flexible hoy (bloques de 2–4 h)",
-      "nextFlexibleShift": "Próximo turno flexible: {{date}}"
+      "nextFlexibleShift": "Próximo turno flexible: {{date}}",
+      "calendar": {
+        "legend": "Leyenda",
+        "monthGrid": "Cuadrante de turnos, vista mensual",
+        "weekGrid": "Cuadrante de turnos, vista semanal",
+        "viewSwitcher": "Vista del calendario",
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "today": "Hoy",
+        "loadFailed": "No se ha podido cargar tu cuadrante. Vuelve a intentarlo en breve.",
+        "weekNumberAbbrev": "Sem",
+        "weekNumberFull": "Número de semana",
+        "weekOf": "Semana {{week}} de {{year}}",
+        "weekTitle": "Semana {{week}} · {{range}}",
+        "views": {
+          "month": "Mes",
+          "week": "Semana"
+        },
+        "tones": {
+          "working": "De servicio",
+          "holiday": "Vacaciones",
+          "sick": "Baja por enfermedad",
+          "other": "Otro permiso",
+          "off": "Libre",
+          "pending": "Solicitado, pendiente de aprobación"
+        },
+        "absenceTypes": {
+          "HOLIDAY": "Vacaciones",
+          "SICK": "Enfermedad",
+          "OTHER": "Permiso"
+        },
+        "shiftShort": {
+          "DAY": "Día",
+          "EVENING": "Tarde",
+          "NIGHT": "Noche",
+          "FLEXIBLE": "Flexible"
+        },
+        "shiftWindow": {
+          "DAY": "07:00–15:00",
+          "EVENING": "15:00–23:00",
+          "NIGHT": "23:00–07:00",
+          "FLEXIBLE": "Cualquier hora"
+        },
+        "a11y": {
+          "dayWorking": "{{date}}: de servicio, {{shifts}}",
+          "dayOff": "{{date}}: libre",
+          "dayAbsenceApproved": "{{date}}: {{absence}}, aprobado. Sigue asignado: {{shifts}}",
+          "dayAbsenceRequested": "{{date}}: {{absence}}, solicitado pero aún no aprobado. Sigue asignado: {{shifts}}",
+          "shiftAssigned": "Asignado: {{shift}}",
+          "shiftFree": "Sin asignar"
+        }
+      }
     },
     "states": {
       "loading": "Cargando…",

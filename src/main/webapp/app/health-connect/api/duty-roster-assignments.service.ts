@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 
@@ -48,6 +48,23 @@ export class DutyRosterAssignmentsService {
       next: assignments => this.myAssignmentsState.set(assignments),
       error: () => this.myAssignmentsState.set([]),
     });
+  }
+
+  /**
+   * The caller's own assignments between two inclusive ISO dates (DR2's optional bounds, DR5's
+   * caller).
+   *
+   * <p>The calendar asks for the range it is about to draw rather than reusing
+   * {@link loadMyAssignments}, whose unbounded result is right for the sidebar's "what am I on next"
+   * and wrong for a grid: it grows without limit as a career accumulates, and every page of the
+   * calendar would re-render the whole of it to show six weeks.
+   *
+   * <p>Both bounds are always sent. The endpoint accepts either alone, but an open-ended range has no
+   * meaning to a bounded grid, and asking for one would quietly reintroduce the unbounded read.
+   */
+  range(from: string, to: string): Observable<DutyRosterAssignmentDto[]> {
+    const params = new HttpParams().set('from', from).set('to', to);
+    return this.http.get<DutyRosterAssignmentDto[]>(this.resourceUrl, { params });
   }
 
   listAll(): Observable<DutyRosterAssignmentDto[]> {

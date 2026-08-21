@@ -154,7 +154,58 @@
         "OTHER": "Autre"
       },
       "flexibleShift": "Garde flexible aujourd'hui (blocs de 2–4 h)",
-      "nextFlexibleShift": "Prochaine garde flexible : {{date}}"
+      "nextFlexibleShift": "Prochaine garde flexible : {{date}}",
+      "calendar": {
+        "legend": "Légende",
+        "monthGrid": "Planning de garde, vue mensuelle",
+        "weekGrid": "Planning de garde, vue hebdomadaire",
+        "viewSwitcher": "Vue du calendrier",
+        "previous": "Précédent",
+        "next": "Suivant",
+        "today": "Aujourd’hui",
+        "loadFailed": "Votre planning n’a pas pu être chargé. Réessayez dans un instant.",
+        "weekNumberAbbrev": "Sem",
+        "weekNumberFull": "Numéro de semaine",
+        "weekOf": "Semaine {{week}} de {{year}}",
+        "weekTitle": "Semaine {{week}} · {{range}}",
+        "views": {
+          "month": "Mois",
+          "week": "Semaine"
+        },
+        "tones": {
+          "working": "De service",
+          "holiday": "Congés",
+          "sick": "Arrêt maladie",
+          "other": "Autre absence",
+          "off": "Repos",
+          "pending": "Demandé, pas encore approuvé"
+        },
+        "absenceTypes": {
+          "HOLIDAY": "Congés",
+          "SICK": "Maladie",
+          "OTHER": "Absence"
+        },
+        "shiftShort": {
+          "DAY": "Jour",
+          "EVENING": "Soir",
+          "NIGHT": "Nuit",
+          "FLEXIBLE": "Flexible"
+        },
+        "shiftWindow": {
+          "DAY": "07:00–15:00",
+          "EVENING": "15:00–23:00",
+          "NIGHT": "23:00–07:00",
+          "FLEXIBLE": "À tout moment"
+        },
+        "a11y": {
+          "dayWorking": "{{date}} : de service, {{shifts}}",
+          "dayOff": "{{date}} : repos",
+          "dayAbsenceApproved": "{{date}} : {{absence}}, approuvé. Toujours affecté : {{shifts}}",
+          "dayAbsenceRequested": "{{date}} : {{absence}}, demandé mais pas encore approuvé. Toujours affecté : {{shifts}}",
+          "shiftAssigned": "Affecté : {{shift}}",
+          "shiftFree": "Non affecté"
+        }
+      }
     },
     "states": {
       "loading": "Chargement...",

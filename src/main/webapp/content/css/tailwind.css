@@ -46,6 +46,16 @@
   --color-hpd-row-urgent: var(--hpd-color-row-urgent);
   --color-hpd-row-open: var(--hpd-color-row-open);
   --color-hpd-row-closed: var(--hpd-color-row-closed);
+  /* Duty-roster calendar day states (DR5) — see the note beside these in global.scss for why they
+     are roster-named rather than reusing danger-tint/success-tint, and why "off" has no token. */
+  --color-hpd-roster-working: var(--hpd-color-roster-working);
+  --color-hpd-roster-working-accent: var(--hpd-color-roster-working-accent);
+  --color-hpd-roster-holiday: var(--hpd-color-roster-holiday);
+  --color-hpd-roster-holiday-accent: var(--hpd-color-roster-holiday-accent);
+  --color-hpd-roster-sick: var(--hpd-color-roster-sick);
+  --color-hpd-roster-sick-accent: var(--hpd-color-roster-sick-accent);
+  --color-hpd-roster-other: var(--hpd-color-roster-other);
+  --color-hpd-roster-other-accent: var(--hpd-color-roster-other-accent);
   --radius-hpd-sm: var(--hpd-r-sm);
   --radius-hpd: var(--hpd-r);
   --radius-hpd-lg: var(--hpd-r-lg);

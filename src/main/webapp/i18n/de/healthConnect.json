@@ -154,7 +154,58 @@
         "OTHER": "Sonstige"
       },
       "flexibleShift": "Heute flexibler Dienst (2–4-h-Blöcke)",
-      "nextFlexibleShift": "Nächste flexible Schicht: {{date}}"
+      "nextFlexibleShift": "Nächste flexible Schicht: {{date}}",
+      "calendar": {
+        "legend": "Legende",
+        "monthGrid": "Dienstplan, Monatsansicht",
+        "weekGrid": "Dienstplan, Wochenansicht",
+        "viewSwitcher": "Kalenderansicht",
+        "previous": "Zurück",
+        "next": "Weiter",
+        "today": "Heute",
+        "loadFailed": "Ihr Dienstplan konnte nicht geladen werden. Bitte versuchen Sie es gleich erneut.",
+        "weekNumberAbbrev": "KW",
+        "weekNumberFull": "Kalenderwoche",
+        "weekOf": "Kalenderwoche {{week}} in {{year}}",
+        "weekTitle": "KW {{week}} · {{range}}",
+        "views": {
+          "month": "Monat",
+          "week": "Woche"
+        },
+        "tones": {
+          "working": "Im Dienst",
+          "holiday": "Urlaub",
+          "sick": "Krankmeldung",
+          "other": "Sonstige Abwesenheit",
+          "off": "Frei",
+          "pending": "Beantragt, noch nicht genehmigt"
+        },
+        "absenceTypes": {
+          "HOLIDAY": "Urlaub",
+          "SICK": "Krank",
+          "OTHER": "Abwesend"
+        },
+        "shiftShort": {
+          "DAY": "Tag",
+          "EVENING": "Abend",
+          "NIGHT": "Nacht",
+          "FLEXIBLE": "Flexibel"
+        },
+        "shiftWindow": {
+          "DAY": "07:00–15:00",
+          "EVENING": "15:00–23:00",
+          "NIGHT": "23:00–07:00",
+          "FLEXIBLE": "Jederzeit"
+        },
+        "a11y": {
+          "dayWorking": "{{date}}: im Dienst, {{shifts}}",
+          "dayOff": "{{date}}: frei",
+          "dayAbsenceApproved": "{{date}}: {{absence}}, genehmigt. Weiterhin eingeteilt: {{shifts}}",
+          "dayAbsenceRequested": "{{date}}: {{absence}}, beantragt, aber noch nicht genehmigt. Weiterhin eingeteilt: {{shifts}}",
+          "shiftAssigned": "Eingeteilt: {{shift}}",
+          "shiftFree": "Nicht eingeteilt"
+        }
+      }
     },
     "states": {
       "loading": "Wird geladen...",
