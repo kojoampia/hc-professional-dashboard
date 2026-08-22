@@ -36,6 +36,7 @@
       "unspecified": "Sin especificar",
       "urgent": "Urgente",
       "open": "Abierto",
+      "treatment": "En tratamiento",
       "closed": "Cerrado"
     },
     "actions": {

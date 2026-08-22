@@ -15,7 +15,7 @@ describe('FakeHealthConnectRepository', () => {
   });
 
   it('derives case counts and chart distribution from deterministic patient records', () => {
-    expect(repository.caseCounts()).toEqual({ urgent: 2, open: 2, closed: 3 });
+    expect(repository.caseCounts()).toEqual({ urgent: 2, open: 2, treatment: 0, closed: 3 });
     expect(repository.charts().caseDistribution).toEqual([
       { label: 'urgent', value: 2 },
       { label: 'open', value: 2 },

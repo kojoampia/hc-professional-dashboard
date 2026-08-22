@@ -116,7 +116,14 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
       .sort((left, right) => right.date.localeCompare(left.date)),
   );
   readonly caseCounts = computed<Record<CaseStatus, number>>(() =>
-    this.caseQueue().reduce((counts, item) => ({ ...counts, [item.status]: counts[item.status] + 1 }), { urgent: 0, open: 0, closed: 0 }),
+    // Every CaseStatus, same as the real repository. A short seed silently drops the statuses it
+    // omits — they are counted into a key nothing reads.
+    this.caseQueue().reduce((counts, item) => ({ ...counts, [item.status]: counts[item.status] + 1 }), {
+      urgent: 0,
+      open: 0,
+      treatment: 0,
+      closed: 0,
+    }),
   );
   readonly charts = computed<ChartData>(() => {
     const counts = this.caseCounts();

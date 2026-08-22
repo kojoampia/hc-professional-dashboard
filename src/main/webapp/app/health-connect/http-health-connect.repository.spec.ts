@@ -54,7 +54,7 @@ describe('HttpHealthConnectRepository', () => {
 
     expect(repository.caseQueue()).toHaveLength(1);
     expect(repository.caseQueue()[0]).toMatchObject({ id: 'case-1', status: 'urgent', brief: 'High fever', patientId: 'patient-kojo' });
-    expect(repository.caseCounts()).toEqual({ urgent: 1, open: 0, closed: 0 });
+    expect(repository.caseCounts()).toEqual({ urgent: 1, open: 0, treatment: 0, closed: 0 });
   });
 
   it('reads the caller’s own roster and scopes "my roster" to assignments held by that professional', () => {
@@ -117,7 +117,7 @@ describe('HttpHealthConnectRepository', () => {
     const updated = repository.updateCase('case-1', { status: 'closed', diagnosis: 'Resolved' });
 
     expect(updated).toMatchObject({ id: 'case-1', status: 'closed', diagnosis: 'Resolved' });
-    expect(repository.caseCounts()).toEqual({ urgent: 0, open: 0, closed: 1 });
+    expect(repository.caseCounts()).toEqual({ urgent: 0, open: 0, treatment: 0, closed: 1 });
 
     const req = httpMock.expectOne(request => request.url.endsWith('services/patientservice/api/clinical-cases/case-1'));
     expect(req.request.method).toBe('PATCH');
