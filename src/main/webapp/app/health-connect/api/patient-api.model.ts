@@ -9,7 +9,8 @@ export type PatientSexDto = 'female' | 'male' | 'unspecified';
 export interface PatientListItemDto {
   id: string;
   patientName: string;
-  lastActivityAt: string;
+  /** Null for a patient with no activity log entries. See the note on `PatientListRow`. */
+  lastActivityAt: string | null;
   sex: PatientSexDto;
   isChild: boolean;
 }

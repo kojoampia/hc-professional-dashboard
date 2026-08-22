@@ -39,6 +39,19 @@ describe('PatientDirectoryPageComponent', () => {
     router.navigate.mockClear();
   });
 
+  it('renders a patient who has NEVER been seen, rather than dropping their row', () => {
+    // `lastActivityAt` is null for a patient with no activity-log entries, and the column
+    // dereferenced it unguarded. On the quality stack that threw once per never-seen patient and
+    // rendered two rows out of nineteen — a caseload silently seventeen patients short.
+    //
+    // Nothing caught it because the model typed the field non-null, so TypeScript raised nothing,
+    // and every fixture supplied a value, so the tests agreed with the wrong type instead of
+    // checking it. Hence the explicit null below.
+    const column = component.columns.find(candidate => candidate.id === 'activity');
+
+    expect(column?.value({ id: 'p1', patientName: 'Never Seen', sex: 'female', isChild: false, lastActivityAt: null })).toBe('—');
+  });
+
   it('restores direct URL filters and reacts to browser query-parameter changes', () => {
     expect(component.gender()).toBe('female');
     expect(component.query()).toBe('ama');

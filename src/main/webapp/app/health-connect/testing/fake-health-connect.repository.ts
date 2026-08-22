@@ -92,7 +92,9 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
   readonly patientRows = computed(() =>
     this.records()
       .map(toPatientRow)
-      .sort((left, right) => right.lastActivityAt.localeCompare(left.lastActivityAt)),
+      // Never-seen patients sort last rather than throwing; an empty string is ordered before any
+      // real timestamp, so this reads as "no activity is the oldest activity".
+      .sort((left, right) => (right.lastActivityAt ?? '').localeCompare(left.lastActivityAt ?? '')),
   );
   readonly caseQueue = computed(() =>
     this.records()
