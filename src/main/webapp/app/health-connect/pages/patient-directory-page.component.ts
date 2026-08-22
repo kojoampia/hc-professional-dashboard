@@ -118,7 +118,14 @@ export default class PatientDirectoryPageComponent {
       labelKey: 'healthConnect.patient.gender',
       value: patient => this.translate.instant(`healthConnect.stats.${patient.sex}`),
     },
-    { id: 'activity', labelKey: 'healthConnect.patient.lastActivity', value: patient => patient.lastActivityAt.slice(0, 10) },
+    {
+      id: 'activity',
+      labelKey: 'healthConnect.patient.lastActivity',
+      // Guarded, and an em dash rather than a blank: the same shape the review queue already uses
+      // for its nullable date. Unguarded this threw once per patient who had never been seen, and
+      // took their row off the table with it.
+      value: patient => patient.lastActivityAt?.slice(0, 10) ?? '—',
+    },
   ];
   readonly actions: readonly DataTableAction<PatientListRow>[] = [
     { id: 'view', labelKey: 'healthConnect.actions.view', icon: 'visibility' },

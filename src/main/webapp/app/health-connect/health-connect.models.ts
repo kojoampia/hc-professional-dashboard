@@ -88,7 +88,17 @@ export interface ShiftLabel {
 export interface PatientListRow {
   id: string;
   patientName: string;
-  lastActivityAt: IsoDateTime;
+  /**
+   * When this patient was last seen, or null if they never have been.
+   *
+   * <p>Nullable, and it always was on the wire — `PatientDirectoryService` derives it from the
+   * patient's activity log and a patient with no entries has none. This was typed non-null, so
+   * TypeScript raised nothing at the one place that dereferenced it, and every fixture supplied a
+   * value, so the tests agreed with the wrong type rather than checking it. The symptom was a
+   * directory that rendered two rows out of nineteen, with a null-dereference in the console per
+   * missing row.
+   */
+  lastActivityAt: IsoDateTime | null;
   sex: PatientSex;
   isChild: boolean;
 }
