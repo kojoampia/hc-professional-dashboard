@@ -7,13 +7,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { AccountService } from 'app/core/auth/account.service';
 
 import { hasHealthConnectPermission } from '../authority-role';
-import { CaseQueueRow, CaseStatus, RosterScope } from '../health-connect.models';
+import { CaseQueueRow, CaseStatus, RosterScope, caseStatusVariant } from '../health-connect.models';
 import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
 import AsyncStateComponent from '../../shared/health-connect/async-state/async-state.component';
 import DataTableComponent, {
   DataTableAction,
   DataTableActionEvent,
   DataTableColumn,
+  DataTableStatusVariant,
 } from '../../shared/health-connect/data-table/data-table.component';
 import StatCardRowComponent, { StatCard } from '../../shared/health-connect/stat-card/stat-card-row.component';
 
@@ -65,7 +66,7 @@ const isRosterScope = (value: string | null): value is RosterScope => value === 
             [columns]="columns"
             [rows]="rows()"
             [actions]="actions"
-            [headerVariant]="statusFilter() ?? 'neutral'"
+            [headerVariant]="caseStatusVariant(statusFilter())"
             [statusVariant]="statusVariant"
             [trackBy]="trackById"
             (actionTriggered)="handleAction($event)"
@@ -115,7 +116,7 @@ export default class CaseQueuePageComponent {
       id: 'status',
       labelKey: 'healthConnect.case.status',
       value: row => this.translate.instant(`healthConnect.stats.${row.status}`),
-      statusVariant: row => row.status,
+      statusVariant: row => caseStatusVariant(row.status),
     },
   ];
   readonly actions: readonly DataTableAction<CaseQueueRow>[] = [
@@ -133,7 +134,10 @@ export default class CaseQueuePageComponent {
       isAvailable: row => row.status === 'closed' && this.canManageCases(),
     },
   ];
-  readonly statusVariant = (row: CaseQueueRow): CaseStatus => row.status;
+  readonly statusVariant = (row: CaseQueueRow): DataTableStatusVariant => caseStatusVariant(row.status);
+
+  /** Exposed for the template's headerVariant binding. */
+  readonly caseStatusVariant = caseStatusVariant;
   readonly trackById = (row: CaseQueueRow): string => row.id;
 
   setStatus(status: string): void {

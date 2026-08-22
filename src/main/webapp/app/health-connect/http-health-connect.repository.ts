@@ -88,7 +88,15 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
       .filter(item => !this.archivedCaseIds().has(item.id)),
   );
   readonly caseCounts = computed<Record<CaseStatus, number>>(() =>
-    this.caseQueue().reduce((counts, item) => ({ ...counts, [item.status]: counts[item.status] + 1 }), { urgent: 0, open: 0, closed: 0 }),
+    // Seeded with every CaseStatus. `treatment` was missing, so cases under treatment were counted
+    // nowhere at all — the reduce wrote `undefined + 1` into a key no tile read. Four of twenty
+    // cases were invisible to every count on the dashboard.
+    this.caseQueue().reduce((counts, item) => ({ ...counts, [item.status]: counts[item.status] + 1 }), {
+      urgent: 0,
+      open: 0,
+      treatment: 0,
+      closed: 0,
+    }),
   );
   /**
    * Charts derived from the cases already loaded, not fetched.

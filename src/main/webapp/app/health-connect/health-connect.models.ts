@@ -14,7 +14,37 @@ export enum AuthorityRole {
   USER = 'User',
 }
 
-export type CaseStatus = 'urgent' | 'open' | 'closed';
+/**
+ * The four values patientservice's `CaseStatus` enum can hold, lower-cased.
+ *
+ * <p>`treatment` was missing until 2026-08-23 and the omission was invisible in both directions:
+ * TypeScript cannot check a string that arrives over HTTP, and the status column renders whatever
+ * it is handed. The symptom on a deployed queue was
+ * `translation-not-found[healthConnect.stats.treatment]` printed in the status cell of every case
+ * under treatment — four of twenty — in all four languages at once, so a key-parity check between
+ * the locales would not have found it either. They were equally wrong.
+ *
+ * <p>**This union must match the sibling's enum, not the subset this app happens to have seen.**
+ * `case-status.spec.ts` pins it and checks every value has a translation key.
+ */
+export type CaseStatus = 'urgent' | 'open' | 'treatment' | 'closed';
+
+/**
+ * The row tint for a case status.
+ *
+ * <p>`treatment` borrows the open tint rather than getting one of its own: a case under treatment is
+ * an active case, and there is no `--hpd-color-row-treatment` token. Adding a brand colour is a
+ * design decision with an AA contrast check attached, and not a type fix's to make.
+ *
+ * <p>One function rather than a ternary at each binding — there are three, and the third was found
+ * only by `ng build`, because template type-checking does not run under `tsc --noEmit`.
+ */
+export const caseStatusVariant = (status: CaseStatus | undefined): 'urgent' | 'open' | 'closed' | 'neutral' => {
+  if (status === undefined) {
+    return 'neutral';
+  }
+  return status === 'treatment' ? 'open' : status;
+};
 export type PatientSex = 'female' | 'male' | 'unspecified';
 export type RosterScope = 'all' | 'mine';
 export type AsyncStatus = 'idle' | 'loading' | 'error' | 'ready';
