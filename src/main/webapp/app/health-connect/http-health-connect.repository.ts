@@ -137,10 +137,14 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
   }
 
   filterPatients(query: string, pageRequest: PageRequest, filters: PatientDirectoryFilters = {}): Page<PatientListRow> {
-    // Client-side filter over the eagerly-fetched patient list cache. A
-    // higher-fidelity implementation would push `query`/`filters`/`pageRequest`
-    // to PatientApiService.query() server-side; deferred until a real
-    // Patient backend exists to validate the round trip against.
+    // Client-side filter over the eagerly-fetched patient list cache.
+    //
+    // The server CAN do this now — `GET /api/patients` takes `query`, `sex`, `childrenOnly`,
+    // `page`, `size` and a whitelisted `sort` as of 2026-08-22 — so the old note here ("deferred
+    // until a real Patient backend exists") is out of date. What still blocks the move is this
+    // interface: `filterPatients` returns a `Page` synchronously from a signal, and every caller
+    // reads it in a template. Pushing the filter server-side means making it async and changing
+    // those callers, which is Phase 5 of web-mobile-port.md, not a drive-by.
     const normalizedQuery = query.trim().toLocaleLowerCase();
     const matches = this.patientRowCache().filter(
       row =>
@@ -370,6 +374,12 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
     this.loading.set(true);
     this.error.set(null);
 
+    // `size: 200` is now a REAL ceiling. Until 2026-08-22 `GET /api/patients` accepted no paging
+    // parameters and answered with the whole caseload, so this asked for 200 and received however
+    // many there were; the server honours it now (web-mobile-port.md § Phase 1.1). Nothing here
+    // changes shape — this repository filters and pages client-side over the cache — but a clinician
+    // with more than 200 patients would silently see only the 200 most recently active. Moving the
+    // filter server-side is Phase 5's job and needs this interface to stop being synchronous first.
     this.patientApi.query({ page: 0, size: 200 }).subscribe({
       next: response => this.patientRowCache.set((response.body ?? []).map(toPatientListRow)),
       error: () => this.error.set('Failed to load patient directory'),
