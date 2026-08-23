@@ -71,10 +71,10 @@ describe('FakeHealthConnectRepository', () => {
   });
 
   it('archives local queue rows without deleting the case detail record', () => {
-    expect(repository.archiveCase('case-nii-closed')).toBe(true);
+    expect(repository.archiveCase('case-nii-closed', 'Resolved at follow-up')).toBe(true);
     expect(repository.listCases('closed')).not.toEqual(expect.arrayContaining([expect.objectContaining({ id: 'case-nii-closed' })]));
     expect(repository.findCase('case-nii-closed')).toEqual(expect.objectContaining({ status: 'closed' }));
-    expect(repository.archiveCase('case-nii-closed')).toBe(false);
+    expect(repository.archiveCase('case-nii-closed', 'Resolved at follow-up')).toBe(false);
   });
 
   it('appends a timestamped activity only to the requested patient', () => {

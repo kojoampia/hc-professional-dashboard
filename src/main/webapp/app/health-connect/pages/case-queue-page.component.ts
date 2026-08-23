@@ -17,6 +17,7 @@ import DataTableComponent, {
   DataTableStatusVariant,
 } from '../../shared/health-connect/data-table/data-table.component';
 import StatCardRowComponent, { StatCard } from '../../shared/health-connect/stat-card/stat-card-row.component';
+import { HealthConnectDialogService } from '../../shared/health-connect/dialog/dialog.service';
 
 const isCaseStatus = (value: string | null): value is CaseStatus => value === 'urgent' || value === 'open' || value === 'closed';
 const isRosterScope = (value: string | null): value is RosterScope => value === 'all' || value === 'mine';
@@ -83,6 +84,7 @@ export default class CaseQueuePageComponent {
   private readonly router = inject(Router);
   private readonly account = inject(AccountService);
   private readonly translate = inject(TranslateService);
+  private readonly dialogs = inject(HealthConnectDialogService);
   private readonly queryParams = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
   private readonly currentAccount = toSignal(this.account.getAuthenticationState(), { initialValue: null });
 
@@ -159,7 +161,27 @@ export default class CaseQueuePageComponent {
     if (event.actionId === 'reopen') {
       this.repository.updateCase(event.row.id, { status: 'open' });
     } else if (event.actionId === 'archive') {
-      this.repository.archiveCase(event.row.id);
+      /**
+       * Asked for, not defaulted. The server requires a reason and says why: an archive with no
+       * reason is the delete that patient data does not allow, wearing a different name. A canned
+       * string sent from here would satisfy the endpoint and empty it of meaning.
+       *
+       * A null result is the user backing out, which is not the same as typing nothing — the
+       * dialog's confirm stays disabled until there is something to send.
+       */
+      this.dialogs
+        .reason({
+          titleKey: 'healthConnect.caseQueue.archive.title',
+          messageKey: 'healthConnect.caseQueue.archive.message',
+          labelKey: 'healthConnect.caseQueue.archive.label',
+          confirmKey: 'healthConnect.caseQueue.archive.confirm',
+        })
+        .afterClosed()
+        .subscribe(reason => {
+          if (reason) {
+            this.repository.archiveCase(event.row.id, reason);
+          }
+        });
     }
   }
 

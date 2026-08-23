@@ -31,6 +31,24 @@ export class ClinicalCaseApiService {
       .pipe(map(response => response.clone({ body: (response.body ?? []).map(item => fromRest(item)) })));
   }
 
+  /**
+   * Retires a case from the queue.
+   *
+   * <p>A POST to a transition endpoint rather than a PATCH setting a field, and that is the api's
+   * design rather than this client's preference: a PATCH over `archivedAt` would let a client choose
+   * when a case was archived and by whom, and both are records rather than claims. The server stamps
+   * the caller and the time; this sends only the reason.</p>
+   *
+   * <p>The reason is required. An archive without one is the delete that patient data does not
+   * allow, wearing a different name — which is why it is collected from the user rather than
+   * defaulted here.</p>
+   */
+  archive(id: string, reason: string): Observable<ClinicalCaseDto> {
+    return this.http
+      .post<RestClinicalCaseDto>(`${this.resourceUrl}/${encodeURIComponent(id)}/archive`, { reason })
+      .pipe(map(response => fromRest(response)));
+  }
+
   partialUpdate(clinicalCase: PartialUpdateClinicalCaseDto): Observable<ClinicalCaseDto> {
     const body: RestClinicalCaseDto = { ...clinicalCase, openedAt: clinicalCase.openedAt?.toJSON() ?? null };
     return this.http

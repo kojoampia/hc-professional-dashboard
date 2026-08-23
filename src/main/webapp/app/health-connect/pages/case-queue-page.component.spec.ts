@@ -7,6 +7,7 @@ import { AccountService } from 'app/core/auth/account.service';
 
 import { FakeHealthConnectRepository } from '../testing/fake-health-connect.repository';
 import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
+import { HealthConnectDialogService } from '../../shared/health-connect/dialog/dialog.service';
 import CaseQueuePageComponent from './case-queue-page.component';
 
 describe('CaseQueuePageComponent', () => {
@@ -24,6 +25,10 @@ describe('CaseQueuePageComponent', () => {
     imageUrl: null,
   });
   const router = { navigate: jest.fn(() => Promise.resolve(true)) };
+  /** What the stubbed reason dialog answers. Null is the user backing out. */
+  let reasonAnswer: string | null = 'Resolved at follow-up';
+  const dialogs = { reason: () => ({ afterClosed: () => new BehaviorSubject(reasonAnswer).asObservable() }) };
+  let archiveSpy: jest.SpyInstance;
   const route = {
     get snapshot(): { queryParamMap: ParamMap } {
       return { queryParamMap: queryParamMap.value };
@@ -32,6 +37,7 @@ describe('CaseQueuePageComponent', () => {
   };
 
   beforeEach(async () => {
+    reasonAnswer = 'Resolved at follow-up';
     queryParamMap = new BehaviorSubject(convertToParamMap({ status: 'urgent' }));
     route.queryParamMap = queryParamMap.asObservable();
     await TestBed.configureTestingModule({
@@ -41,11 +47,16 @@ describe('CaseQueuePageComponent', () => {
         { provide: ActivatedRoute, useValue: route },
         { provide: Router, useValue: router },
         { provide: AccountService, useValue: { getAuthenticationState: () => authenticationState.asObservable() } },
+        // Archiving now asks why, because the server requires a reason. The dialog is stubbed to
+        // answer immediately so these assertions stay synchronous; the reason itself is asserted
+        // below, since sending an empty one would be refused by the api.
+        { provide: HealthConnectDialogService, useValue: dialogs },
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(CaseQueuePageComponent);
     component = fixture.componentInstance;
     TestBed.inject(FakeHealthConnectRepository).reset();
+    archiveSpy = jest.spyOn(TestBed.inject(FakeHealthConnectRepository), 'archiveCase');
     fixture.detectChanges();
     router.navigate.mockClear();
   });
@@ -100,6 +111,16 @@ describe('CaseQueuePageComponent', () => {
     const archivedCase = component.rows()[0];
     component.handleAction({ actionId: 'archive', row: archivedCase });
     expect(component.rows()).toHaveLength(2);
+    // The reason reaches the repository rather than being defaulted away.
+    expect(archiveSpy).toHaveBeenCalledWith(archivedCase.id, 'Resolved at follow-up');
+
+    // Backing out of the dialog archives nothing. Null is "cancelled", which is not the same as
+    // an empty reason — the dialog cannot return one.
+    reasonAnswer = null;
+    const keptCase = component.rows()[0];
+    component.handleAction({ actionId: 'archive', row: keptCase });
+    expect(component.rows()).toHaveLength(2);
+    reasonAnswer = 'Resolved at follow-up';
 
     authenticationState.next({ ...authenticationState.value, authorities: ['ROLE_USER'] });
     const protectedCase = component.rows()[0];

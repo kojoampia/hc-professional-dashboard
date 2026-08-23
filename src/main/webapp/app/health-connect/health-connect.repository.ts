@@ -60,7 +60,8 @@ export interface HealthConnectRepository {
     patientId: string,
     report: Omit<ClinicalReport, 'id' | 'occurredAt' | 'label'> & { id?: string; occurredAt?: string; label?: string },
   ): ClinicalReport | null;
-  archiveCase(id: string): boolean;
+  /** Retires a case from the queue. The reason is required by the server and is not defaulted. */
+  archiveCase(id: string, reason: string): boolean;
   setLoading(loading: boolean): void;
   setError(error: string | null): void;
   reset(): void;

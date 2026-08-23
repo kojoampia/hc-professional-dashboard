@@ -570,6 +570,14 @@
         "status": "Estado",
         "finishFirst": "Completa todos los requisitos anteriores antes de enviar."
       }
+    },
+    "caseQueue": {
+      "archive": {
+        "title": "Archivar este caso",
+        "message": "Sale de la cola y permanece en el historial del paciente. Indique por qué, para que lo sepa el siguiente profesional que lo abra.",
+        "label": "Motivo",
+        "confirm": "Archivar"
+      }
     }
   }
 }
