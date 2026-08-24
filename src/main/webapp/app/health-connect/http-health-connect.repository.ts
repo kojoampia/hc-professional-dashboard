@@ -395,9 +395,17 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
    * failed write replaced the whole collection with an error panel — and `Retry` re-ran the load,
    * which succeeded, but never cleared the signal, so only a full page reload brought the list back.
    *
-   * <p>Reachable from all four writes; archive is simply the one that fails every time today, since
-   * hc-patient gates `/archive` on `ROLE_PROFESSIONAL` and this portal issues no such authority
-   * (kojoampia/hc-patient-service#13). Found on the quality stack by clicking it.
+   * <p>Reachable from all four writes. Archive used to be the one that failed every time, because
+   * hc-patient gated `/archive` on `ROLE_PROFESSIONAL` and this portal issues no such authority —
+   * found on the quality stack by clicking it, and raised as kojoampia/hc-patient-service#13. That
+   * is **fixed** (their PR #14, then #15 which dropped `ROLE_PROFESSIONAL` entirely), so the gate is
+   * now `hasAuthority(DOCTOR)`.
+   *
+   * <p>Two reasons this path still matters for archive rather than becoming dead. It is **not yet in
+   * production** — that stack still runs the api image that predates the fix, so an archive from the
+   * live dashboard is refused today. And it is doctor-only *by design*: `ROLE_ADMIN` is excluded on
+   * purpose, which inverts the usual rule here, so an admin clicking archive gets a 403 that is
+   * correct rather than a bug. Both are exactly what this toast exists to say out loud.
    *
    * <p>A load failure legitimately blanks the collection — there is nothing to show. A write failure
    * does not: the data is still there and still correct, and the clinician needs to be told their
