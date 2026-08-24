@@ -1,5 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 
+import { AlertService } from 'app/core/util/alert.service';
 import { ClinicalCaseApiService } from './api/clinical-case-api.service';
 import { ClinicalCaseDto } from './api/clinical-case-api.model';
 
@@ -62,6 +63,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
   private readonly patientApi = inject(PatientApiService);
   private readonly rosterApi = inject(DutyRosterAssignmentsService);
   private readonly clinicalCaseService = inject(ClinicalCaseApiService);
+  private readonly alertService = inject(AlertService);
 
   private readonly patientRowCache = signal<readonly PatientListRow[]>([]);
   private readonly recordCache = signal<ReadonlyMap<string, PatientRecord>>(new Map());
@@ -282,7 +284,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
     };
     this.clinicalCaseCache.update(cache => cache.map(candidate => (candidate.id === id ? updatedCase : candidate)));
     this.clinicalCaseService.partialUpdate(updatedCase).subscribe({
-      error: () => this.error.set(`Failed to save case ${id}`),
+      error: () => this.reportWriteFailure('healthConnect.toast.caseSaveFailed'),
     });
     return toClinicalCase(updatedCase);
   }
@@ -317,7 +319,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
           }),
         );
       },
-      error: () => this.error.set(`Failed to log activity for patient ${patientId}`),
+      error: () => this.reportWriteFailure('healthConnect.toast.activityFailed'),
     });
     return optimistic;
   }
@@ -348,7 +350,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
           new Map(cache).set(patientId, { ...current, reports: current.reports.map(item => (item.id === optimistic.id ? saved : item)) }),
         );
       },
-      error: () => this.error.set(`Failed to save report for patient ${patientId}`),
+      error: () => this.reportWriteFailure('healthConnect.toast.reportFailed'),
     });
     return optimistic;
   }
@@ -379,10 +381,30 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
           next.delete(id);
           return next;
         });
-        this.error.set(`Failed to archive case ${id}`);
+        this.reportWriteFailure('healthConnect.toast.archiveFailed');
       },
     });
     return true;
+  }
+
+  /**
+   * Reports a failed WRITE without blanking what is on screen.
+   *
+   * <p>Every mutation here used to call `this.error.set(...)`, and `this.error` is what
+   * `asyncState.status` reads to decide between the list and "Unable to load this information". So a
+   * failed write replaced the whole collection with an error panel — and `Retry` re-ran the load,
+   * which succeeded, but never cleared the signal, so only a full page reload brought the list back.
+   *
+   * <p>Reachable from all four writes; archive is simply the one that fails every time today, since
+   * hc-patient gates `/archive` on `ROLE_PROFESSIONAL` and this portal issues no such authority
+   * (kojoampia/hc-patient-service#13). Found on the quality stack by clicking it.
+   *
+   * <p>A load failure legitimately blanks the collection — there is nothing to show. A write failure
+   * does not: the data is still there and still correct, and the clinician needs to be told their
+   * change did not stick, not to lose the screen.
+   */
+  private reportWriteFailure(translationKey: string, params?: Record<string, unknown>): void {
+    this.alertService.addAlert({ type: 'danger', translationKey, translationParams: params, toast: true, timeout: 5000 });
   }
 
   setLoading(loading: boolean): void {

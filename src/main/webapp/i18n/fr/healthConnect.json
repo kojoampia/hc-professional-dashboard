@@ -328,7 +328,11 @@
       "markedRead": "Marqué comme lu",
       "acknowledged": "Confirmation enregistrée",
       "sweepDone": "Contrôle terminé : {{suspended}} candidature(s) restreinte(s)",
-      "messageSent": "Message envoyé"
+      "messageSent": "Message envoyé",
+      "caseSaveFailed": "Cette modification du dossier n'a pas été enregistrée.",
+      "activityFailed": "Cette activité n'a pas été enregistrée.",
+      "reportFailed": "Ce rapport n'a pas été enregistré.",
+      "archiveFailed": "Le dossier n'a pas été archivé. Il est toujours dans la file."
     },
     "onboarding": {
       "title": "Intégration professionnelle",

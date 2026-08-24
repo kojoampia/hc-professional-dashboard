@@ -328,7 +328,11 @@
       "markedRead": "Marked as read",
       "acknowledged": "Acknowledgement recorded",
       "sweepDone": "Sweep finished: {{suspended}} application(s) restricted",
-      "messageSent": "Message sent"
+      "messageSent": "Message sent",
+      "caseSaveFailed": "That change to the case was not saved.",
+      "activityFailed": "That activity entry was not saved.",
+      "reportFailed": "That report was not saved.",
+      "archiveFailed": "The case was not archived. It is still in the queue."
     },
     "onboarding": {
       "title": "Professional onboarding",

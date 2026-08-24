@@ -328,7 +328,11 @@
       "markedRead": "Als gelesen markiert",
       "acknowledged": "Bestätigung gespeichert",
       "sweepDone": "Prüfung abgeschlossen: {{suspended}} Bewerbung(en) eingeschränkt",
-      "messageSent": "Nachricht gesendet"
+      "messageSent": "Nachricht gesendet",
+      "caseSaveFailed": "Diese Änderung am Fall wurde nicht gespeichert.",
+      "activityFailed": "Dieser Aktivitätseintrag wurde nicht gespeichert.",
+      "reportFailed": "Dieser Bericht wurde nicht gespeichert.",
+      "archiveFailed": "Der Fall wurde nicht archiviert. Er ist weiterhin in der Liste."
     },
     "onboarding": {
       "title": "Fachkräfte-Onboarding",

@@ -328,7 +328,11 @@
       "markedRead": "Marcado como leído",
       "acknowledged": "Confirmación registrada",
       "sweepDone": "Barrido completado: {{suspended}} solicitud(es) restringida(s)",
-      "messageSent": "Mensaje enviado"
+      "messageSent": "Mensaje enviado",
+      "caseSaveFailed": "Ese cambio en el caso no se guardó.",
+      "activityFailed": "Esa entrada de actividad no se guardó.",
+      "reportFailed": "Ese informe no se guardó.",
+      "archiveFailed": "El caso no se archivó. Sigue en la cola."
     },
     "onboarding": {
       "title": "Incorporación profesional",

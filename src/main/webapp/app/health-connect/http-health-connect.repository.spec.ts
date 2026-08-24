@@ -2,16 +2,55 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
+import { AlertService } from 'app/core/util/alert.service';
 import { HttpHealthConnectRepository } from './http-health-connect.repository';
 
 describe('HttpHealthConnectRepository', () => {
   let repository: HttpHealthConnectRepository;
   let httpMock: HttpTestingController;
+  let alerts: string[];
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting(), HttpHealthConnectRepository] });
+    // AlertService is stubbed rather than real: it pulls in TranslateService, and what these assert
+    // is the repository's behaviour, not how an alert is rendered. `alerts` is captured so a test
+    // can check a WRITE failure reports through here and not through the collection-level error.
+    alerts = [];
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        HttpHealthConnectRepository,
+        {
+          provide: AlertService,
+          useValue: { addAlert: (a: { translationKey?: string }) => alerts.push(a.translationKey ?? ''), showToast: () => undefined },
+        },
+      ],
+    });
     repository = TestBed.inject(HttpHealthConnectRepository);
     httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  it('does NOT blank the collection when a WRITE fails', () => {
+    // The regression this exists for, found by clicking Archive on the quality stack. Every mutation
+    // used to call `this.error.set(...)`, and `this.error` is what asyncState.status reads to choose
+    // between the list and "Unable to load this information" — so one failed write replaced the
+    // whole case queue with an error panel, Retry re-ran the load and never cleared the signal, and
+    // only a full page reload brought the list back.
+    //
+    // A LOAD failure blanking the collection is right: there is nothing to show. A WRITE failure is
+    // not: the data on screen is still there and still correct.
+    // flushInitialLoad puts case-1 in the queue; without a real case archiveCase returns at its
+    // guard and the test passes while exercising nothing.
+    flushInitialLoad();
+    expect(repository.asyncState().status).not.toBe('error');
+
+    expect(repository.archiveCase('case-1', 'a reason')).toBe(true);
+    httpMock
+      .match(request => request.url.includes('archive'))
+      .forEach(request => request.flush({ message: 'denied' }, { status: 403, statusText: 'Forbidden' }));
+
+    expect(repository.asyncState().status).not.toBe('error');
+    expect(alerts).toContain('healthConnect.toast.archiveFailed');
   });
 
   afterEach(() => httpMock.verify());
