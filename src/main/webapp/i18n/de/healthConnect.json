@@ -570,6 +570,14 @@
         "status": "Status",
         "finishFirst": "Erfüllen Sie alle oben genannten Anforderungen, bevor Sie absenden."
       }
+    },
+    "caseQueue": {
+      "archive": {
+        "title": "Diesen Fall archivieren",
+        "message": "Er verlässt die Warteliste und bleibt in der Patientenakte. Geben Sie an, warum — damit die nächste Fachkraft es weiß.",
+        "label": "Grund",
+        "confirm": "Archivieren"
+      }
     }
   }
 }

@@ -288,7 +288,7 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     return clinicalReport;
   }
 
-  archiveCase(id: string): boolean {
+  archiveCase(id: string, _reason: string): boolean {
     if (!this.findCase(id) || this.archivedCaseIds().has(id)) {
       return false;
     }

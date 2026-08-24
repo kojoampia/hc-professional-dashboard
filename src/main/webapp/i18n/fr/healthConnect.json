@@ -570,6 +570,14 @@
         "status": "Statut",
         "finishFirst": "Complétez toutes les exigences ci-dessus avant de soumettre."
       }
+    },
+    "caseQueue": {
+      "archive": {
+        "title": "Archiver ce dossier",
+        "message": "Il quitte la file d'attente et reste au dossier du patient. Indiquez pourquoi, afin que le prochain clinicien qui l'ouvre le sache.",
+        "label": "Motif",
+        "confirm": "Archiver"
+      }
     }
   }
 }

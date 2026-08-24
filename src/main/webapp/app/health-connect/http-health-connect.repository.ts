@@ -353,12 +353,35 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
     return optimistic;
   }
 
-  archiveCase(id: string): boolean {
-    // No archive endpoint specced — same client-side-only behavior as the mock.
+  /**
+   * Retires a case, on the server.
+   *
+   * <p>Until 2026-08-23 this only added the id to a local Set, with "No archive endpoint specced"
+   * written beside it — true when it was written, and it had stopped being true on 2026-08-22. The
+   * effect was that a case one clinician retired was still in every other clinician's queue, and
+   * came back for the first clinician on reload.</p>
+   *
+   * <p>The Set stays, now as an optimistic overlay rather than the whole truth: the row leaves the
+   * queue on the click instead of after a round trip, and goes back if the server refuses. Without
+   * the rollback a failed archive would look exactly like a successful one until a reload
+   * contradicted it — which is the failure mode the old implementation had permanently.</p>
+   */
+  archiveCase(id: string, reason: string): boolean {
     if (!this.findCase(id) || this.archivedCaseIds().has(id)) {
       return false;
     }
     this.archivedCaseIds.update(ids => new Set(ids).add(id));
+
+    this.clinicalCaseService.archive(id, reason).subscribe({
+      error: () => {
+        this.archivedCaseIds.update(ids => {
+          const next = new Set(ids);
+          next.delete(id);
+          return next;
+        });
+        this.error.set(`Failed to archive case ${id}`);
+      },
+    });
     return true;
   }
 

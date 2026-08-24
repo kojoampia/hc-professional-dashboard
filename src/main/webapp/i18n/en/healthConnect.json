@@ -570,6 +570,14 @@
         "status": "Status",
         "finishFirst": "Finish every requirement above before submitting."
       }
+    },
+    "caseQueue": {
+      "archive": {
+        "title": "Archive this case",
+        "message": "It leaves the queue and stays on the patient’s record. Say why, so the next clinician to open the record knows.",
+        "label": "Reason",
+        "confirm": "Archive"
+      }
     }
   }
 }
