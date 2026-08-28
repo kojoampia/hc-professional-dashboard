@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -25,7 +25,7 @@ const isRosterScope = (value: string | null): value is RosterScope => value === 
 @Component({
   standalone: true,
   selector: 'hpd-case-queue-page',
-  imports: [AsyncStateComponent, DataTableComponent, MatIconModule, StatCardRowComponent, TranslateModule],
+  imports: [AsyncStateComponent, DataTableComponent, MatIconModule, RouterOutlet, StatCardRowComponent, TranslateModule],
   template: `
     <main class="w-full px-4 py-8 md:px-8">
       <h1 class="sr-only">{{ 'healthConnect.case.queue' | translate }}</h1>
@@ -75,6 +75,13 @@ const isRosterScope = (value: string | null): value is RosterScope => value === 
         </hpd-async-state>
       </div>
     </main>
+
+    <!--
+      The case-detail overlay renders here. It is fixed-positioned, so it covers the viewport
+      rather than appearing at the end of this page — and because it is a child route, the queue
+      above stays mounted with its filters and scroll position intact while it is open.
+    -->
+    <router-outlet />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -152,7 +159,11 @@ export default class CaseQueuePageComponent {
 
   handleAction(event: DataTableActionEvent<CaseQueueRow>): void {
     if (event.actionId === 'view') {
-      void this.router.navigate(['/cases', event.row.id]);
+      // preserve: the status and scope filters live in the query string, and the queue renders
+      // from them underneath the overlay. Dropping them here re-filtered the list to "all cases"
+      // the instant a row was clicked — the list visibly changing because you looked at one of
+      // its rows. Closing preserves them too; see the overlay host's close().
+      void this.router.navigate(['/cases', event.row.id], { queryParamsHandling: 'preserve' });
       return;
     }
     if (!this.canManageCases() || event.row.status !== 'closed') {

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -115,11 +115,34 @@ export default class CaseDetailPageComponent {
     diagnosis: new FormControl('', { nonNullable: true }),
     recommendationIds: new FormControl<readonly string[]>([], { nonNullable: true }),
   });
+  /** Set once the form has been filled from the loaded case, so a later emission cannot refill it. */
+  private hydrated = false;
+
+  /**
+   * Fill the form when the case arrives, which is not necessarily when this component is created.
+   *
+   * <p>This was a bare read in the constructor. That works when the case is already cached — which
+   * it is when you click a row in the queue — and fails silently on a <b>cold load</b>: a deep
+   * link, a refresh, or a bookmark. The repository has not fetched yet, the read returns
+   * {@code undefined}, every field is left empty, and nothing ever looks again, because a computed
+   * signal that nothing subscribes to does not re-render a reactive form. The result was a record
+   * that rendered blank with a live Save button, and <b>saving wrote the blanks over the case</b>.
+   *
+   * <p>Two guards, and both are load-bearing. {@code hydrated} stops a second emission resetting
+   * the form under the clinician mid-edit; {@code form.dirty} covers the narrower race where they
+   * started typing into the empty form before the response landed. Neither alone is enough: the
+   * first does nothing if the case arrives twice before anyone types, the second does nothing if
+   * they have typed nothing yet.
+   */
   constructor() {
-    const item = this.clinicalCase();
-    if (item) {
+    effect(() => {
+      const item = this.clinicalCase();
+      if (!item || this.hydrated || this.form.dirty) {
+        return;
+      }
+      this.hydrated = true;
       this.form.setValue({ symptoms: item.symptoms, diagnosis: item.diagnosis, recommendationIds: item.recommendationIds });
-    }
+    });
   }
   save(): void {
     if (this.clinicalCase() && this.canManageCases()) {

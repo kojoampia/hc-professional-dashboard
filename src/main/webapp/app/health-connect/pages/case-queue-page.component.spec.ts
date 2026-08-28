@@ -95,7 +95,9 @@ describe('CaseQueuePageComponent', () => {
       relativeTo: route,
       queryParams: { status: 'open', scope: 'mine' },
     });
-    expect(router.navigate).toHaveBeenNthCalledWith(3, ['/cases', 'case-kojo-urgent']);
+    // preserve: the queue keeps rendering beneath the overlay, so opening a case must not drop
+    // the status/scope filters and silently re-list every case.
+    expect(router.navigate).toHaveBeenNthCalledWith(3, ['/cases', 'case-kojo-urgent'], { queryParamsHandling: 'preserve' });
   });
 
   it('reopens or archives closed cases only when the approved case permission is present', () => {

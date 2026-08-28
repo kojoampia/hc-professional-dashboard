@@ -30,7 +30,18 @@ import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
       (keydown.tab)="trapFocus($event)"
     >
       <div class="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true"></div>
-      <div class="hpd-surface relative mx-auto mt-4 flex max-w-6xl flex-col overflow-hidden rounded-hpd-lg bg-white shadow-hpd-lg sm:mt-10">
+      <!--
+        80% of the viewport in both directions, centred by the 10vh margin. It was max-w-6xl with
+        content-driven height, which left a patient record — five paginated panels — in a column
+        far narrower than the screen it was opened on.
+
+        h-[80vh] is a fixed height, not a max: the header stays put and the body below it scrolls,
+        so the Print and Close buttons cannot be pushed off a long record. Print overrides both
+        dimensions in global.scss, or the printed page would be clipped to 80vh.
+      -->
+      <div
+        class="hpd-surface relative mx-auto my-[10vh] flex h-[80vh] w-[80vw] flex-col overflow-hidden rounded-hpd-lg bg-white shadow-hpd-lg"
+      >
         <header class="flex flex-wrap items-center justify-between gap-2 bg-hpd-primary px-5 py-4 text-white">
           <h1 id="hpd-route-overlay-title" class="m-0 text-[15px] font-extrabold tracking-tight text-white">
             {{ resolvedTitleKey() | translate: titleParams() }}
@@ -92,12 +103,16 @@ export default class RouteDrivenOverlayHostComponent implements AfterViewInit, O
     this.activeElement?.focus();
   }
 
+  /**
+   * Back to the list, <b>carrying the query string with us</b>.
+   *
+   * <p>The fallback branch below always did this; the {@code closeUrl} branch did not, and used
+   * {@code navigateByUrl} with a bare path, which discarded it. The effect was that closing a
+   * record cleared the filters the reader had set before opening it — a case queue scoped to "my
+   * roster" came back as "all cases", which reads as the list refreshing itself.
+   */
   close(): void {
-    if (this.closeUrl) {
-      void this.router.navigateByUrl(this.closeUrl);
-      return;
-    }
-    const closeUrl = this.clinicalCase() ? '/cases' : '/patients';
+    const closeUrl = this.closeUrl || (this.clinicalCase() ? '/cases' : '/patients');
     void this.router.navigate([closeUrl], { queryParams: this.route.snapshot.queryParams });
   }
 
