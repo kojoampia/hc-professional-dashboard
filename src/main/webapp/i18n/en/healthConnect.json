@@ -56,7 +56,6 @@
       "previous": "Previous",
       "next": "Next",
       "confirm": "Confirm",
-      "newPatient": "New patient",
       "markAllRead": "Mark all as read",
       "back": "Back"
     },
@@ -475,7 +474,7 @@
       "acknowledge": "I acknowledge"
     },
     "compliance": {
-      "title": "Compliance & operations",
+      "title": "Compliance",
       "byStatus": "Applications by status",
       "bySource": "Applications by source",
       "expiring": "Licenses lapsed or expiring within 30 days ({{count}})",
