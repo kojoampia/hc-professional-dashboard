@@ -1,3 +1,4 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -77,5 +78,85 @@ describe('CaseDetailPageComponent', () => {
 
     expect(print).toHaveBeenCalled();
     expect(fixture.nativeElement.querySelector('.hpd-no-print')).not.toBeNull();
+  });
+  /**
+   * The cold load: a deep link, a refresh or a bookmark, where the case is NOT in the cache when
+   * the component is created. Every other test here starts warm, which is why this shipped —
+   * clicking a row in the queue always finds the case already loaded, and the bug only appears
+   * when the record is opened directly.
+   */
+  it('fills the form when the case arrives after the component was created', () => {
+    const loadedCase = signal<
+      { id: string; patientId: string; symptoms: string; diagnosis: string; recommendationIds: string[] } | undefined
+    >(undefined);
+    const repository = {
+      findCase: () => loadedCase(),
+      findPatient: () => undefined,
+      recommendations: () => [],
+      updateCase: jest.fn(),
+    };
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [CaseDetailPageComponent, TranslateModule.forRoot()],
+      providers: [
+        { provide: HEALTH_CONNECT_REPOSITORY, useValue: repository },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ caseId: 'case-late' }) } } },
+        { provide: Router, useValue: router },
+        { provide: AccountService, useValue: { getAuthenticationState: () => authenticationState.asObservable() } },
+      ],
+    });
+    const late: ComponentFixture<CaseDetailPageComponent> = TestBed.createComponent(CaseDetailPageComponent);
+    late.detectChanges();
+
+    // Nothing loaded yet: the form is empty, and before the fix it stayed that way for good.
+    expect(late.componentInstance.form.getRawValue().symptoms).toBe('');
+
+    loadedCase.set({
+      id: 'case-late',
+      patientId: 'patient-kojo',
+      symptoms: 'Fasting readings creeping upward',
+      diagnosis: 'Deteriorating glycaemic control',
+      recommendationIds: ['recommendation-hba1c'],
+    });
+    late.detectChanges();
+
+    expect(late.componentInstance.form.getRawValue()).toEqual({
+      symptoms: 'Fasting readings creeping upward',
+      diagnosis: 'Deteriorating glycaemic control',
+      recommendationIds: ['recommendation-hba1c'],
+    });
+  });
+
+  it('does not overwrite what the clinician has already typed when the case lands late', () => {
+    const loadedCase = signal<
+      { id: string; patientId: string; symptoms: string; diagnosis: string; recommendationIds: string[] } | undefined
+    >(undefined);
+    const repository = {
+      findCase: () => loadedCase(),
+      findPatient: () => undefined,
+      recommendations: () => [],
+      updateCase: jest.fn(),
+    };
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [CaseDetailPageComponent, TranslateModule.forRoot()],
+      providers: [
+        { provide: HEALTH_CONNECT_REPOSITORY, useValue: repository },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ caseId: 'case-late' }) } } },
+        { provide: Router, useValue: router },
+        { provide: AccountService, useValue: { getAuthenticationState: () => authenticationState.asObservable() } },
+      ],
+    });
+    const late: ComponentFixture<CaseDetailPageComponent> = TestBed.createComponent(CaseDetailPageComponent);
+    late.detectChanges();
+
+    late.componentInstance.form.controls.symptoms.setValue('Typed before the response landed');
+    late.componentInstance.form.controls.symptoms.markAsDirty();
+    loadedCase.set({ id: 'case-late', patientId: 'patient-kojo', symptoms: 'From the server', diagnosis: 'd', recommendationIds: [] });
+    late.detectChanges();
+
+    expect(late.componentInstance.form.getRawValue().symptoms).toBe('Typed before the response landed');
   });
 });
