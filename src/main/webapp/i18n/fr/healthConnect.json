@@ -56,7 +56,6 @@
       "previous": "Précédent",
       "next": "Suivant",
       "confirm": "Confirmer",
-      "newPatient": "Nouveau patient",
       "markAllRead": "Tout marquer comme lu",
       "back": "Retour"
     },
@@ -475,7 +474,7 @@
       "acknowledge": "J'accepte"
     },
     "compliance": {
-      "title": "Conformité et opérations",
+      "title": "Conformité",
       "byStatus": "Candidatures par statut",
       "bySource": "Candidatures par source",
       "expiring": "Licences expirées ou expirant sous 30 jours ({{count}})",

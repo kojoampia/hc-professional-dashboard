@@ -56,7 +56,6 @@
       "previous": "Anterior",
       "next": "Siguiente",
       "confirm": "Confirmar",
-      "newPatient": "Nuevo paciente",
       "markAllRead": "Marcar todo como leído",
       "back": "Atrás"
     },
@@ -475,7 +474,7 @@
       "acknowledge": "Lo confirmo"
     },
     "compliance": {
-      "title": "Cumplimiento y operaciones",
+      "title": "Cumplimiento",
       "byStatus": "Solicitudes por estado",
       "bySource": "Solicitudes por origen",
       "expiring": "Licencias vencidas o por vencer en 30 días ({{count}})",

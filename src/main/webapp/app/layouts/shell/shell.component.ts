@@ -3,7 +3,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 
 import { AccountService } from 'app/core/auth/account.service';
-import { hasHealthConnectPermission } from 'app/health-connect/authority-role';
 import { MessagesApiService } from 'app/health-connect/api/messages-api.service';
 import SharedModule from 'app/shared/shared.module';
 import FooterComponent from '../footer/footer.component';
@@ -48,7 +47,6 @@ export default class ShellComponent implements OnInit {
   sidebarCollapsed = false;
   crumbKey: string | null = null;
   titleKey = 'global.title';
-  canCreatePatients = false;
   authenticated = false;
 
   readonly messagesApi = inject(MessagesApiService);
@@ -63,7 +61,6 @@ export default class ShellComponent implements OnInit {
 
     this.accountService.getAuthenticationState().subscribe(account => {
       this.authenticated = account !== null;
-      this.canCreatePatients = hasHealthConnectPermission(account?.authorities, 'managePatient');
       this.syncPageHeader();
     });
 
