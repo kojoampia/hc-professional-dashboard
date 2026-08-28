@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -22,7 +22,7 @@ const isPatientSex = (value: string | null): value is PatientSex => value === 'f
 @Component({
   standalone: true,
   selector: 'hpd-patient-directory-page',
-  imports: [AsyncStateComponent, DataTableComponent, FormsModule, PaginationComponent, SearchInputComponent, TranslateModule],
+  imports: [AsyncStateComponent, DataTableComponent, FormsModule, PaginationComponent, RouterOutlet, SearchInputComponent, TranslateModule],
   template: `
     <main class="w-full px-4 py-8 md:px-8">
       <div class="rounded-hpd border border-hpd-border bg-white p-6 shadow-hpd-sm">
@@ -80,6 +80,13 @@ const isPatientSex = (value: string | null): value is PatientSex => value === 'f
         </hpd-async-state>
       </div>
     </main>
+
+    <!--
+      The patient-record overlay renders here. Fixed-positioned, so it covers the viewport rather
+      than trailing this page — and as a child route it leaves the directory above mounted, with
+      its search, filters, page number and scroll position untouched while a record is open.
+    -->
+    <router-outlet />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -150,7 +157,10 @@ export default class PatientDirectoryPageComponent {
 
   handleAction(event: DataTableActionEvent<PatientListRow>): void {
     if (event.actionId === 'view') {
-      void this.router.navigate(['/patients', event.row.id]);
+      // preserve: the search text, gender filter, children-only flag and page number are all in
+      // the query string, and the directory keeps rendering from them beneath the record overlay.
+      // Without this, opening a record reset the list to page 1 unfiltered.
+      void this.router.navigate(['/patients', event.row.id], { queryParamsHandling: 'preserve' });
     }
   }
 

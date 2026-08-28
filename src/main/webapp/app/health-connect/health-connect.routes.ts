@@ -48,31 +48,43 @@ const routes: Routes = [
     loadComponent: dashboardPage,
     data: { ...protectedFeatureRoute.data, titleKey: 'healthConnect.navigation.dashboard' },
   },
+  /**
+   * The two list surfaces and their record overlays.
+   *
+   * <p><b>The overlay is a CHILD of its list, not a sibling of it.</b> While they were siblings,
+   * opening a record unmounted the list that opened it: the queue vanished behind the modal, its
+   * scroll position was lost, and closing rebuilt it from scratch. Nesting keeps the list mounted
+   * and rendering underneath, which is what a modal is supposed to mean — the overlay itself is
+   * {@code position: fixed}, so it still covers the page from wherever the outlet sits in the DOM.
+   *
+   * <p>Do not flatten these back. The list component holds the filter state that the query string
+   * drives, and a component that is destroyed on every record view cannot hold anything.
+   */
   {
     path: 'patients',
     ...protectedFeatureRoute,
     loadComponent: patientDirectoryPage,
     data: { ...protectedFeatureRoute.data, titleKey: 'healthConnect.patient.directory' },
-  },
-  {
-    path: 'patients/:patientId',
-    ...protectedFeatureRoute,
-    loadComponent: overlayHost,
-    data: {
-      ...protectedFeatureRoute.data,
-      titleKey: 'healthConnect.patient.record',
-      closeUrl: '/patients',
-    },
     children: [
       {
-        path: '',
-        loadComponent: patientRecordPage,
-        data: { titleKey: 'healthConnect.patient.identity' },
-      },
-      {
-        path: 'cases/:caseId',
-        loadComponent: caseDetailPage,
-        data: { titleKey: 'healthConnect.case.detail' },
+        path: ':patientId',
+        loadComponent: overlayHost,
+        data: {
+          titleKey: 'healthConnect.patient.record',
+          closeUrl: '/patients',
+        },
+        children: [
+          {
+            path: '',
+            loadComponent: patientRecordPage,
+            data: { titleKey: 'healthConnect.patient.identity' },
+          },
+          {
+            path: 'cases/:caseId',
+            loadComponent: caseDetailPage,
+            data: { titleKey: 'healthConnect.case.detail' },
+          },
+        ],
       },
     ],
   },
@@ -81,17 +93,17 @@ const routes: Routes = [
     ...protectedFeatureRoute,
     loadComponent: caseQueuePage,
     data: { ...protectedFeatureRoute.data, titleKey: 'healthConnect.case.queue' },
-  },
-  {
-    path: 'cases/:caseId',
-    ...protectedFeatureRoute,
-    loadComponent: overlayHost,
-    data: {
-      ...protectedFeatureRoute.data,
-      titleKey: 'healthConnect.case.detail',
-      closeUrl: '/cases',
-    },
-    children: [{ path: '', loadComponent: caseDetailPage, data: { titleKey: 'healthConnect.case.detail' } }],
+    children: [
+      {
+        path: ':caseId',
+        loadComponent: overlayHost,
+        data: {
+          titleKey: 'healthConnect.case.detail',
+          closeUrl: '/cases',
+        },
+        children: [{ path: '', loadComponent: caseDetailPage, data: { titleKey: 'healthConnect.case.detail' } }],
+      },
+    ],
   },
   {
     path: 'duty-roster',

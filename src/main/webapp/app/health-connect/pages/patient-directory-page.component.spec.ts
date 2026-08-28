@@ -100,6 +100,8 @@ describe('PatientDirectoryPageComponent', () => {
     });
 
     component.handleAction({ actionId: 'view', row: component.directoryPage().items[0] });
-    expect(router.navigate).toHaveBeenLastCalledWith(['/patients', 'patient-ama']);
+    // preserve: search text, gender, children-only and page all live in the query string, and the
+    // directory stays mounted behind the record overlay.
+    expect(router.navigate).toHaveBeenLastCalledWith(['/patients', 'patient-ama'], { queryParamsHandling: 'preserve' });
   }));
 });

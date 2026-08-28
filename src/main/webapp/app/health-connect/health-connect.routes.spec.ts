@@ -24,11 +24,32 @@ import { HEALTH_CONNECT_REPOSITORY } from './health-connect.repository';
 })
 class HealthConnectRouteTestHostComponent {}
 
+/** A JHipster account that clears both guards, shared by the two routing tests below. */
+const authorizedAccount = () => {
+  const account = {
+    activated: true,
+    authorities: [Authority.USER],
+    email: 'professional@example.test',
+    firstName: null,
+    langKey: 'en',
+    lastName: null,
+    login: 'professional',
+    imageUrl: null,
+  };
+  return {
+    identity: jest.fn(() => of(account)),
+    getAuthenticationState: jest.fn(() => of(account)),
+    hasAnyAuthority: jest.fn(() => true),
+  };
+};
+
 describe('HealthConnect feature routes', () => {
   const find = (path: string): (typeof routes)[number] => routes.find(route => route.path === path)!;
 
   it('defines all lazy protected feature entry URLs without replacing generated routes', () => {
-    const requiredPaths = ['dashboard', 'patients', 'patients/:patientId', 'cases', 'cases/:caseId', 'duty-roster'];
+    // The record overlays are CHILDREN of their lists now, so they are not in this list; the
+    // guards and authorities they need come from the parent that renders them.
+    const requiredPaths = ['dashboard', 'patients', 'cases', 'duty-roster'];
 
     for (const path of requiredPaths) {
       const route = find(path);
@@ -51,13 +72,21 @@ describe('HealthConnect feature routes', () => {
     }
   });
 
-  it('keeps patient-scoped and standalone case detail routes available through route-driven overlays', () => {
-    const patientDetail = find('patients/:patientId');
-    const standaloneCase = find('cases/:caseId');
+  /**
+   * The overlays hang off their lists rather than sitting beside them. Flattening this back is the
+   * regression: as siblings, opening a record unmounted the list that opened it, so the queue
+   * vanished behind the modal and came back rebuilt and unfiltered.
+   */
+  it('nests both record overlays under the list that opens them', () => {
+    const patientDetail = (find('patients').children as Routes)[0];
+    const caseDetail = (find('cases').children as Routes)[0];
 
-    expect((patientDetail.children as Routes)[1].path).toBe('cases/:caseId');
+    expect(patientDetail.path).toBe(':patientId');
     expect(patientDetail.data?.['closeUrl']).toBe('/patients');
-    expect(standaloneCase.data?.['closeUrl']).toBe('/cases');
+    expect((patientDetail.children as Routes)[1].path).toBe('cases/:caseId');
+
+    expect(caseDetail.path).toBe(':caseId');
+    expect(caseDetail.data?.['closeUrl']).toBe('/cases');
   });
 
   it('resolves every protected entry URL for an authorized JHipster user', async () => {
@@ -68,36 +97,7 @@ describe('HealthConnect feature routes', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter(routes),
-        {
-          provide: AccountService,
-          useValue: {
-            identity: jest.fn(() =>
-              of({
-                activated: true,
-                authorities: [Authority.USER],
-                email: 'professional@example.test',
-                firstName: null,
-                langKey: 'en',
-                lastName: null,
-                login: 'professional',
-                imageUrl: null,
-              }),
-            ),
-            getAuthenticationState: jest.fn(() =>
-              of({
-                activated: true,
-                authorities: [Authority.USER],
-                email: 'professional@example.test',
-                firstName: null,
-                langKey: 'en',
-                lastName: null,
-                login: 'professional',
-                imageUrl: null,
-              }),
-            ),
-            hasAnyAuthority: jest.fn(() => true),
-          },
-        },
+        { provide: AccountService, useValue: authorizedAccount() },
         { provide: StateStorageService, useValue: { storeUrl: jest.fn() } },
       ],
     }).compileComponents();
@@ -117,5 +117,33 @@ describe('HealthConnect feature routes', () => {
       await router.navigateByUrl(url);
       expect(router.url).toBe(url);
     }
+  });
+
+  it('leaves the list rendered underneath while a record overlay is open', async () => {
+    await TestBed.configureTestingModule({
+      imports: [HealthConnectRouteTestHostComponent, TranslateModule.forRoot()],
+      providers: [
+        { provide: HEALTH_CONNECT_REPOSITORY, useExisting: FakeHealthConnectRepository },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter(routes),
+        { provide: AccountService, useValue: authorizedAccount() },
+        { provide: StateStorageService, useValue: { storeUrl: jest.fn() } },
+      ],
+    }).compileComponents();
+    const fixture: ComponentFixture<HealthConnectRouteTestHostComponent> = TestBed.createComponent(HealthConnectRouteTestHostComponent);
+    const router = TestBed.inject(Router);
+    fixture.detectChanges();
+
+    await router.navigateByUrl('/cases');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.hpd-case-queue__scope')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('[role="dialog"]')).toBeNull();
+
+    await router.navigateByUrl('/cases/case-1');
+    fixture.detectChanges();
+    // Both at once. The queue is still there — that is the whole point of the nesting.
+    expect(fixture.nativeElement.querySelector('[role="dialog"]')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.hpd-case-queue__scope')).not.toBeNull();
   });
 });

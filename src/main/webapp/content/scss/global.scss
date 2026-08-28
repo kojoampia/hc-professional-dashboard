@@ -157,7 +157,12 @@ bars, chart fills).
   .hpd-route-overlay > div {
     position: static !important;
     display: block !important;
+    // The panel is sized 80vw x 80vh on screen; both have to go here, or the printed record is
+    // clipped to the height of a viewport that no longer exists on paper. The margin goes with
+    // them — 10vh of leading whitespace at the top of a printout is not a margin, it is a gap.
     width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
     overflow: visible !important;
     padding: 0 !important;
     background: var(--hpd-color-surface) !important;
