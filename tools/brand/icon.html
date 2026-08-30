@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+  Abofonsa BridgeCare Professional — app icon source.
+
+  The badge in brand.png sits on an opaque WHITE square with a ~6px margin, so it cannot simply be
+  scaled down: the corners would ship as white, which reads as a missing image against a dark tab
+  strip and looks nothing like the navy identity the manifest declares.
+
+  So the badge is clipped to a circle and dropped on the brand navy. Two numbers below are measured
+  from the source rather than chosen:
+
+    - The gold ring's outer edge is at x=6 of 383, i.e. a radius of 185.5 against the inscribed
+      circle's 191.5. Scaling to 103.5% puts the gold exactly on the clip edge; 104% is used so
+      that rounding at small sizes never leaves a pale fringe outside the ring.
+    - #0d3058 is the --hpd-color-primary token, and the same value manifest.webapp declares as
+      theme_color and background_color. The navy inside the badge artwork is (13,47,83), so the
+      field and the ring band agree.
+
+  This is the ONLY source: generate-icons.sh renders every size from it, 16px included. That is a
+  deliberate, recorded trade-off (see docs/brand-update.md § W1) — the badge's ring legend and
+  bridge cabling do not survive below about 48px, and a raster source offers no way to simplify
+  them. The escape hatch, if the small end ever needs to be legible, is hc-patient's approach:
+  a second hand-drawn SVG source used for 16px alone.
+-->
+<style>
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #0d3058;
+  }
+  .badge {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  .badge img {
+    width: 104%;
+    height: 104%;
+    margin: -2%;
+    display: block;
+  }
+</style>
+<div class="badge"><img src="brand.png" alt="" /></div>

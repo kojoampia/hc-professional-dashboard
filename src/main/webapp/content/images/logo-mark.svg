@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Abofonsa BridgeCare — simplified brand mark for small sizes (<= 48px).
+
+  The full badge (logo.jpg) carries two rings, a wordmark and a border legend. Below about 48px all
+  of that collapses into an unreadable smudge, so this keeps only what survives: the suspension
+  bridge the brand is named for, and the star above it.
+
+  Three things here were arrived at by rendering it, not by drawing what a bridge "should" have.
+  Each earlier version read as something else entirely:
+
+    - NO SIDE SPANS — cables from the deck ends up to the tower tops are steep diagonals that
+      dominate at 40px. With them, the mark read as a tent.
+    - THE TOWERS RISE ABOVE THE CABLE. When the cable met the tower tops exactly it read as a
+      roofline, and the whole mark as a colonnade. Masts above the cable are what say "suspension
+      bridge" rather than "building".
+    - HANGERS, AND A SHALLOW CABLE. Deck, towers and a cable alone leave a void underneath and the
+      mark read as a chalice. The verticals filling that space are what make it a bridge.
+
+  The star sits in the opening between the tower tops and the cable rather than above the mark,
+  because raising it far enough to clear the masts pushed it out of the circle.
+
+  Colours are the theme's brand tokens (_tokens.scss $hc-gold / $hc-navy), not sampled from the JPEG,
+  so the mark matches the rest of the UI rather than the compression artefacts of a photograph.
+
+  Deliberately transparent: it sits inside a white circle supplied by the container
+  (.hc-shell__brand-mark), which is what puts a light mark on the navy sidebar.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-hidden="true">
+  <g fill="none" stroke="#c59437" stroke-linecap="round" stroke-linejoin="round">
+    <g stroke-width="2.2">
+      <!-- deck -->
+      <path d="M3 21H29" />
+      <!-- towers, rising above the cable -->
+      <path d="M10 21V6" />
+      <path d="M22 21V6" />
+    </g>
+    <!-- main cable, passing over the towers below their tops -->
+    <path d="M10 9Q16 14 22 9" stroke-width="1.8" />
+    <!-- hangers -->
+    <g stroke-width="1">
+      <path d="M13 10.88V21" />
+      <path d="M16 11.5V21" />
+      <path d="M19 10.88V21" />
+    </g>
+  </g>
+  <!-- star, as on the badge, nestled in the opening -->
+  <path
+    fill="#0d3058"
+    d="M16 5L16.61 6.76L18.47 6.81L17 7.94L17.54 9.72L16 8.65L14.46 9.72L15 7.94L13.53 6.81L15.39 6.76Z"
+  />
+</svg>
