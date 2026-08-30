@@ -1,10 +1,18 @@
 # robotstxt.org/
+#
+# Nothing on this portal is public. Every surface sits behind authentication, and the marketing
+# entry point for clinicians is web.abofonsa.com/careers, not this hostname — so the whole
+# application is withdrawn from search rather than disallowed path by path. The per-path list this
+# replaced also enumerated the interesting routes to anyone who read it.
+#
+# This file governs CRAWLING only. A URL linked from somewhere else can still be indexed as a bare
+# result without ever being fetched, and Disallow actually prevents a crawler from seeing a noindex
+# directive in the page. The other two layers cover that: the <meta name="robots"> in index.html,
+# and the X-Robots-Tag header in deploy/prod-server/professional.abofonsa.com.conf.
+#
+# NOTE: in production this file is SHADOWED. The nginx site serves /robots.txt from a `location =`
+# block so the answer survives the container being down. The two are kept in step by hand; this
+# copy is what the local and quality stacks serve.
 
 User-agent: *
-Disallow: /api/account
-Disallow: /api/account/change-password
-Disallow: /api/account/sessions
-Disallow: /api/logs/
-Disallow: /api/users/
-Disallow: /management/
-Disallow: /v3/api-docs/
+Disallow: /

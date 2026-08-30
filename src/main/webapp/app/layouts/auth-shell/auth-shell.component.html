@@ -13,12 +13,19 @@
   -->
   <section class="hpd-auth-brand hidden flex-col justify-center px-10 py-14 text-white lg:flex xl:px-16">
     <div class="mx-auto w-full max-w-[34rem]">
-      <div
-        class="mb-7 grid h-16 w-16 place-items-center rounded-2xl bg-hpd-gold-bright text-[22px] font-extrabold text-hpd-primary-deep shadow-hpd-lg"
+      <!--
+        The full badge here rather than the simplified mark: at 64px the ring legend and the bridge
+        cabling are legible, which is the whole reason the badge exists. The sidebar's 38px tile
+        uses logo-mark.svg instead, where they are not.
+      -->
+      <img
+        src="content/images/icon-192x192.png"
+        alt=""
+        width="64"
+        height="64"
+        class="mb-7 h-16 w-16 rounded-2xl shadow-hpd-lg"
         aria-hidden="true"
-      >
-        AB
-      </div>
+      />
       <p class="mb-5 text-[11.5px] font-bold uppercase tracking-[0.19em] text-hpd-gold-bright" jhiTranslate="healthConnect.brand.tagline">
         Clinician workspace
       </p>

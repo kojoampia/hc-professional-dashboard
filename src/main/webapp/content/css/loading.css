@@ -133,7 +133,10 @@
   left: -8px;
   width: 24px;
   height: 10px;
-  background-image: url('/content/images/logo.png');
+  /* The travelling dots of the pre-boot spinner. This was logo.png — the old blue Health Connect
+     medical cross, which survived the BridgeCare rebrand because nothing but this one rule
+     referenced it and it is only visible for the second before Angular takes over. */
+  background-image: url('/content/images/logo-mark.svg');
   background-size: contain;
   -webkit-animation: lds-pacman-3 1s linear infinite;
   animation: lds-pacman-3 1.5s linear infinite;

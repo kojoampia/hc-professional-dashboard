@@ -3,13 +3,29 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>professional Dashboard</title>
-    <meta name="description" content="Health Connect professional Dashboard by JojoAddison.Net" />
+    <title>Abofonsa BridgeCare Professional</title>
+    <meta
+      name="description"
+      content="Abofonsa BridgeCare Professional — the clinician portal for Abofonsa BridgeCare home healthcare: patient records, clinical cases, duty rosters and credentialing in one place."
+    />
+    <!--
+      Every surface here is behind authentication and the marketing entry point is
+      web.abofonsa.com/careers, not this hostname, so the portal is withdrawn from search entirely.
+      This tag is one of three layers and it is the one that stops *indexing*; robots.txt only stops
+      crawling, and a Disallow'd URL can still be indexed from an inbound link. The other two are
+      robots.txt and the X-Robots-Tag header in deploy/prod-server/professional.abofonsa.com.conf.
+    -->
+    <meta name="robots" content="noindex, nofollow" />
     <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#0d3058" />
     <base href="/" />
-    <link rel="icon" href="favicon.ico" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <!-- content/ is copied wholesale by angular.json's assets; root-level PNGs are NOT, so these
+         must point here or they 404 in a production build. -->
+    <link rel="icon" type="image/png" sizes="32x32" href="content/images/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="content/images/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="content/images/apple-icon-180x180.png" />
     <link rel="manifest" href="manifest.webapp" />
     <link rel="stylesheet" href="content/css/loading.css" />
     <!-- jhipster-needle-add-resources-to-root - JHipster will add new resources here -->
@@ -39,65 +55,23 @@
       </div>
       <div class="app-loading">
         <div id="jhipster-error" style="display: none">
-          <!-- This content is for troubleshooting purpose and will be removed when app renders -->
-          <h1>An error has occurred :-(</h1>
-          <h2>Usual error causes</h2>
-          <ol>
-            <li>
-              You started the application from an IDE and you didn't run <code style="color: red">npm start</code> or
-              <code style="color: red">npm run webapp:build</code>.
-            </li>
-            <li>
-              You had a network error while running <code style="color: red">npm install</code>. If you are behind a corporate proxy, it is
-              likely that this error was caused by your proxy. Have a look at the JHipster error logs, you will probably have the cause of
-              the error.
-            </li>
-            <li>
-              You installed a Node.js version that doesn't work with JHipster: please use an LTS (long-term support) version, as it's the
-              only version we support.
-            </li>
-          </ol>
-          <h2>Building the client side code again</h2>
-          <p>If you want to go fast, run <code style="color: red">./mvnw</code> to build and run everything.</p>
-          <p>If you want to have more control, so you can debug your issue more easily, you should follow the following steps:</p>
-          <ol>
-            <li>Install npm dependencies with the command <code style="color: red">npm install</code></li>
-            <li>
-              Build the client with the command <code style="color: red">npm run webapp:build</code> or
-              <code style="color: red">npm start</code>
-            </li>
-            <li>Start the server with <code style="color: red">./mvnw</code> or using your IDE</li>
-          </ol>
+          <!--
+            Shown by content/js/boot.js only if the bundle has not booted after four seconds.
+            Without it a failed load is a blank page, indistinguishable from a slow one.
 
-          <h2>Getting more help</h2>
+            KEEP id="jhipster-error" — boot.js:22 looks the element up by that id, and renaming it
+            breaks the error path silently, with nothing failing to build.
 
-          <h3>If you have a question on how to use JHipster</h3>
-          <p>
-            Go to Stack Overflow with the
-            <a href="http://stackoverflow.com/tags/jhipster" target="_blank" rel="noopener noreferrer">"jhipster"</a> tag.
+            This text is deliberately English-only. It renders before Angular and ngx-translate
+            boot, so no translation machinery exists yet to render a key; the <noscript> line below
+            is English for the same reason. It is the one place the four-languages rule cannot
+            apply. Keep it short, and keep it free of anything a signed-out visitor should not read.
+          -->
+          <h1 style="font-size: 20px; font-weight: 700; color: #0d3058">Abofonsa BridgeCare Professional</h1>
+          <p style="margin-top: 12px; color: #4a5568">
+            The portal could not finish loading. This is usually a temporary network problem — please refresh the page.
           </p>
-
-          <h3>If you have a bug or a feature request</h3>
-          <p>
-            First read our
-            <a href="https://github.com/jhipster/generator-jhipster/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer"
-              >contributing guidelines</a
-            >.
-          </p>
-          <p>
-            Then, fill a ticket on our
-            <a href="https://github.com/jhipster/generator-jhipster/issues/new/choose" target="_blank" rel="noopener noreferrer"
-              >bug tracker</a
-            >, we'll be happy to resolve your issue!
-          </p>
-
-          <h3>If you want to chat with contributors and other users</h3>
-          <p>
-            Join our chat room on
-            <a href="https://gitter.im/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer">Gitter.im</a>. Please note
-            that this is a public chat room, and that we expect you to respect other people and write in a correct English language!
-          </p>
-          <!-- end of troubleshooting content -->
+          <p style="margin-top: 12px; color: #4a5568">If it keeps happening, contact your Abofonsa BridgeCare administrator.</p>
         </div>
       </div>
     </hpd-app>

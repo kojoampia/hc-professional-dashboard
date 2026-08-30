@@ -28,11 +28,15 @@
     [attr.aria-label]="collapsed ? ('healthConnect.navigation.dashboard' | translate) : null"
     (click)="requestClose()"
   >
-    <span
-      class="grid h-[38px] w-[38px] flex-none place-items-center rounded-[10px] bg-hpd-gold-bright text-[15px] font-extrabold text-hpd-primary-deep"
-      aria-hidden="true"
-      >AB</span
-    >
+    <!--
+      The brand mark, not a lettermark. The container stays light: logo-mark.svg is transparent and
+      its star is navy #0d3058, so dropped straight onto the navy sidebar the star disappears into
+      the background. Still aria-hidden — the wordmark beside it already names the product, and
+      announcing both would read it twice.
+    -->
+    <span class="grid h-[38px] w-[38px] flex-none place-items-center rounded-[10px] bg-white" aria-hidden="true">
+      <img src="content/images/logo-mark.svg" alt="" width="26" height="26" />
+    </span>
     <span class="min-w-0" [ngClass]="labelClass">
       <span class="block truncate text-[15px] font-extrabold leading-tight">
         <span class="text-white" jhiTranslate="healthConnect.brand.name">Abofonsa</span>&nbsp;<span class="text-hpd-gold-bright"
