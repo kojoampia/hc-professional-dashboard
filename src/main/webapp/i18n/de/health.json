@@ -23,10 +23,10 @@
       "status": "Status"
     },
     "status": {
-      "UNKNOWN": "UNKNOWN",
-      "UP": "UP",
-      "OUT_OF_SERVICE": "OUT_OF_SERVICE",
-      "DOWN": "DOWN"
+      "UNKNOWN": "Unbekannt",
+      "UP": "Aktiv",
+      "OUT_OF_SERVICE": "Außer Betrieb",
+      "DOWN": "Ausgefallen"
     }
   }
 }

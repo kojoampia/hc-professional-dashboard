@@ -23,26 +23,36 @@ import { dirname, join, relative, resolve } from 'node:path';
  * the English inside it as a build-time fallback. Flagging that fallback would report 269 false
  * positives and the spec would be deleted within a week, so the tag stack tracks it.
  *
- * <p>It checks four things, mirroring the four `mobile/` needed:
+ * <p>It checks five things — the four `mobile/` needed, plus bound visible attributes:
  *
  * <ol>
  *   <li><strong>Text nodes</strong> — `>Sign in<`, outside any translated subtree.
  *   <li><strong>Visible attributes</strong> — `placeholder="Write a reply"`. Also catches a raw key
  *       used as a literal value (`aria-label="healthConnect.pagination.page"`), which a screen
  *       reader reads out verbatim.
- *   <li><strong>Interpolation expressions</strong> — `{{ mine ? 'You' : name }}`. Stripping
- *       `{{ … }}` wholesale as "already translated" is true of the common case and false of every
- *       ternary and every `??` fallback.
+ *   <li><strong>Bound visible attributes</strong> — `[attr.aria-label]="open ? 'Collapse' : 'Expand'"`.
+ *       An expression, so it is judged the way interpolations are rather than the way literal
+ *       attributes are.
+ *   <li><strong>Interpolation expressions</strong> — `{{ mine ? 'You' : name }}`, and the same shape
+ *       in an `@let`. Stripping `{{ … }}` wholesale as "already translated" is true of the common
+ *       case and false of every ternary and every `??` fallback.
  *   <li><strong>TypeScript prose</strong> — `return 'No shift assigned'` in a component body, which
  *       no amount of template scanning can see.
  * </ol>
  *
- * <p><strong>What it cannot do.</strong> Rule 4 is a heuristic, not a parser: it looks for prose
- * *shape* — a capitalised word followed by lower-case words — plus fallback literals after `||` and
- * `??`. A single capitalised word in TypeScript (`'Offline'`, `'GET'`, `'PENDING'`) is not flagged,
- * because in that position it is far more often an enum or a header than a caption. Strings
- * assembled from fragments at runtime are invisible to it, and services outside component files are
- * not scanned.
+ * <p><strong>What is scanned.</strong> Rules 1–4 need a template, so they run over every file that
+ * has one, inline (backtick **or** quoted — `template: '<hpd-main></hpd-main>'` is a real component
+ * in this repo) or by `templateUrl`. Rule 5 runs over **every** non-spec `.ts` file under `app/`,
+ * services and models included: a component with no template of its own is still a component, and a
+ * caption assembled in a service reaches a screen exactly like one assembled in a component. Two
+ * things are deliberately outside that: `console.*` arguments, which reach a console no clinician
+ * opens, and `health-connect/testing/`, which is test support imported by specs alone.
+ *
+ * <p><strong>What it cannot do.</strong> Rule 5 is a heuristic, not a parser: it looks for prose
+ * *shape* — a capitalised word followed by further words — plus fallback literals after `||` and
+ * `??`. A single capitalised word (`'Offline'`, `'GET'`, `'PENDING'`) is not flagged, because in
+ * that position it is far more often an enum or a header than a caption. Strings assembled from
+ * fragments at runtime are invisible to it.
  *
  * @see docs/CLAUDE.md § Cross-repo invariants, "Four languages, everywhere, always"
  */
@@ -107,10 +117,15 @@ const NOT_TRANSLATABLE = [
  * Attributes whose value is displayed or read aloud.
  *
  * `name`, `type`, `class`, `role`, `data-cy` and friends are not, and listing them would produce
- * pure noise. Only the *unbound* form is checked — `[title]="expr"` is an expression, and an
- * expression that needs translating goes through the pipe, which this cannot and need not judge.
+ * pure noise. `matTooltip` is here because Angular Material is the component library in this repo,
+ * and it is cheapest to add while nothing violates it.
+ *
+ * Both forms are checked. The literal form (`title="Save"`) is judged as text; the bound form
+ * (`[attr.aria-label]="open ? 'Collapse' : 'Expand'"`) is an expression and is judged with the same
+ * heuristic as an interpolation, because it is the same shape and carries the same risk — a ternary
+ * whose branches are English captions and whose pipe was forgotten.
  */
-const VISIBLE_ATTRIBUTES = ['placeholder', 'title', 'aria-label', 'alt', 'label'];
+const VISIBLE_ATTRIBUTES = ['placeholder', 'title', 'aria-label', 'aria-description', 'aria-placeholder', 'alt', 'label', 'matTooltip'];
 
 /**
  * Elements whose text content is not prose.
@@ -128,6 +143,15 @@ const NON_PROSE_ELEMENTS = new Set(['mat-icon', 'script', 'style', 'svg', 'path'
  * build-time fallback that no user ever sees.
  */
 const CONTENT_REPLACING_ATTRIBUTES = ['jhiTranslate', '[jhiTranslate]', 'innerHTML', '[innerHTML]', 'translate', '[translate]'];
+
+/**
+ * A wire value that happens to have the shape of prose.
+ *
+ * `Bearer ${token}` is an `Authorization` header, and it is two "words" only because the
+ * interpolated credential counts as one. Deliberately exact — an HTTP authentication scheme
+ * followed by nothing but an interpolation — so that "Basic information" is still reported.
+ */
+const WIRE_LITERAL = /^(?:Bearer|Basic|Digest|Token)\s+\$\{[^}]*\}$/;
 
 /** HTML elements that never have a closing tag, so they must not be pushed onto the tag stack. */
 const VOID_ELEMENTS = new Set([
@@ -152,11 +176,18 @@ interface Offender {
   text: string;
 }
 
+/**
+ * Every shipping `.ts` file under `app/`.
+ *
+ * `*.spec.ts` is excluded because a test is not a surface, and so is `testing/` for the same reason:
+ * `health-connect/testing/` holds the fake repository and its fixtures, imported by specs and by
+ * nothing else, and its two dozen invented patient names are test data rather than copy.
+ */
 function componentFiles(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
     const full = join(dir, entry.name);
     if (entry.isDirectory()) {
-      return componentFiles(full);
+      return entry.name === 'testing' ? [] : componentFiles(full);
     }
     return entry.name.endsWith('.ts') && !entry.name.endsWith('.spec.ts') ? [full] : [];
   });
@@ -165,26 +196,31 @@ function componentFiles(dir: string): string[] {
 /**
  * The inline template of a component, or null.
  *
- * Walks to the closing backtick rather than regex-matching, because templates contain `${}`
- * interpolations of their own and a lazy match stops at the first one.
+ * <p>Walks to the closing quote rather than regex-matching, because a backtick template contains
+ * `${}` interpolations of its own and a lazy match stops at the first one.
+ *
+ * <p>**All three quote characters count.** `template: '<hpd-main></hpd-main>'` is how `app.component.ts`
+ * is written, and matching only the backtick form left that component with no template *and* no
+ * `templateUrl`, so it dropped out of the suite entirely rather than being reported.
  */
 function inlineTemplate(source: string): string | null {
-  const marker = /template:\s*`/.exec(source);
+  const marker = /template:\s*(['"`])/.exec(source);
   if (!marker) {
     return null;
   }
+  const quote = marker[1];
   const start = marker.index + marker[0].length;
   let depth = 0;
   for (let i = start; i < source.length; i++) {
     const char = source[i];
     if (char === '\\') {
       i++;
-    } else if (char === '$' && source[i + 1] === '{') {
+    } else if (quote === '`' && char === '$' && source[i + 1] === '{') {
       depth++;
       i++;
-    } else if (char === '}' && depth > 0) {
+    } else if (quote === '`' && char === '}' && depth > 0) {
       depth--;
-    } else if (char === '`' && depth === 0) {
+    } else if (char === quote && depth === 0) {
       return source.slice(start, i);
     }
   }
@@ -205,7 +241,14 @@ function stripComments(template: string): string {
   return template.replace(/<!--[\s\S]*?-->/g, ' ');
 }
 
-/** Removes `@if (...) {`, `@for (...) {`, `@else {` and the rest, parentheses balanced. */
+/**
+ * Removes `@if (...) {`, `@for (...) {`, `@else {` and the rest, parentheses balanced.
+ *
+ * `@let` is the odd one out: it takes no parentheses and runs to a semicolon, so consuming only the
+ * keyword would leave `greeting = 'Hello there'` behind as a text node. The whole statement goes,
+ * and its expression is judged separately by {@link letLiterals} — dropping it silently would hide
+ * exactly the literal this rule exists to find.
+ */
 function stripControlFlow(template: string): string {
   let out = '';
   for (let i = 0; i < template.length; i++) {
@@ -216,6 +259,11 @@ function stripControlFlow(template: string): string {
       continue;
     }
     i += match[0].length;
+    if (match[1] === 'let') {
+      const end = template.indexOf(';', i);
+      i = end === -1 ? template.length : end; // the loop's own i++ steps past the ';'
+      continue;
+    }
     // Skip the condition, if this keyword takes one. Parens nest: @if (a() > b()).
     while (i < template.length && /\s/.test(template[i])) {
       i++;
@@ -262,7 +310,7 @@ function scanTemplate(template: string): Offender[] {
     // [env] }}</a>` has its entire content replaced at runtime, so the literal inside it is a
     // build-time fallback exactly like the text beside it — scanning the raw template would report
     // it, and the only available fix would be to delete a deliberate fallback.
-    offenders.push(...interpolationLiterals(raw));
+    offenders.push(...interpolationLiterals(raw), ...letLiterals(raw));
 
     // Control flow and its braces are syntax, and interpolations are now accounted for.
     const text = stripControlFlow(raw.replace(/\{\{[\s\S]*?\}\}/g, ' '))
@@ -347,35 +395,65 @@ function scanAttributes(attributes: string): Offender[] {
         offenders.push({ rule: 'attribute', text: `${attribute}="${value}"` });
       }
     }
+
+    // The bound forms — `[title]="…"`, `[attr.aria-label]="…"` — are expressions, so they are judged
+    // the way an interpolation is rather than as text. Every one of these in the repo today carries
+    // `| translate`; the next one that does not is the regression this rule exists to catch.
+    const bound = new RegExp(`\\[(?:attr\\.)?${attribute}\\]\\s*=\\s*"([^"]*)"`, 'g');
+    for (const [, expression] of attributes.matchAll(bound)) {
+      offenders.push(
+        ...expressionLiterals(expression).map(quoted => ({ rule: 'bound attribute', text: `[${attribute}]="… '${quoted}' …"` })),
+      );
+    }
   }
   return offenders;
+}
+
+/**
+ * The displayed string literals of one Angular expression.
+ *
+ * <p>Shared by the three rules that judge an expression rather than text — interpolations, `@let`
+ * declarations and bound visible attributes — because all three carry the same risk in the same
+ * shape: a ternary whose branches are English captions and whose `| translate` was forgotten.
+ *
+ * <p>Looser than the TypeScript rule: a literal written inside a template expression is nearly
+ * always displayed, so a single capitalised word counts. Server enums (`'VERIFIED'`) do not, having
+ * no lower-case second letter. A literal piped through `translate`, or a catalogue key being built
+ * up (`'x.y.' + status | translate`), is fine.
+ */
+function expressionLiterals(expression: string): string[] {
+  if (/\|\s*translate/.test(expression)) {
+    return [];
+  }
+  // Pipe arguments are formats, not prose: `| date: 'EEE d MMM'` must not be reported.
+  const withoutPipeArgs = expression.replace(/\|\s*\w+\s*:\s*(['"])(?:(?!\1).)*\1/g, ' ');
+  return [...withoutPipeArgs.matchAll(/(['"])((?:(?!\1).)*)\1/g)]
+    .map(([, , quoted]) => quoted)
+    .filter(quoted => !isTranslationKey(quoted) && /^[A-Z][a-z]/.test(quoted.trim()));
 }
 
 /**
  * String literals written inside `{{ … }}`.
  *
  * `{{ mine ? 'You' : name }}` is user-visible text that no amount of scanning text nodes will find,
- * because the whole interpolation is one expression. A literal that is piped through `translate`,
- * or that is a catalogue key being built up (`'x.y.' + status | translate`), is fine.
+ * because the whole interpolation is one expression.
  */
 function interpolationLiterals(fragment: string): Offender[] {
-  const offenders: Offender[] = [];
-  for (const [, expression] of fragment.matchAll(/\{\{([\s\S]*?)\}\}/g)) {
-    if (/\|\s*translate/.test(expression)) {
-      continue;
-    }
-    // Pipe arguments are formats, not prose: `| date: 'EEE d MMM'` must not be reported.
-    const withoutPipeArgs = expression.replace(/\|\s*\w+\s*:\s*(['"])(?:(?!\1).)*\1/g, ' ');
-    for (const [, , quoted] of withoutPipeArgs.matchAll(/(['"])((?:(?!\1).)*)\1/g)) {
-      // Looser than the TypeScript rule: a literal written inside an interpolation is nearly always
-      // displayed, so a single capitalised word counts. Server enums (`'VERIFIED'`) do not, having
-      // no lower-case second letter.
-      if (!isTranslationKey(quoted) && /^[A-Z][a-z]/.test(quoted.trim())) {
-        offenders.push({ rule: 'interpolation', text: `{{ … '${quoted}' … }}` });
-      }
-    }
-  }
-  return offenders;
+  return [...fragment.matchAll(/\{\{([\s\S]*?)\}\}/g)].flatMap(([, expression]) =>
+    expressionLiterals(expression).map(quoted => ({ rule: 'interpolation', text: `{{ … '${quoted}' … }}` })),
+  );
+}
+
+/**
+ * String literals declared with Angular 19's `@let`.
+ *
+ * `@let label = mine ? 'You' : name;` is displayed wherever the variable is used, and the statement
+ * itself is stripped as syntax by {@link stripControlFlow}, so nothing else would ever look at it.
+ */
+function letLiterals(fragment: string): Offender[] {
+  return [...fragment.matchAll(/@let\s+[\w$]+\s*=([^;]*);/g)].flatMap(([, expression]) =>
+    expressionLiterals(expression).map(quoted => ({ rule: 'let', text: `@let … '${quoted}' …` })),
+  );
 }
 
 /**
@@ -390,9 +468,13 @@ function interpolationLiterals(fragment: string): Offender[] {
  * has to be reworded or exempted.
  */
 function typescriptProse(source: string, template: string | null): Offender[] {
-  const withoutComments = source.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/\/\/[^\n]*/g, ' ');
-  // The inline template is checked by the other rules; scanning it here would double-report.
-  const body = template === null ? withoutComments : withoutComments.split(template).join(' ');
+  // The inline template is checked by the other rules; scanning it here would double-report. It is
+  // subtracted from the *raw* source, before comments are stripped: a template containing any
+  // `https://` URL loses its `//…` tail to the comment stripper first, after which `split(template)`
+  // matches nothing and the entire template gets re-scanned as TypeScript.
+  const body = stripConsoleCalls(
+    (template === null ? source : source.split(template).join(' ')).replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/\/\/[^\n]*/g, ' '),
+  );
 
   const offenders: Offender[] = [];
   for (const [, , quoted] of body.matchAll(/(['"`])((?:(?!\1)[\s\S])*)\1/g)) {
@@ -410,6 +492,45 @@ function typescriptProse(source: string, template: string | null): Offender[] {
   return offenders;
 }
 
+/**
+ * Removes the arguments of every `console.*` call.
+ *
+ * `console.error('User has not any of required authorities: ', authorities)` is prose by shape and
+ * invisible by construction — it reaches the browser console, which no clinician opens. Balanced on
+ * parentheses and aware of string literals, so a `)` inside a message cannot unbalance it.
+ */
+function stripConsoleCalls(source: string): string {
+  let out = '';
+  for (let i = 0; i < source.length; i++) {
+    // `startsWith` first: slicing every character of every file to run a regex is needlessly slow.
+    const call = source.startsWith('console.', i) ? /^console\.\w+\s*\(/.exec(source.slice(i, i + 40)) : null;
+    if (!call) {
+      out += source[i];
+      continue;
+    }
+    i += call[0].length;
+    let depth = 1;
+    for (; i < source.length && depth > 0; i++) {
+      const char = source[i];
+      if (char === '\\') {
+        i++;
+      } else if (char === "'" || char === '"' || char === '`') {
+        for (i++; i < source.length && source[i] !== char; i++) {
+          if (source[i] === '\\') {
+            i++;
+          }
+        }
+      } else if (char === '(') {
+        depth++;
+      } else if (char === ')') {
+        depth--;
+      }
+    }
+    i--; // the loop's own i++ steps past the closing ')'
+  }
+  return out;
+}
+
 function isTranslationKey(literal: string): boolean {
   return /^[a-z][a-zA-Z0-9]*(\.[a-zA-Z0-9]+)+$/.test(literal.trim());
 }
@@ -417,14 +538,21 @@ function isTranslationKey(literal: string): boolean {
 /**
  * Does this literal read like something a person is meant to read?
  *
- * A capital followed by lower-case words: "No shift assigned". Not "Bearer " (no second word), not
- * "self-end max-w-[85%]" (lower-case start), not "today.onDuty" (a key), not "GET".
+ * <p>A capitalised word followed by at least one more word: "No shift assigned". Not "Bearer " (no
+ * second word), not "self-end max-w-[85%]" (lower-case start), not "today.onDuty" (a key), not
+ * "GET".
+ *
+ * <p>Continuation words may be capitalised too, so that Title Case — "Add Document", "No Shifts
+ * Today" — is reported. Requiring lower-case there let every button caption written in title case
+ * through, which is a large share of the copy on a dashboard. The cost is a little more traffic
+ * through the exemption list for capitalised multi-word technical strings; two words are still
+ * required, so `'GET'`, `'PENDING'` and `'Offline'` remain unflagged.
  */
 function isProse(literal: string): boolean {
-  if (isTranslationKey(literal)) {
+  if (isTranslationKey(literal) || WIRE_LITERAL.test(literal.trim())) {
     return false;
   }
-  return /^[A-Z][a-z]+([ ,]+[a-z$][\w${}]*)+/.test(literal.trim());
+  return /^[A-Z][a-z]+([ ,]+[a-zA-Z$][\w${}]*)+/.test(literal.trim());
 }
 
 /**
@@ -439,7 +567,10 @@ function isProse(literal: string): boolean {
  * and `kebab-case-1` and nothing else. A caption never takes either shape, so `Send`, `Write a
  * reply` and `Add a document` are all still reported. The known cost is that a lower-case
  * hyphenated English placeholder (`sign-in`) would be exempted; that has not occurred here, and it
- * is a smaller hole than exempting the two files outright.
+ * is a smaller hole than exempting the two files outright. `placeholder="e-mail"` is the concrete
+ * one to know about: a real word, hyphenated, that this would exempt. Widening the rule to exclude
+ * it would cost more than it saves — the tokens it recognises are the shape of an identifier the
+ * server parses, and every extra condition here is another way for a caption to slip through.
  */
 function isFormatExample(value: string): boolean {
   const tokens = value.split(/[\s,;/|]+/).filter(Boolean);
@@ -464,13 +595,18 @@ describe('component surfaces contain no untranslated text', () => {
   it('finds components to check, so a broken path cannot pass this suite silently', () => {
     // Without this, a wrong APP_ROOT makes every case below a no-op and the suite passes green.
     expect(withTemplates.length).toBeGreaterThanOrEqual(50);
+    // Every file is scanned for TypeScript prose, template or no template, so this counts too.
+    expect(files.length).toBeGreaterThanOrEqual(withTemplates.length);
+    expect(files.length).toBeGreaterThanOrEqual(150);
   });
 
-  it.each(withTemplates.map(file => [relative(APP_ROOT, file), file]))('%s', (name, file) => {
+  it.each(files.map(file => [relative(APP_ROOT, file), file]))('%s', (name, file) => {
     if (EXEMPT_FILES[name as string]) {
       return;
     }
     const source = readFileSync(file as string, 'utf8');
+    // A file with neither an inline template nor a `templateUrl` still gets its TypeScript scanned;
+    // the template rules simply have nothing to look at.
     const template = inlineTemplate(source) ?? externalTemplate(source, file as string) ?? '';
 
     const offenders = [...scanTemplate(template), ...typescriptProse(source, inlineTemplate(source))].map(

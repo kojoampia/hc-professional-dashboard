@@ -28,7 +28,9 @@ import { dirname, join, relative, resolve } from 'node:path';
  * <p><strong>Comments are stripped before checking, deliberately.</strong> A comment explaining that
  * an asset "was logo.png — the old blue Health Connect mark" is exactly the historical note this
  * must not punish, and stripping is better than an allowlist because it cannot go stale. What is
- * checked is what ships: catalogue values, and the rendered text of every template.
+ * checked is what ships: catalogue values, the rendered text of every template, and the TypeScript
+ * source itself — a name assembled in code (`document.title = 'Health Connect Portal'`) reaches a
+ * user just as surely as one written in markup, and is invisible to both of the other two rules.
  *
  * <p>Templates are checked with their **tags removed**, so the split wordmark in the sidebar —
  * `<span>Abofonsa</span>&nbsp;<span>BridgeCare</span>`, two colours, one name — reads as the whole
@@ -81,24 +83,30 @@ function walk(dir: string, extensions: string[]): string[] {
   });
 }
 
-/** The inline template of a component, or null. Balanced against `${}` like the literals spec. */
+/**
+ * The inline template of a component, or null. Balanced against `${}` like the literals spec.
+ *
+ * All three quote characters count: `template: '<hpd-main></hpd-main>'` is a real component here,
+ * and matching the backtick alone left it out of the scan entirely.
+ */
 function inlineTemplate(source: string): string | null {
-  const marker = /template:\s*`/.exec(source);
+  const marker = /template:\s*(['"`])/.exec(source);
   if (!marker) {
     return null;
   }
+  const quote = marker[1];
   const start = marker.index + marker[0].length;
   let depth = 0;
   for (let i = start; i < source.length; i++) {
     const char = source[i];
     if (char === '\\') {
       i++;
-    } else if (char === '$' && source[i + 1] === '{') {
+    } else if (quote === '`' && char === '$' && source[i + 1] === '{') {
       depth++;
       i++;
-    } else if (char === '}' && depth > 0) {
+    } else if (quote === '`' && char === '}' && depth > 0) {
       depth--;
-    } else if (char === '`' && depth === 0) {
+    } else if (char === quote && depth === 0) {
       return source.slice(start, i);
     }
   }
@@ -175,13 +183,36 @@ describe('brand terms', () => {
     expect(found).toEqual([]);
   });
 
+  it('no component or service source carries a retired brand term', () => {
+    // The template rule above sees rendered markup only, so `const fallbackTitle = 'Health Connect
+    // Portal'` assigned to `document.title` passes it — and passes the untranslated-literals spec
+    // too, whose prose test wants a lower-case second word. That is the shape of the defect this
+    // whole gate was written for, so the TypeScript itself is scanned, comments stripped.
+    //
+    // Near-zero false-positive risk by construction: identifiers spell it `healthConnect` or
+    // `health-connect`, and all three denied patterns require spacing and casing no identifier has.
+    const found = walk(APP_ROOT, ['.ts'])
+      .filter(file => !file.endsWith('.spec.ts'))
+      .flatMap(file => {
+        const source = readFileSync(file, 'utf8')
+          .replace(/\/\*[\s\S]*?\*\//g, ' ')
+          .replace(/\/\/[^\n]*/g, ' ');
+        return offences(source, relative(APP_ROOT, file));
+      });
+
+    expect(found).toEqual([]);
+  });
+
   it('the shell documents carry the right name', () => {
     // `index.html` and `manifest.webapp` are the browser tab, the install prompt and the home-screen
     // label. They are outside every component, so the template rule above cannot see them.
-    const found = ['index.html', 'manifest.webapp', '404.html']
-      .map(name => join(WEBAPP_ROOT, name))
-      .filter(existsSync)
-      .flatMap(file => offences(renderedText(readFileSync(file, 'utf8')), relative(WEBAPP_ROOT, file)));
+    const shells = ['index.html', 'manifest.webapp', '404.html'].map(name => join(WEBAPP_ROOT, name));
+
+    // Asserted rather than filtered: a renamed or moved shell document used to drop silently out of
+    // coverage, which is the same failure mode as not checking it at all.
+    expect(shells.filter(file => !existsSync(file)).map(file => relative(WEBAPP_ROOT, file))).toEqual([]);
+
+    const found = shells.flatMap(file => offences(renderedText(readFileSync(file, 'utf8')), relative(WEBAPP_ROOT, file)));
 
     expect(found).toEqual([]);
   });
