@@ -282,7 +282,7 @@
       "name": "Abofonsa",
       "product": "Professional",
       "tagline": "Arbeitsbereich für Fachkräfte",
-      "description": "Die Fachkräfte-Seite von BridgeCare — Patientenakten, Triage und Dienstpläne an einem Ort.",
+      "description": "Die Fachkräfte-Seite von Abofonsa BridgeCare — Patientenakten, Triage und Dienstpläne an einem Ort.",
       "signInHint": "Melden Sie sich bei Ihrem Fachkräfte-Konto an.",
       "portal": "Portal",
       "facts": {
@@ -317,7 +317,7 @@
     },
     "about": {
       "title": "Warum Abofonsa BridgeCare — Professional",
-      "body": "Eine Plattform, zwei Seiten: Familien buchen und verfolgen Pflege über das BridgeCare-Familienportal, während Fachkräfte hier Patienten, Triage und Dienstpläne verwalten — mit denselben Patientenakten in Echtzeit."
+      "body": "Eine Plattform, zwei Seiten: Familien buchen und verfolgen Pflege über das Abofonsa BridgeCare-Familienportal, während Fachkräfte hier Patienten, Triage und Dienstpläne verwalten — mit denselben Patientenakten in Echtzeit."
     },
     "toast": {
       "caseSaved": "Fall gespeichert",
@@ -466,7 +466,7 @@
       }
     },
     "firstLogin": {
-      "title": "Willkommen bei BridgeCare Professional",
+      "title": "Willkommen bei Abofonsa BridgeCare Professional",
       "body": "Bitte bestätigen Sie vor dem Start, dass Sie Ihre beruflichen Pflichten gelesen haben und akzeptieren:",
       "dutyOfCare": "Ich handle im Rahmen meiner zugewiesenen klinischen Rolle und Sorgfaltspflicht.",
       "dataProtection": "Ich behandle Patientendaten vertraulich und gemäß Datenschutzrecht.",

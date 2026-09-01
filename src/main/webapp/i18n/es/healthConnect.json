@@ -282,7 +282,7 @@
       "name": "Abofonsa",
       "product": "Profesional",
       "tagline": "Espacio del profesional clínico",
-      "description": "El lado clínico de BridgeCare: expedientes de pacientes, triaje y cuadros de turnos en un solo lugar.",
+      "description": "El lado clínico de Abofonsa BridgeCare: expedientes de pacientes, triaje y cuadros de turnos en un solo lugar.",
       "signInHint": "Inicie sesión en su cuenta clínica.",
       "portal": "Portal",
       "facts": {
@@ -317,7 +317,7 @@
     },
     "about": {
       "title": "Por qué Abofonsa BridgeCare — Professional",
-      "body": "Una plataforma, dos caras: las familias reservan y siguen la atención a través del portal familiar de BridgeCare, mientras que el personal clínico gestiona aquí pacientes, triaje y cuadros de turnos, compartiendo los mismos expedientes en tiempo real."
+      "body": "Una plataforma, dos caras: las familias reservan y siguen la atención a través del portal familiar de Abofonsa BridgeCare, mientras que el personal clínico gestiona aquí pacientes, triaje y cuadros de turnos, compartiendo los mismos expedientes en tiempo real."
     },
     "toast": {
       "caseSaved": "Caso guardado",
@@ -466,7 +466,7 @@
       }
     },
     "firstLogin": {
-      "title": "Bienvenido/a a BridgeCare Professional",
+      "title": "Bienvenido/a a Abofonsa BridgeCare Professional",
       "body": "Antes de empezar, confirme que ha leído y acepta sus obligaciones profesionales:",
       "dutyOfCare": "Actuaré dentro de mi rol clínico asignado y mi deber de cuidado.",
       "dataProtection": "Trataré los datos de los pacientes de forma confidencial y conforme a la ley de protección de datos.",

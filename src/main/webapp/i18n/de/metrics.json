@@ -75,7 +75,15 @@
       "cachename": "Cache Name",
       "hits": "Treffer",
       "misses": "Keine Treffer",
-      "evictions": "Anzahl entfernter Objekte"
+      "gets": "Cache-Abrufe",
+      "puts": "Cache-Schreibvorgänge",
+      "removals": "Cache-Löschungen",
+      "evictions": "Anzahl entfernter Objekte",
+      "hitPercent": "Trefferquote %",
+      "missPercent": "Fehlerquote %",
+      "averageGetTime": "Durchschnittliche Abrufzeit (µs)",
+      "averagePutTime": "Durchschnittliche Schreibzeit (µs)",
+      "averageRemoveTime": "Durchschnittliche Löschzeit (µs)"
     },
     "datasource": {
       "usage": "Usage",

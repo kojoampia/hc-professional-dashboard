@@ -112,7 +112,8 @@
       "maxbytes": "Dieses Feld sollte nicht mehr als {{max}} bytes haben.",
       "pattern": "Dieses Feld muss das Muster {{pattern}} erfüllen.",
       "number": "Dieses Feld muss eine Zahl sein.",
-      "datetimelocal": "Dieses Feld muss eine Datums- und Zeitangabe enthalten."
+      "datetimelocal": "Dieses Feld muss eine Datums- und Zeitangabe enthalten.",
+      "patternLogin": "Dieses Feld darf nur Buchstaben, Ziffern und E-Mail-Adressen enthalten."
     },
     "filters": {
       "set": "Folgende Filter sind gesetzt",
@@ -138,6 +139,7 @@
     }
   },
   "footer": {
-    "copyright": "&copy; {{ year }} Abofonsa BridgeCare von Jojo Addison Information Systems Consultancy &reg; Alle Rechte vorbehalten."
+    "copyright": "&copy; {{ year }} Abofonsa BridgeCare &reg; Alle Rechte vorbehalten.",
+    "poweredBy": "bereitgestellt von:"
   }
 }

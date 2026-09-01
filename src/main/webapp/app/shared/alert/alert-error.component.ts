@@ -40,7 +40,12 @@ export class AlertErrorComponent implements OnDestroy {
       switch (httpErrorResponse.status) {
         // connection refused, server not reachable
         case 0:
-          this.addErrorAlert('Server not reachable', 'error.server.not.reachable');
+          // The message argument is the fallback `addAlert` uses when the key is missing. The key is
+          // present in all four catalogues — as the flat `"server.not.reachable"` entry in
+          // `global.json`, not in `error.json`, which is easy to miss — so this is belt and braces
+          // rather than the visible string. It is resolved rather than hardcoded so that if the key
+          // is ever dropped the fallback degrades to the user's language, not to English.
+          this.addErrorAlert(translateService.instant('error.server.not.reachable'), 'error.server.not.reachable');
           break;
 
         case 400: {
@@ -68,7 +73,15 @@ export class AlertErrorComponent implements OnDestroy {
               const fieldName: string = translateService.instant(
                 `professionalGatewayApp.${fieldError.objectName as string}.${convertedField}`,
               );
-              this.addErrorAlert(`Error on field "${fieldName}"`, `error.${fieldError.message as string}`, { fieldName });
+              // `error.<constraint>` is a Bean Validation constraint name. Only `Size` and `NotNull`
+              // are in the catalogues, and the switch above folds Min/Max/DecimalMin/DecimalMax into
+              // `Size` — so any other constraint (`Pattern`, `Email`, …) misses and this fallback is
+              // what the user reads. `error.fieldError` was added for it; it used to be interpolated
+              // in English here, which meant a French user got an English sentence around a French
+              // field name.
+              this.addErrorAlert(translateService.instant('error.fieldError', { fieldName }), `error.${fieldError.message as string}`, {
+                fieldName,
+              });
             }
           } else if (httpErrorResponse.error !== '' && httpErrorResponse.error.message) {
             this.addErrorAlert(
@@ -83,7 +96,7 @@ export class AlertErrorComponent implements OnDestroy {
         }
 
         case 404:
-          this.addErrorAlert('Not found', 'error.url.not.found');
+          this.addErrorAlert(translateService.instant('error.url.not.found'), 'error.url.not.found');
           break;
 
         default:
