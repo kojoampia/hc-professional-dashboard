@@ -8,6 +8,7 @@
       "405": "Le verbe HTTP que vous avez utilisé n'est pas reconnu par cet URL.",
       "500": "Erreur interne du serveur."
     },
+    "fieldError": "Erreur sur le champ « {{ fieldName }} ».",
     "concurrencyFailure": "Un autre utilisateur a modifié ces données en même temps que vous. Vos changements n'ont pas été sauvegardés.",
     "validation": "Erreur de validation côté serveur."
   }

@@ -282,7 +282,7 @@
       "name": "Abofonsa",
       "product": "Professional",
       "tagline": "Espace clinicien",
-      "description": "Le volet clinicien de BridgeCare — dossiers patients, triage et plannings de garde réunis au même endroit.",
+      "description": "Le volet clinicien d'Abofonsa BridgeCare — dossiers patients, triage et plannings de garde réunis au même endroit.",
       "signInHint": "Connectez-vous à votre compte clinicien.",
       "portal": "Portail",
       "facts": {
@@ -317,7 +317,7 @@
     },
     "about": {
       "title": "Pourquoi Abofonsa BridgeCare — Professional",
-      "body": "Une plateforme, deux volets : les familles réservent et suivent les soins via le portail famille BridgeCare, tandis que les cliniciens gèrent ici les patients, le triage et les plannings de garde — en partageant les mêmes dossiers patients en temps réel."
+      "body": "Une plateforme, deux volets : les familles réservent et suivent les soins via le portail famille Abofonsa BridgeCare, tandis que les cliniciens gèrent ici les patients, le triage et les plannings de garde — en partageant les mêmes dossiers patients en temps réel."
     },
     "toast": {
       "caseSaved": "Cas enregistré",
@@ -466,7 +466,7 @@
       }
     },
     "firstLogin": {
-      "title": "Bienvenue sur BridgeCare Professional",
+      "title": "Bienvenue sur Abofonsa BridgeCare Professional",
       "body": "Avant de commencer, veuillez confirmer que vous avez lu et accepté vos obligations professionnelles :",
       "dutyOfCare": "J'agirai dans le cadre de mon rôle clinique attribué et de mon devoir de diligence.",
       "dataProtection": "Je traiterai les données des patients de manière confidentielle et conformément à la législation sur la protection des données.",

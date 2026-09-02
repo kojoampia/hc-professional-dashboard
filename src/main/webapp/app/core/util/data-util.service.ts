@@ -1,11 +1,20 @@
 import { Buffer } from 'buffer';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
 import { Observable, Observer } from 'rxjs';
 
 export type FileLoadErrorType = 'not.image' | 'could.not.extract';
 
 export interface FileLoadError {
+  /**
+   * The sentence a caller shows when it cannot resolve {@link key}.
+   *
+   * Resolved through the catalogue rather than written in English here, the same way
+   * `AlertErrorComponent` resolves its `error.server.not.reachable` fallback. Both of these strings
+   * already existed word for word under `error.file.*` in all four catalogues, so the hardcoded
+   * copies were a French user's guarantee of an English sentence.
+   */
   message: string;
   key: FileLoadErrorType;
   params?: any;
@@ -18,6 +27,8 @@ export interface FileLoadError {
   providedIn: 'root',
 })
 export class DataUtils {
+  private readonly translateService = inject(TranslateService);
+
   /**
    * Method to find the byte size of the string provides
    */
@@ -65,7 +76,7 @@ export class DataUtils {
         const file: File = eventTarget.files[0];
         if (isImage && !file.type.startsWith('image/')) {
           const error: FileLoadError = {
-            message: `File was expected to be an image but was found to be '${file.type}'`,
+            message: this.translateService.instant('error.file.not.image', { fileType: file.type }),
             key: 'not.image',
             params: { fileType: file.type },
           };
@@ -83,7 +94,7 @@ export class DataUtils {
         }
       } else {
         const error: FileLoadError = {
-          message: 'Could not extract file',
+          message: this.translateService.instant('error.file.could.not.extract'),
           key: 'could.not.extract',
           params: { event },
         };

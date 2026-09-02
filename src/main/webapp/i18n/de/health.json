@@ -23,9 +23,10 @@
       "status": "Status"
     },
     "status": {
-      "UNKNOWN": "UNKNOWN",
-      "UP": "UP",
-      "DOWN": "DOWN"
+      "UNKNOWN": "Unbekannt",
+      "UP": "Aktiv",
+      "OUT_OF_SERVICE": "Außer Betrieb",
+      "DOWN": "Ausgefallen"
     }
   }
 }

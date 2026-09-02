@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { DataUtils } from './data-util.service';
 
@@ -7,6 +8,9 @@ describe('Data Utils Service Test', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      // The service resolves its `FileLoadError.message` through the catalogue rather than
+      // hardcoding English, so it needs a TranslateService to inject.
+      imports: [TranslateModule.forRoot()],
       providers: [DataUtils],
     });
     service = TestBed.inject(DataUtils);

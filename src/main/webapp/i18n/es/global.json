@@ -139,6 +139,7 @@
     }
   },
   "footer": {
-    "copyright": "&copy; {{ year }} Health Connect de Jojo Addison Information Systems Consultancy &reg; Todos los derechos reservados."
+    "copyright": "&copy; {{ year }} Abofonsa BridgeCare &reg; Todos los derechos reservados.",
+    "poweredBy": "con la tecnología de:"
   }
 }

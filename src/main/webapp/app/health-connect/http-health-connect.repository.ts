@@ -27,6 +27,15 @@ import {
 import { HealthConnectRepository, PatientDirectoryFilters } from './health-connect.repository';
 
 /**
+ * What {@link HttpHealthConnectRepository.asyncState} reports when a load fails.
+ *
+ * A catalogue key, and the same one `<hpd-async-state>` renders by default — the three loads used to
+ * set English sentences here ("Failed to load case queue"), which nothing displayed and nothing
+ * translated. One key for all three, because none of them was ever distinguished on screen.
+ */
+const LOAD_ERROR_KEY = 'healthConnect.states.error';
+
+/**
  * Real HttpClient-backed implementation of HealthConnectRepository, built
  * against the REST contracts specced in professional-web.md §5
  * (dashboard/patients/clinical-cases/duty-roster). Most of those endpoints do not exist
@@ -71,6 +80,13 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
   private readonly clinicalCaseCache = signal<readonly ClinicalCaseDto[]>([]);
   private readonly archivedCaseIds = signal<ReadonlySet<string>>(new Set());
   private readonly loading = signal(false);
+  /**
+   * The failure carried by {@link asyncState}, as a **catalogue key** rather than a sentence.
+   *
+   * Only `asyncState().status` is read today — `<hpd-async-state>` renders its own `errorKey`, which
+   * defaults to this same key — but the value is typed as a string that something may one day
+   * display, and an English sentence here would ship untranslated on the day it does.
+   */
   private readonly error = signal<string | null>(null);
 
   readonly patients = computed<readonly PatientRecord[]>(() => Array.from(this.recordCache().values()));
@@ -209,7 +225,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
       },
       error: () => {
         this.pendingRecordFetches.delete(id);
-        this.error.set(`Failed to load patient ${id}`);
+        this.error.set(LOAD_ERROR_KEY);
       },
     });
     return undefined;
@@ -443,12 +459,12 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
     // filter server-side is Phase 5's job and needs this interface to stop being synchronous first.
     this.patientApi.query({ page: 0, size: 200 }).subscribe({
       next: response => this.patientRowCache.set((response.body ?? []).map(toPatientListRow)),
-      error: () => this.error.set('Failed to load patient directory'),
+      error: () => this.error.set(LOAD_ERROR_KEY),
     });
 
     this.clinicalCaseService.query().subscribe({
       next: response => this.clinicalCaseCache.set(response.body ?? []),
-      error: () => this.error.set('Failed to load case queue'),
+      error: () => this.error.set(LOAD_ERROR_KEY),
     });
 
     // Owns its own load rather than relying on the sidebar having run first — same request count as

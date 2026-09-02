@@ -4,7 +4,8 @@
       "title": "Usuarios",
       "refreshListLabel": "Refrescar lista",
       "createLabel": "Crear un nuevo usuario",
-      "createOrEditLabel": "Crear o editar un usuario"
+      "createOrEditLabel": "Crear o editar un usuario",
+      "notFound": "No se encontró ningún usuario"
     },
     "created": "Se creó un nuevo usuario con identificador {{ param }}",
     "updated": "Se actualizó el usuario con identificador {{ param }}",
@@ -15,10 +16,12 @@
     "detail": {
       "title": "Usuario"
     },
+    "id": "ID",
     "login": "Login",
     "firstName": "Nombre",
     "lastName": "Apellidos",
     "email": "Email",
+    "imageUrl": "Imagen",
     "activated": "Activado",
     "deactivated": "Desactivado",
     "profiles": "Perfiles",

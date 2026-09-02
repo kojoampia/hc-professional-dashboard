@@ -282,7 +282,7 @@
       "name": "Abofonsa",
       "product": "Professional",
       "tagline": "Clinician workspace",
-      "description": "The clinician-facing side of BridgeCare — patient records, triage, and duty rosters in one place.",
+      "description": "The clinician-facing side of Abofonsa BridgeCare — patient records, triage, and duty rosters in one place.",
       "signInHint": "Sign in to your clinician account.",
       "portal": "Portal",
       "facts": {
@@ -317,7 +317,7 @@
     },
     "about": {
       "title": "Why Abofonsa BridgeCare — Professional",
-      "body": "One platform, two sides: families book and track care through the BridgeCare family portal, while clinicians manage patients, triage, and duty rosters here — sharing the same patient records in real time."
+      "body": "One platform, two sides: families book and track care through the Abofonsa BridgeCare family portal, while clinicians manage patients, triage, and duty rosters here — sharing the same patient records in real time."
     },
     "toast": {
       "caseSaved": "Case saved",
@@ -466,7 +466,7 @@
       }
     },
     "firstLogin": {
-      "title": "Welcome to BridgeCare Professional",
+      "title": "Welcome to Abofonsa BridgeCare Professional",
       "body": "Before you start, please confirm that you have read and accept your professional obligations:",
       "dutyOfCare": "I will act within my assigned clinical role and duty of care.",
       "dataProtection": "I will handle patient data confidentially and in line with data-protection law.",

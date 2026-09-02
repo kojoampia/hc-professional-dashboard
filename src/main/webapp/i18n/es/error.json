@@ -8,6 +8,7 @@
       "405": "El verbo HTTP utilizado no es compatible con esta URL.",
       "500": "Error interno del servidor."
     },
+    "fieldError": "Error en el campo \"{{ fieldName }}\".",
     "concurrencyFailure": "Otro usuario modificó estos datos al mismo tiempo que usted. Sus cambios fueron rechazados.",
     "validation": "Error de validación en el servidor."
   }

@@ -1,5 +1,24 @@
 #!/usr/bin/env python3
-"""Capture UI baseline screenshots via headless Chrome CDP."""
+"""Capture UI baseline screenshots via headless Chrome CDP.
+
+    ./capture.py <out-dir> <token-file>
+
+USE AN ADMIN TOKEN. The AUTH list below includes /admin/health and /admin/metrics, which are
+ROLE_ADMIN-gated; with a clinician token every shot still saves, but those two are a byte-identical
+"You are not authorized to access this page" and the run looks like it worked. That is how the
+2026-09-01 re-capture was first done, with `doctor`.
+
+The app must be answering on BASE. Two ways: `npm start` for a dev server, or point BASE at a
+running stack. For the quality stack on jacserver, proxy it onto this port rather than hitting its
+own — the gateway's CORS allowlist names localhost:4200 and not the quality port, so a browser
+loading it directly gets 403 on every API call while the shell still renders.
+
+Get a token the same way the app does:
+
+    curl -s -X POST http://localhost:4200/api/authenticate \\
+      -H 'Content-Type: application/json' -H 'Origin: http://localhost:4200' \\
+      -d '{"username":"admin","password":"...","rememberMe":false}' | jq -r .id_token > /tmp/tok
+"""
 import asyncio, base64, json, subprocess, sys, time, urllib.request, os, signal
 
 import websockets
@@ -16,11 +35,17 @@ AUTH = [
     ("patients", "/patients"),
     ("cases", "/cases"),
     ("duty-roster", "/duty-roster"),
-    ("med-case", "/med-case"),
+    # /med-case is GONE and is not coming back. MedCase was retired in favour of ClinicalCase, and
+    # the generated entity layer that carried the route was deleted on 2026-08-20 (897c151). It
+    # captured as "The page does not exist." in the 2026-09-01 run, which is why it is dropped here
+    # rather than left to keep producing an error page every time.
     ("admin-health", "/admin/health"),
     ("admin-metrics", "/admin/metrics"),
-    ("account-settings", "/account/settings"),
-    ("account-password", "/account/password"),
+    # ONE page, not two. `settings` and `password` were separate screens; they are now three
+    # sections of /account/profile, and both old paths are `redirectTo: 'profile'` in
+    # account.route.ts — kept so sidebar links and bookmarks do not 404. Capturing both produced
+    # two byte-identical shots of the same page in the 2026-09-01 run.
+    ("account-profile", "/account/profile"),
 ]
 MOBILE_ROUTES = {"dashboard", "patients", "cases", "duty-roster", "login", "welcome"}
 DESKTOP = (1440, 900, False)
