@@ -1,7 +1,8 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 
+import { ITEMS_PER_PAGE } from 'app/config/pagination.constants';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { DutyRosterShift, SHIFT_WINDOWS, ShiftLabel, shiftStartHour } from '../health-connect.models';
 import { AbsenceStatus, AbsenceType } from './absence-api.service';
@@ -26,6 +27,11 @@ export type { DutyRosterShift };
  *
  * <p>`id` exists only so a single visit can be named for reassignment (DR4). It carries no meaning
  * and is not a customer identifier — two visits to the same person on one day have different ids.
+ *
+ * <p>The three snapshot fields have always been optional here and, since `api/` `058ce46`, they are
+ * **absent by construction** from every read but the day view: those go through a projection with no
+ * field to put a name in. Keep them optional rather than dropping them — {@link day} is a real reader
+ * of this interface and still receives them.
  */
 export interface VisitDto {
   id?: string;
@@ -66,8 +72,8 @@ export interface DutyRosterAssignmentDto {
   description?: string | null;
   /**
    * Present on the day read (DR6) and on the write path's response; **absent from the range read's
-   * usable content**, which the calendar grid uses to draw shift names and never renders a customer
-   * from. Treat it as optional at every call site.
+   * and `/all`'s usable content**, which draw shift names and never render a customer. Treat it as
+   * optional at every call site.
    */
   visits?: VisitDto[] | null;
 }
@@ -158,8 +164,32 @@ export class DutyRosterAssignmentsService {
     return this.http.get<DaySummaryDto[]>(`${this.resourceUrl}/summary`, { params: new HttpParams().set('year', year) });
   }
 
-  listAll(): Observable<DutyRosterAssignmentDto[]> {
-    return this.http.get<DutyRosterAssignmentDto[]>(`${this.resourceUrl}/all`);
+  /**
+   * Every assignment on the estate, **one bounded page at a time** — the administrator's read.
+   *
+   * <p><b>Returns the response rather than the body, because the headers are the point.</b> `/all`
+   * was an unbounded read until `api/` `058ce46` (backlog.md item 7) bounded it; it answers with a
+   * `Page` now, so `X-Total-Count` is the collection's real count and `Link` carries
+   * first/prev/next/last. A caller that reads only the body cannot tell a complete list from the
+   * first page of one — and a short list reads as a quiet week rather than as a truncation, which is
+   * the whole of item 13.
+   *
+   * <p><b>Both wire shapes are supported deliberately.</b> The deployed `/all` takes no `Pageable`,
+   * so Spring drops these two parameters and returns the whole estate with neither header — and this
+   * change has to work against that until the api ships. **Absent headers therefore mean "that was
+   * all of it", not "page one of unknown"**, which is the reading in
+   * `RoundBuilderComponent.nextPageOf`. Nothing here may assume a page exists after one it was not
+   * told about, or it would ask the old endpoint for page 1 and be handed the whole estate again.
+   *
+   * <p>No `sort` is sent. The server defaults to **newest date first**, then shift, then id — an
+   * administrator's working set is near today, and the id key is what makes the order total so a page
+   * boundary inside a tie group can neither repeat nor skip a row. Naming an order from here would be
+   * a second copy of a decision that belongs beside the query, and paging over an order the two ends
+   * disagree about is the failure that decision exists to prevent.
+   */
+  listAll(page = 0, size = ITEMS_PER_PAGE): Observable<HttpResponse<DutyRosterAssignmentDto[]>> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    return this.http.get<DutyRosterAssignmentDto[]>(`${this.resourceUrl}/all`, { params, observe: 'response' });
   }
 
   assign(assignment: DutyRosterAssignmentDto): Observable<DutyRosterAssignmentDto> {

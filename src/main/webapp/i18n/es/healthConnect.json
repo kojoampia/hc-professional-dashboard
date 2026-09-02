@@ -246,6 +246,8 @@
         }
       },
       "builder": {
+        "showing": "Mostrando {{shown}} de {{total}} asignaciones",
+        "loadMore": "Cargar más",
         "visits": "Visitas",
         "addVisit": "Añadir visita",
         "removeVisit": "Quitar",

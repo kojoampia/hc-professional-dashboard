@@ -1,3 +1,4 @@
+import { HttpResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { BehaviorSubject, of } from 'rxjs';
@@ -41,7 +42,13 @@ describe('DutyRosterPageComponent (WP6 assignment-only, DR8 exception)', () => {
       providers: [
         {
           provide: DutyRosterAssignmentsService,
-          useValue: { range: jest.fn(() => of([])), summary: jest.fn(() => of([])), listAll: jest.fn(() => of([])) },
+          useValue: {
+            range: jest.fn(() => of([])),
+            summary: jest.fn(() => of([])),
+            // `listAll` returns the whole response since backlog.md item 13 — the round builder reads
+            // `X-Total-Count` and `Link` off it to know whether the estate list is complete.
+            listAll: jest.fn(() => of(new HttpResponse({ body: [] }))),
+          },
         },
         {
           provide: AbsenceApiService,
