@@ -41,6 +41,35 @@ const readTotalCount = (response: HttpResponse<unknown>): number | null => {
   return Number.isFinite(total) ? total : null;
 };
 
+/**
+ * Append `incoming` to `loaded`, dropping any row whose id is already on screen.
+ *
+ * <p>Belt and braces behind the epoch guard and behind `api/`'s `id` sort key: the estate list tracks
+ * by `assignment.id` (`@for … track assignment.id`), and a duplicate id there is not a cosmetic
+ * repeat. Each rendered copy carries a live *unassign* and *reassign* button, so an administrator can
+ * delete a round from one copy and be looking at the other.
+ *
+ * <p>A row with no id cannot be deduplicated and is kept: it has nothing to collide on, and dropping
+ * rows on a guess is the truncation this component exists to prevent.
+ */
+const appendUnique = (
+  loaded: readonly DutyRosterAssignmentDto[],
+  incoming: readonly DutyRosterAssignmentDto[],
+): DutyRosterAssignmentDto[] => {
+  const seen = new Set(loaded.map(assignment => assignment.id).filter((id): id is string => id !== undefined));
+  const rows = [...loaded];
+  for (const assignment of incoming) {
+    if (assignment.id !== undefined) {
+      if (seen.has(assignment.id)) {
+        continue;
+      }
+      seen.add(assignment.id);
+    }
+    rows.push(assignment);
+  }
+  return rows;
+};
+
 const visitGroup = (): FormGroup =>
   new FormGroup({
     customerId: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),
@@ -200,7 +229,12 @@ const visitGroup = (): FormGroup =>
           </button>
         </form>
 
-        <ul class="m-0 grid list-none gap-2 p-0" data-cy="allAssignments">
+        <!--
+          aria-busy while a page is in flight: the rows below are about to change under a screen
+          reader that has no other way to know it, and the appended ones arrive with the focus still
+          on the button that asked for them.
+        -->
+        <ul class="m-0 grid list-none gap-2 p-0" data-cy="allAssignments" [attr.aria-busy]="loadingMore()">
           @for (assignment of allAssignments(); track assignment.id) {
             <li class="grid gap-2 rounded-hpd-sm border border-hpd-border px-3.5 py-2.5 text-sm" data-cy="assignmentRow">
               <div class="flex flex-wrap items-center justify-between gap-3">
@@ -283,28 +317,40 @@ const visitGroup = (): FormGroup =>
           }
         </ul>
 
-        @if (hasMore()) {
+        @if (totalAssignments() || hasMore()) {
           <!--
             The anti-truncation surface. The estate read is bounded server-side (backlog.md items 7
             and 13), so the rows above are a page of the estate rather than the estate — and a page
-            that says nothing is indistinguishable from a quiet week. This block is on screen whenever
-            there are rows that are not.
+            that says nothing is indistinguishable from a quiet week.
           -->
-          <div class="flex flex-wrap items-center justify-between gap-3 border-t border-hpd-border pt-3" data-cy="rosterMore">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-t border-hpd-border pt-3">
             @if (totalAssignments(); as total) {
-              <p class="m-0 text-xs text-hpd-muted" data-cy="rosterShowing">
+              <!--
+                The count outlives the load-more control on purpose. It used to live inside the
+                hasMore() block, so the live region vanished at the exact moment completion should
+                have been announced: the last page appended twenty rows, the control disappeared, and
+                nothing said "showing 57 of 57" — to a screen reader or to anybody else.
+
+                aria-live is polite because appended rows are otherwise silent. Focus stays on the
+                button, the list grows below it, and without this the only feedback is visual.
+              -->
+              <p class="m-0 text-xs text-hpd-muted" aria-live="polite" data-cy="rosterShowing">
                 {{ 'healthConnect.roster.builder.showing' | translate: { shown: allAssignments().length, total: total } }}
               </p>
             }
-            <button
-              class="hpd-focusable hpd-btn hpd-btn-ghost !text-xs"
-              type="button"
-              [disabled]="loadingMore()"
-              data-cy="rosterLoadMore"
-              (click)="loadMore()"
-            >
-              {{ 'healthConnect.roster.builder.loadMore' | translate }}
-            </button>
+            @if (hasMore()) {
+              <div data-cy="rosterMore">
+                <button
+                  class="hpd-focusable hpd-btn hpd-btn-ghost !text-xs"
+                  type="button"
+                  [disabled]="loadingMore()"
+                  data-cy="rosterLoadMore"
+                  (click)="loadMore()"
+                >
+                  {{ 'healthConnect.roster.builder.loadMore' | translate }}
+                </button>
+              </div>
+            }
           </div>
         }
       </div>
@@ -334,6 +380,23 @@ export class RoundBuilderComponent implements OnInit {
   private readonly reassigningId = signal<string | null>(null);
   /** The next page to ask for, or null when what is loaded is the whole collection. */
   private readonly nextPage = signal<number | null>(null);
+
+  /**
+   * Which list the responses in flight belong to. **Incremented by every `refresh()`; a response
+   * carrying an older number is dropped.**
+   *
+   * <p>Without it a mutation racing a slow "load more" puts the deleted round back on screen. Forty
+   * rows are loaded, the administrator asks for page 2, and while it is in flight they unassign a
+   * row: `refresh()` lands the fresh first page correctly, and then the slow page-2 response arrives
+   * closed over the *old* forty rows — including the one that was just deleted — and sets the list to
+   * those forty plus twenty. The count reverts to a stale total and `nextPage` is set from a context
+   * that no longer exists, so the next "load more" asks for the wrong page as well.
+   *
+   * <p>An epoch rather than an unsubscribe because the request is already in flight either way and
+   * the answer is not wanted, not merely unneeded; and it is what stops a stale response flipping
+   * `loadingMore` false in the middle of the refresh it lost to.
+   */
+  private epoch = 0;
 
   /** Whether the estate holds rows this list has not loaded. Drives the whole anti-truncation block. */
   readonly hasMore = computed(() => this.nextPage() !== null);
@@ -432,15 +495,22 @@ export class RoundBuilderComponent implements OnInit {
     });
   }
 
+  /**
+   * <p>**An empty target does nothing at all**, rather than being sent. The button is disabled without
+   * one, so this is only reachable from code — but sending it earns a 400 naming an unknown
+   * professional, which reads as a server problem rather than as an unfilled field, and the message is
+   * shown to the administrator verbatim. Silent, like the missing-id guard beside it: there is nothing
+   * to report about a form the user has not finished.
+   */
   reassignRound(assignment: DutyRosterAssignmentDto): void {
-    if (!assignment.id) {
+    if (!assignment.id || !this.reassignTarget()) {
       return;
     }
     this.runReassign(this.rosterService.reassignRound(assignment.id, this.reassignTarget()));
   }
 
   reassignVisit(assignment: DutyRosterAssignmentDto, visit: VisitDto): void {
-    if (!assignment.id || !visit.id) {
+    if (!assignment.id || !visit.id || !this.reassignTarget()) {
       return;
     }
     this.runReassign(this.rosterService.reassignVisit(assignment.id, visit.id, this.reassignTarget()));
@@ -491,21 +561,30 @@ export class RoundBuilderComponent implements OnInit {
    * how much was dropped.
    */
   private refresh(): void {
+    // Opens a new epoch, so any page still in flight is answering about a list that no longer exists.
+    this.epoch += 1;
     this.loadPage(0, []);
   }
 
   private loadPage(page: number, loaded: readonly DutyRosterAssignmentDto[]): void {
+    const epoch = this.epoch;
     this.loadingMore.set(true);
     this.rosterService.listAll(page).subscribe({
       next: response => {
+        if (epoch !== this.epoch) {
+          return;
+        }
         this.loadingMore.set(false);
-        const rows = [...loaded, ...(response.body ?? [])];
+        const rows = appendUnique(loaded, response.body ?? []);
         const total = readTotalCount(response);
         this.allAssignments.set(rows);
         this.totalAssignments.set(total);
         this.nextPage.set(this.nextPageOf(response, page, rows.length, total));
       },
       error: () => {
+        if (epoch !== this.epoch) {
+          return;
+        }
         this.loadingMore.set(false);
         // A failed first page empties the list, as it always did. A failed later page keeps what is
         // already on screen and leaves `nextPage` where it was, so the control retries instead of
@@ -537,7 +616,11 @@ export class RoundBuilderComponent implements OnInit {
     if (header) {
       try {
         const next = this.parseLinks.parse(header).next;
-        if (next !== undefined) {
+        // A `next` naming the page just requested would append this page to itself for ever, one
+        // click at a time. `PaginationUtil` never emits that, so this is a guard against a header
+        // rather than against a known bug — but it costs one comparison and the alternative is an
+        // infinite list of duplicates that the id tracker then renders twice.
+        if (next !== undefined && next !== requested) {
           return next;
         }
       } catch {

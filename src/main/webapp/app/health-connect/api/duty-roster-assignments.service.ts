@@ -181,9 +181,11 @@ export class DutyRosterAssignmentsService {
    * `RoundBuilderComponent.nextPageOf`. Nothing here may assume a page exists after one it was not
    * told about, or it would ask the old endpoint for page 1 and be handed the whole estate again.
    *
-   * <p>No `sort` is sent. The server defaults to date then shift, and naming an order from here would
-   * be a second copy of a decision that belongs beside the query — paging over an order the two ends
-   * disagree about is how page 2 repeats or skips a row from page 1.
+   * <p>No `sort` is sent. The server defaults to **newest date first**, then shift, then id — an
+   * administrator's working set is near today, and the id key is what makes the order total so a page
+   * boundary inside a tie group can neither repeat nor skip a row. Naming an order from here would be
+   * a second copy of a decision that belongs beside the query, and paging over an order the two ends
+   * disagree about is the failure that decision exists to prevent.
    */
   listAll(page = 0, size = ITEMS_PER_PAGE): Observable<HttpResponse<DutyRosterAssignmentDto[]>> {
     const params = new HttpParams().set('page', page).set('size', size);

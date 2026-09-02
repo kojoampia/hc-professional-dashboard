@@ -1,7 +1,7 @@
 import { HttpHeaders, HttpResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { of, throwError } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 
 import { AlertService } from 'app/core/util/alert.service';
 
@@ -90,6 +90,11 @@ describe('RoundBuilderComponent (DR8)', () => {
 
   const renderedRows = (): number => element().querySelectorAll('[data-cy="assignmentRow"]').length;
   const moreNotice = (): HTMLElement | null => element().querySelector('[data-cy="rosterMore"]');
+  const showingLine = (): HTMLElement | null => element().querySelector('[data-cy="rosterShowing"]');
+  const rowIds = (): (string | undefined)[] => component.allAssignments().map(assignment => assignment.id);
+
+  /** A response that has not arrived yet — the whole point of the race cases below. */
+  const pending = (): Subject<HttpResponse<DutyRosterAssignmentDto[]>> => new Subject<HttpResponse<DutyRosterAssignmentDto[]>>();
 
   /**
    * **The invariant item 13 exists for: if fewer rows are on screen than the estate holds, the screen
@@ -252,9 +257,14 @@ describe('RoundBuilderComponent (DR8)', () => {
       await build();
       component.toggleReassign('r-1');
       component.reassignRound(round());
-      // The button is disabled, but the guard matters too: an empty target would earn a 400 that
-      // reads as a server problem rather than an unfilled field.
-      expect(reassignRound).toHaveBeenCalledWith('r-1', '');
+      component.reassignVisit(round(), { id: 'v-1', customerId: 'patient-7', startTime: '09:00', endTime: '10:00' });
+
+      // The button is disabled without a target, so this is only reachable from code — but the guard
+      // is what the name promises and until now it did not exist: this case asserted that an empty
+      // target *was* sent, which earns a 400 naming an unknown professional and is shown to the
+      // administrator verbatim, reading as a server fault rather than as an unfilled field.
+      expect(reassignRound).not.toHaveBeenCalled();
+      expect(reassignVisit).not.toHaveBeenCalled();
     });
   });
 
@@ -400,6 +410,167 @@ describe('RoundBuilderComponent (DR8)', () => {
       expect(renderedRows()).toBe(0);
       expect(component.totalAssignments()).toBeNull();
       expect(component.hasMore()).toBe(false);
+    });
+
+    it('refuses a Link header that names the page it was just given', async () => {
+      // A `next` equal to the page requested would append this page to itself for ever, one click at
+      // a time. PaginationUtil never emits it, so the guard is against a header rather than a known
+      // bug — but it is one comparison, and the failure it prevents is unbounded.
+      listAll = jest.fn(() => of(answer(rows(1, 20), { 'X-Total-Count': '20', Link: link(0) })));
+      await build();
+
+      expect(component.hasMore()).toBe(false);
+      component.loadMore();
+      expect(listAll).toHaveBeenCalledTimes(1);
+    });
+
+    it('falls back to the count when the Link header cannot be parsed at all', async () => {
+      // The one branch of nextPageOf nothing covered. `ParseLinks.parse` throws on a section it
+      // cannot split on ";", and a header this parser cannot read is not a reason to declare the
+      // list complete — the count still proves rows are missing, and offering them is the safe half
+      // of the disagreement.
+      listAll = jest
+        .fn()
+        .mockReturnValueOnce(of(answer(rows(1, 20), { 'X-Total-Count': '57', Link: '</api/duty-roster/all?page=1&size=20>' })))
+        .mockReturnValueOnce(of(answer(rows(21, 37), { 'X-Total-Count': '57' })));
+      await build();
+
+      expect(component.hasMore()).toBe(true);
+      expectNoSilentTruncation(57);
+
+      component.loadMore();
+      fixture.detectChanges();
+      expect(listAll).toHaveBeenLastCalledWith(1);
+      expect(renderedRows()).toBe(57);
+    });
+
+    it('renders a round once when two pages overlap', async () => {
+      // Falls out of the race below and out of a non-unique server ordering, and it is not cosmetic:
+      // `@for … track assignment.id` keys on the id, and each rendered copy of a round carries its
+      // own live unassign and reassign buttons — so an administrator can delete a round from one copy
+      // and still be looking at the other.
+      listAll = jest
+        .fn()
+        .mockReturnValueOnce(of(answer(rows(1, 20), { 'X-Total-Count': '39', Link: link(1) })))
+        .mockReturnValueOnce(of(answer(rows(20, 20), { 'X-Total-Count': '39' })));
+      await build();
+
+      component.loadMore();
+      fixture.detectChanges();
+
+      expect(renderedRows()).toBe(39);
+      expect(new Set(rowIds()).size).toBe(rowIds().length);
+    });
+  });
+
+  /**
+   * The race, and the reason every other case in this file is synchronous.
+   *
+   * <p>Every mock above answers with `of()`, which resolves before `subscribe` returns — so no two
+   * requests can ever be in flight at once and **the interleaving simply does not exist in the
+   * suite**. These use a `Subject` and resolve it out of order, which is the only way the defect is
+   * reachable from a test.
+   *
+   * <p>What it costs in production: forty rows loaded, "load more" clicked on a slow link, a row
+   * unassigned while it is in flight. The refresh lands the fresh first page correctly, then the slow
+   * page-2 response arrives closed over the *old* forty rows — the deleted one among them — and puts
+   * them all back, with a stale total and a `nextPage` computed from a list that no longer exists.
+   */
+  describe('a mutation racing a page in flight', () => {
+    it('drops a page that arrives after a refresh reset the list', async () => {
+      const slowSecondPage = pending();
+      listAll = jest
+        .fn()
+        .mockReturnValueOnce(of(answer([...rows(1, 19), round({ id: 'r-doomed' })], { 'X-Total-Count': '57', Link: link(1) })))
+        .mockReturnValueOnce(slowSecondPage)
+        .mockReturnValueOnce(of(answer(rows(101, 20), { 'X-Total-Count': '56', Link: link(1) })));
+      await build();
+
+      component.loadMore();
+      expect(component.loadingMore()).toBe(true);
+
+      // The mutation lands while page 2 is still in flight.
+      component.unassign(round({ id: 'r-doomed' }));
+      fixture.detectChanges();
+      expect(renderedRows()).toBe(20);
+      expect(rowIds()).not.toContain('r-doomed');
+
+      // ...and now the page the administrator asked for before the deletion finally arrives.
+      slowSecondPage.next(answer(rows(21, 20), { 'X-Total-Count': '57', Link: link(2) }));
+      slowSecondPage.complete();
+      fixture.detectChanges();
+
+      expect(renderedRows()).toBe(20);
+      expect(rowIds()).not.toContain('r-doomed');
+      // Not merely the rows: the count and the next page must not revert either, or the list lies
+      // about its size and the following "load more" asks for the wrong page.
+      expect(component.totalAssignments()).toBe(56);
+      expect(component.loadingMore()).toBe(false);
+    });
+
+    it('does not start a second page while one is in flight', async () => {
+      const slowSecondPage = pending();
+      listAll = jest
+        .fn()
+        .mockReturnValueOnce(of(answer(rows(1, 20), { 'X-Total-Count': '57', Link: link(1) })))
+        .mockReturnValueOnce(slowSecondPage);
+      await build();
+
+      component.loadMore();
+      expect(listAll).toHaveBeenCalledTimes(2);
+      fixture.detectChanges();
+      // Assistive tech is told the list is changing under it — the rows appear with focus still on
+      // the button that asked for them, and nothing else says so.
+      expect(element().querySelector('[data-cy="allAssignments"]')!.getAttribute('aria-busy')).toBe('true');
+
+      // A second click while the first is outstanding would double-append the same page.
+      component.loadMore();
+      expect(listAll).toHaveBeenCalledTimes(2);
+
+      slowSecondPage.next(answer(rows(21, 20), { 'X-Total-Count': '57', Link: link(2) }));
+      slowSecondPage.complete();
+      fixture.detectChanges();
+      expect(renderedRows()).toBe(40);
+      expect(element().querySelector('[data-cy="allAssignments"]')!.getAttribute('aria-busy')).toBe('false');
+    });
+  });
+
+  /**
+   * What the screen says while it does it (W4).
+   *
+   * <p>The count line used to live inside the `hasMore()` block, so it disappeared at the exact
+   * moment completion should have been announced — the last page appended its rows, the control went
+   * away, and nothing said "showing 57 of 57" to a screen reader or to anybody else.
+   */
+  describe('announcing what arrived', () => {
+    it('announces the count politely and keeps it after the last page', async () => {
+      listAll = jest
+        .fn()
+        .mockReturnValueOnce(of(answer(rows(1, 20), { 'X-Total-Count': '37', Link: link(1) })))
+        .mockReturnValueOnce(of(answer(rows(21, 17), { 'X-Total-Count': '37' })));
+      await build();
+
+      expect(showingLine()!.getAttribute('aria-live')).toBe('polite');
+
+      component.loadMore();
+      fixture.detectChanges();
+
+      // The list is complete, so the load-more control is gone...
+      expect(moreNotice()).toBeNull();
+      // ...and the live region that says so is not.
+      expect(showingLine()).not.toBeNull();
+      expect(component.allAssignments()).toHaveLength(37);
+      expect(component.totalAssignments()).toBe(37);
+    });
+
+    it('says nothing at all when the server sent no count', async () => {
+      // The unpaginated `/all` deployed today. "Showing 57 of 57" would be inventing a total the
+      // server never claimed, and an empty bordered strip below the list says less than nothing.
+      listAll = jest.fn(() => of(answer(rows(1, 57))));
+      await build();
+
+      expect(showingLine()).toBeNull();
+      expect(moreNotice()).toBeNull();
     });
   });
 });
