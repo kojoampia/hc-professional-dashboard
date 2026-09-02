@@ -35,9 +35,25 @@ import { DUTY_ROSTER_SHIFTS } from './health-connect.models';
  * @see case-status.spec.ts, the same check for patientservice's `CaseStatus`
  */
 describe('duty-roster shift names', () => {
-  const shiftNames = (locale: string): Record<string, unknown> =>
-    (JSON.parse(readFileSync(join(__dirname, '..', '..', 'i18n', locale, 'healthConnect.json'), 'utf8')) as any).healthConnect.roster
-      .shiftNames;
+  /**
+   * The `healthConnect.roster.shiftNames` block of one locale's catalogue.
+   *
+   * Walked key by key rather than read through `as any`, because the interesting failure is the
+   * catalogue being reorganised: `as any` turns a renamed or moved block into `TypeError: Cannot read
+   * properties of undefined`, which names neither the file nor the path that moved and sends the
+   * reader to this spec instead of to the rename.
+   */
+  const shiftNames = (locale: string): Record<string, unknown> => {
+    const path = join(__dirname, '..', '..', 'i18n', locale, 'healthConnect.json');
+    let node: unknown = JSON.parse(readFileSync(path, 'utf8'));
+    for (const key of ['healthConnect', 'roster', 'shiftNames']) {
+      if (typeof node !== 'object' || node === null || !(key in node)) {
+        throw new Error(`${path} has no healthConnect.roster.shiftNames — it stops at '${key}'`);
+      }
+      node = (node as Record<string, unknown>)[key];
+    }
+    return node as Record<string, unknown>;
+  };
 
   it('has shifts to check', () => {
     // A derived expectation over an empty list asserts nothing at all, quietly and forever.
@@ -59,10 +75,12 @@ describe('duty-roster shift names', () => {
     const names = shiftNames(locale);
 
     // A key copied into the catalogue to silence the check above passes it and still puts
-    // `healthConnect.roster.shiftNames.NIGHT` on the screen.
-    expect(DUTY_ROSTER_SHIFTS.filter(shift => String(names[shift]).trim() === '' || String(names[shift]).includes('shiftNames'))).toEqual(
-      [],
-    );
+    // `healthConnect.roster.shiftNames.NIGHT` on the screen. An echo has two shapes and only one of
+    // them contains the word `shiftNames`: the whole dotted path, and the bare `NIGHT` that someone
+    // pastes when filling a locale in a hurry. Both are caught here.
+    const echoes = (name: string, shift: string): boolean => name === shift || name.includes('shiftNames');
+
+    expect(DUTY_ROSTER_SHIFTS.filter(shift => String(names[shift]).trim() === '' || echoes(String(names[shift]), shift))).toEqual([]);
   });
 
   it('translates the shifts differently from one another in English', () => {
