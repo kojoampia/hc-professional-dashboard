@@ -9,9 +9,10 @@ import { ParseLinks } from 'app/core/util/parse-links.service';
 
 import { AbsenceApiService, AbsenceDto } from '../api/absence-api.service';
 import { DutyRosterAssignmentDto, DutyRosterAssignmentsService, VisitDto } from '../api/duty-roster-assignments.service';
-import { DutyRosterShift } from '../health-connect.models';
+import { DUTY_ROSTER_SHIFTS, DutyRosterShift } from '../health-connect.models';
 
-const SHIFTS: readonly DutyRosterShift[] = ['DAY', 'EVENING', 'NIGHT', 'FLEXIBLE'];
+/** The model's list, not a second copy — the assign form offers exactly the shifts the server has. */
+const SHIFTS: readonly DutyRosterShift[] = DUTY_ROSTER_SHIFTS;
 const DUTIES: readonly string[] = [
   'DOCTOR',
   'NURSE',
