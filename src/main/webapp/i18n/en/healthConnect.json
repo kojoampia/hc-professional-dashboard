@@ -246,6 +246,8 @@
         }
       },
       "builder": {
+        "showing": "Showing {{shown}} of {{total}} assignments",
+        "loadMore": "Load more",
         "visits": "Visits",
         "addVisit": "Add visit",
         "removeVisit": "Remove",

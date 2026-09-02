@@ -50,6 +50,40 @@ describe('DutyRosterAssignmentsService', () => {
     expect(service.shiftLabel()).toEqual({ translationKey: 'healthConnect.roster.activeShift', translationParams: { time: '15:00' } });
   });
 
+  /**
+   * The admin's estate read, bounded by `api/` `058ce46` (backlog.md items 7 and 13).
+   *
+   * <p>Two things are asserted and neither is decoration: that a page is **asked for**, since this
+   * used to send nothing and take whatever came; and that the **response** is handed to the caller
+   * rather than the body, since `X-Total-Count` and `Link` are the only way a caller can tell a
+   * complete list from the first page of one.
+   */
+  describe('listAll', () => {
+    it('asks for a bounded page and hands back the headers with it', () => {
+      let response: { total: string | null; link: string | null } | undefined;
+      service.listAll().subscribe(result => {
+        response = { total: result.headers.get('X-Total-Count'), link: result.headers.get('Link') };
+      });
+
+      const request = httpMock.expectOne(req => req.url === 'services/professionalservice/api/duty-roster/all');
+      expect(request.request.params.get('page')).toBe('0');
+      expect(request.request.params.get('size')).toBe('20');
+      // No `sort`: the server defaults to date then shift, and a second copy of that decision here is
+      // how page 2 comes to repeat or skip a row from page 1.
+      expect(request.request.params.has('sort')).toBe(false);
+
+      request.flush([assignment({})], { headers: { 'X-Total-Count': '57', Link: '<…?page=1>; rel="next"' } });
+      expect(response).toEqual({ total: '57', link: '<…?page=1>; rel="next"' });
+    });
+
+    it('asks for the page it was given', () => {
+      service.listAll(3).subscribe();
+      const request = httpMock.expectOne(req => req.url === 'services/professionalservice/api/duty-roster/all');
+      expect(request.request.params.get('page')).toBe('3');
+      request.flush([]);
+    });
+  });
+
   describe('computeShiftLabel', () => {
     const at = (iso: string): Date => new Date(iso);
 

@@ -246,6 +246,8 @@
         }
       },
       "builder": {
+        "showing": "Affichage de {{shown}} affectations sur {{total}}",
+        "loadMore": "Charger plus",
         "visits": "Visites",
         "addVisit": "Ajouter une visite",
         "removeVisit": "Retirer",

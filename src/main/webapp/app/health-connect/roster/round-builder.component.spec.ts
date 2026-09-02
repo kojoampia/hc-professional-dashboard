@@ -1,3 +1,4 @@
+import { HttpHeaders, HttpResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
@@ -15,6 +16,11 @@ import { RoundBuilderComponent } from './round-builder.component';
  * visits**, which the form could not do before DR8 while the backend has carried them since DR2; that
  * approved leave **warns rather than blocks**, which is how open question 4 was settled; and that a
  * round moves whole by default with a single visit as the fallback.
+ *
+ * <p>A fourth arrived with backlog.md item 13: **the estate list must never silently truncate**. See
+ * the paging block at the bottom, and `expectNoSilentTruncation`, which is written as an implication
+ * over what the server answered rather than as an expected row count — an expected row count is
+ * exactly what passes in the broken state.
  */
 describe('RoundBuilderComponent (DR8)', () => {
   let fixture: ComponentFixture<RoundBuilderComponent>;
@@ -63,11 +69,56 @@ describe('RoundBuilderComponent (DR8)', () => {
 
   const element = (): HTMLElement => fixture.nativeElement;
 
+  /**
+   * One answer from `GET /api/duty-roster/all`, headers and all.
+   *
+   * <p>The headers are the whole subject of the paging block: `api/` `058ce46` made this a `Page`, so
+   * `X-Total-Count` is the estate's real count and `Link` names the next page. Passing **no** headers
+   * models the `/all` deployed today, which takes no `Pageable` and answers with the whole estate —
+   * both shapes have to work, and until the api ships only the second one is real.
+   */
+  const answer = (rows: DutyRosterAssignmentDto[], headers: Record<string, string> = {}): HttpResponse<DutyRosterAssignmentDto[]> =>
+    new HttpResponse({ body: rows, headers: new HttpHeaders(headers) });
+
+  /** A page's worth of distinguishable rows, so appending can be told from replacing. */
+  const rows = (from: number, count: number): DutyRosterAssignmentDto[] =>
+    Array.from({ length: count }, (_value, index) => round({ id: `r-${from + index}` }));
+
+  const link = (nextPage: number): string =>
+    `</services/professionalservice/api/duty-roster/all?page=${nextPage}&size=20>; rel="next",` +
+    '</services/professionalservice/api/duty-roster/all?page=2&size=20>; rel="last"';
+
+  const renderedRows = (): number => element().querySelectorAll('[data-cy="assignmentRow"]').length;
+  const moreNotice = (): HTMLElement | null => element().querySelector('[data-cy="rosterMore"]');
+
+  /**
+   * **The invariant item 13 exists for: if fewer rows are on screen than the estate holds, the screen
+   * says so.**
+   *
+   * <p>Phrased as an implication over the count the *server* sent, not over anything the component
+   * decided. That distinction is the point of the whole block. A test written as "the first page
+   * renders twenty rows" passes in precisely the state item 13 describes — twenty rows and no hint
+   * that there are fifty-seven — and so would an implication guarded by `component.totalAssignments()`,
+   * because a component that ignored the header would leave it null and make the guard vacuous.
+   *
+   * <p>The other direction is asserted too: a list that *is* complete must not claim otherwise. An
+   * always-on "load more" would satisfy the first half and be a different lie.
+   */
+  const expectNoSilentTruncation = (estateTotal: number): void => {
+    expect(renderedRows()).toBe(component.allAssignments().length);
+    if (renderedRows() < estateTotal) {
+      expect(moreNotice()).not.toBeNull();
+      expect(component.totalAssignments()).toBe(estateTotal);
+    } else {
+      expect(moreNotice()).toBeNull();
+    }
+  };
+
   const fillRound = (): void =>
     component.form.patchValue({ professionalId: 'prof-1', date: '2026-09-14', shift: 'DAY', duty: 'NURSE', name: 'Ward 3' });
 
   beforeEach(() => {
-    listAll = jest.fn(() => of([round()]));
+    listAll = jest.fn(() => of(answer([round()])));
     assign = jest.fn(() => of(round()));
     unassign = jest.fn(() => of(void 0));
     reassignRound = jest.fn(() => of(round({ professionalId: 'prof-2' })));
@@ -212,5 +263,143 @@ describe('RoundBuilderComponent (DR8)', () => {
     component.unassign(round());
     expect(unassign).toHaveBeenCalledWith('r-1');
     expect(listAll).toHaveBeenCalledTimes(2);
+  });
+
+  /**
+   * The estate list, and backlog.md item 13.
+   *
+   * <p>`GET /api/duty-roster/all` returned every assignment on the estate in one response until `api/`
+   * `058ce46` bounded it to a `Page`. This component asked for no page and rendered whatever came
+   * back, so the moment that change ships the administrator sees the first twenty rows and nothing at
+   * all to say there are more. **A short roster list and a truncated one look the same**, which is
+   * why the cases below assert the affordance rather than the row count.
+   *
+   * <p>Both wire shapes are exercised, because the api change is committed on an unpushed branch and
+   * quality still runs the unpaginated `/all`: for a window of time this code has to be right against
+   * a server that ignores `page` and `size` entirely.
+   */
+  describe('paging the estate list (item 13)', () => {
+    it('asks for a bounded page instead of the whole estate', async () => {
+      await build();
+      expect(listAll).toHaveBeenCalledWith(0);
+    });
+
+    it('says so when the estate holds more than the page it was given', async () => {
+      // The failure this item is about: twenty rows of fifty-seven, and nothing on screen that
+      // distinguishes that from a quiet week.
+      listAll = jest.fn(() => of(answer(rows(1, 20), { 'X-Total-Count': '57', Link: link(1) })));
+      await build();
+
+      expect(renderedRows()).toBe(20);
+      expectNoSilentTruncation(57);
+      expect(element().querySelector('[data-cy="rosterShowing"]')).not.toBeNull();
+      expect(element().querySelector('[data-cy="rosterLoadMore"]')).not.toBeNull();
+    });
+
+    it('appends the next page on demand and stops claiming more once it has them all', async () => {
+      listAll = jest
+        .fn()
+        .mockReturnValueOnce(of(answer(rows(1, 20), { 'X-Total-Count': '57', Link: link(1) })))
+        .mockReturnValueOnce(of(answer(rows(21, 20), { 'X-Total-Count': '57', Link: link(2) })))
+        .mockReturnValueOnce(of(answer(rows(41, 17), { 'X-Total-Count': '57' })));
+      await build();
+
+      component.loadMore();
+      fixture.detectChanges();
+      // Appended, not replaced: the administrator is scanning for a round to move, and swapping the
+      // rows underneath them would make finding one a game of chance.
+      expect(renderedRows()).toBe(40);
+      expect(listAll).toHaveBeenLastCalledWith(1);
+      expectNoSilentTruncation(57);
+
+      component.loadMore();
+      fixture.detectChanges();
+      expect(renderedRows()).toBe(57);
+      expect(listAll).toHaveBeenLastCalledWith(2);
+      // The list is now complete, so the notice must be gone — an always-on "load more" would pass
+      // the first half of the invariant and be a different lie.
+      expectNoSilentTruncation(57);
+      expect(moreNotice()).toBeNull();
+    });
+
+    it('reads an answer with no paging headers as the whole estate, not as a first page', async () => {
+      // Backwards compatibility with the `/all` deployed today, which takes no Pageable and drops
+      // `page` and `size`. Guessing at a page 1 here would fetch the estate a second time and append
+      // it to itself, which is a worse defect than the one being fixed.
+      listAll = jest.fn(() => of(answer(rows(1, 57))));
+      await build();
+
+      expect(renderedRows()).toBe(57);
+      expect(component.totalAssignments()).toBeNull();
+      expect(component.hasMore()).toBe(false);
+      expectNoSilentTruncation(57);
+      expect(listAll).toHaveBeenCalledTimes(1);
+
+      // And the control is not merely hidden — asking for more does nothing at all.
+      component.loadMore();
+      expect(listAll).toHaveBeenCalledTimes(1);
+    });
+
+    it('falls back to the count when a bounded answer carries no Link header', async () => {
+      // The two headers can only disagree if something upstream strips one, and the safe reading of a
+      // disagreement is the one that offers to load the rows the count says exist.
+      listAll = jest
+        .fn()
+        .mockReturnValueOnce(of(answer(rows(1, 20), { 'X-Total-Count': '57' })))
+        .mockReturnValueOnce(of(answer(rows(21, 37), { 'X-Total-Count': '57' })));
+      await build();
+
+      expectNoSilentTruncation(57);
+      component.loadMore();
+      fixture.detectChanges();
+      expect(listAll).toHaveBeenLastCalledWith(1);
+      expect(renderedRows()).toBe(57);
+      expectNoSilentTruncation(57);
+    });
+
+    it('returns to the first page after a mutation', async () => {
+      // The new round changes where the date-then-shift ordering puts every row after it, so
+      // re-requesting page 2 would show a window that no longer means what it did.
+      listAll = jest
+        .fn()
+        .mockReturnValueOnce(of(answer(rows(1, 20), { 'X-Total-Count': '57', Link: link(1) })))
+        .mockReturnValueOnce(of(answer(rows(21, 20), { 'X-Total-Count': '57', Link: link(2) })))
+        .mockReturnValueOnce(of(answer(rows(1, 20), { 'X-Total-Count': '58', Link: link(1) })));
+      await build();
+      component.loadMore();
+      fixture.detectChanges();
+      expect(renderedRows()).toBe(40);
+
+      component.unassign(round());
+      fixture.detectChanges();
+      expect(listAll).toHaveBeenLastCalledWith(0);
+      expect(renderedRows()).toBe(20);
+      expectNoSilentTruncation(58);
+    });
+
+    it('keeps the rows already on screen when a later page fails, and offers the retry', async () => {
+      listAll = jest
+        .fn()
+        .mockReturnValueOnce(of(answer(rows(1, 20), { 'X-Total-Count': '57', Link: link(1) })))
+        .mockReturnValueOnce(throwError(() => ({ status: 500 })));
+      await build();
+
+      component.loadMore();
+      fixture.detectChanges();
+      // Dropping back to an empty list on a failed second page would be the truncation wearing a
+      // different hat: twenty rows became none, and nothing said why.
+      expect(renderedRows()).toBe(20);
+      expect(component.loadingMore()).toBe(false);
+      expectNoSilentTruncation(57);
+    });
+
+    it('empties the list when the first page fails, as it always did', async () => {
+      listAll = jest.fn(() => throwError(() => ({ status: 500 })));
+      await build();
+
+      expect(renderedRows()).toBe(0);
+      expect(component.totalAssignments()).toBeNull();
+      expect(component.hasMore()).toBe(false);
+    });
   });
 });

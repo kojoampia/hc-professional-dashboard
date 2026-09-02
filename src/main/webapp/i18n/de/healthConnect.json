@@ -246,6 +246,8 @@
         }
       },
       "builder": {
+        "showing": "{{shown}} von {{total}} Zuteilungen werden angezeigt",
+        "loadMore": "Mehr laden",
         "visits": "Besuche",
         "addVisit": "Besuch hinzufügen",
         "removeVisit": "Entfernen",
