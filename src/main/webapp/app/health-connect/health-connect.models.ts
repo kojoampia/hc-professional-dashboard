@@ -63,7 +63,20 @@ export interface HealthConnectProfessional {
  * DAY 07–15, EVENING 15–23, NIGHT 23–07 wrapping past midnight, FLEXIBLE the whole day for
  * individually agreed 2–4 hour blocks. MORNING and AFTERNOON were retired in DR1.
  */
-export type DutyRosterShift = 'DAY' | 'EVENING' | 'NIGHT' | 'FLEXIBLE';
+export const DUTY_ROSTER_SHIFTS = ['DAY', 'EVENING', 'NIGHT', 'FLEXIBLE'] as const;
+
+/**
+ * The union, **derived from the runtime list above rather than written twice.**
+ *
+ * <p>A TypeScript union cannot be enumerated at runtime, so a test cannot ask "does every shift have
+ * a translation" of a bare `'DAY' | 'EVENING' | …`. That is why the values are a `const` array and the
+ * type comes from it: `shift-names.spec.ts` derives the catalogue keys it expects from
+ * {@link DUTY_ROSTER_SHIFTS}, so adding a value here fails that test in all four locales until the
+ * catalogues carry it — instead of rendering `healthConnect.roster.shiftNames.OFF` to a French user
+ * with nothing thrown. The ordering is the display order the calendar, the week grid's rows and the
+ * assign form all use (see `duty-roster.md` § 9: FLEXIBLE last, because it has no window).
+ */
+export type DutyRosterShift = (typeof DUTY_ROSTER_SHIFTS)[number];
 
 /**
  * The windows above as hours of the day, kept beside the union so the two cannot drift apart.

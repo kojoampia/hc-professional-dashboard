@@ -5,7 +5,7 @@ import { Observable, forkJoin, map } from 'rxjs';
 
 import { AbsenceApiService } from '../api/absence-api.service';
 import { DutyRosterAssignmentsService } from '../api/duty-roster-assignments.service';
-import { DutyRosterShift } from '../health-connect.models';
+import { DUTY_ROSTER_SHIFTS, DutyRosterShift } from '../health-connect.models';
 import { DAYS_IN_WEEK, addDays, addMonths, startOfIsoWeek, startOfMonth, todayIsoDate, yearOf } from './calendar-date.util';
 import { DayListComponent } from './day-list.component';
 import { MonthGridComponent } from './month-grid.component';
@@ -18,7 +18,8 @@ export type CalendarView = 'month' | 'week' | 'year';
 
 /** Every tone that takes a fill. `off` is the page showing through and has no legend swatch of its own. */
 const LEGEND_TONES: readonly RosterDayTone[] = ['working', 'holiday', 'sick', 'other'];
-const SHIFTS: readonly DutyRosterShift[] = ['DAY', 'EVENING', 'NIGHT', 'FLEXIBLE'];
+/** The model's list, not a second copy — these are the keys the shift names are resolved under. */
+const SHIFTS: readonly DutyRosterShift[] = DUTY_ROSTER_SHIFTS;
 const ABSENCE_TYPES = ['HOLIDAY', 'SICK', 'OTHER'] as const;
 
 /** A month grid draws at most six weeks; fetch the whole span it might show, not just the month. */

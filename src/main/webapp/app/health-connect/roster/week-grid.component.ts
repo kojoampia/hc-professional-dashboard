@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { DutyRosterShift } from '../health-connect.models';
+import { DUTY_ROSTER_SHIFTS, DutyRosterShift } from '../health-connect.models';
 import { cellClasses, cellDescription, cellGlyph } from './roster-day-cell';
 import { RosterDay } from './roster-day.model';
 import { isoWeekDays } from './week-number.util';
@@ -30,8 +30,10 @@ interface ShiftRow {
  * a time of day and does not belong interleaved with the three that are; it covers the whole date in
  * individually agreed 2–4 hour blocks, and putting it anywhere in the middle implies a window it does
  * not have.
+ *
+ * <p>Taken from the model's list rather than re-typed, so a new shift gains a row here by existing.
  */
-const SHIFT_ROWS: readonly DutyRosterShift[] = ['DAY', 'EVENING', 'NIGHT', 'FLEXIBLE'];
+const SHIFT_ROWS: readonly DutyRosterShift[] = DUTY_ROSTER_SHIFTS;
 
 /**
  * Week view of the duty roster (docs/duty-roster.md § 9, DR5): days Monday–Sunday across, shifts
