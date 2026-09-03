@@ -9,7 +9,8 @@
         "title": "Memory",
         "total": "Total Memory",
         "heap": "Heap Memory",
-        "nonheap": "Non-Heap Memory"
+        "nonheap": "Non-Heap Memory",
+        "committed": "Committed"
       },
       "threads": {
         "title": "Threads",
@@ -18,6 +19,7 @@
         "timedwaiting": "Timed waiting",
         "waiting": "Waiting",
         "blocked": "Blocked",
+        "expand": "Expand",
         "dump": {
           "title": "Threads dump",
           "id": "Id: ",
@@ -36,7 +38,13 @@
         "marksweepcount": "Mark Sweep count",
         "marksweeptime": "Mark Sweep time",
         "scavengecount": "Scavenge count",
-        "scavengetime": "Scavenge time"
+        "scavengetime": "Scavenge time",
+        "livedatasize": "GC Live Data Size",
+        "maxdatasize": "GC Max Data Size",
+        "memorypromoted": "GC Memory Promoted",
+        "memoryallocated": "GC Memory Allocated",
+        "classesloaded": "Classes loaded",
+        "classesunloaded": "Classes unloaded"
       },
       "http": {
         "title": "HTTP requests (time in millisecond)",
@@ -56,6 +64,17 @@
         }
       }
     },
+    "system": {
+      "title": "System",
+      "uptime": "Uptime",
+      "starttime": "Start time",
+      "processcpuusage": "Process CPU usage",
+      "systemcpuusage": "System CPU usage",
+      "systemcpucount": "System CPU count",
+      "systemloadaverage": "System 1m Load average",
+      "processfilesmax": "Process files max",
+      "processfilesopen": "Process files open"
+    },
     "servicesstats": {
       "title": "Services statistics (time in millisecond)",
       "table": {
@@ -69,6 +88,11 @@
         "p95": "p95",
         "p99": "p99"
       }
+    },
+    "endpoints": {
+      "title": "Endpoints requests (time in millisecond)",
+      "method": "Method",
+      "url": "Endpoint url"
     },
     "cache": {
       "title": "Cache statistics",
@@ -96,7 +120,18 @@
       "p50": "p50",
       "p75": "p75",
       "p95": "p95",
-      "p99": "p99"
+      "p99": "p99",
+      "pool": {
+        "active": "active",
+        "min": "min",
+        "max": "max",
+        "idle": "idle"
+      },
+      "rows": {
+        "acquire": "Acquire",
+        "creation": "Creation",
+        "usage": "Usage"
+      }
     }
   }
 }

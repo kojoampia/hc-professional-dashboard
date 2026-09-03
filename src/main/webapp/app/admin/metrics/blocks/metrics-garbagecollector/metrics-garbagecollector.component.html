@@ -7,7 +7,10 @@
     @if (garbageCollectorMetrics) {
       <div>
         <span class="text-xs text-hpd-muted">
-          GC Live Data Size/GC Max Data Size ({{ garbageCollectorMetrics['jvm.gc.live.data.size'] / 1048576 | number: '1.0-0' }}M /
+          <span jhiTranslate="metrics.jvm.gc.livedatasize">GC Live Data Size</span>/<span jhiTranslate="metrics.jvm.gc.maxdatasize"
+            >GC Max Data Size</span
+          >
+          ({{ garbageCollectorMetrics['jvm.gc.live.data.size'] / 1048576 | number: '1.0-0' }}M /
           {{ garbageCollectorMetrics['jvm.gc.max.data.size'] / 1048576 | number: '1.0-0' }}M)
         </span>
 
@@ -29,7 +32,10 @@
     @if (garbageCollectorMetrics) {
       <div>
         <span class="text-xs text-hpd-muted">
-          GC Memory Promoted/GC Memory Allocated ({{ garbageCollectorMetrics['jvm.gc.memory.promoted'] / 1048576 | number: '1.0-0' }}M /
+          <span jhiTranslate="metrics.jvm.gc.memorypromoted">GC Memory Promoted</span>/<span jhiTranslate="metrics.jvm.gc.memoryallocated"
+            >GC Memory Allocated</span
+          >
+          ({{ garbageCollectorMetrics['jvm.gc.memory.promoted'] / 1048576 | number: '1.0-0' }}M /
           {{ garbageCollectorMetrics['jvm.gc.memory.allocated'] / 1048576 | number: '1.0-0' }}M)
         </span>
 
@@ -52,11 +58,11 @@
     @if (garbageCollectorMetrics) {
       <div class="grid gap-2 text-xs text-hpd-muted">
         <div class="flex items-center justify-between">
-          <span>Classes loaded</span>
+          <span jhiTranslate="metrics.jvm.gc.classesloaded">Classes loaded</span>
           <span class="font-medium text-hpd-primary-dark">{{ garbageCollectorMetrics.classesLoaded }}</span>
         </div>
         <div class="flex items-center justify-between">
-          <span>Classes unloaded</span>
+          <span jhiTranslate="metrics.jvm.gc.classesunloaded">Classes unloaded</span>
           <span class="font-medium text-hpd-primary-dark">{{ garbageCollectorMetrics.classesUnloaded }}</span>
         </div>
       </div>
@@ -97,7 +103,7 @@
         </thead>
         <tbody>
           <tr class="border-t border-hpd-border">
-            <td class="px-4 py-3">jvm.gc.pause</td>
+            <td class="px-4 py-3"><code>jvm.gc.pause</code></td>
             <td class="px-4 py-3 text-right">{{ garbageCollectorMetrics['jvm.gc.pause'].count }}</td>
             <td class="px-4 py-3 text-right">{{ garbageCollectorMetrics['jvm.gc.pause'].mean | number: '1.0-3' }}</td>
             <td class="px-4 py-3 text-right">{{ garbageCollectorMetrics['jvm.gc.pause']['0.0'] | number: '1.0-3' }}</td>

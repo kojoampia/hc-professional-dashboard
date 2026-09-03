@@ -66,29 +66,19 @@ const APP_ROOT = resolve(__dirname, '../..');
  * clinician or an applicant can reach in normal use belongs in the catalogues, not in this map.
  */
 const EXEMPT_FILES: Record<string, string> = {
-  // The JHipster-generated `/admin/metrics` and `/admin/health` blocks. These are ROLE_ADMIN-only
-  // ops dashboards that render JVM internals — "GC Live Data Size", "Process files max",
-  // "jvm.gc.pause", "Timed Waiting" — in the vocabulary the JVM itself publishes. That vocabulary is
-  // conventionally left in English wherever it appears (Actuator, JConsole, Grafana), and a German
-  // rendering of "GC Memory Promoted" would make the page harder to read for the one audience that
-  // reads it. They are this repo's equivalent of `mobile/`'s exempted `diagnostics.page.ts`.
+  // Empty, and worth keeping empty. It held the eight JHipster `/admin/metrics` and `/admin/health`
+  // blocks until backlog item 12 cleared them; the argument for exempting them was that JVM and
+  // Actuator vocabulary is conventionally read in English, and it did not survive contact with the
+  // catalogues — `i18n/*/metrics.json` already carried keys for most of those strings in all four
+  // locales, so the templates were rendering English the repo had already paid to translate.
   //
-  // Not permanent: `i18n/*/metrics.json` and `health.json` already carry keys for roughly two
-  // thirds of these strings and the templates simply do not use them. Wiring the templates to the
-  // keys they already have is worth doing on its own; it is not part of porting this gate.
-  // Tracked as item 12 in `backlog.md`, which lists all eight and what each still hardcodes.
-  'admin/health/modal/health-modal.component.ts': 'JHipster ops dashboard — JVM/Actuator vocabulary, admin-only. See note above.',
-  'admin/metrics/blocks/jvm-memory/jvm-memory.component.ts': 'JHipster ops dashboard — JVM/Actuator vocabulary, admin-only.',
-  'admin/metrics/blocks/jvm-threads/jvm-threads.component.ts': 'JHipster ops dashboard — JVM/Actuator vocabulary, admin-only.',
-  'admin/metrics/blocks/metrics-datasource/metrics-datasource.component.ts':
-    'JHipster ops dashboard — JVM/Actuator vocabulary, admin-only.',
-  'admin/metrics/blocks/metrics-endpoints-requests/metrics-endpoints-requests.component.ts':
-    'JHipster ops dashboard — JVM/Actuator vocabulary, admin-only.',
-  'admin/metrics/blocks/metrics-garbagecollector/metrics-garbagecollector.component.ts':
-    'JHipster ops dashboard — JVM/Actuator vocabulary, admin-only.',
-  'admin/metrics/blocks/metrics-modal-threads/metrics-modal-threads.component.ts':
-    'JHipster ops dashboard — JVM/Actuator vocabulary, admin-only.',
-  'admin/metrics/blocks/metrics-system/metrics-system.component.ts': 'JHipster ops dashboard — JVM/Actuator vocabulary, admin-only.',
+  // What remained genuinely untranslatable turned out to be identifiers rather than copy, and the
+  // markup now says so: `jvm.gc.pause` is a Micrometer meter name inside `<code>`, and a thread's
+  // lock name is bound (`[title]`) rather than interpolated. Neither needed an exemption.
+  //
+  // Before adding a line here, check the two rules that make an exemption unnecessary: `<code>` and
+  // the rest of NON_PROSE_ELEMENTS mute an element's content, and NOT_TRANSLATABLE covers a proper
+  // noun that reads the same in every locale.
 };
 
 /**

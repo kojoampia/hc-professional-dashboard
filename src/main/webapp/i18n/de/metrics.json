@@ -9,7 +9,8 @@
         "title": "Hauptspeicher",
         "total": "Gesamter Hauptspeicher",
         "heap": "Heap Speicher",
-        "nonheap": "Non-Heap Speicher"
+        "nonheap": "Non-Heap Speicher",
+        "committed": "Zugesichert"
       },
       "threads": {
         "title": "Threads",
@@ -18,6 +19,7 @@
         "timedwaiting": "Wartezeit",
         "waiting": "Wartend",
         "blocked": "Geblockt",
+        "expand": "Ausklappen",
         "dump": {
           "title": "Threads dump",
           "id": "Id: ",
@@ -36,7 +38,13 @@
         "marksweepcount": "Durchlaufmarkierungs (Mark Sweep) Anzahl",
         "marksweeptime": "Durchlaufmarkierungs (Mark Sweep) Zeit",
         "scavengecount": "Bereinigungslauf (Scavenge) Anzahl",
-        "scavengetime": "Bereinigungslauf (Scavenge) Zeit"
+        "scavengetime": "Bereinigungslauf (Scavenge) Zeit",
+        "livedatasize": "GC-Größe der aktiven Daten",
+        "maxdatasize": "GC-Maximalgröße der Daten",
+        "memorypromoted": "Vom GC beförderter Speicher",
+        "memoryallocated": "Vom GC allokierter Speicher",
+        "classesloaded": "Geladene Klassen",
+        "classesunloaded": "Entladene Klassen"
       },
       "http": {
         "title": "HTTP Anfragen (Ereignisse pro Sekunde)",
@@ -56,6 +64,17 @@
         }
       }
     },
+    "system": {
+      "title": "System",
+      "uptime": "Betriebszeit",
+      "starttime": "Startzeit",
+      "processcpuusage": "CPU-Auslastung des Prozesses",
+      "systemcpuusage": "CPU-Auslastung des Systems",
+      "systemcpucount": "Anzahl der System-CPUs",
+      "systemloadaverage": "Systemlast im Mittel (1 Min.)",
+      "processfilesmax": "Maximale Dateien des Prozesses",
+      "processfilesopen": "Geöffnete Dateien des Prozesses"
+    },
     "servicesstats": {
       "title": "Service Statistiken (Zeit in Millisekunden)",
       "table": {
@@ -69,6 +88,11 @@
         "p95": "p95",
         "p99": "p99"
       }
+    },
+    "endpoints": {
+      "title": "Anfragen pro Endpunkt (Zeit in Millisekunden)",
+      "method": "Methode",
+      "url": "Endpunkt-URL"
     },
     "cache": {
       "title": "Cache Statistiken",
@@ -86,7 +110,7 @@
       "averageRemoveTime": "Durchschnittliche Löschzeit (µs)"
     },
     "datasource": {
-      "usage": "Usage",
+      "usage": "Auslastung des Verbindungspools",
       "title": "Datenquelle (Zeit in Millisekunden)",
       "name": "Pool-Auslastung",
       "count": "Anzahl",
@@ -96,7 +120,18 @@
       "p50": "p50",
       "p75": "p75",
       "p95": "p95",
-      "p99": "p99"
+      "p99": "p99",
+      "pool": {
+        "active": "aktiv",
+        "min": "min",
+        "max": "max",
+        "idle": "inaktiv"
+      },
+      "rows": {
+        "acquire": "Anforderung",
+        "creation": "Erzeugung",
+        "usage": "Nutzung"
+      }
     }
   }
 }

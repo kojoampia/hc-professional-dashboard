@@ -10,7 +10,8 @@
       @if (threadStateFilter === undefined) {
         <mat-icon aria-hidden="true" class="!text-sm">check</mat-icon>
       }
-      All <span class="rounded-full bg-white/20 px-1.5 py-0.5">{{ threadDumpAll }}</span>
+      <span jhiTranslate="metrics.jvm.threads.all">All</span>
+      <span class="rounded-full bg-white/20 px-1.5 py-0.5">{{ threadDumpAll }}</span>
     </button>
 
     <button
@@ -21,7 +22,8 @@
       @if (threadStateFilter === ThreadState.Runnable) {
         <mat-icon aria-hidden="true" class="!text-sm">check</mat-icon>
       }
-      Runnable <span class="rounded-full bg-white/60 px-1.5 py-0.5">{{ threadDumpRunnable }}</span>
+      <span jhiTranslate="metrics.jvm.threads.runnable">Runnable</span>
+      <span class="rounded-full bg-white/60 px-1.5 py-0.5">{{ threadDumpRunnable }}</span>
     </button>
 
     <button
@@ -32,7 +34,8 @@
       @if (threadStateFilter === ThreadState.Waiting) {
         <mat-icon aria-hidden="true" class="!text-sm">check</mat-icon>
       }
-      Waiting <span class="rounded-full bg-white/60 px-1.5 py-0.5">{{ threadDumpWaiting }}</span>
+      <span jhiTranslate="metrics.jvm.threads.waiting">Waiting</span>
+      <span class="rounded-full bg-white/60 px-1.5 py-0.5">{{ threadDumpWaiting }}</span>
     </button>
 
     <button
@@ -43,7 +46,8 @@
       @if (threadStateFilter === ThreadState.TimedWaiting) {
         <mat-icon aria-hidden="true" class="!text-sm">check</mat-icon>
       }
-      Timed Waiting <span class="rounded-full bg-white/60 px-1.5 py-0.5">{{ threadDumpTimedWaiting }}</span>
+      <span jhiTranslate="metrics.jvm.threads.timedwaiting">Timed waiting</span>
+      <span class="rounded-full bg-white/60 px-1.5 py-0.5">{{ threadDumpTimedWaiting }}</span>
     </button>
 
     <button
@@ -54,7 +58,8 @@
       @if (threadStateFilter === ThreadState.Blocked) {
         <mat-icon aria-hidden="true" class="!text-sm">check</mat-icon>
       }
-      Blocked <span class="rounded-full bg-white/60 px-1.5 py-0.5">{{ threadDumpBlocked }}</span>
+      <span jhiTranslate="metrics.jvm.threads.blocked">Blocked</span>
+      <span class="rounded-full bg-white/60 px-1.5 py-0.5">{{ threadDumpBlocked }}</span>
     </button>
   </div>
 
@@ -65,7 +70,9 @@
           thread.threadState
         }}</span>
 
-        <span class="text-hpd-primary-dark">{{ thread.threadName }} (ID {{ thread.threadId }})</span>
+        <span class="text-hpd-primary-dark"
+          >{{ thread.threadName }} (<span jhiTranslate="metrics.jvm.threads.dump.id">Id: </span>{{ thread.threadId }})</span
+        >
 
         <button
           class="hpd-focusable text-xs font-medium text-hpd-primary underline"
@@ -93,7 +100,9 @@
       <div class="mt-3 overflow-x-auto rounded-hpd-sm border border-hpd-border">
         <table class="w-full text-left text-sm text-hpd-muted">
           <caption class="sr-only">
-            Threads dump:
+            {{
+              'metrics.jvm.threads.dump.title' | translate
+            }}:
             {{
               thread.threadName
             }}
@@ -123,7 +132,7 @@
               <td class="px-4 py-2">{{ thread.blockedCount }}</td>
               <td class="px-4 py-2">{{ thread.waitedTime }}</td>
               <td class="px-4 py-2">{{ thread.waitedCount }}</td>
-              <td class="px-4 py-2" title="{{ thread.lockName }}">
+              <td class="px-4 py-2" [title]="thread.lockName">
                 <code>{{ thread.lockName }}</code>
               </td>
             </tr>
@@ -135,5 +144,5 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button class="hpd-focusable" mat-button type="button" (click)="dismiss()">Done</button>
+  <button class="hpd-focusable" mat-button type="button" (click)="dismiss()" jhiTranslate="entity.action.done">Done</button>
 </mat-dialog-actions>
