@@ -16,7 +16,7 @@
         "title": "Threads",
         "all": "Alle",
         "runnable": "Runnable",
-        "timedwaiting": "Wartezeit",
+        "timedwaiting": "Zeitlich begrenzt wartend",
         "waiting": "Wartend",
         "blocked": "Geblockt",
         "expand": "Ausklappen",
