@@ -1,14 +1,20 @@
-<h3 id="endpointsRequestsMetrics" class="text-sm font-semibold text-hpd-primary-dark">Endpoints requests (time in millisecond)</h3>
+<h3 id="endpointsRequestsMetrics" class="text-sm font-semibold text-hpd-primary-dark" jhiTranslate="metrics.endpoints.title">
+  Endpoints requests (time in millisecond)
+</h3>
 
 @if (!updating && endpointsRequestsMetrics) {
   <div class="mt-2 overflow-x-auto rounded-hpd-sm border border-hpd-border">
     <table class="w-full text-left text-sm text-hpd-muted" aria-describedby="endpointsRequestsMetrics">
       <thead class="bg-hpd-cream text-xs uppercase">
         <tr>
-          <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark">Method</th>
-          <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark">Endpoint url</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark">Count</th>
-          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark">Mean</th>
+          <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark" jhiTranslate="metrics.endpoints.method">Method</th>
+          <th scope="col" class="px-4 py-3 font-bold text-hpd-primary-dark" jhiTranslate="metrics.endpoints.url">Endpoint url</th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.servicesstats.table.count">
+            Count
+          </th>
+          <th scope="col" class="px-4 py-3 text-right font-bold text-hpd-primary-dark" jhiTranslate="metrics.servicesstats.table.mean">
+            Mean
+          </th>
         </tr>
       </thead>
       <tbody>

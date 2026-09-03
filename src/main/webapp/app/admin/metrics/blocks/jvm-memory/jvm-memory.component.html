@@ -10,7 +10,9 @@
             ({{ entry.value.used / 1048576 | number: '1.0-0' }}M / {{ entry.value.max / 1048576 | number: '1.0-0' }}M)
           </span>
 
-          <div class="text-xs text-hpd-muted">Committed : {{ entry.value.committed / 1048576 | number: '1.0-0' }}M</div>
+          <div class="text-xs text-hpd-muted">
+            <span jhiTranslate="metrics.jvm.memory.committed">Committed</span> : {{ entry.value.committed / 1048576 | number: '1.0-0' }}M
+          </div>
         } @else {
           <span class="text-xs text-hpd-muted">
             <span class="font-medium text-hpd-primary-dark">{{ entry.key }}</span> {{ entry.value.used / 1048576 | number: '1.0-0' }}M</span

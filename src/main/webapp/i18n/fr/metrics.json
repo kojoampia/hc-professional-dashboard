@@ -9,7 +9,8 @@
         "title": "Mémoire",
         "total": "Mémoire totale",
         "heap": "Mémoire \"Heap\"",
-        "nonheap": "Mémoire \"Non-Heap\""
+        "nonheap": "Mémoire \"Non-Heap\"",
+        "committed": "Réservée"
       },
       "threads": {
         "title": "Threads",
@@ -18,9 +19,10 @@
         "timedwaiting": "Temps d'attente",
         "waiting": "En attente",
         "blocked": "Bloqué",
+        "expand": "Développer",
         "dump": {
           "title": "Threads dump",
-          "id": "Id :",
+          "id": "Id : ",
           "blockedtime": "Temps bloqué",
           "blockedcount": "Nb fois bloqué",
           "waitedtime": "Temps d'attente",
@@ -36,7 +38,13 @@
         "marksweepcount": "Total de \"Mark Sweep\"",
         "marksweeptime": "Temps \"Mark Sweep\"",
         "scavengecount": "Total \"Scavenge\"",
-        "scavengetime": "Temps \"Scavenge\""
+        "scavengetime": "Temps \"Scavenge\"",
+        "livedatasize": "Taille des données vivantes du GC",
+        "maxdatasize": "Taille maximale des données du GC",
+        "memorypromoted": "Mémoire promue par le GC",
+        "memoryallocated": "Mémoire allouée par le GC",
+        "classesloaded": "Classes chargées",
+        "classesunloaded": "Classes déchargées"
       },
       "http": {
         "title": "Requêtes HTTP (temps en millisecondes)",
@@ -56,6 +64,17 @@
         }
       }
     },
+    "system": {
+      "title": "Système",
+      "uptime": "Temps de fonctionnement",
+      "starttime": "Heure de démarrage",
+      "processcpuusage": "Utilisation CPU du processus",
+      "systemcpuusage": "Utilisation CPU du système",
+      "systemcpucount": "Nombre de CPU du système",
+      "systemloadaverage": "Charge moyenne du système (1 min)",
+      "processfilesmax": "Fichiers max du processus",
+      "processfilesopen": "Fichiers ouverts du processus"
+    },
     "servicesstats": {
       "title": "Statistiques des services (temps en millisecondes)",
       "table": {
@@ -69,6 +88,11 @@
         "p95": "p95",
         "p99": "p99"
       }
+    },
+    "endpoints": {
+      "title": "Requêtes par point de terminaison (temps en millisecondes)",
+      "method": "Méthode",
+      "url": "URL du point de terminaison"
     },
     "cache": {
       "title": "Statistiques de cache",
@@ -96,7 +120,18 @@
       "p50": "p50",
       "p75": "p75",
       "p95": "p95",
-      "p99": "p99"
+      "p99": "p99",
+      "pool": {
+        "active": "actives",
+        "min": "min",
+        "max": "max",
+        "idle": "inactives"
+      },
+      "rows": {
+        "acquire": "Acquisition",
+        "creation": "Création",
+        "usage": "Utilisation"
+      }
     }
   }
 }

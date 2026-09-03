@@ -9,7 +9,8 @@
         "title": "Memoria",
         "total": "Memoria total",
         "heap": "Memoria heap",
-        "nonheap": "Memoria no heap"
+        "nonheap": "Memoria no heap",
+        "committed": "Comprometida"
       },
       "threads": {
         "title": "Hilos",
@@ -18,6 +19,7 @@
         "timedwaiting": "Espera temporizada",
         "waiting": "En espera",
         "blocked": "Bloqueado",
+        "expand": "Expandir",
         "dump": {
           "title": "Volcado de hilos",
           "id": "Id: ",
@@ -36,7 +38,13 @@
         "marksweepcount": "Recuento de Mark Sweep",
         "marksweeptime": "Tiempo de Mark Sweep",
         "scavengecount": "Recuento de Scavenge",
-        "scavengetime": "Tiempo de Scavenge"
+        "scavengetime": "Tiempo de Scavenge",
+        "livedatasize": "Tamaño de datos vivos del GC",
+        "maxdatasize": "Tamaño máximo de datos del GC",
+        "memorypromoted": "Memoria promovida por el GC",
+        "memoryallocated": "Memoria asignada por el GC",
+        "classesloaded": "Clases cargadas",
+        "classesunloaded": "Clases descargadas"
       },
       "http": {
         "title": "Solicitudes HTTP (tiempo en milisegundos)",
@@ -56,6 +64,17 @@
         }
       }
     },
+    "system": {
+      "title": "Sistema",
+      "uptime": "Tiempo activo",
+      "starttime": "Hora de inicio",
+      "processcpuusage": "Uso de CPU del proceso",
+      "systemcpuusage": "Uso de CPU del sistema",
+      "systemcpucount": "Número de CPU del sistema",
+      "systemloadaverage": "Carga media del sistema (1 min)",
+      "processfilesmax": "Máximo de archivos del proceso",
+      "processfilesopen": "Archivos abiertos del proceso"
+    },
     "servicesstats": {
       "title": "Estadísticas de servicios (tiempo en milisegundos)",
       "table": {
@@ -69,6 +88,11 @@
         "p95": "p95",
         "p99": "p99"
       }
+    },
+    "endpoints": {
+      "title": "Solicitudes por endpoint (tiempo en milisegundos)",
+      "method": "Método",
+      "url": "URL del endpoint"
     },
     "cache": {
       "title": "Estadísticas de caché",
@@ -96,7 +120,18 @@
       "p50": "p50",
       "p75": "p75",
       "p95": "p95",
-      "p99": "p99"
+      "p99": "p99",
+      "pool": {
+        "active": "activas",
+        "min": "mín",
+        "max": "máx",
+        "idle": "inactivas"
+      },
+      "rows": {
+        "acquire": "Adquisición",
+        "creation": "Creación",
+        "usage": "Uso"
+      }
     }
   }
 }
