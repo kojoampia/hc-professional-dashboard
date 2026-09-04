@@ -169,5 +169,32 @@ describe('DutyRosterAssignmentsService', () => {
       expect(service.computeShiftLabel([], at('2026-07-30T10:00:00'))).toBeNull();
       expect(service.computeShiftLabel([assignment({ date: '2026-07-01', shift: 'DAY' })], at('2026-07-30T10:00:00'))).toBeNull();
     });
+
+    /**
+     * `OFF` is the second value with no window, and the first for which "no window" means "not
+     * worked" rather than "any time on the date".
+     *
+     * <p>Every one of these passed before the exclusion was written, announcing a rostered rest day
+     * as a shift: `shiftStartHour` answers the 07:00 default for any windowless value, and that
+     * default was chosen when FLEXIBLE was the only one, where it means "sorts with the morning".
+     * `mobile/`'s `selectShift` carries the identical cases, because the two must agree or one
+     * clinician sees different answers on their phone and in this sidebar.
+     */
+    it('never labels a rostered rest day as an active or upcoming shift', () => {
+      const off = [assignment({ date: '2026-07-30', shift: 'OFF' })];
+
+      expect(service.computeShiftLabel(off, at('2026-07-30T09:00:00'))).toBeNull();
+      expect(service.computeShiftLabel(off, at('2026-07-30T23:30:00'))).toBeNull();
+      expect(service.computeShiftLabel([assignment({ date: '2026-08-02', shift: 'OFF' })], at('2026-07-30T10:00:00'))).toBeNull();
+    });
+
+    it('looks past a rest day to the next shift actually being worked', () => {
+      const label = service.computeShiftLabel(
+        [assignment({ date: '2026-07-31', shift: 'OFF' }), assignment({ id: 'a-2', date: '2026-08-01', shift: 'DAY' })],
+        at('2026-07-30T16:00:00'),
+      );
+
+      expect(label).toEqual({ translationKey: 'healthConnect.roster.nextShift', translationParams: { time: '2026-08-01 07:00' } });
+    });
   });
 });

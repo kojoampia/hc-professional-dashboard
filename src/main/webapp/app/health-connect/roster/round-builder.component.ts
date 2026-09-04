@@ -138,7 +138,7 @@ const visitGroup = (): FormGroup =>
               <label class="hpd-label" for="dr-shift">{{ 'healthConnect.roster.shift' | translate }}</label>
               <select id="dr-shift" class="hpd-focusable hpd-input" formControlName="shift">
                 @for (shift of shifts; track shift) {
-                  <option [value]="shift">{{ 'healthConnect.roster.shiftNames.' + shift | translate }}</option>
+                  <option [value]="shift">{{ 'healthConnect.shiftType.' + shift | translate }}</option>
                 }
               </select>
             </div>
@@ -245,7 +245,7 @@ const visitGroup = (): FormGroup =>
                 </span>
                 <span class="flex items-center gap-2">
                   <span class="rounded-full bg-hpd-cream px-2.5 py-0.5 text-[11px] font-bold text-hpd-primary">
-                    {{ 'healthConnect.roster.shiftNames.' + assignment.shift | translate }}
+                    {{ 'healthConnect.shiftType.' + assignment.shift | translate }}
                   </span>
                   <button
                     class="hpd-focusable hpd-btn hpd-btn-ghost !px-2.5 !py-1 !text-xs"

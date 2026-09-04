@@ -49,6 +49,30 @@ describe('roster day model', () => {
       expect(days.get('2026-08-18')!.shifts).toEqual(['DAY', 'FLEXIBLE']);
     });
 
+    /**
+     * The windowless values keep their declared order relative to each other.
+     *
+     * <p>The sort was `shiftStartHour` with a tie-break naming FLEXIBLE by hand, from when FLEXIBLE
+     * was the only value with no window. OFF gave it a second, and both fall back to the same 07:00
+     * default — so DAY, OFF and FLEXIBLE all tied and the result depended on the order they arrived
+     * in. The assignments below are supplied in reverse deliberately, since that is the only way a
+     * sort that has stopped sorting can be told from one that has not.
+     */
+    it('orders the two windowless values after the windowed ones, and after each other', () => {
+      const days = buildRosterDays(
+        dates,
+        [
+          assignment({ id: 'a-1', shift: 'FLEXIBLE' }),
+          assignment({ id: 'a-2', shift: 'OFF' }),
+          assignment({ id: 'a-3', shift: 'NIGHT' }),
+          assignment({ id: 'a-4', shift: 'DAY' }),
+        ],
+        [],
+      );
+
+      expect(days.get('2026-08-18')!.shifts).toEqual(['DAY', 'NIGHT', 'OFF', 'FLEXIBLE']);
+    });
+
     it('ignores assignments outside the requested range rather than inventing days for them', () => {
       const days = buildRosterDays(dates, [assignment({ date: '2026-09-01' })], []);
       expect(days.size).toBe(dates.length);

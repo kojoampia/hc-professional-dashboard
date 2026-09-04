@@ -9,10 +9,26 @@
  * that side. `amount` fields arrive as JSON numbers from a Java `BigDecimal`.
  */
 
+import { DutyRosterShift } from '../health-connect.models';
+
 export type EarningsGranularity = 'DAILY' | 'WEEKLY' | 'MONTHLY';
 
-/** hc-admin's `ShiftType`. Note this is **not** the same enum as professionalservice's. */
-export type AdminShiftType = 'DAY' | 'EVENING' | 'NIGHT' | 'OFF';
+/**
+ * hc-admin's `ShiftType`, which **is** professionalservice's as of 2026-09-04.
+ *
+ * <p>This was `'DAY' | 'EVENING' | 'NIGHT' | 'OFF'` written out here on purpose: the two enums
+ * differed by one value at each end, and a separate type was how that divergence was recorded where
+ * somebody reading the earnings contract would meet it. The superset change settled both sides on
+ * `DAY, EVENING, NIGHT, OFF, FLEXIBLE`, so the type existed only to describe a difference that no
+ * longer exists — and a second union that happens to agree today is precisely the near-identity this
+ * change was made to remove.
+ *
+ * <p>Kept as an alias rather than deleted outright, because these shapes are read as hc-admin's
+ * contract and naming the enum at the boundary says which service owns it. If the two ever diverge
+ * again this alias is where it becomes a real union once more — which makes the divergence something
+ * somebody has to write down, rather than something that accumulates.
+ */
+export type AdminShiftType = DutyRosterShift;
 
 export interface EarningsBucketDto {
   /** ISO date. */

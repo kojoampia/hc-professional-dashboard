@@ -62,8 +62,18 @@ export interface HealthConnectProfessional {
  * workspace guide names as a cross-repo invariant. Windows (local time, contiguous across the day):
  * DAY 07–15, EVENING 15–23, NIGHT 23–07 wrapping past midnight, FLEXIBLE the whole day for
  * individually agreed 2–4 hour blocks. MORNING and AFTERNOON were retired in DR1.
+ *
+ * <p><b>`OFF` was added in the superset change (2026-09-04)</b> and is a rostered rest day: planned,
+ * and deliberately not worked. It is hc-admin's value, and the two enums are now the same five values
+ * in the same order on both sides of the estate rather than four-that-nearly-match. The alternative
+ * was a translation table at a boundary where three of the four names already agreed, and
+ * near-identity is more dangerous than clean difference. See `adminservice-earnings-contract.md`.
+ *
+ * <p>`OFF` has **no window**, like `FLEXIBLE`, and unlike `FLEXIBLE` it carries no visits at all —
+ * the server rejects a round that is `OFF` and has any. It is the one value here for which "when does
+ * this shift run" has no answer rather than the answer "all day".
  */
-export const DUTY_ROSTER_SHIFTS = ['DAY', 'EVENING', 'NIGHT', 'FLEXIBLE'] as const;
+export const DUTY_ROSTER_SHIFTS = ['DAY', 'EVENING', 'NIGHT', 'OFF', 'FLEXIBLE'] as const;
 
 /**
  * The union, **derived from the runtime list above rather than written twice.**
@@ -72,9 +82,13 @@ export const DUTY_ROSTER_SHIFTS = ['DAY', 'EVENING', 'NIGHT', 'FLEXIBLE'] as con
  * a translation" of a bare `'DAY' | 'EVENING' | …`. That is why the values are a `const` array and the
  * type comes from it: `shift-names.spec.ts` derives the catalogue keys it expects from
  * {@link DUTY_ROSTER_SHIFTS}, so adding a value here fails that test in all four locales until the
- * catalogues carry it — instead of rendering `healthConnect.roster.shiftNames.OFF` to a French user
- * with nothing thrown. The ordering is the display order the calendar, the week grid's rows and the
- * assign form all use (see `duty-roster.md` § 9: FLEXIBLE last, because it has no window).
+ * catalogues carry it — instead of rendering `healthConnect.shiftType.OFF` to a French user with
+ * nothing thrown. The ordering is the display order the calendar, the week grid's rows and the assign
+ * form all use (see `duty-roster.md` § 9: the two windowless values last, `FLEXIBLE` after `OFF`).
+ *
+ * <p>This is also the **only** shift union in this app. `earnings-api.model.ts` used to declare an
+ * `AdminShiftType` beside it to record that hc-admin's enum differed; it re-exports this one now,
+ * because it does not.
  */
 export type DutyRosterShift = (typeof DUTY_ROSTER_SHIFTS)[number];
 
@@ -85,9 +99,11 @@ export type DutyRosterShift = (typeof DUTY_ROSTER_SHIFTS)[number];
  * 01:00 moment belongs to the *previous* date's shift. Anything consuming this table has to say so
  * explicitly; the wrap is the single easiest thing here to get subtly wrong.
  *
- * <p>FLEXIBLE is deliberately absent rather than mapped to 0–24. It covers its whole date, so asking
- * "is the hour inside the window" is the wrong question for it and a `Partial` record forces the
- * caller to answer the right one.
+ * <p>FLEXIBLE and OFF are deliberately absent rather than mapped to 0–24 and 0–0. FLEXIBLE covers its
+ * whole date and OFF is not worked at all, so "is the hour inside the window" is the wrong question
+ * for both and a `Partial` record forces the caller to answer the right one. Two absent values rather
+ * than one is worth noticing when reading a caller: a `?? default` that was written for FLEXIBLE now
+ * also answers for OFF, and only some of those defaults still make sense.
  */
 export const SHIFT_WINDOWS: Partial<Record<DutyRosterShift, { start: number; end: number }>> = {
   DAY: { start: 7, end: 15 },
@@ -95,7 +111,7 @@ export const SHIFT_WINDOWS: Partial<Record<DutyRosterShift, { start: number; end
   NIGHT: { start: 23, end: 7 },
 };
 
-/** Sorting anchor for FLEXIBLE, which spans the day and so has no meaningful start. */
+/** Sorting anchor for the windowless values, which have no meaningful start. */
 const DEFAULT_START_HOUR = 7;
 
 export const shiftStartHour = (shift: DutyRosterShift): number => SHIFT_WINDOWS[shift]?.start ?? DEFAULT_START_HOUR;

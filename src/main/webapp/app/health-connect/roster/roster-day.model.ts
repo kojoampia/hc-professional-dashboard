@@ -1,6 +1,6 @@
 import { AbsenceDto, AbsenceStatus, AbsenceType } from '../api/absence-api.service';
 import { DaySummaryDto, DutyRosterAssignmentDto } from '../api/duty-roster-assignments.service';
-import { DutyRosterShift, shiftStartHour } from '../health-connect.models';
+import { DUTY_ROSTER_SHIFTS, DutyRosterShift } from '../health-connect.models';
 import { isIsoDate } from './calendar-date.util';
 
 /**
@@ -81,9 +81,15 @@ export const buildRosterDays = (
     }
   }
   for (const day of days.values()) {
-    // Window order, so a cell reads down the day. FLEXIBLE sorts with DAY's start hour and is
-    // pushed last by the tie-break, since it spans the whole date and has no real start.
-    day.shifts.sort((a, b) => shiftStartHour(a) - shiftStartHour(b) || (a === 'FLEXIBLE' ? 1 : b === 'FLEXIBLE' ? -1 : 0));
+    // Window order, so a cell reads down the day — which is exactly the order DUTY_ROSTER_SHIFTS is
+    // declared in: the three windowed values, then the windowless ones.
+    //
+    // This sorted on `shiftStartHour` with a hand-written tie-break naming FLEXIBLE, from when
+    // FLEXIBLE was the only value with no window. `OFF` gave it a second, and both fall back to the
+    // same default 07:00 — so the tie-break would have needed to name OFF too, and whatever came
+    // after it. Reading the canonical order off the list the values themselves come from cannot fall
+    // behind that list.
+    day.shifts.sort((a, b) => DUTY_ROSTER_SHIFTS.indexOf(a) - DUTY_ROSTER_SHIFTS.indexOf(b));
   }
 
   for (const absence of absences) {
