@@ -4,6 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 
 import { DutyRosterAssignmentDto, DutyRosterAssignmentsService, VisitDto } from '../api/duty-roster-assignments.service';
+import { GeographicSpaceApiService } from '../api/geographic-space-api.service';
 import { DayListComponent } from './day-list.component';
 
 /**
@@ -18,6 +19,7 @@ describe('DayListComponent (DR6)', () => {
   let component: DayListComponent;
   let day: jest.Mock;
   let customerTrail: jest.Mock;
+  let spaceName: jest.Mock;
 
   const visit = (partial: Partial<VisitDto>): VisitDto => ({
     id: 'v-1',
@@ -44,7 +46,14 @@ describe('DayListComponent (DR6)', () => {
   const build = async (): Promise<void> => {
     await TestBed.configureTestingModule({
       imports: [DayListComponent, TranslateModule.forRoot()],
-      providers: [{ provide: DutyRosterAssignmentsService, useValue: { day, customerTrail } }],
+      providers: [
+        { provide: DutyRosterAssignmentsService, useValue: { day, customerTrail } },
+        // Stubbed rather than left to the real client, which would reach hc-admin through the
+        // gateway. `spaceName` is a jest.fn so the area cases below can vary it; by default it
+        // answers null, which is what a round with no geographicSpaceId gets and is the shape every
+        // pre-existing case here was written against.
+        { provide: GeographicSpaceApiService, useValue: { name: (id?: string | null) => spaceName(id) } },
+      ],
     }).compileComponents();
     fixture = TestBed.createComponent(DayListComponent);
     fixture.componentRef.setInput('date', '2026-08-21');
@@ -59,6 +68,7 @@ describe('DayListComponent (DR6)', () => {
 
   beforeEach(() => {
     day = jest.fn(() => of([round({})]));
+    spaceName = jest.fn(() => of(null));
     customerTrail = jest.fn(() =>
       of([
         { id: 'e-1', occurredAt: '2026-08-20', label: 'visit', title: 'Dressing changed', description: 'Clean', createdAt: '2026-08-20' },
@@ -228,5 +238,48 @@ describe('DayListComponent (DR6)', () => {
 
     (element().querySelector('[data-cy="dayRound-r-1"]') as HTMLElement).dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(closed).toHaveBeenCalledTimes(1);
+  });
+
+  /**
+   * The round's area, resolved from hc-admin's narrow geographic read.
+   *
+   * <p>`geographicSpaceId` is opaque in this product — stored, returned, never interpreted — so the
+   * name has to come from the service that owns the tree. What these cases pin is the direction the
+   * lookup fails in: a round is readable without an area, and hc-admin being unreachable must cost
+   * a label rather than a round.
+   */
+  describe('the round area', () => {
+    it('shows the name hc-admin gives for the round space', async () => {
+      day = jest.fn(() => of([round({ geographicSpaceId: 'space-osu' })]));
+      spaceName = jest.fn(() => of('Osu'));
+      await build();
+
+      expect(spaceName).toHaveBeenCalledWith('space-osu');
+      expect(element().querySelector('[data-cy="roundArea-r-1"]')?.textContent).toContain('Osu');
+    });
+
+    it('shows nothing when the round carries no space', async () => {
+      day = jest.fn(() => of([round({ geographicSpaceId: null })]));
+      await build();
+
+      expect(element().querySelector('[data-cy="roundArea-r-1"]')).toBeNull();
+    });
+
+    /**
+     * hc-admin unreachable is an absent label, not an error and not a stall.
+     *
+     * <p>The client answers null on failure by contract. The round beneath it — the shift, the
+     * times, the customer at the door — comes from this service and is the information a clinician
+     * is actually standing there needing.
+     */
+    it('shows nothing rather than an error when hc-admin cannot be reached', async () => {
+      day = jest.fn(() => of([round({ geographicSpaceId: 'space-osu' })]));
+      spaceName = jest.fn(() => of(null));
+      await build();
+
+      expect(element().querySelector('[data-cy="roundArea-r-1"]')).toBeNull();
+      expect(element().querySelector('[data-cy="dayRound-r-1"]')).not.toBeNull();
+      expect(element().querySelector('[data-cy="dayError"]')).toBeNull();
+    });
   });
 });

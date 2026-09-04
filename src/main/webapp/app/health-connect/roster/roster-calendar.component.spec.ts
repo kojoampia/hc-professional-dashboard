@@ -5,6 +5,7 @@ import { of, throwError } from 'rxjs';
 
 import { AbsenceApiService, AbsenceDto } from '../api/absence-api.service';
 import { DutyRosterAssignmentDto, DutyRosterAssignmentsService } from '../api/duty-roster-assignments.service';
+import { GeographicSpaceApiService } from '../api/geographic-space-api.service';
 import { RosterCalendarComponent } from './roster-calendar.component';
 
 /**
@@ -47,6 +48,11 @@ describe('RosterCalendarComponent (DR5)', () => {
       providers: [
         { provide: DutyRosterAssignmentsService, useValue: { range, summary } },
         { provide: AbsenceApiService, useValue: { mine } },
+        // The day popup resolves each round's area from hc-admin. Stubbed here because this suite
+        // is about the calendar rather than the popup's contents, and the real client would want an
+        // HttpClient this TestBed does not provide. `of(null)` is what a round with no
+        // geographicSpaceId gets, which is every round in this suite's fixtures.
+        { provide: GeographicSpaceApiService, useValue: { name: () => of(null) } },
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(RosterCalendarComponent);

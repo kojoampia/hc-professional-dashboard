@@ -76,6 +76,18 @@ export interface DutyRosterAssignmentDto {
    * optional at every call site.
    */
   visits?: VisitDto[] | null;
+  /**
+   * Where the round is worked, as a `GeographicSpace` id **owned by hc-admin** (2026-09-04).
+   *
+   * <p>Opaque on this side, exactly as it is in `api/`: this product stores and returns the id and
+   * models no tree. `GeographicSpaceApiService` turns it into a name for display, from hc-admin's
+   * narrow read, and caches it.
+   *
+   * <p>Optional and absent on every round written before hc-admin's planner existed — a round with
+   * no space is one nobody has said where to work, which is an ordinary state for one created
+   * through this service's own admin write.
+   */
+  geographicSpaceId?: string | null;
 }
 
 const pad = (n: number): string => String(n).padStart(2, '0');
