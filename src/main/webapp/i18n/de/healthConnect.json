@@ -511,7 +511,7 @@
       "payable": "Gezählt",
       "notPayable": "Nicht gezählt",
       "viewDetail": "Vergütung ansehen",
-      "unpriced": "{{count}} Ihrer Dienste liegen vor der Festlegung eines Satzes für Ihre Rolle. Sie gelten als geleistet, erhöhen den Gesamtbetrag aber nicht. Die Sätze legt Ihre Administration fest.",
+      "unpriced": "Für {{count}} Ihrer Dienste ist für die jeweilige Dienstart am geleisteten Tag kein Satz festgelegt. Sie gelten als geleistet, erhöhen den Gesamtbetrag aber nicht. Die Sätze legt Ihre Administration fest.",
       "noRecord": "Sie haben noch keinen Berufsdatensatz, daher gibt es keine Dienste oder Vergütung anzuzeigen. Beides erscheint, sobald Ihr Onboarding freigegeben ist."
     },
     "profile": {

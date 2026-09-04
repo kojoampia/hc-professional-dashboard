@@ -511,7 +511,7 @@
       "payable": "Counted",
       "notPayable": "Not counted",
       "viewDetail": "View earnings",
-      "unpriced": "{{count}} of your shifts fall before any rate was set for your role, so they count as worked but add nothing to the total. Your administrator sets wage rates.",
+      "unpriced": "{{count}} of your shifts have no wage rate set for their shift type on the day they were worked, so they count as worked but add nothing to the total. Your administrator sets wage rates.",
       "noRecord": "You do not have a professional record yet, so there are no shifts or earnings to show. This appears once your onboarding is approved."
     },
     "profile": {

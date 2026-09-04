@@ -511,7 +511,7 @@
       "payable": "Contabilizado",
       "notPayable": "No contabilizado",
       "viewDetail": "Ver ingresos",
-      "unpriced": "{{count}} de tus turnos son anteriores a la fijación de una tarifa para tu rol, por lo que cuentan como trabajados pero no suman al total. Tu administrador fija las tarifas.",
+      "unpriced": "{{count}} de tus turnos no tienen una tarifa fijada para su tipo de turno en la fecha trabajada, por lo que cuentan como trabajados pero no suman al total. Tu administrador fija las tarifas.",
       "noRecord": "Todavía no tienes un registro profesional, así que no hay turnos ni ingresos que mostrar. Aparecerán cuando se apruebe tu incorporación."
     },
     "profile": {
