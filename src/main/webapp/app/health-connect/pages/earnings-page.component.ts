@@ -125,7 +125,7 @@ const GRANULARITIES: readonly EarningsGranularity[] = ['DAILY', 'WEEKLY', 'MONTH
               @for (shift of shifts(); track shift.date + shift.shift) {
                 <li class="flex flex-wrap items-center justify-between gap-3 px-5 py-3 text-sm">
                   <span class="font-semibold text-hpd-primary-dark">{{ day(shift.date) }}</span>
-                  <span class="text-hpd-muted">{{ 'healthConnect.earnings.shiftNames.' + shift.shift | translate }}</span>
+                  <span class="text-hpd-muted">{{ 'healthConnect.shiftType.' + shift.shift | translate }}</span>
                   <span class="text-xs" [class]="shift.payable ? 'font-bold text-hpd-success' : 'text-hpd-subtle'">
                     {{ (shift.payable ? 'healthConnect.earnings.payable' : 'healthConnect.earnings.notPayable') | translate }}
                   </span>

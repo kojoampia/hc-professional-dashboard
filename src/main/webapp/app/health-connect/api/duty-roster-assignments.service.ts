@@ -251,7 +251,14 @@ export class DutyRosterAssignmentsService {
       return { translationKey: 'healthConnect.roster.flexibleShift', translationParams: { date: today } };
     }
 
+    // OFF is excluded from the upcoming set, and this is the one place the exclusion has to be
+    // written out. The loop above skips it for free — it has no window, so it can never be active —
+    // but the search below leans on `shiftStartHour`, which answers 07:00 for any value with no
+    // window. That default was written when FLEXIBLE was the only one, where it means "sorts with
+    // the morning"; applied to OFF it announces a rostered rest day as "next shift, 07:00" in the
+    // sidebar card, which reads as a working day nobody told the clinician about.
     const upcoming = assignments
+      .filter(a => a.shift !== 'OFF')
       .filter(a => a.date > today || (a.date === today && hour < shiftStartHour(a.shift)))
       .sort((a, b) => (a.date === b.date ? shiftStartHour(a.shift) - shiftStartHour(b.shift) : a.date < b.date ? -1 : 1))[0];
     if (upcoming) {

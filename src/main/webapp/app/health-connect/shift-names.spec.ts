@@ -10,9 +10,9 @@ import { DUTY_ROSTER_SHIFTS } from './health-connect.models';
  * server can no longer send (backlog.md item 8).
  *
  * <p>`ShiftType` is one of the cross-repo invariants `docs/CLAUDE.md` lists, and the four `i18n/`
- * catalogues are its least obvious mirror: every value is a `healthConnect.roster.shiftNames.*` key,
+ * catalogues are its least obvious mirror: every value is a `healthConnect.shiftType.*` key,
  * resolved by string in `roster-calendar.component`. Nothing links the two, and both directions fail
- * quietly. A new value renders the literal `healthConnect.roster.shiftNames.OFF` mid-screen, because
+ * quietly. A new value renders the literal `healthConnect.shiftType.OFF` mid-screen, because
  * ngx-translate's missing-key handler prints the key and throws nothing. A retired value leaves behind
  * a key that reads perfectly and translates a shift nothing will ever ask for again — which is exactly
  * what DR1 did to `api/.jhipster/DutyRoster.json`, where `MORNING` and `AFTERNOON` survived their own
@@ -28,15 +28,27 @@ import { DUTY_ROSTER_SHIFTS } from './health-connect.models';
  * <p><b>What this cannot see, and what does.</b> The authority is `ShiftType` in `api/`, and nothing
  * here can read Java. This holds the catalogues to `web/`'s mirror of that enum;
  * `JhipsterEnumFieldValuesTest` in `api/` holds the JHipster generator inputs to the enum itself. The
- * one link still made by hand is `DUTY_ROSTER_SHIFTS` against `ShiftType.values()` — which is what
- * `docs/CLAUDE.md` means by "all of it moves in one change".
+ * two links still made by hand are `DUTY_ROSTER_SHIFTS` against `ShiftType.values()`, and `mobile/`'s
+ * own copy of both the union and its catalogues — which is what `docs/CLAUDE.md` means by "all of it
+ * moves in one change", and why `mobile/` grew the same spec on 2026-09-04 rather than inheriting
+ * this one.
+ *
+ * <p><b>One namespace, since 2026-09-04.</b> There were two — `healthConnect.roster.shiftNames` and
+ * `healthConnect.earnings.shiftNames` — and this spec covered only the first, so the earnings
+ * catalogue could drift with nothing failing. The split existed *because* the two vocabularies
+ * differed: the roster named professionalservice's four values and earnings named hc-admin's other
+ * four. The superset enum makes them one vocabulary, so keeping the split would have preserved the
+ * shape of a decision that no longer exists and left a future reader to rediscover why. The merged
+ * labels carry the window (`Day (07:00–15:00)`), which is the roster's wording rather than earnings'
+ * bare `Day`: a calendar square needs the hours, and an earnings row is not harmed by carrying them.
  *
  * @see docs/duty-roster.md § 2
+ * @see docs/adminservice-earnings-contract.md, for why the two enums are now one
  * @see case-status.spec.ts, the same check for patientservice's `CaseStatus`
  */
 describe('duty-roster shift names', () => {
   /**
-   * The `healthConnect.roster.shiftNames` block of one locale's catalogue.
+   * The `healthConnect.shiftType` block of one locale's catalogue.
    *
    * Walked key by key rather than read through `as any`, because the interesting failure is the
    * catalogue being reorganised: `as any` turns a renamed or moved block into `TypeError: Cannot read
@@ -46,9 +58,9 @@ describe('duty-roster shift names', () => {
   const shiftNames = (locale: string): Record<string, unknown> => {
     const path = join(__dirname, '..', '..', 'i18n', locale, 'healthConnect.json');
     let node: unknown = JSON.parse(readFileSync(path, 'utf8'));
-    for (const key of ['healthConnect', 'roster', 'shiftNames']) {
+    for (const key of ['healthConnect', 'shiftType']) {
       if (typeof node !== 'object' || node === null || !(key in node)) {
-        throw new Error(`${path} has no healthConnect.roster.shiftNames — it stops at '${key}'`);
+        throw new Error(`${path} has no healthConnect.shiftType — it stops at '${key}'`);
       }
       node = (node as Record<string, unknown>)[key];
     }
@@ -75,7 +87,7 @@ describe('duty-roster shift names', () => {
     const names = shiftNames(locale);
 
     // A key copied into the catalogue to silence the check above passes it and still puts
-    // `healthConnect.roster.shiftNames.NIGHT` on the screen. An echo has two shapes and only one of
+    // `healthConnect.shiftType.NIGHT` on the screen. An echo has two shapes and only one of
     // them contains the word `shiftNames`: the whole dotted path, and the bare `NIGHT` that someone
     // pastes when filling a locale in a hurry. Both are caught here.
     const echoes = (name: string, shift: string): boolean => name === shift || name.includes('shiftNames');

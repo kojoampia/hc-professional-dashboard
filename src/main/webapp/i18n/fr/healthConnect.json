@@ -118,6 +118,13 @@
       "eventTitle": "Titre de l'événement",
       "description": "Description détaillée de l'événement."
     },
+    "shiftType": {
+      "DAY": "Journée (07:00–15:00)",
+      "EVENING": "Soirée (15:00–23:00)",
+      "NIGHT": "Nuit (23:00–07:00)",
+      "OFF": "Repos (jour de repos)",
+      "FLEXIBLE": "Flexible (blocs de 2–4 h)"
+    },
     "roster": {
       "subtitle": "Les dossiers des gardes qui vous sont attribuées apparaissent dans votre file « Ma garde ».",
       "allCases": "Tous les cas",
@@ -135,12 +142,6 @@
       "wardName": "Service / unité",
       "assign": "Attribuer la garde",
       "unassign": "Retirer",
-      "shiftNames": {
-        "DAY": "Journée (07:00–15:00)",
-        "EVENING": "Soirée (15:00–23:00)",
-        "NIGHT": "Nuit (23:00–07:00)",
-        "FLEXIBLE": "Flexible (blocs de 2–4 h)"
-      },
       "duties": {
         "DOCTOR": "Médecin",
         "NURSE": "Infirmier·ère",
@@ -510,14 +511,8 @@
       "payable": "Comptabilisée",
       "notPayable": "Non comptabilisée",
       "viewDetail": "Voir les revenus",
-      "unpriced": "{{count}} de vos gardes sont antérieures à la définition d'un tarif pour votre rôle : elles comptent comme travaillées mais n'ajoutent rien au total. Les tarifs sont fixés par votre administrateur.",
-      "noRecord": "Vous n'avez pas encore de dossier professionnel : il n'y a donc ni garde ni revenu à afficher. Cela apparaîtra une fois votre intégration validée.",
-      "shiftNames": {
-        "DAY": "Jour",
-        "EVENING": "Soirée",
-        "NIGHT": "Nuit",
-        "OFF": "Repos"
-      }
+      "unpriced": "{{count}} de vos gardes n'ont aucun tarif défini pour leur type de garde à la date travaillée : elles comptent comme travaillées mais n'ajoutent rien au total. Les tarifs sont fixés par votre administrateur.",
+      "noRecord": "Vous n'avez pas encore de dossier professionnel : il n'y a donc ni garde ni revenu à afficher. Cela apparaîtra une fois votre intégration validée."
     },
     "profile": {
       "title": "Profil",

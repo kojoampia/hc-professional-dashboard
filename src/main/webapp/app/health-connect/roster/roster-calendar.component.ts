@@ -230,7 +230,7 @@ export class RosterCalendarComponent {
 
   readonly shiftNames = computed<Record<string, string>>(() => {
     this.langChange();
-    return Object.fromEntries(SHIFTS.map(shift => [shift, this.translate.instant(`healthConnect.roster.shiftNames.${shift}`)]));
+    return Object.fromEntries(SHIFTS.map(shift => [shift, this.translate.instant(`healthConnect.shiftType.${shift}`)]));
   });
 
   readonly absenceNames = computed<Record<string, string>>(() => {

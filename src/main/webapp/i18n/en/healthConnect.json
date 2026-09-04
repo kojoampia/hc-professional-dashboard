@@ -118,6 +118,13 @@
       "eventTitle": "Title of event",
       "description": "Detailed description of event."
     },
+    "shiftType": {
+      "DAY": "Day (07:00–15:00)",
+      "EVENING": "Evening (15:00–23:00)",
+      "NIGHT": "Night (23:00–07:00)",
+      "OFF": "Off (rest day)",
+      "FLEXIBLE": "Flexible (2–4 h blocks)"
+    },
     "roster": {
       "subtitle": "Cases on the rosters you are assigned to appear in your \"My roster\" queue.",
       "allCases": "All cases",
@@ -135,12 +142,6 @@
       "wardName": "Ward / unit",
       "assign": "Assign shift",
       "unassign": "Unassign",
-      "shiftNames": {
-        "DAY": "Day (07:00–15:00)",
-        "EVENING": "Evening (15:00–23:00)",
-        "NIGHT": "Night (23:00–07:00)",
-        "FLEXIBLE": "Flexible (2–4 h blocks)"
-      },
       "duties": {
         "DOCTOR": "Doctor",
         "NURSE": "Nurse",
@@ -510,14 +511,8 @@
       "payable": "Counted",
       "notPayable": "Not counted",
       "viewDetail": "View earnings",
-      "unpriced": "{{count}} of your shifts fall before any rate was set for your role, so they count as worked but add nothing to the total. Your administrator sets wage rates.",
-      "noRecord": "You do not have a professional record yet, so there are no shifts or earnings to show. This appears once your onboarding is approved.",
-      "shiftNames": {
-        "DAY": "Day",
-        "EVENING": "Evening",
-        "NIGHT": "Night",
-        "OFF": "Off"
-      }
+      "unpriced": "{{count}} of your shifts have no wage rate set for their shift type on the day they were worked, so they count as worked but add nothing to the total. Your administrator sets wage rates.",
+      "noRecord": "You do not have a professional record yet, so there are no shifts or earnings to show. This appears once your onboarding is approved."
     },
     "profile": {
       "title": "Profile",

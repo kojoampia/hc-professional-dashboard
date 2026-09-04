@@ -24,14 +24,16 @@ interface ShiftRow {
 }
 
 /**
- * The four shifts as rows, in window order (docs/duty-roster.md § 2).
+ * The five shifts as rows, in window order (docs/duty-roster.md § 2).
  *
- * <p><b>`FLEXIBLE` occupies its own fourth row, below `NIGHT`</b> — § 9 says so explicitly. It is not
- * a time of day and does not belong interleaved with the three that are; it covers the whole date in
- * individually agreed 2–4 hour blocks, and putting it anywhere in the middle implies a window it does
- * not have.
+ * <p><b>The windowless values occupy the rows below `NIGHT`</b> — § 9 says so explicitly of
+ * `FLEXIBLE`, and `OFF` joined it there in the 2026-09-04 superset change. Neither is a time of day,
+ * so neither belongs interleaved with the three that are: `FLEXIBLE` covers the whole date in
+ * individually agreed 2–4 hour blocks and `OFF` is not worked at all, and putting either in the
+ * middle implies a window it does not have.
  *
- * <p>Taken from the model's list rather than re-typed, so a new shift gains a row here by existing.
+ * <p>Taken from the model's list rather than re-typed, so a new shift gains a row here by existing —
+ * which is how `OFF` got one, with nothing in this file edited but this comment.
  */
 const SHIFT_ROWS: readonly DutyRosterShift[] = DUTY_ROSTER_SHIFTS;
 

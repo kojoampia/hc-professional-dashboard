@@ -201,8 +201,10 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
       return null;
     }
     // filter() already returns a fresh array, so sorting it in place does not touch the signal.
+    // OFF is dropped for the same reason the real implementation drops it: a rest day is not a
+    // next shift, and `shiftStartHour` would otherwise sort it in at 07:00 like any windowless value.
     const next = this.rosters()
-      .filter(roster => roster.professionalId === professionalId)
+      .filter(roster => roster.professionalId === professionalId && roster.shift !== 'OFF')
       .sort((left, right) =>
         left.date === right.date ? shiftStartHour(left.shift) - shiftStartHour(right.shift) : left.date < right.date ? -1 : 1,
       )[0];

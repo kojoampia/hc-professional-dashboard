@@ -118,6 +118,13 @@
       "eventTitle": "Ereignistitel",
       "description": "Detaillierte Ereignisbeschreibung."
     },
+    "shiftType": {
+      "DAY": "Tag (07:00–15:00)",
+      "EVENING": "Abend (15:00–23:00)",
+      "NIGHT": "Nacht (23:00–07:00)",
+      "OFF": "Frei (Ruhetag)",
+      "FLEXIBLE": "Flexibel (2–4-h-Blöcke)"
+    },
     "roster": {
       "subtitle": "Fälle aus den dir zugeteilten Schichten erscheinen in deiner Liste „Meine Schicht“.",
       "allCases": "Alle Fälle",
@@ -135,12 +142,6 @@
       "wardName": "Station / Einheit",
       "assign": "Schicht zuteilen",
       "unassign": "Entfernen",
-      "shiftNames": {
-        "DAY": "Tag (07:00–15:00)",
-        "EVENING": "Abend (15:00–23:00)",
-        "NIGHT": "Nacht (23:00–07:00)",
-        "FLEXIBLE": "Flexibel (2–4-h-Blöcke)"
-      },
       "duties": {
         "DOCTOR": "Arzt/Ärztin",
         "NURSE": "Pflegekraft",
@@ -510,14 +511,8 @@
       "payable": "Gezählt",
       "notPayable": "Nicht gezählt",
       "viewDetail": "Vergütung ansehen",
-      "unpriced": "{{count}} Ihrer Dienste liegen vor der Festlegung eines Satzes für Ihre Rolle. Sie gelten als geleistet, erhöhen den Gesamtbetrag aber nicht. Die Sätze legt Ihre Administration fest.",
-      "noRecord": "Sie haben noch keinen Berufsdatensatz, daher gibt es keine Dienste oder Vergütung anzuzeigen. Beides erscheint, sobald Ihr Onboarding freigegeben ist.",
-      "shiftNames": {
-        "DAY": "Tag",
-        "EVENING": "Abend",
-        "NIGHT": "Nacht",
-        "OFF": "Frei"
-      }
+      "unpriced": "Für {{count}} Ihrer Dienste ist für die jeweilige Dienstart am geleisteten Tag kein Satz festgelegt. Sie gelten als geleistet, erhöhen den Gesamtbetrag aber nicht. Die Sätze legt Ihre Administration fest.",
+      "noRecord": "Sie haben noch keinen Berufsdatensatz, daher gibt es keine Dienste oder Vergütung anzuzeigen. Beides erscheint, sobald Ihr Onboarding freigegeben ist."
     },
     "profile": {
       "title": "Profil",

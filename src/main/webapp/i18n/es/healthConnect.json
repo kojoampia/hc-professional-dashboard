@@ -118,6 +118,13 @@
       "eventTitle": "Título del evento",
       "description": "Descripción detallada del evento."
     },
+    "shiftType": {
+      "DAY": "Día (07:00–15:00)",
+      "EVENING": "Tarde (15:00–23:00)",
+      "NIGHT": "Noche (23:00–07:00)",
+      "OFF": "Libre (día de descanso)",
+      "FLEXIBLE": "Flexible (bloques de 2–4 h)"
+    },
     "roster": {
       "subtitle": "Los casos de los turnos que tienes asignados aparecen en tu cola «Mi turno».",
       "allCases": "Todos los casos",
@@ -135,12 +142,6 @@
       "wardName": "Planta / unidad",
       "assign": "Asignar turno",
       "unassign": "Quitar",
-      "shiftNames": {
-        "DAY": "Día (07:00–15:00)",
-        "EVENING": "Tarde (15:00–23:00)",
-        "NIGHT": "Noche (23:00–07:00)",
-        "FLEXIBLE": "Flexible (bloques de 2–4 h)"
-      },
       "duties": {
         "DOCTOR": "Médico/a",
         "NURSE": "Enfermero/a",
@@ -510,14 +511,8 @@
       "payable": "Contabilizado",
       "notPayable": "No contabilizado",
       "viewDetail": "Ver ingresos",
-      "unpriced": "{{count}} de tus turnos son anteriores a la fijación de una tarifa para tu rol, por lo que cuentan como trabajados pero no suman al total. Tu administrador fija las tarifas.",
-      "noRecord": "Todavía no tienes un registro profesional, así que no hay turnos ni ingresos que mostrar. Aparecerán cuando se apruebe tu incorporación.",
-      "shiftNames": {
-        "DAY": "Día",
-        "EVENING": "Tarde",
-        "NIGHT": "Noche",
-        "OFF": "Libre"
-      }
+      "unpriced": "{{count}} de tus turnos no tienen una tarifa fijada para su tipo de turno en la fecha trabajada, por lo que cuentan como trabajados pero no suman al total. Tu administrador fija las tarifas.",
+      "noRecord": "Todavía no tienes un registro profesional, así que no hay turnos ni ingresos que mostrar. Aparecerán cuando se apruebe tu incorporación."
     },
     "profile": {
       "title": "Perfil",
