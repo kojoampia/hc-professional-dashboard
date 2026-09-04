@@ -1,9 +1,21 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, ViewChild, inject, input, output, signal } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  ViewChild,
+  WritableSignal,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { ActivityLogEntryDto } from '../api/patient-api.model';
 import { DutyRosterAssignmentDto, DutyRosterAssignmentsService, VisitDto } from '../api/duty-roster-assignments.service';
+import { GeographicSpaceApiService } from '../api/geographic-space-api.service';
 import { DutyRosterShift } from '../health-connect.models';
 
 /** What the trail panel for one customer is currently showing. */
@@ -21,6 +33,15 @@ interface DayRound {
   duty: string;
   description?: string | null;
   visits: VisitDto[];
+  /**
+   * The round's area, resolved from hc-admin and null until it is — or for ever, when the round
+   * carries no space or hc-admin cannot be reached.
+   *
+   * <p>A signal per round rather than a field on the DTO, because the name arrives after the round
+   * does and the round must render without waiting for it. hc-admin being down costs an area label
+   * and nothing else.
+   */
+  areaName: WritableSignal<string | null>;
 }
 
 /**
@@ -93,6 +114,12 @@ interface DayRound {
                 <span class="text-xs font-normal text-hpd-subtle">
                   {{ 'healthConnect.roster.duties.' + round.duty | translate }}
                 </span>
+                <!-- The area, when hc-admin could name it. Absent rather than "unknown": the round
+                     is the information and the area is a nicety, so a sibling stack being down must
+                     not put an error next to a perfectly good round. -->
+                @if (round.areaName(); as area) {
+                  <span class="text-xs font-normal text-hpd-subtle" [attr.data-cy]="'roundArea-' + round.id">· {{ area }}</span>
+                }
               </h3>
 
               @if (round.description) {
@@ -197,6 +224,7 @@ interface DayRound {
 })
 export class DayListComponent implements AfterViewInit {
   private readonly rosterService = inject(DutyRosterAssignmentsService);
+  private readonly geographicSpaceService = inject(GeographicSpaceApiService);
 
   readonly date = input.required<string>();
   /** The date already formatted by the parent — this component does no locale work of its own. */
@@ -316,7 +344,12 @@ export class DayListComponent implements AfterViewInit {
   }
 
   private toDayRound(round: DutyRosterAssignmentDto): DayRound {
+    const areaName = signal<string | null>(null);
+    // Resolved and cached by GeographicSpaceApiService, so a week of rounds in one district makes
+    // one request. A failure answers null and is cached as such — see that service.
+    this.geographicSpaceService.name(round.geographicSpaceId).subscribe(name => areaName.set(name));
     return {
+      areaName,
       id: round.id ?? `${round.date}-${round.shift}`,
       name: round.name,
       shift: round.shift,
