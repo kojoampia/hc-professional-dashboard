@@ -88,8 +88,10 @@ new routes.
   gateway is reachable there before debugging API issues. (`/h2-console` is a vestigial
   generator default — the stack is MongoDB-only.)
 - In **production** there is no proxy: `npm run webapp:prod` bakes `SERVER_API_URL='/'`, so every
-  call is same-origin and `nginx.conf` proxies it to the gateway container. Changing the proxied
-  path set means editing **both** `webpack/proxy.conf.js` and `nginx.conf`.
+  call is same-origin and the container's nginx proxies it to the gateway. That config is
+  `../deploy/docker/web-nginx.conf`, **not** the `nginx.conf` in this repo — see "Build" below.
+  Changing the proxied path set means editing **both** `webpack/proxy.conf.js` and
+  `../deploy/docker/web-nginx.conf`.
 
 ## Development
 
@@ -114,13 +116,28 @@ through Consul — so a useful session needs the backend stack up. See `../CLAUD
 ```bash
 npm run webapp:prod                                  # production web build
 ./mvnw -Pprod clean verify                           # same build, driven through frontend-maven-plugin
-docker build -f Dockerfile.prod -t hc-professional-dashboard:latest .   # production image (nginx)
+```
+
+**The deployed image is not built from this repo's Dockerfile.** It is built from
+`../deploy/docker/web.Dockerfile`, with this repo as the build context and its nginx config coming
+from `../deploy/docker/web-nginx.conf` through a named build context — by `../deploy/build.sh` on
+the `local` channel and by this repo's `.github/workflows/release.yml` on the `github` (ghcr) one.
+Nothing has been built from the files below since the deployment bundle was restructured in August.
+
+The root `Dockerfile.prod` (with `Dockerfile` symlinked to it), `Dockerfile.dev`, `nginx.conf` and
+the `docker-compose.yml` / `docker-compose-prod.yml` pair build a **local, single-app** image, and
+are still here only because `package.json`'s `docker:build:*` and `deploy:*` scripts reach them.
+Those scripts push to `docker-registry.jojoaddison.net`, which is not a registry in use. So:
+
+```bash
+docker build -f Dockerfile.prod -t hc-professional-dashboard:latest .   # LOCAL image only, not what ships
 ```
 
 `Dockerfile.prod` builds the bundle on `node:22-bookworm` (**not** alpine — npm dies there with
-"Exit handler never called!") and serves it from nginx with `nginx.conf`. The
-`docker-compose.yml` / `docker-compose-prod.yml` pair at the repo root builds dev/prod images for
-this app alone; the **full-stack** deployment is `../deploy/`.
+"Exit handler never called!") and serves it from nginx with this repo's `nginx.conf`. **Editing that
+`nginx.conf` changes nothing that ships** — the deployed config is `../deploy/docker/web-nginx.conf`,
+and the two have to be kept in step by hand until this chain is retired (`../docs/backlog.md`
+item 34).
 
 PWA/service worker is registered but disabled — set `enabled: true` in the
 `ServiceWorkerModule.register(...)` call in `app/app.config.ts` (config in `ngsw-config.json`).
