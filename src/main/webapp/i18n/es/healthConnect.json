@@ -422,6 +422,7 @@
         "VERIFIED": "Verificado",
         "REJECTED": "Rechazada"
       },
+      "superseded": "Reemplazado",
       "toast": {
         "started": "Solicitud iniciada",
         "saved": "Progreso guardado",

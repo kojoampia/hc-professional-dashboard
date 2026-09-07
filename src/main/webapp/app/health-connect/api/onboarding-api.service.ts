@@ -137,6 +137,24 @@ export interface OnboardingDocumentDto {
   sizeBytes?: number | null;
   verificationStatus?: DocumentVerificationStatus | null;
   rejectionReason?: string | null;
+  /**
+   * Set once a later upload of the same credential replaced this row; absent while it is the current
+   * one (backlog.md item 20).
+   *
+   * <p>Renewing a credential archives the document it replaces rather than deleting it — a superseded
+   * licence is evidence of what a clinician held while they were treating patients — so both document
+   * lists in this app keep showing archived rows. They must not be counted, though:
+   * `verificationStatus` is a reviewer's verdict and stays whatever it was, so an archived REJECTED
+   * row would otherwise hold `allDocumentsVerified` false and grey out Approve for ever.
+   */
+  supersededAt?: string | null;
+  /** The document that replaced this one — the history link the reviewer follows. */
+  supersededByDocumentId?: string | null;
+}
+
+/** Whether a document is the credential the professional holds now, rather than an archived one. */
+export function isLiveDocument(document: OnboardingDocumentDto): boolean {
+  return !document.supersededAt;
 }
 
 @Injectable({ providedIn: 'root' })

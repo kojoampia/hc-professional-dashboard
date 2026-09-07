@@ -5,7 +5,12 @@ import SharedModule from 'app/shared/shared.module';
 import { AlertService } from 'app/core/util/alert.service';
 import { OnboardingProgressService } from 'app/core/onboarding/onboarding-progress.service';
 import FileUploadTriggerComponent from 'app/shared/health-connect/form-controls/file-upload-trigger.component';
-import { OnboardingApiService, OnboardingDocumentDto, OnboardingDocumentType } from 'app/health-connect/api/onboarding-api.service';
+import {
+  OnboardingApiService,
+  OnboardingDocumentDto,
+  OnboardingDocumentType,
+  isLiveDocument,
+} from 'app/health-connect/api/onboarding-api.service';
 
 const UPLOADABLE_TYPES: OnboardingDocumentType[] = [
   'CERTIFICATE',
@@ -62,6 +67,18 @@ export default class DocumentsTabComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
+  }
+
+  /**
+   * Whether a row has been archived by a later upload of the same credential (backlog.md item 20).
+   *
+   * <p>Renewing marks the old document rather than deleting it, and this list deliberately keeps
+   * showing it — a clinician's credential history is theirs to read, and a renewal that made the
+   * previous licence vanish would look like a deletion. It is labelled instead, so an old expiry date
+   * beside a current one is not read as a compliance problem.
+   */
+  archived(document: OnboardingDocumentDto): boolean {
+    return !isLiveDocument(document);
   }
 
   load(): void {

@@ -13,6 +13,7 @@ import {
   OnboardingDocumentDto,
   OnboardingEventDto,
   OnboardingStatus,
+  isLiveDocument,
 } from '../api/onboarding-api.service';
 
 /**
@@ -41,9 +42,20 @@ export default class ReviewDetailPageComponent implements OnInit {
   readonly busy = signal(false);
   readonly loadState = signal<'loading' | 'ready' | 'error'>('loading');
 
-  readonly allDocumentsVerified = computed(
-    () => this.documents().length > 0 && this.documents().every(d => d.verificationStatus === 'VERIFIED'),
-  );
+  /**
+   * The client mirror of the server's `requireAllMandatoryDocumentsVerified`, and it has to read the
+   * same list the server does (backlog.md item 20).
+   *
+   * <p>Archived rows are excluded. A document a reviewer rejected, the applicant replaced, and the
+   * reviewer verified leaves the original REJECTED row in the list for ever — deliberately, since it
+   * is credential history — and against the unfiltered list it would keep Approve greyed out with
+   * nothing anyone could do about it. The server stopped refusing those applications; if this
+   * computation had been left alone the browser would simply have refused them instead.
+   */
+  readonly allDocumentsVerified = computed(() => {
+    const live = this.documents().filter(isLiveDocument);
+    return live.length > 0 && live.every(d => d.verificationStatus === 'VERIFIED');
+  });
 
   readonly decisionForm = new FormGroup({
     reason: new FormControl<string>('', { nonNullable: true }),
@@ -75,6 +87,15 @@ export default class ReviewDetailPageComponent implements OnInit {
 
   status(): OnboardingStatus | null {
     return this.application()?.status ?? null;
+  }
+
+  /**
+   * Template access to {@link isLiveDocument}: an archived row is labelled, dimmed, and no longer
+   * verifiable or rejectable — a verdict on a credential the applicant has already replaced would be
+   * meaningless, and re-verifying it would not change what the server counts either way.
+   */
+  archived(document: OnboardingDocumentDto): boolean {
+    return !isLiveDocument(document);
   }
 
   verify(document: OnboardingDocumentDto): void {

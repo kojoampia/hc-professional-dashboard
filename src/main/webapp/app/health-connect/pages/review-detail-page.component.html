@@ -57,8 +57,18 @@
           {{ 'healthConnect.onboarding.steps.documents' | translate }}
         </h2>
         <ul class="m-0 grid list-none gap-2 p-5">
+          <!--
+            Archived rows stay in this list on purpose: a superseded licence is evidence of what a
+            clinician held while they were treating patients, so renewing marks the old row rather
+            than deleting it (backlog.md item 20). They are labelled and dimmed so a reviewer can tell
+            history from the credentials on offer, and they are excluded from allDocumentsVerified().
+          -->
           @for (doc of documents(); track doc.id) {
-            <li class="flex flex-wrap items-center justify-between gap-3 rounded-hpd-sm border border-hpd-border px-3.5 py-2.5 text-sm">
+            <li
+              class="flex flex-wrap items-center justify-between gap-3 rounded-hpd-sm border border-hpd-border px-3.5 py-2.5 text-sm"
+              [class.opacity-60]="archived(doc)"
+              [attr.data-cy]="'document-' + doc.id"
+            >
               <span class="min-w-0 truncate text-hpd-primary-dark">
                 {{ 'healthConnect.onboarding.documentTypes.' + doc.type | translate }}
                 @if (doc.otherLabel) {
@@ -70,6 +80,11 @@
                 }
               </span>
               <span class="flex items-center gap-2">
+                @if (archived(doc)) {
+                  <span class="rounded-full bg-hpd-border/50 px-2.5 py-0.5 text-[11px] font-bold text-hpd-muted" data-cy="supersededBadge">
+                    {{ 'healthConnect.onboarding.superseded' | translate }}
+                  </span>
+                }
                 <span
                   class="rounded-full px-2.5 py-0.5 text-[11px] font-bold"
                   [class]="
@@ -92,7 +107,7 @@
                 <button
                   class="hpd-focusable hpd-btn hpd-btn-primary !px-2.5 !py-1 text-xs"
                   type="button"
-                  [disabled]="busy() || doc.verificationStatus === 'VERIFIED'"
+                  [disabled]="busy() || archived(doc) || doc.verificationStatus === 'VERIFIED'"
                   [attr.data-cy]="'verify-' + doc.id"
                   (click)="verify(doc)"
                 >
@@ -101,7 +116,7 @@
                 <button
                   class="hpd-focusable hpd-btn hpd-btn-danger !px-2.5 !py-1 text-xs"
                   type="button"
-                  [disabled]="busy() || doc.verificationStatus === 'REJECTED'"
+                  [disabled]="busy() || archived(doc) || doc.verificationStatus === 'REJECTED'"
                   [attr.data-cy]="'reject-' + doc.id"
                   (click)="reject(doc)"
                 >
