@@ -38,7 +38,19 @@
     @if (expiryRequired) {
       <div>
         <label class="hpd-label" for="doc-expiry" jhiTranslate="healthConnect.onboarding.fields.expiryDate">Expiry date</label>
-        <input class="hpd-focusable hpd-input" type="date" id="doc-expiry" formControlName="expiryDate" data-cy="documentExpiry" />
+        <!--
+          A licence that expired before today is never a renewal, and the server refuses to retire a
+          current one with it (backlog.md item 20). Bounding the picker is the cheapest place to catch
+          the typo that made this dangerous — 2026 for 2036 in a bare date field.
+        -->
+        <input
+          class="hpd-focusable hpd-input"
+          type="date"
+          id="doc-expiry"
+          [min]="today"
+          formControlName="expiryDate"
+          data-cy="documentExpiry"
+        />
         @if (!uploadForm.controls.expiryDate.value && uploadForm.controls.expiryDate.touched) {
           <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
         }
@@ -52,6 +64,30 @@
         @if (!uploadForm.controls.otherLabel.value && uploadForm.controls.otherLabel.touched) {
           <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
         }
+      </div>
+    }
+
+    <!--
+      Renewing is the clinician naming the row this document replaces; the server archives that row
+      and no other (backlog.md item 20). It cannot work it out for itself — a second certificate and a
+      renewed one are the same upload — and when it guessed, it archived credentials nobody had
+      replaced, after which they could be neither verified nor rejected. Shown only when there is
+      something of this type to replace.
+    -->
+    @if (replaceable().length) {
+      <div>
+        <label class="hpd-label" for="doc-supersedes" jhiTranslate="healthConnect.onboarding.fields.replaces">
+          Replaces an existing document
+        </label>
+        <select class="hpd-focusable hpd-input" id="doc-supersedes" formControlName="supersedesDocumentId" data-cy="documentReplaces">
+          <option value="">{{ 'healthConnect.onboarding.replacesNothing' | translate }}</option>
+          @for (candidate of replaceable(); track candidate.id) {
+            <option [value]="candidate.id">
+              {{ 'healthConnect.onboarding.documentTypes.' + candidate.type | translate
+              }}{{ candidate.otherLabel ? ' · ' + candidate.otherLabel : '' }}{{ candidate.expiryDate ? ' · ' + candidate.expiryDate : '' }}
+            </option>
+          }
+        </select>
       </div>
     }
 
@@ -85,7 +121,10 @@
       } @else {
         <ul class="grid gap-2">
           @for (document of documents(); track document.id) {
-            <li class="flex flex-wrap items-center justify-between gap-2 rounded-hpd-sm border border-hpd-border px-4 py-3">
+            <li
+              class="flex flex-wrap items-center justify-between gap-2 rounded-hpd-sm border border-hpd-border px-4 py-3"
+              [class.opacity-60]="archived(document)"
+            >
               <span class="text-sm font-semibold text-hpd-primary-dark">
                 <span [jhiTranslate]="'healthConnect.onboarding.documentTypes.' + document.type"></span>
                 @if (document.otherLabel) {
@@ -95,6 +134,18 @@
               <span class="flex items-center gap-3 text-xs">
                 @if (document.expiryDate) {
                   <span class="text-hpd-muted">{{ document.expiryDate }}</span>
+                }
+                <!--
+                  A renewal archives the document it replaces instead of deleting it, so this list
+                  keeps both (backlog.md item 20). Labelled, or a lapsed expiry beside a current one
+                  reads as a compliance problem the clinician has already fixed.
+                -->
+                @if (archived(document)) {
+                  <span
+                    class="rounded-full bg-hpd-border/50 px-2.5 py-1 font-bold text-hpd-muted"
+                    jhiTranslate="healthConnect.onboarding.superseded"
+                    data-cy="supersededBadge"
+                  ></span>
                 }
                 <span
                   class="rounded-full px-2.5 py-1 font-bold"

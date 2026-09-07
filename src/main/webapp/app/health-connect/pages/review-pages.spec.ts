@@ -96,15 +96,15 @@ describe('Review pages (WP5 gate)', () => {
     let fixture: ComponentFixture<ReviewDetailPageComponent>;
     let component: ReviewDetailPageComponent;
 
-    const configure = async (status: OnboardingApplicationDto['status']): Promise<void> => {
+    const DEFAULT_DOCUMENTS = [
+      { id: 'doc-1', type: 'LICENSE', verificationStatus: 'PENDING' },
+      { id: 'doc-2', type: 'CERTIFICATE', verificationStatus: 'VERIFIED' },
+    ];
+
+    const configure = async (status: OnboardingApplicationDto['status'], documents: unknown[] = DEFAULT_DOCUMENTS): Promise<void> => {
       api = {
         getApplication: jest.fn(() => of(application(status))),
-        applicationDocuments: jest.fn(() =>
-          of([
-            { id: 'doc-1', type: 'LICENSE', verificationStatus: 'PENDING' },
-            { id: 'doc-2', type: 'CERTIFICATE', verificationStatus: 'VERIFIED' },
-          ]),
-        ),
+        applicationDocuments: jest.fn(() => of(documents)),
         events: jest.fn(() => of([])),
         verifyDocument: jest.fn(() => of({ id: 'doc-1', type: 'LICENSE', verificationStatus: 'VERIFIED' })),
         rejectDocument: jest.fn(() => of({ id: 'doc-1', type: 'LICENSE', verificationStatus: 'REJECTED' })),
@@ -143,6 +143,38 @@ describe('Review pages (WP5 gate)', () => {
       component.decisionForm.patchValue({ reason: 'License expired', correctionNotes: 'documents' });
       component.decide('RETURNED_FOR_CORRECTION');
       expect(api['decide']).toHaveBeenCalledWith('app-1', 'RETURNED_FOR_CORRECTION', 'License expired', 'documents');
+    });
+
+    it('lets a replaced document stay on screen without blocking approval (backlog item 20)', async () => {
+      // A certificate the reviewer rejected, which the applicant then re-uploaded. The rejected row
+      // is deliberately never deleted — it is credential history — so before item 20 it held
+      // allDocumentsVerified() false for ever and greyed out Approve with nothing anyone could do
+      // about it, even after the server had stopped refusing the application.
+      await configure('CREDENTIAL_REVIEW', [
+        {
+          id: 'doc-old',
+          type: 'CERTIFICATE',
+          verificationStatus: 'REJECTED',
+          supersededAt: '2026-09-01T10:00:00Z',
+          supersededByDocumentId: 'doc-new',
+        },
+        { id: 'doc-new', type: 'CERTIFICATE', verificationStatus: 'VERIFIED' },
+        { id: 'doc-2', type: 'LICENSE', verificationStatus: 'VERIFIED' },
+      ]);
+
+      expect(component.allDocumentsVerified()).toBe(true);
+      expect((fixture.nativeElement.querySelector('[data-cy="approve"]') as HTMLButtonElement).disabled).toBe(false);
+
+      // Still listed, and labelled as replaced rather than silently indistinguishable from a live one.
+      expect(fixture.nativeElement.querySelectorAll('[data-cy^="document-"]')).toHaveLength(3);
+      const archivedRow = fixture.nativeElement.querySelector('[data-cy="document-doc-old"]') as HTMLElement;
+      expect(archivedRow.querySelector('[data-cy="supersededBadge"]')).toBeTruthy();
+
+      // A verdict on a credential the applicant has already replaced is meaningless, so neither
+      // action is offered on it.
+      expect((fixture.nativeElement.querySelector('[data-cy="verify-doc-old"]') as HTMLButtonElement).disabled).toBe(true);
+      expect((fixture.nativeElement.querySelector('[data-cy="reject-doc-old"]') as HTMLButtonElement).disabled).toBe(true);
+      expect(fixture.nativeElement.querySelector('[data-cy="document-doc-new"]').querySelector('[data-cy="supersededBadge"]')).toBeNull();
     });
 
     it('verifies and rejects documents (rejection needs a reason)', async () => {

@@ -137,6 +137,24 @@ export interface OnboardingDocumentDto {
   sizeBytes?: number | null;
   verificationStatus?: DocumentVerificationStatus | null;
   rejectionReason?: string | null;
+  /**
+   * Set once a later upload of the same credential replaced this row; absent while it is the current
+   * one (backlog.md item 20).
+   *
+   * <p>Renewing a credential archives the document it replaces rather than deleting it — a superseded
+   * licence is evidence of what a clinician held while they were treating patients — so both document
+   * lists in this app keep showing archived rows. They must not be counted, though:
+   * `verificationStatus` is a reviewer's verdict and stays whatever it was, so an archived REJECTED
+   * row would otherwise hold `allDocumentsVerified` false and grey out Approve for ever.
+   */
+  supersededAt?: string | null;
+  /** The document that replaced this one — the history link the reviewer follows. */
+  supersededByDocumentId?: string | null;
+}
+
+/** Whether a document is the credential the professional holds now, rather than an archived one. */
+export function isLiveDocument(document: OnboardingDocumentDto): boolean {
+  return !document.supersededAt;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -273,10 +291,18 @@ export class OnboardingApiService {
     return this.http.get<OnboardingDocumentDto[]>(`${this.resourceUrl}/documents`);
   }
 
+  /**
+   * Uploads a credential.
+   *
+   * <p>`supersedesDocumentId` names one of the caller's own live documents that this one replaces,
+   * and it is the only thing that archives a row (backlog.md item 20). The server does not infer the
+   * replacement, because it cannot: a renewed certificate and a second, different certificate are the
+   * same request. Sending nothing simply adds a document.
+   */
   uploadDocument(
     file: File,
     type: OnboardingDocumentType,
-    options: { otherLabel?: string; expiryDate?: string } = {},
+    options: { otherLabel?: string; expiryDate?: string; supersedesDocumentId?: string } = {},
   ): Observable<OnboardingDocumentDto> {
     const form = new FormData();
     form.append('file', file);
@@ -286,6 +312,9 @@ export class OnboardingApiService {
     }
     if (options.expiryDate) {
       form.append('expiryDate', options.expiryDate);
+    }
+    if (options.supersedesDocumentId) {
+      form.append('supersedesDocumentId', options.supersedesDocumentId);
     }
     return this.http.post<OnboardingDocumentDto>(`${this.resourceUrl}/documents`, form);
   }
