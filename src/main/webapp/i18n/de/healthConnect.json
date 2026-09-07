@@ -377,7 +377,8 @@
         "contactPhone": "Kontakttelefon",
         "documentType": "Dokumenttyp",
         "otherLabel": "Bezeichnung",
-        "expiryDate": "Ablaufdatum"
+        "expiryDate": "Ablaufdatum",
+        "replaces": "Ersetzt ein vorhandenes Dokument"
       },
       "actions": {
         "start": "Antrag starten",
@@ -423,6 +424,7 @@
         "REJECTED": "Abgelehnt"
       },
       "superseded": "Ersetzt",
+      "replacesNothing": "Keines – dies ist ein neues Dokument",
       "toast": {
         "started": "Antrag gestartet",
         "saved": "Fortschritt gespeichert",

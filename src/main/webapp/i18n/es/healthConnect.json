@@ -377,7 +377,8 @@
         "contactPhone": "Teléfono del contacto",
         "documentType": "Tipo de documento",
         "otherLabel": "Etiqueta",
-        "expiryDate": "Fecha de caducidad"
+        "expiryDate": "Fecha de caducidad",
+        "replaces": "Sustituye a un documento existente"
       },
       "actions": {
         "start": "Iniciar solicitud",
@@ -423,6 +424,7 @@
         "REJECTED": "Rechazada"
       },
       "superseded": "Reemplazado",
+      "replacesNothing": "Ninguno: es un documento nuevo",
       "toast": {
         "started": "Solicitud iniciada",
         "saved": "Progreso guardado",

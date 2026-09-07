@@ -377,7 +377,8 @@
         "contactPhone": "Contact phone",
         "documentType": "Document type",
         "otherLabel": "Label",
-        "expiryDate": "Expiry date"
+        "expiryDate": "Expiry date",
+        "replaces": "Replaces an existing document"
       },
       "actions": {
         "start": "Start application",
@@ -423,6 +424,7 @@
         "REJECTED": "Rejected"
       },
       "superseded": "Replaced",
+      "replacesNothing": "Nothing — this is a new document",
       "toast": {
         "started": "Application started",
         "saved": "Progress saved",

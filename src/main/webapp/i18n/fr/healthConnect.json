@@ -377,7 +377,8 @@
         "contactPhone": "Téléphone du contact",
         "documentType": "Type de document",
         "otherLabel": "Libellé",
-        "expiryDate": "Date d'expiration"
+        "expiryDate": "Date d'expiration",
+        "replaces": "Remplace un document existant"
       },
       "actions": {
         "start": "Commencer la demande",
@@ -423,6 +424,7 @@
         "REJECTED": "Rejeté"
       },
       "superseded": "Remplacé",
+      "replacesNothing": "Aucun — il s’agit d’un nouveau document",
       "toast": {
         "started": "Demande commencée",
         "saved": "Progression enregistrée",

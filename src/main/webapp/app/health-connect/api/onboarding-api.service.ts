@@ -291,10 +291,18 @@ export class OnboardingApiService {
     return this.http.get<OnboardingDocumentDto[]>(`${this.resourceUrl}/documents`);
   }
 
+  /**
+   * Uploads a credential.
+   *
+   * <p>`supersedesDocumentId` names one of the caller's own live documents that this one replaces,
+   * and it is the only thing that archives a row (backlog.md item 20). The server does not infer the
+   * replacement, because it cannot: a renewed certificate and a second, different certificate are the
+   * same request. Sending nothing simply adds a document.
+   */
   uploadDocument(
     file: File,
     type: OnboardingDocumentType,
-    options: { otherLabel?: string; expiryDate?: string } = {},
+    options: { otherLabel?: string; expiryDate?: string; supersedesDocumentId?: string } = {},
   ): Observable<OnboardingDocumentDto> {
     const form = new FormData();
     form.append('file', file);
@@ -304,6 +312,9 @@ export class OnboardingApiService {
     }
     if (options.expiryDate) {
       form.append('expiryDate', options.expiryDate);
+    }
+    if (options.supersedesDocumentId) {
+      form.append('supersedesDocumentId', options.supersedesDocumentId);
     }
     return this.http.post<OnboardingDocumentDto>(`${this.resourceUrl}/documents`, form);
   }
