@@ -460,6 +460,18 @@
       "rosterConfigured": "Marquer le planning configuré",
       "activate": "Activer l'accès professionnel",
       "suspend": "Suspendre",
+      "error": {
+        "incompleteProfile": "Ce professionnel ne peut pas encore être activé, car son profil est incomplet. Il manque encore :",
+        "conflict": "Le service a refusé cette action ; rien n'a été modifié.",
+        "invalid": "Le service a rejeté cette requête comme invalide ; rien n'a été modifié.",
+        "signedOut": "Votre session a expiré. Reconnectez-vous, puis réessayez.",
+        "forbidden": "Vous n'êtes pas autorisé à effectuer cette action.",
+        "notFound": "Cette demande n'existe plus. Revenez à la file d'examen et actualisez-la.",
+        "unreachable": "Le service est injoignable ; rien n'a été modifié.",
+        "failed": "L'action n'a pas abouti ; rien n'a été modifié.",
+        "serverSaid": "Le service a répondu :",
+        "dismiss": "Ignorer ce message"
+      },
       "toast": {
         "documentVerified": "Document vérifié",
         "documentRejected": "Document rejeté",

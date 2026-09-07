@@ -460,6 +460,18 @@
       "rosterConfigured": "Marcar cuadro de turnos configurado",
       "activate": "Activar acceso profesional",
       "suspend": "Suspender",
+      "error": {
+        "incompleteProfile": "Todavía no se puede activar a este profesional, porque su perfil está incompleto. Falta lo siguiente:",
+        "conflict": "El servicio rechazó esta acción y no se ha cambiado nada.",
+        "invalid": "El servicio rechazó esta solicitud por no ser válida y no se ha cambiado nada.",
+        "signedOut": "Tu sesión ha caducado. Vuelve a iniciar sesión e inténtalo de nuevo.",
+        "forbidden": "No tienes permiso para realizar esta acción.",
+        "notFound": "Esta solicitud ya no existe. Vuelve a la cola de revisión y actualízala.",
+        "unreachable": "No se ha podido contactar con el servicio y no se ha cambiado nada.",
+        "failed": "La acción no se ha completado y no se ha cambiado nada.",
+        "serverSaid": "El servicio informó:",
+        "dismiss": "Descartar este mensaje"
+      },
       "toast": {
         "documentVerified": "Documento verificado",
         "documentRejected": "Documento rechazado",

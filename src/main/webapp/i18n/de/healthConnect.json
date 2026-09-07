@@ -460,6 +460,18 @@
       "rosterConfigured": "Dienstplan als eingerichtet markieren",
       "activate": "Fachzugang aktivieren",
       "suspend": "Sperren",
+      "error": {
+        "incompleteProfile": "Diese Fachkraft kann noch nicht aktiviert werden, weil ihr Profil unvollständig ist. Es fehlt noch:",
+        "conflict": "Der Dienst hat diese Aktion abgelehnt; es wurde nichts geändert.",
+        "invalid": "Der Dienst hat diese Anfrage als ungültig abgelehnt; es wurde nichts geändert.",
+        "signedOut": "Ihre Sitzung ist abgelaufen. Melden Sie sich erneut an und versuchen Sie es noch einmal.",
+        "forbidden": "Sie dürfen diese Aktion nicht ausführen.",
+        "notFound": "Dieser Antrag existiert nicht mehr. Kehren Sie zur Prüfungswarteschlange zurück und laden Sie sie neu.",
+        "unreachable": "Der Dienst war nicht erreichbar; es wurde nichts geändert.",
+        "failed": "Die Aktion wurde nicht abgeschlossen; es wurde nichts geändert.",
+        "serverSaid": "Der Dienst meldete:",
+        "dismiss": "Diese Meldung ausblenden"
+      },
       "toast": {
         "documentVerified": "Dokument verifiziert",
         "documentRejected": "Dokument abgelehnt",
