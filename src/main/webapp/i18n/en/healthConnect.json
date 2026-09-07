@@ -460,6 +460,18 @@
       "rosterConfigured": "Mark roster configured",
       "activate": "Activate professional access",
       "suspend": "Suspend",
+      "error": {
+        "incompleteProfile": "This professional cannot be activated yet, because their profile is incomplete. Still outstanding:",
+        "conflict": "The service refused this action, and nothing was changed.",
+        "invalid": "The service rejected this request as invalid, and nothing was changed.",
+        "signedOut": "Your session has expired. Sign in again, then retry.",
+        "forbidden": "You are not allowed to perform this action.",
+        "notFound": "This application no longer exists. Go back to the review queue and reload it.",
+        "unreachable": "The service could not be reached, and nothing was changed.",
+        "failed": "That action did not complete, and nothing was changed.",
+        "serverSaid": "The service reported:",
+        "dismiss": "Dismiss this message"
+      },
       "toast": {
         "documentVerified": "Document verified",
         "documentRejected": "Document rejected",

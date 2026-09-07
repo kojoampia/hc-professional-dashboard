@@ -136,6 +136,51 @@
           {{ 'healthConnect.review.decision' | translate }}
         </h2>
         <div class="grid gap-4 p-5">
+          <!--
+            Why a refused action is reported here and not as a page-level banner: every button that
+            can be refused lives inside this card, so the message lands beside the control the
+            operator just pressed. The document verify/reject buttons are the one exception — they
+            are in the section immediately above — and their refusals land here too, which is a
+            short scroll rather than nowhere at all.
+
+            role="alert" because the operator's attention is already on the button, not here.
+          -->
+          @if (actionError(); as failure) {
+            <div
+              class="rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger"
+              role="alert"
+              data-cy="actionError"
+            >
+              <div class="flex items-start gap-2">
+                <mat-icon aria-hidden="true" class="!h-[18px] !w-[18px] !text-[18px] shrink-0">error_outline</mat-icon>
+                <div class="grid gap-1.5">
+                  <p class="m-0 font-bold">{{ failure.messageKey | translate }}</p>
+                  @if (failure.missingRequirements.length) {
+                    <ul class="m-0 list-disc pl-5" data-cy="actionErrorRequirements">
+                      @for (requirement of failure.missingRequirements; track requirement) {
+                        <li>{{ requirementLabelKey(requirement) | translate }}</li>
+                      }
+                    </ul>
+                  }
+                  @if (failure.detail) {
+                    <p class="m-0 text-xs" data-cy="actionErrorDetail">
+                      {{ 'healthConnect.review.error.serverSaid' | translate }} {{ failure.detail }}
+                    </p>
+                  }
+                </div>
+                <button
+                  class="hpd-focusable ml-auto cursor-pointer border-0 bg-transparent p-0 text-hpd-danger"
+                  type="button"
+                  [attr.aria-label]="'healthConnect.review.error.dismiss' | translate"
+                  data-cy="dismissActionError"
+                  (click)="dismissActionError()"
+                >
+                  <mat-icon aria-hidden="true" class="!h-[18px] !w-[18px] !text-[18px]">close</mat-icon>
+                </button>
+              </div>
+            </div>
+          }
+
           <form class="grid gap-4 sm:grid-cols-2" [formGroup]="decisionForm">
             <div>
               <label class="hpd-label" for="rv-reason">{{ 'healthConnect.review.reason' | translate }}</label>

@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -8,13 +9,68 @@ import { Observable } from 'rxjs';
 import { AlertService } from 'app/core/util/alert.service';
 import { GatewayAdminApiService } from '../api/gateway-admin-api.service';
 import {
+  ONBOARDING_REQUIREMENT_KEYS,
   OnboardingApiService,
   OnboardingApplicationDto,
   OnboardingDocumentDto,
   OnboardingEventDto,
+  OnboardingRequirementKey,
   OnboardingStatus,
   isLiveDocument,
 } from '../api/onboarding-api.service';
+
+/**
+ * A refused transition, in the shape the card renders (backlog.md item 46).
+ *
+ * @param messageKey          headline, always a catalogue key so the operator reads it in their own
+ *                            language. Chosen from the status, never from the server's wording.
+ * @param missingRequirements requirement keys the service named as still outstanding, in catalogue
+ *                            order; empty for every refusal that is not the completeness contract.
+ * @param detail              the service's own sentence, shown only when no requirement list
+ *                            explains the refusal. Untranslated by nature — it is a quotation, and
+ *                            it is labelled as one — but it is the only thing that distinguishes
+ *                            one 409 from another, so hiding it is what caused this defect.
+ */
+export interface ReviewActionFailure {
+  messageKey: string;
+  missingRequirements: OnboardingRequirementKey[];
+  detail: string | null;
+}
+
+/**
+ * Headline per HTTP status. Anything not listed falls back to `error.failed`.
+ *
+ * <p>Keyed on the status rather than on the service's message because the message is English prose
+ * that this repo must not mirror: a reword on the service side would silently stop matching, and
+ * the operator would be back to being told nothing. The one refusal worth naming exactly — the
+ * completeness contract — is recognised by the requirement keys it lists instead, which are a wire
+ * vocabulary the two sides already share.
+ */
+const MESSAGE_KEY_BY_STATUS: Record<number, string> = {
+  0: 'healthConnect.review.error.unreachable',
+  400: 'healthConnect.review.error.invalid',
+  401: 'healthConnect.review.error.signedOut',
+  403: 'healthConnect.review.error.forbidden',
+  404: 'healthConnect.review.error.notFound',
+  409: 'healthConnect.review.error.conflict',
+};
+
+/**
+ * The tail of the service's completeness refusal, from which requirement keys are read.
+ *
+ * <p>Anchored on the word before the colon rather than on the whole sentence, and deliberately not
+ * on any requirement name: `Application has no linked profile` is also a 409 and also contains
+ * `profile`, so matching bare key names would report a missing requirement that nobody is missing.
+ */
+const MISSING_REQUIREMENTS_TAIL = /missing[^:]*:([^"]*)/i;
+
+/**
+ * The Spring wrapper around a `ResponseStatusException` reason — `409 CONFLICT "…"`.
+ *
+ * <p>Unwrapped rather than shown as-is: the status is already rendered as a translated headline,
+ * and repeating it in the service's own words tells the operator nothing they can act on.
+ */
+const PROBLEM_DETAIL_WRAPPER = /^\d{3}\s+[A-Z_]+\s+"([\s\S]*)"$/;
 
 /**
  * Reviewer/admin application detail (WP5): document verification, decisions,
@@ -41,6 +97,21 @@ export default class ReviewDetailPageComponent implements OnInit {
   readonly eventTrail = signal<OnboardingEventDto[]>([]);
   readonly busy = signal(false);
   readonly loadState = signal<'loading' | 'ready' | 'error'>('loading');
+
+  /**
+   * Why the last action was refused, or null (backlog.md item 46).
+   *
+   * <p>Until this existed the error arm of every transition on this page was `busy.set(false)` and
+   * nothing else — no toast, no message, no field error. The spinner cleared and the card sat where
+   * it was, which is indistinguishable from a button that does not work. It was reported from
+   * production as exactly that: "activating a professional does not work, the card freezes".
+   *
+   * <p>The refusal that produced the report is by design — `OnboardingService` will not take an
+   * application to ACTIVE unless the eight-requirement completion contract is met, and it names the
+   * outstanding requirements in the 409. Those names were arriving in the browser and being thrown
+   * away.
+   */
+  readonly actionError = signal<ReviewActionFailure | null>(null);
 
   /**
    * The client mirror of the server's `requireAllMandatoryDocumentsVerified`, and it has to read the
@@ -74,6 +145,7 @@ export default class ReviewDetailPageComponent implements OnInit {
 
   load(): void {
     this.loadState.set('loading');
+    this.actionError.set(null);
     this.api.getApplication(this.applicationId).subscribe({
       next: application => {
         this.application.set(application);
@@ -159,6 +231,7 @@ export default class ReviewDetailPageComponent implements OnInit {
       return;
     }
     this.busy.set(true);
+    this.actionError.set(null);
     this.gatewayAdmin.grantAuthority(application.login, application.requestedRole).subscribe({
       next: () => {
         this.api.markAuthorityAssigned(this.applicationId).subscribe({
@@ -167,10 +240,13 @@ export default class ReviewDetailPageComponent implements OnInit {
             this.alertService.showToast('healthConnect.review.toast.authorityAssigned');
             this.afterTransition(updated);
           },
-          error: () => this.busy.set(false),
+          // Two error arms rather than one because the step is two calls, and either can refuse.
+          // The second failing means the gateway granted the authority and the api never recorded
+          // it, which is worth an operator seeing rather than a silent no-op.
+          error: (error: unknown) => this.fail(error),
         });
       },
-      error: () => this.busy.set(false),
+      error: (error: unknown) => this.fail(error),
     });
   }
 
@@ -195,6 +271,15 @@ export default class ReviewDetailPageComponent implements OnInit {
 
   back(): void {
     void this.router.navigate(['/review']);
+  }
+
+  dismissActionError(): void {
+    this.actionError.set(null);
+  }
+
+  /** The catalogue label for a requirement the service named, so the list reads in four languages. */
+  requirementLabelKey(requirement: OnboardingRequirementKey): string {
+    return 'healthConnect.profile.completion.requirements.' + requirement;
   }
 
   roleLabelKey(): string | null {
@@ -223,13 +308,68 @@ export default class ReviewDetailPageComponent implements OnInit {
 
   private run<T>(request: Observable<T>, toastKey: string, onNext: (v: T) => void): void {
     this.busy.set(true);
+    this.actionError.set(null);
     request.subscribe({
       next: value => {
         this.busy.set(false);
         this.alertService.showToast(toastKey);
         onNext(value);
       },
-      error: () => this.busy.set(false),
+      error: (error: unknown) => this.fail(error),
     });
+  }
+
+  /**
+   * The one place a refused action lands, for every transition on this page rather than for
+   * activation alone — the hole was in `run`, so all seven had it, and fixing one would have left
+   * six buttons that still do nothing visible when the service says no.
+   */
+  private fail(error: unknown): void {
+    this.busy.set(false);
+    this.actionError.set(this.failureFor(error));
+  }
+
+  private failureFor(error: unknown): ReviewActionFailure {
+    const response = error instanceof HttpErrorResponse ? error : null;
+    const detail = this.serverDetail(response);
+    const missingRequirements = this.missingRequirements(detail);
+    if (missingRequirements.length > 0) {
+      return { messageKey: 'healthConnect.review.error.incompleteProfile', missingRequirements, detail: null };
+    }
+    return {
+      messageKey: MESSAGE_KEY_BY_STATUS[response?.status ?? -1] ?? 'healthConnect.review.error.failed',
+      missingRequirements: [],
+      detail,
+    };
+  }
+
+  /**
+   * The sentence the service sent, unwrapped from the JHipster problem document and from Spring's
+   * `409 CONFLICT "…"` framing, or null when the body carries none.
+   */
+  private serverDetail(response: HttpErrorResponse | null): string | null {
+    const body: unknown = response?.error;
+    const raw = typeof body === 'string' ? body : (body as { detail?: string; title?: string } | null)?.detail ?? null;
+    const trimmed = raw?.trim();
+    if (!trimmed) {
+      return null;
+    }
+    return PROBLEM_DETAIL_WRAPPER.exec(trimmed)?.[1].trim() ?? trimmed;
+  }
+
+  /**
+   * The requirement keys named after `missing:` in a completeness refusal, in catalogue order.
+   *
+   * <p>Intersected with {@link ONBOARDING_REQUIREMENT_KEYS} rather than taken as read, so a
+   * sentence that lists something this build has no label for degrades to the generic headline and
+   * the quoted detail instead of rendering a raw translation key at the operator.
+   */
+  private missingRequirements(detail: string | null): OnboardingRequirementKey[] {
+    const tail = detail === null ? null : MISSING_REQUIREMENTS_TAIL.exec(detail)?.[1];
+    if (!tail) {
+      return [];
+    }
+    const named = new Set(tail.split(/[^A-Za-z]+/).filter(Boolean));
+    return ONBOARDING_REQUIREMENT_KEYS.filter(requirement => named.has(requirement));
   }
 }

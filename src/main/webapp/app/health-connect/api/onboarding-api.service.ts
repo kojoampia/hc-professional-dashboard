@@ -108,8 +108,28 @@ export interface OnboardingProgressDto {
   requirements: { key: OnboardingRequirementKey; done: boolean }[];
 }
 
-/** Keys the server sends; each maps to a translated label in all four catalogues. */
-export type OnboardingRequirementKey = 'consent' | 'profile' | 'address' | 'nextOfKin' | 'certificate' | 'license' | 'identity' | 'photo';
+/**
+ * Keys the server sends, in display order; each maps to a translated label in all four catalogues
+ * under `healthConnect.profile.completion.requirements.*`.
+ *
+ * <p>A runtime array with the union derived from it, rather than a bare union, for the reason
+ * `DUTY_ROSTER_SHIFTS` is one: a union cannot be enumerated at run time, so it cannot be matched
+ * against anything. The review page needs exactly that — it reads the requirement names out of the
+ * service's completeness refusal and has to know which tokens in that sentence are requirement keys
+ * (backlog.md item 46).
+ */
+export const ONBOARDING_REQUIREMENT_KEYS = [
+  'consent',
+  'profile',
+  'address',
+  'nextOfKin',
+  'certificate',
+  'license',
+  'identity',
+  'photo',
+] as const;
+
+export type OnboardingRequirementKey = (typeof ONBOARDING_REQUIREMENT_KEYS)[number];
 
 export interface OnboardingProfileDto {
   id?: string | null;

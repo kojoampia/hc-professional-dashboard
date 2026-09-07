@@ -1,7 +1,8 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { Authority } from 'app/config/authority.constants';
 import { GatewayAdminApiService } from '../api/gateway-admin-api.service';
@@ -214,6 +215,152 @@ describe('Review pages (WP5 gate)', () => {
       await configure('CREDENTIAL_REVIEW');
       const badge = fixture.nativeElement.querySelector('[data-cy="reviewSource"]');
       expect(badge.textContent).toContain('web-careers');
+    });
+
+    /**
+     * backlog.md item 46, reported from production: "activating a professional does not work, the
+     * card freezes on Activating". The activate call was returning 409 in under a second with the
+     * missing requirements named in it, and the page was discarding the whole response — the error
+     * arm of `run` was `busy.set(false)` and nothing else, so the spinner cleared and the operator
+     * was told nothing at all.
+     */
+    describe('a refused action is reported to the operator (backlog item 46)', () => {
+      /** The problem document `professionalservice` actually sends, captured from the quality stack. */
+      const refusal = (status: number, detail: string): HttpErrorResponse =>
+        new HttpErrorResponse({
+          status,
+          url: '/services/professionalservice/api/onboarding/applications/app-1/activate',
+          error: {
+            detail,
+            status,
+            title: 'Conflict',
+            type: 'https://www.jhipster.tech/problem/problem-with-message',
+            message: 'error.http.409',
+          },
+        });
+
+      it('names every requirement the completeness contract is still missing, in catalogue order', async () => {
+        await configure('ROSTER_CONFIGURED');
+        api['activate'] = jest.fn(() =>
+          throwError(() =>
+            // Verbatim, wrapper and all, from PUT .../activate against the quality stack.
+            refusal(409, '409 CONFLICT "Activation requires a complete profile; still missing: nextOfKin, profile, address"'),
+          ),
+        );
+
+        component.activate();
+
+        expect(component.busy()).toBe(false);
+        expect(component.actionError()).toEqual({
+          messageKey: 'healthConnect.review.error.incompleteProfile',
+          // Catalogue order, not the order the service happened to list them in.
+          missingRequirements: ['profile', 'address', 'nextOfKin'],
+          detail: null,
+        });
+
+        fixture.detectChanges();
+        const requirements = fixture.nativeElement.querySelectorAll('[data-cy="actionErrorRequirements"] li');
+        expect([...requirements].map((li: HTMLElement) => li.textContent?.trim())).toEqual([
+          'healthConnect.profile.completion.requirements.profile',
+          'healthConnect.profile.completion.requirements.address',
+          'healthConnect.profile.completion.requirements.nextOfKin',
+        ]);
+        // No raw server sentence when the requirement list already explains the refusal.
+        expect(fixture.nativeElement.querySelector('[data-cy="actionErrorDetail"]')).toBeNull();
+      });
+
+      it('does not read a requirement out of a 409 that names one without missing it', async () => {
+        // "Application has no linked profile" is also a 409 and also contains "profile". Matching
+        // bare key names would report a missing requirement that nobody is missing.
+        await configure('APPROVED');
+        api['assignOrganization'] = jest.fn(() => throwError(() => refusal(409, '409 CONFLICT "Application has no linked profile"')));
+
+        component.organizationForm.patchValue({ specialtyCategoryId: 'cat-1' });
+        component.assignOrganization();
+
+        expect(component.actionError()).toEqual({
+          messageKey: 'healthConnect.review.error.conflict',
+          missingRequirements: [],
+          // Unwrapped from Spring's `409 CONFLICT "…"`: the status is already the headline.
+          detail: 'Application has no linked profile',
+        });
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('[data-cy="actionErrorDetail"]').textContent).toContain(
+          'Application has no linked profile',
+        );
+      });
+
+      it.each([
+        [0, 'healthConnect.review.error.unreachable'],
+        [403, 'healthConnect.review.error.forbidden'],
+        [404, 'healthConnect.review.error.notFound'],
+        [503, 'healthConnect.review.error.failed'],
+      ])('maps HTTP %i to a translated headline rather than to silence', async (status, messageKey) => {
+        await configure('ROSTER_CONFIGURED');
+        api['activate'] = jest.fn(() => throwError(() => refusal(status, '')));
+
+        component.activate();
+
+        expect(component.actionError()?.messageKey).toBe(messageKey);
+      });
+
+      it('covers every transition on the page, not activation alone', async () => {
+        // The hole was in `run`, so all of these had it; fixing one would have left the rest silent.
+        await configure('CREDENTIAL_REVIEW');
+        for (const call of ['verifyDocument', 'rejectDocument', 'decide', 'markRosterConfigured', 'activate', 'suspend']) {
+          api[call] = jest.fn(() => throwError(() => refusal(403, '403 FORBIDDEN "Not the application owner"')));
+        }
+
+        component.decisionForm.patchValue({ reason: 'Blurry scan' });
+        for (const action of [
+          () => component.verify({ id: 'doc-1', type: 'LICENSE' }),
+          () => component.reject({ id: 'doc-1', type: 'LICENSE' }),
+          () => component.decide('REJECTED'),
+          () => component.markRosterConfigured(),
+          () => component.activate(),
+          () => component.suspend(),
+        ]) {
+          component.dismissActionError();
+          action();
+          expect(component.actionError()?.messageKey).toBe('healthConnect.review.error.forbidden');
+          expect(component.busy()).toBe(false);
+        }
+      });
+
+      it('reports a failed authority grant, whichever of its two calls refused', async () => {
+        await configure('ORGANIZATION_ASSIGNED');
+        gatewayAdmin.grantAuthority = jest.fn(() => throwError(() => refusal(403, '403 FORBIDDEN "Not allowed"')));
+        component.assignAuthority();
+        expect(component.actionError()?.messageKey).toBe('healthConnect.review.error.forbidden');
+
+        // The gateway granted it and the api did not record it: an inconsistency worth showing.
+        gatewayAdmin.grantAuthority = jest.fn(() => of({ login: 'candidate' }));
+        api['markAuthorityAssigned'] = jest.fn(() => throwError(() => refusal(409, '409 CONFLICT "Illegal onboarding transition"')));
+        component.assignAuthority();
+        expect(component.actionError()).toEqual({
+          messageKey: 'healthConnect.review.error.conflict',
+          missingRequirements: [],
+          detail: 'Illegal onboarding transition',
+        });
+      });
+
+      it('clears on the next attempt and on an explicit dismiss', async () => {
+        await configure('ROSTER_CONFIGURED');
+        api['activate'] = jest.fn(() =>
+          throwError(() => refusal(409, '409 CONFLICT "Activation requires a complete profile; still missing: photo"')),
+        );
+        component.activate();
+        expect(component.actionError()).not.toBeNull();
+
+        component.dismissActionError();
+        expect(component.actionError()).toBeNull();
+
+        component.activate();
+        expect(component.actionError()).not.toBeNull();
+        api['activate'] = jest.fn(() => of(application('ACTIVE')));
+        component.activate();
+        expect(component.actionError()).toBeNull();
+      });
     });
   });
 });
