@@ -28,6 +28,24 @@ describe('CareersHandoffService (careers handoff contract)', () => {
     expect(handoff?.src).toBe('web-careers');
   });
 
+  /**
+   * `?track=ROLE_ANGEL` was a valid track until 2026-09-08 and is now an unknown value.
+   *
+   * The careers site is a separate repository on a separate deploy cadence (`hc-abofonsa-web`), so a
+   * link naming the retired track can go on being clicked for as long as its CMS holds one. The
+   * contract's rule covers it exactly — a value outside the known set is dropped and the page still
+   * works — and `KNOWN_TRACKS` derives from the `Authority` enum, so removing the member was the whole
+   * change. This asserts the graceful degradation rather than the enum: what must not happen is an
+   * error, and what must happen is that the rest of the handoff survives.
+   */
+  it('drops the retired care-angel track without failing, keeping the other parameters', () => {
+    const handoff = service.capture(convertToParamMap({ track: 'ROLE_ANGEL', locale: 'fr', src: 'web-careers' }));
+
+    expect(handoff?.track).toBeNull();
+    expect(handoff?.locale).toBe('fr');
+    expect(handoff?.src).toBe('web-careers');
+  });
+
   it('never accepts admin/user authorities as a track', () => {
     expect(service.capture(convertToParamMap({ track: 'ROLE_ADMIN' }))).toBeNull();
     expect(service.capture(convertToParamMap({ track: 'ROLE_USER' }))).toBeNull();

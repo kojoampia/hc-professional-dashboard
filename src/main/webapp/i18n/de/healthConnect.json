@@ -24,7 +24,6 @@
       "therapist": "Therapeut",
       "carer": "Betreuungskraft",
       "user": "Benutzer",
-      "angel": "Betreuungsengel",
       "chemist": "Apotheker",
       "technician": "Techniker"
     },
@@ -149,7 +148,6 @@
         "PHARMACIST": "Apotheker/in",
         "THERAPIST": "Therapeut/in",
         "CARER": "Betreuungskraft",
-        "ANGEL": "Care-Angel",
         "CHEMIST": "Chemiker/in",
         "TECHNICIAN": "Techniker/in",
         "OTHER": "Sonstige"

@@ -24,7 +24,6 @@
       "therapist": "Therapist",
       "carer": "Carer",
       "user": "User",
-      "angel": "Angel",
       "chemist": "Chemist",
       "technician": "Technician"
     },
@@ -149,7 +148,6 @@
         "PHARMACIST": "Pharmacist",
         "THERAPIST": "Therapist",
         "CARER": "Carer",
-        "ANGEL": "Care angel",
         "CHEMIST": "Chemist",
         "TECHNICIAN": "Technician",
         "OTHER": "Other"

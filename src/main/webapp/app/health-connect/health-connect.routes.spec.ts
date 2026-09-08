@@ -65,7 +65,6 @@ describe('HealthConnect feature routes', () => {
         Authority.PHARMACIST,
         Authority.THERAPIST,
         Authority.CARER,
-        Authority.ANGEL,
         Authority.CHEMIST,
         Authority.TECHNICIAN,
       ]);

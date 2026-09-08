@@ -24,7 +24,6 @@
       "therapist": "Thérapeute",
       "carer": "Aidant",
       "user": "Utilisateur",
-      "angel": "Ange gardien",
       "chemist": "Chimiste",
       "technician": "Technicien"
     },
@@ -149,7 +148,6 @@
         "PHARMACIST": "Pharmacien·ne",
         "THERAPIST": "Thérapeute",
         "CARER": "Aide-soignant·e",
-        "ANGEL": "Ange gardien",
         "CHEMIST": "Chimiste",
         "TECHNICIAN": "Technicien·ne",
         "OTHER": "Autre"

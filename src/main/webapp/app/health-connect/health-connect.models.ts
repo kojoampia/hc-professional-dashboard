@@ -8,7 +8,6 @@ export enum AuthorityRole {
   PHARMACIST = 'Pharmacist',
   THERAPIST = 'Therapist',
   CARER = 'Carer',
-  ANGEL = 'Angel',
   CHEMIST = 'Chemist',
   TECHNICIAN = 'Technician',
   USER = 'User',
