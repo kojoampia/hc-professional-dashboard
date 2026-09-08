@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, ViewChild, signal } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import SharedModule from 'app/shared/shared.module';
 
@@ -13,7 +13,7 @@ export default class PasswordResetInitComponent implements AfterViewInit {
   @ViewChild('email', { static: false })
   email?: ElementRef;
 
-  success = false;
+  success = signal(false);
   resetRequestForm = this.fb.group({
     email: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(254), Validators.email]],
   });
@@ -30,6 +30,6 @@ export default class PasswordResetInitComponent implements AfterViewInit {
   }
 
   requestReset(): void {
-    this.passwordResetInitService.save(this.resetRequestForm.get(['email'])!.value).subscribe(() => (this.success = true));
+    this.passwordResetInitService.save(this.resetRequestForm.get(['email'])!.value).subscribe(() => this.success.set(true));
   }
 }

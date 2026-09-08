@@ -4,7 +4,7 @@
       Registration
     </h1>
 
-    @if (success) {
+    @if (success()) {
       <div
         class="mb-4 rounded-hpd-sm border border-hpd-success-accent/25 bg-hpd-success-tint px-4 py-3 text-sm text-hpd-success"
         jhiTranslate="register.messages.success"
@@ -13,7 +13,7 @@
       </div>
     }
 
-    @if (error) {
+    @if (error()) {
       <div
         class="mb-4 rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger"
         jhiTranslate="register.messages.error.fail"
@@ -22,7 +22,7 @@
       </div>
     }
 
-    @if (errorUserExists) {
+    @if (errorUserExists()) {
       <div
         class="mb-4 rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger"
         jhiTranslate="register.messages.error.userexists"
@@ -31,7 +31,7 @@
       </div>
     }
 
-    @if (errorEmailExists) {
+    @if (errorEmailExists()) {
       <div
         class="mb-4 rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger"
         jhiTranslate="register.messages.error.emailexists"
@@ -40,7 +40,7 @@
       </div>
     }
 
-    @if (doNotMatch) {
+    @if (doNotMatch()) {
       <div
         class="mb-4 rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger"
         jhiTranslate="global.messages.error.dontmatch"
@@ -49,7 +49,7 @@
       </div>
     }
 
-    @if (!success) {
+    @if (!success()) {
       <form class="grid gap-4" name="form" role="form" (ngSubmit)="register()" [formGroup]="registerForm">
         <div>
           <label class="hpd-label" for="login" jhiTranslate="global.form.username.label">Username</label>
