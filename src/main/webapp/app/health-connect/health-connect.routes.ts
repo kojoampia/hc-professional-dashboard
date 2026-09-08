@@ -16,7 +16,6 @@ const protectedFeatureRoute = {
       Authority.PHARMACIST,
       Authority.THERAPIST,
       Authority.CARER,
-      Authority.ANGEL,
       Authority.CHEMIST,
       Authority.TECHNICIAN,
     ],

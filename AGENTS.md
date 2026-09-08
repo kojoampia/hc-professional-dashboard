@@ -54,15 +54,17 @@ Two commands earlier versions of this file recommended **do not work**, verified
 
 Three distinct tiers — don't copy the wrong one onto a new route:
 
-- **Clinician surfaces** (dashboard, patients, cases, duty roster, messages, about) use the shared `protectedFeatureRoute`: `UserRouteAccessService` + `healthConnectRoleGuard`, admitting admin and all nine clinical roles.
+- **Clinician surfaces** (dashboard, patients, cases, duty roster, messages, about) use the shared `protectedFeatureRoute`: `UserRouteAccessService` + `healthConnectRoleGuard`, admitting admin and all eight clinical disciplines.
 - **Admin surfaces** (`/review`, `/review/:id`, `/compliance`) are `Authority.ADMIN` only, with no role guard.
 - **`/onboarding` requires authentication but no clinical role at all** — applicants hold only `ROLE_USER` until approval, so adding the role guard here would lock every applicant out of the wizard. This is deliberate; there's a comment on the route saying so.
 
 ### Roles and the mutation matrix
 
-`Authority` (`config/authority.constants.ts`) and `AuthorityRole` (`health-connect/authority-role.ts`) carry the **nine clinical roles**, mirroring `gateway/security/AuthoritiesConstants` and `api/security/AuthoritiesConstants` — a three-repo invariant that drifts silently.
+`Authority` (`config/authority.constants.ts`) and `AuthorityRole` (`health-connect/authority-role.ts`) carry the **eight clinical disciplines**, mirroring `gateway/security/AuthoritiesConstants` and `api/security/AuthoritiesConstants` — a three-repo invariant that drifts silently.
 
-`hasHealthConnectPermission` encodes the same mutating set the api enforces, but expressed differently: admin and doctor return true via an early return, and `CLINICAL_MUTATION_ROLES` holds the other four (nurse, paramedic, pharmacist, therapist). **That is six roles total, matching api's `CLINICAL_MUTATION` — not a four-vs-six drift bug.** Carer, angel, chemist and technician are read-only in v1. The client check is convenience only; `api/config/SecurityConfiguration` is the enforcement point.
+**`ROLE_ANGEL` was a ninth and is not an authority of this stack** (`../docs/backlog.md` item 44, 2026-09-08). A care angel supports one named patient; hc-patient owns the authority and the whole surface for it, and this portal is not where an angel belongs. Two consequences are load-bearing. **`hasClinicalAuthority` must keep answering "not a clinician" for an authority it does not recognise** — hc-patient still issues `ROLE_ANGEL`, the three gateways share one signing key, and an account on a long-lived database may hold an old grant, so such an account lands on the applicant view rather than in a clinician shell where every call 403s (that was the defect item 44 named). The `primaryRole !== null` half of that function is what makes it true, and `authority-role.spec.ts` pins it. And **`KNOWN_TRACKS` in `core/careers/careers-handoff.service.ts` derives from the `Authority` enum**, so `?track=ROLE_ANGEL` from the careers site is now dropped in silence, as the handoff contract requires of any unknown value.
+
+`hasHealthConnectPermission` encodes the same mutating set the api enforces, but expressed differently: admin and doctor return true via an early return, and `CLINICAL_MUTATION_ROLES` holds the other four (nurse, paramedic, pharmacist, therapist). **That is six roles total, matching api's `CLINICAL_MUTATION` — not a four-vs-six drift bug.** Carer, chemist and technician are read-only in v1. The client check is convenience only; `api/config/SecurityConfiguration` is the enforcement point.
 
 ### Onboarding and the careers handoff
 

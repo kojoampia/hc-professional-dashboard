@@ -81,8 +81,8 @@ describe('DutyRosterPageComponent (WP6 assignment-only, DR8 exception)', () => {
   });
 
   it('gives a read-only clinical role the same surfaces', async () => {
-    // Carers, care angels, chemists and technicians are read-only under CLINICAL_MUTATION and must
-    // still be able to ask for a holiday — /api/absences/** is .authenticated() for exactly this.
+    // Carers, chemists and technicians are read-only under CLINICAL_MUTATION and must still be able
+    // to ask for a holiday — /api/absences/** is .authenticated() for exactly this.
     await configure(['ROLE_CARER']);
 
     expect(element().querySelector('hpd-absence-panel')).not.toBeNull();

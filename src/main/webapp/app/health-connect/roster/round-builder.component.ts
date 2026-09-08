@@ -13,18 +13,7 @@ import { DUTY_ROSTER_SHIFTS, DutyRosterShift } from '../health-connect.models';
 
 /** The model's list, not a second copy — the assign form offers exactly the shifts the server has. */
 const SHIFTS: readonly DutyRosterShift[] = DUTY_ROSTER_SHIFTS;
-const DUTIES: readonly string[] = [
-  'DOCTOR',
-  'NURSE',
-  'PARAMEDIC',
-  'PHARMACIST',
-  'THERAPIST',
-  'CARER',
-  'ANGEL',
-  'CHEMIST',
-  'TECHNICIAN',
-  'OTHER',
-];
+const DUTIES: readonly string[] = ['DOCTOR', 'NURSE', 'PARAMEDIC', 'PHARMACIST', 'THERAPIST', 'CARER', 'CHEMIST', 'TECHNICIAN', 'OTHER'];
 
 /**
  * `X-Total-Count`, or **null when the server did not send one**.
