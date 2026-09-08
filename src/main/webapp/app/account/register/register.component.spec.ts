@@ -1,7 +1,9 @@
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { By } from '@angular/platform-browser';
 import { ComponentFixture, TestBed, waitForAsync, inject, tick, fakeAsync } from '@angular/core/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { FormBuilder } from '@angular/forms';
-import { of, throwError } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 
@@ -42,7 +44,7 @@ describe('RegisterComponent', () => {
 
     comp.register();
 
-    expect(comp.doNotMatch).toBe(true);
+    expect(comp.doNotMatch()).toBe(true);
   });
 
   it('should update success to true after creating an account', inject(
@@ -64,10 +66,10 @@ describe('RegisterComponent', () => {
         login: '',
         langKey: 'en',
       });
-      expect(comp.success).toBe(true);
-      expect(comp.errorUserExists).toBe(false);
-      expect(comp.errorEmailExists).toBe(false);
-      expect(comp.error).toBe(false);
+      expect(comp.success()).toBe(true);
+      expect(comp.errorUserExists()).toBe(false);
+      expect(comp.errorEmailExists()).toBe(false);
+      expect(comp.error()).toBe(false);
     }),
   ));
 
@@ -88,9 +90,9 @@ describe('RegisterComponent', () => {
       comp.register();
       tick();
 
-      expect(comp.errorUserExists).toBe(true);
-      expect(comp.errorEmailExists).toBe(false);
-      expect(comp.error).toBe(false);
+      expect(comp.errorUserExists()).toBe(true);
+      expect(comp.errorEmailExists()).toBe(false);
+      expect(comp.error()).toBe(false);
     }),
   ));
 
@@ -111,9 +113,9 @@ describe('RegisterComponent', () => {
       comp.register();
       tick();
 
-      expect(comp.errorEmailExists).toBe(true);
-      expect(comp.errorUserExists).toBe(false);
-      expect(comp.error).toBe(false);
+      expect(comp.errorEmailExists()).toBe(true);
+      expect(comp.errorUserExists()).toBe(false);
+      expect(comp.error()).toBe(false);
     }),
   ));
 
@@ -245,9 +247,89 @@ describe('RegisterComponent', () => {
       comp.register();
       tick();
 
-      expect(comp.errorUserExists).toBe(false);
-      expect(comp.errorEmailExists).toBe(false);
-      expect(comp.error).toBe(true);
+      expect(comp.errorUserExists()).toBe(false);
+      expect(comp.errorEmailExists()).toBe(false);
+      expect(comp.error()).toBe(true);
     }),
   ));
+});
+
+/**
+ * Backlog item 47 defect 1: the outcome never reaches the screen.
+ *
+ * The suite above cannot catch it — it asserts fields, not the DOM, and blanks the template with
+ * `.overrideTemplate(..., '')`. Two things are needed to reproduce the defect, and getting either
+ * wrong yields a test that passes against the broken code:
+ *
+ *   1. **The response must arrive after the first render.** A synchronous `of(...)` sets the field
+ *      before anything is painted, so the initial render shows the alert and OnPush never enters into
+ *      it. The defect is that a *later* write does not mark the view dirty. Hence the Subject.
+ *   2. **The component must not be the fixture root.** `ComponentFixture.detectChanges()` forces a
+ *      check of its own view regardless of OnPush. Hence the host wrapper.
+ *
+ * Verified by inversion: with plain fields restored these fail while the field-based tests above still
+ * pass. Asserted on the alert container's class, not its text, so nothing here depends on translation.
+ */
+@Component({
+  imports: [RegisterComponent],
+  template: '<hpd-register />',
+})
+class RegisterHostComponent {}
+
+describe('RegisterComponent rendering under OnPush', () => {
+  const render = async () => {
+    const responses = new Subject<{}>();
+
+    await TestBed.configureTestingModule({
+      imports: [RegisterHostComponent, TranslateModule.forRoot()],
+      providers: [
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap({}) }, queryParams: of({}) } },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
+    })
+      .overrideComponent(RegisterComponent, { set: { changeDetection: ChangeDetectionStrategy.OnPush } })
+      .compileComponents();
+
+    jest.spyOn(TestBed.inject(RegisterService), 'save').mockReturnValue(responses.asObservable());
+
+    const fixture = TestBed.createComponent(RegisterHostComponent);
+    fixture.detectChanges();
+
+    const comp = fixture.debugElement.query(By.directive(RegisterComponent)).componentInstance;
+    comp.registerForm.patchValue({
+      login: 'ama.serwaa',
+      email: 'ama@localhost',
+      password: 'Passw0rd!',
+      confirmPassword: 'Passw0rd!',
+    });
+    comp.register();
+    fixture.detectChanges();
+
+    return { fixture, responses };
+  };
+
+  afterEach(() => TestBed.resetTestingModule());
+
+  it('renders the success alert when registration is accepted', async () => {
+    const { fixture, responses } = await render();
+
+    expect(fixture.nativeElement.querySelector('.bg-hpd-success-tint')).toBeNull();
+
+    responses.next({});
+    responses.complete();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.bg-hpd-success-tint')).not.toBeNull();
+  });
+
+  it('renders the login-already-used alert rather than nothing', async () => {
+    const { fixture, responses } = await render();
+
+    // The reporter hit this screen first: the same defect one step before activation.
+    responses.error({ status: 400, error: { type: LOGIN_ALREADY_USED_TYPE } });
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.bg-hpd-danger-tint')).not.toBeNull();
+  });
 });

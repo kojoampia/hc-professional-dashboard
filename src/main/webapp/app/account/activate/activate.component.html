@@ -1,13 +1,13 @@
 <div class="mx-auto flex min-h-[60vh] max-w-2xl flex-col justify-center px-4 py-12">
   <div class="rounded-hpd-lg border border-hpd-border bg-white p-8 shadow-hpd-sm">
     <h1 class="mb-6 text-xl font-extrabold tracking-tight text-hpd-primary-dark" jhiTranslate="activate.title">Activation</h1>
-    @if (success) {
+    @if (success()) {
       <div class="rounded-hpd-sm border border-hpd-success-accent/25 bg-hpd-success-tint px-4 py-3 text-sm text-hpd-success">
         <span jhiTranslate="activate.messages.success"><strong>Your user account has been activated.</strong> Please </span>
         <a class="font-medium underline" routerLink="/login" jhiTranslate="global.messages.info.authenticated.link">sign in</a>.
       </div>
     }
-    @if (error) {
+    @if (error()) {
       <div
         class="rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger"
         jhiTranslate="activate.messages.error"

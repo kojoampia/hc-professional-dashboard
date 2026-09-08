@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, DestroyRef, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, inject, signal, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -27,11 +27,11 @@ export default class RegisterComponent implements OnInit, AfterViewInit {
   @ViewChild('login', { static: false })
   login?: ElementRef;
 
-  doNotMatch = false;
-  error = false;
-  errorEmailExists = false;
-  errorUserExists = false;
-  success = false;
+  doNotMatch = signal(false);
+  error = signal(false);
+  errorEmailExists = signal(false);
+  errorUserExists = signal(false);
+  success = signal(false);
 
   /**
    * Look-ahead state for the login field.
@@ -130,7 +130,7 @@ export default class RegisterComponent implements OnInit, AfterViewInit {
         this.loginSuggestions = result.available ? [] : result.suggestions;
         // A login the server has just told us is taken is worth clearing the stale submit error for.
         if (!result.available) {
-          this.errorUserExists = false;
+          this.errorUserExists.set(false);
         }
       });
   }
@@ -142,29 +142,29 @@ export default class RegisterComponent implements OnInit, AfterViewInit {
   }
 
   register(): void {
-    this.doNotMatch = false;
-    this.error = false;
-    this.errorEmailExists = false;
-    this.errorUserExists = false;
+    this.doNotMatch.set(false);
+    this.error.set(false);
+    this.errorEmailExists.set(false);
+    this.errorUserExists.set(false);
 
     const { password, confirmPassword } = this.registerForm.getRawValue();
     if (password !== confirmPassword) {
-      this.doNotMatch = true;
+      this.doNotMatch.set(true);
     } else {
       const { login, email } = this.registerForm.getRawValue();
       this.registerService
         .save({ login, email, password, langKey: this.translateService.currentLang })
-        .subscribe({ next: () => (this.success = true), error: response => this.processError(response) });
+        .subscribe({ next: () => this.success.set(true), error: response => this.processError(response) });
     }
   }
 
   private processError(response: HttpErrorResponse): void {
     if (response.status === 400 && response.error.type === LOGIN_ALREADY_USED_TYPE) {
-      this.errorUserExists = true;
+      this.errorUserExists.set(true);
     } else if (response.status === 400 && response.error.type === EMAIL_ALREADY_USED_TYPE) {
-      this.errorEmailExists = true;
+      this.errorEmailExists.set(true);
     } else {
-      this.error = true;
+      this.error.set(true);
     }
   }
 }
