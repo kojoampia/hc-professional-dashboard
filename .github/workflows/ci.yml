@@ -67,8 +67,17 @@ jobs:
       - name: Check the built output
         run: node scripts/check-build-output.mjs
 
-      # Four languages are a shipping condition, and ngx-translate gives no runtime signal when a
-      # key is missing — it renders the key itself. Fails on drift beyond the recorded baseline; see
-      # the script's header for why there is a baseline rather than a clean fail.
-      - name: Check i18n parity
-        run: node scripts/check-i18n-parity.mjs
+      # Four languages are a shipping condition, and ngx-translate gives no runtime signal when a key
+      # is missing — it renders the key itself. **That is asserted by `catalogues.spec.ts` inside
+      # `npm test` above**, per locale and per file, with no baseline.
+      #
+      # There was a second check here until docs/backlog.md item 101 — `scripts/check-i18n-parity.mjs`,
+      # asserting the same key parity with a baseline. It ran at this point in the same job, *after*
+      # `npm test`, so drift failed Jest and this step was never reached. A recorded allowance could
+      # therefore never buy a green build, and no future drift could be baselined either: recording it
+      # would first require making `catalogues.spec.ts` pass, i.e. having no drift to record. Item 26
+      # deleted the baseline for that reason; item 101 deleted the script that read it.
+      #
+      # What was lost, recorded so nobody rediscovers it as a gap: the script needed no Jest and no
+      # `node_modules`, so it was the only way to check parity on a machine that could not build the
+      # app. If that is wanted again, it wants to run *before* `npm test` to mean anything.
