@@ -15,12 +15,23 @@
 //
 // WHY A BASELINE RATHER THAN A CLEAN FAIL. Adding this found 56 keys already missing. Translating
 // them is work for someone who speaks the languages, and blocking every pull request until that
-// happens would get the check deleted rather than the keys translated. So the existing drift is
+// happens would get the check deleted rather than the keys translated. So the existing drift was
 // recorded in i18n-drift-baseline.json and any NEW drift fails. The debt is visible, it cannot
 // grow, and shrinking it is a normal change: fix some keys, run --update, commit a smaller file.
 //
-// None of the recorded drift is in healthConnect.json — the hand-built clinician screens are in
-// step across all four. It is generated-entity and admin catalogues.
+// THE BASELINE FILE IS GONE, AND ITS ABSENCE IS THE STRICTEST SETTING, NOT A MISSING ALLOWANCE
+// (backlog item 26). The debt reached zero: the last 20 recorded keys were translated by item 3's
+// 02d034d and nobody re-ran --update, so the file spent a week describing a state that had stopped
+// existing. With no file, `baseline` below is {} and every drifted key is new drift — which is what
+// we want. --update recreates it if a future change ever genuinely needs to record debt again.
+//
+// Note, before reaching for it, that recording debt here no longer buys a green build. The
+// paragraph above used to say this repository had no other i18n gate; that stopped being true on
+// 2026-09-02 when item 3 added app/core/i18n/catalogues.spec.ts, which asserts the same key parity
+// with NO baseline mechanism, per locale and per file. CI runs `npm test` before this script in the
+// same job, so drift fails there first and this script's allowance is never reached. Treat that
+// spec as the gate of record and this script as the fast standalone check — it needs no Jest and no
+// node_modules, which is why it is still here.
 
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, basename } from 'node:path';
