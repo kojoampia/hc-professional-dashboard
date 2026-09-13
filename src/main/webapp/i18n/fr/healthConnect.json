@@ -86,6 +86,11 @@
       "allGenders": "Tous les genres",
       "childrenOnly": "Enfants uniquement",
       "lastActivity": "Dernière activité",
+      "restricted": {
+        "caseAssignments": "Cette liste est incomplète : vous n'êtes pas autorisé à lire les affectations de cas, de sorte que tout patient qui vous est rattaché uniquement par un cas affecté n'y figure pas.",
+        "lastActivity": "Vous n'êtes pas autorisé à lire l'historique d'activité ; aucune date de dernière activité n'est donc affichée pour aucun patient. Cela ne signifie pas que ces patients n'ont pas été vus.",
+        "lastActivityCell": "Non autorisé"
+      },
       "patient": "Patient",
       "record": "Patient : {{name}}",
       "identity": "Identité du patient",

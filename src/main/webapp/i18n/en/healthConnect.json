@@ -86,6 +86,11 @@
       "allGenders": "All genders",
       "childrenOnly": "Children only",
       "lastActivity": "Last activity",
+      "restricted": {
+        "caseAssignments": "This list is incomplete: you are not permitted to read case assignments, so any patient linked to you only through an assigned case is missing from it.",
+        "lastActivity": "You are not permitted to read the activity log, so no last-activity date is shown for any patient. This does not mean these patients have not been seen.",
+        "lastActivityCell": "Not permitted"
+      },
       "patient": "Patient",
       "record": "Patient: {{name}}",
       "identity": "Patient identity",

@@ -2,9 +2,11 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
+import { RestrictedPart } from '../api/restricted-parts';
 import { PatientListRow, PatientSex } from '../health-connect.models';
 import AsyncStateComponent from '../../shared/health-connect/async-state/async-state.component';
 import DataTableComponent, {
@@ -22,7 +24,16 @@ const isPatientSex = (value: string | null): value is PatientSex => value === 'f
 @Component({
   standalone: true,
   selector: 'hpd-patient-directory-page',
-  imports: [AsyncStateComponent, DataTableComponent, FormsModule, PaginationComponent, RouterOutlet, SearchInputComponent, TranslateModule],
+  imports: [
+    AsyncStateComponent,
+    DataTableComponent,
+    FormsModule,
+    MatIconModule,
+    PaginationComponent,
+    RouterOutlet,
+    SearchInputComponent,
+    TranslateModule,
+  ],
   template: `
     <main class="w-full px-4 py-8 md:px-8">
       <div class="rounded-hpd border border-hpd-border bg-white p-6 shadow-hpd-sm">
@@ -68,9 +79,38 @@ const isPatientSex = (value: string | null): value is PatientSex => value === 'f
           </div>
         </div>
 
+        <!--
+          What this read was refused, said differently for each part because the two cost different
+          things. caseAssignments is the louder of the two and comes first: it says the list in
+          front of the clinician is short, which nothing inside the list could say. lastActivity is
+          a quiet note about one column, and the column itself carries the marker.
+
+          Both are absent whenever the header is, which is five of the eight disciplines.
+        -->
+        @if (restricted('caseAssignments')) {
+          <p
+            class="mb-4 flex items-start gap-2 rounded-hpd-sm bg-hpd-warning-tint px-4 py-3 text-sm text-hpd-warning"
+            role="status"
+            data-cy="restrictedCaseAssignments"
+          >
+            <mat-icon class="!h-5 !w-5 shrink-0 !text-[20px]" aria-hidden="true">report_problem</mat-icon>
+            <span>{{ 'healthConnect.patient.restricted.caseAssignments' | translate }}</span>
+          </p>
+        }
+        @if (restricted('lastActivity')) {
+          <p
+            class="mb-4 flex items-start gap-2 rounded-hpd-sm border border-hpd-border bg-hpd-cream px-4 py-3 text-sm text-hpd-muted"
+            role="status"
+            data-cy="restrictedLastActivity"
+          >
+            <mat-icon class="!h-5 !w-5 shrink-0 !text-[20px]" aria-hidden="true">visibility_off</mat-icon>
+            <span>{{ 'healthConnect.patient.restricted.lastActivity' | translate }}</span>
+          </p>
+        }
+
         <hpd-async-state [status]="repository.asyncState().status" [empty]="directoryPage().totalItems === 0" (retry)="repository.reset()">
           <hpd-data-table
-            [columns]="columns"
+            [columns]="columns()"
             [rows]="directoryPage().items"
             [actions]="actions"
             [trackBy]="trackById"
@@ -118,7 +158,15 @@ export default class PatientDirectoryPageComponent {
     ),
   );
 
-  readonly columns: readonly DataTableColumn<PatientListRow>[] = [
+  /**
+   * A `computed` rather than a plain array **so the activity column can change what it says.**
+   *
+   * <p>`<hpd-data-table>` is `OnPush` over `@Input()`s, so a closure that quietly started reading a
+   * signal would keep rendering the previous text until the `rows` reference happened to change.
+   * Recomputing the array gives the table a new `columns` reference, which is the only thing it
+   * watches.
+   */
+  readonly columns = computed<readonly DataTableColumn<PatientListRow>[]>(() => [
     { id: 'name', labelKey: 'healthConnect.patient.patient', value: patient => patient.patientName },
     {
       id: 'gender',
@@ -128,16 +176,39 @@ export default class PatientDirectoryPageComponent {
     {
       id: 'activity',
       labelKey: 'healthConnect.patient.lastActivity',
-      // Guarded, and an em dash rather than a blank: the same shape the review queue already uses
-      // for its nullable date. Unguarded this threw once per patient who had never been seen, and
-      // took their row off the table with it.
-      value: patient => patient.lastActivityAt?.slice(0, 10) ?? '—',
+      // Three states, and the whole of backlog item 114 is that the first two stopped being one.
+      //
+      // A marker when the activity log was refused: every row is present and every one of them has
+      // a null date, so saying it per row is honest here — unlike `caseAssignments`, where the
+      // rows that would carry the marker are the ones that are not there.
+      //
+      // An em dash when the read succeeded and this patient has simply never been seen. Guarded,
+      // and an em dash rather than a blank: the same shape the review queue already uses for its
+      // nullable date. Unguarded this threw once per patient who had never been seen, and took
+      // their row off the table with it.
+      value: patient =>
+        this.restricted('lastActivity')
+          ? this.translate.instant('healthConnect.patient.restricted.lastActivityCell')
+          : patient.lastActivityAt?.slice(0, 10) ?? '—',
     },
-  ];
+  ]);
   readonly actions: readonly DataTableAction<PatientListRow>[] = [
     { id: 'view', labelKey: 'healthConnect.actions.view', icon: 'visibility' },
   ];
   readonly trackById = (patient: PatientListRow): string => patient.id;
+
+  /**
+   * Whether this directory read was refused one named part.
+   *
+   * <p>Asked per part rather than rendered by looping the array, because each part has its own
+   * sentence and its own treatment — and because a token this bundle does not recognise never
+   * reaches here: {@link parseRestrictedParts} drops it, so nothing can ask for a catalogue key
+   * that does not exist. It is a question about *this read*, not about the caller's discipline; see
+   * `api/restricted-parts.ts` for why the two are not the same.
+   */
+  restricted(part: RestrictedPart): boolean {
+    return this.repository.directoryRestrictions().includes(part);
+  }
 
   setSearch(query: string): void {
     this.navigate({ query, page: 1 });
