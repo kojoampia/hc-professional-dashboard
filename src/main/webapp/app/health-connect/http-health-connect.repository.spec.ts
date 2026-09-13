@@ -96,6 +96,67 @@ describe('HttpHealthConnectRepository', () => {
     expect(repository.caseCounts()).toEqual({ urgent: 1, open: 0, treatment: 0, closed: 0 });
   });
 
+  describe('X-Restricted-Parts on the directory read (backlog item 114)', () => {
+    // `api/` emits the header only when a composed part was refused, so the empty case has to stay
+    // empty — and the tokens have to survive the trip from the response to the signal the screen
+    // reads. Measured on the quality stack 2026-09-11: pharmacist and chemist get `lastActivity`,
+    // technician gets `caseAssignments,lastActivity`, the other five get no header at all.
+    it('reports nothing restricted when the response carried no header', () => {
+      flushInitialLoad();
+
+      expect(repository.directoryRestrictions()).toEqual([]);
+    });
+
+    it('reports the one part a pharmacist was refused', () => {
+      flushDirectory({ 'X-Restricted-Parts': 'lastActivity' });
+
+      expect(repository.directoryRestrictions()).toEqual(['lastActivity']);
+    });
+
+    it('reports both parts a technician was refused, in the order the header named them', () => {
+      flushDirectory({ 'X-Restricted-Parts': 'caseAssignments,lastActivity' });
+
+      expect(repository.directoryRestrictions()).toEqual(['caseAssignments', 'lastActivity']);
+    });
+
+    it('drops a token it does not know rather than passing it to the screen', () => {
+      flushDirectory({ 'X-Restricted-Parts': 'medications,lastActivity' });
+
+      expect(repository.directoryRestrictions()).toEqual(['lastActivity']);
+    });
+
+    it('clears the restrictions when the directory read fails outright', () => {
+      // The rows are gone and the error panel replaces them, so a surviving "part of this list was
+      // withheld" would be a statement about a list that is no longer on screen.
+      flushDirectory({ 'X-Restricted-Parts': 'lastActivity' });
+      expect(repository.directoryRestrictions()).toEqual(['lastActivity']);
+
+      repository.reset();
+      flushRestOfLoad();
+      httpMock
+        .expectOne(request => request.url.endsWith('services/professionalservice/api/patients'))
+        .flush('nope', { status: 503, statusText: 'Service Unavailable' });
+
+      expect(repository.asyncState().status).toBe('error');
+      expect(repository.directoryRestrictions()).toEqual([]);
+    });
+
+    /** The initial load, with a chosen set of headers on the directory response alone. */
+    const flushDirectory = (headers: Record<string, string>): void => {
+      httpMock
+        .expectOne(request => request.url.endsWith('services/professionalservice/api/patients'))
+        .flush([{ id: 'patient-kojo', patientName: 'Kojo Ampia-Addison', lastActivityAt: null, sex: 'male', isChild: false }], {
+          headers: { 'X-Total-Count': '1', ...headers },
+        });
+      flushRestOfLoad();
+    };
+
+    const flushRestOfLoad = (): void => {
+      httpMock.expectOne(request => request.url.endsWith('services/patientservice/api/clinical-cases')).flush([], { headers: {} });
+      httpMock.expectOne('services/professionalservice/api/duty-roster').flush([]);
+    };
+  });
+
   it('reads the caller’s own roster and scopes "my roster" to assignments held by that professional', () => {
     httpMock
       .expectOne(request => request.url.endsWith('services/professionalservice/api/patients'))

@@ -18,6 +18,7 @@ import {
   RosterScope,
   ShiftLabel,
 } from './health-connect.models';
+import { RestrictedPart } from './api/restricted-parts';
 import { HttpHealthConnectRepository } from './http-health-connect.repository';
 
 export interface PatientDirectoryFilters {
@@ -37,6 +38,16 @@ export interface HealthConnectRepository {
   readonly dutyRosters: Signal<readonly DutyRoster[]>;
   readonly asyncState: Signal<AsyncViewState>;
   readonly patientRows: Signal<readonly PatientListRow[]>;
+  /**
+   * What the last patient-directory read was refused, from its `X-Restricted-Parts` header.
+   *
+   * <p>Empty for a caller refused nothing, which is five of the eight disciplines and the case
+   * nothing should pay for. **A fact about the read, not about any row** — `caseAssignments` says
+   * rows are missing, which no per-row field could ever say — so it sits beside `patientRows`
+   * rather than inside `PatientListRow`. See `api/restricted-parts.ts` for why it must be
+   * re-derived per read and never cached as a capability.
+   */
+  readonly directoryRestrictions: Signal<readonly RestrictedPart[]>;
   readonly caseQueue: Signal<readonly CaseQueueRow[]>;
   readonly caseCounts: Signal<Record<CaseStatus, number>>;
   readonly charts: Signal<ChartData>;

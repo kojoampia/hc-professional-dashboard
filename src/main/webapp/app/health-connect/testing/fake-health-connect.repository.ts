@@ -19,6 +19,7 @@ import {
   ShiftLabel,
   shiftStartHour,
 } from '../health-connect.models';
+import { RestrictedPart } from '../api/restricted-parts';
 import { HealthConnectRepository, PatientDirectoryFilters } from '../health-connect.repository';
 import {
   HEALTH_CONNECT_DUTY_ROSTERS,
@@ -82,6 +83,7 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
   private readonly archivedCaseIds = signal<ReadonlySet<string>>(new Set());
   private readonly loading = signal(false);
   private readonly error = signal<string | null>(null);
+  private readonly restrictions = signal<readonly RestrictedPart[]>([]);
 
   readonly patients = this.records.asReadonly();
   readonly dutyRosters = this.rosters.asReadonly();
@@ -96,6 +98,8 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
       // real timestamp, so this reads as "no activity is the oldest activity".
       .sort((left, right) => (right.lastActivityAt ?? '').localeCompare(left.lastActivityAt ?? '')),
   );
+  /** Empty unless a spec calls {@link setDirectoryRestrictions} — the ordinary, unrestricted read. */
+  readonly directoryRestrictions = this.restrictions.asReadonly();
   readonly caseQueue = computed(() =>
     this.records()
       .flatMap(record =>
@@ -306,11 +310,23 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     this.error.set(error);
   }
 
+  /**
+   * Stand in for an `X-Restricted-Parts` header on the directory read.
+   *
+   * <p>Spec-only, and deliberately not on {@link HealthConnectRepository}: the real repository
+   * derives this from a response and nothing in the application may set it. Cleared by
+   * {@link reset}, so a spec that restricts a part cannot leak it into the next one.
+   */
+  setDirectoryRestrictions(restrictions: readonly RestrictedPart[]): void {
+    this.restrictions.set(restrictions);
+  }
+
   reset(): void {
     this.records.set(copyRecords());
     this.rosters.set(copyRosters());
     this.archivedCaseIds.set(new Set());
     this.loading.set(false);
     this.error.set(null);
+    this.restrictions.set([]);
   }
 }

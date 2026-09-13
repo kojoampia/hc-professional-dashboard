@@ -86,6 +86,11 @@
       "allGenders": "Todos los géneros",
       "childrenOnly": "Solo menores",
       "lastActivity": "Última actividad",
+      "restricted": {
+        "caseAssignments": "Esta lista está incompleta: no tiene permiso para leer las asignaciones de casos, por lo que falta todo paciente vinculado a usted únicamente mediante un caso asignado.",
+        "lastActivity": "No tiene permiso para leer el historial de actividad, por lo que no se muestra la fecha de última actividad de ningún paciente. Esto no significa que no se haya atendido a estos pacientes.",
+        "lastActivityCell": "Sin permiso"
+      },
       "patient": "Paciente",
       "record": "Paciente: {{name}}",
       "identity": "Identidad del paciente",

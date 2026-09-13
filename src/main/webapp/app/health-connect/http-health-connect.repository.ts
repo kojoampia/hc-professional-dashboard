@@ -7,6 +7,7 @@ import { ClinicalCaseDto } from './api/clinical-case-api.model';
 import { DutyRosterAssignmentDto, DutyRosterAssignmentsService } from './api/duty-roster-assignments.service';
 import { PatientListItemDto } from './api/patient-api.model';
 import { PatientApiService } from './api/patient-api.service';
+import { RestrictedPart, parseRestrictedParts } from './api/restricted-parts';
 import {
   ActivityLogEntry,
   AsyncViewState,
@@ -75,6 +76,15 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
   private readonly alertService = inject(AlertService);
 
   private readonly patientRowCache = signal<readonly PatientListRow[]>([]);
+  /**
+   * What the directory read was refused, parsed from its `X-Restricted-Parts` header.
+   *
+   * <p>Set from the same response as {@link patientRowCache} and in the same handler, so the rows
+   * on screen and the statement about what is missing from them can never come from two different
+   * reads. Cleared on the error path for the same reason: a stale restriction outliving the list it
+   * described would explain the wrong list.
+   */
+  private readonly patientRestrictions = signal<readonly RestrictedPart[]>([]);
   private readonly recordCache = signal<ReadonlyMap<string, PatientRecord>>(new Map());
   private readonly pendingRecordFetches = new Set<string>();
   private readonly clinicalCaseCache = signal<readonly ClinicalCaseDto[]>([]);
@@ -100,6 +110,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
     error: this.error(),
   }));
   readonly patientRows = computed(() => this.patientRowCache());
+  readonly directoryRestrictions = computed(() => this.patientRestrictions());
   readonly caseQueue = computed<readonly CaseQueueRow[]>(() =>
     this.clinicalCaseCache()
       .map(toCaseQueueRow)
@@ -458,8 +469,16 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
     // with more than 200 patients would silently see only the 200 most recently active. Moving the
     // filter server-side is Phase 5's job and needs this interface to stop being synchronous first.
     this.patientApi.query({ page: 0, size: 200 }).subscribe({
-      next: response => this.patientRowCache.set((response.body ?? []).map(toPatientListRow)),
-      error: () => this.error.set(LOAD_ERROR_KEY),
+      next: response => {
+        this.patientRowCache.set((response.body ?? []).map(toPatientListRow));
+        // The header is absent whenever nothing was withheld, which is the ordinary case; parsing
+        // it then yields an empty array and the directory renders exactly as it always did.
+        this.patientRestrictions.set(parseRestrictedParts(response.headers));
+      },
+      error: () => {
+        this.error.set(LOAD_ERROR_KEY);
+        this.patientRestrictions.set([]);
+      },
     });
 
     this.clinicalCaseService.query().subscribe({

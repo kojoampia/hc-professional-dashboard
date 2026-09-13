@@ -86,6 +86,11 @@
       "allGenders": "Alle Geschlechter",
       "childrenOnly": "Nur Kinder",
       "lastActivity": "Letzte Aktivität",
+      "restricted": {
+        "caseAssignments": "Diese Liste ist unvollständig: Sie sind nicht berechtigt, Fallzuweisungen zu lesen, daher fehlen alle Patienten, die Ihnen nur über einen zugewiesenen Fall zugeordnet sind.",
+        "lastActivity": "Sie sind nicht berechtigt, den Aktivitätsverlauf zu lesen, daher wird für keinen Patienten ein Datum der letzten Aktivität angezeigt. Das bedeutet nicht, dass diese Patienten nicht gesehen wurden.",
+        "lastActivityCell": "Nicht berechtigt"
+      },
       "patient": "Patient",
       "record": "Patient: {{name}}",
       "identity": "Patientenidentität",
