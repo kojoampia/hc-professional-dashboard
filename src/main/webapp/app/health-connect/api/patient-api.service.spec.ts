@@ -26,11 +26,17 @@ describe('PatientApiService', () => {
     req.flush([], { headers: { 'X-Total-Count': '0' } });
   });
 
-  it('fetches a single patient record', () => {
-    service.find('patient-kojo').subscribe();
+  it('fetches a single patient record, and hands back the response so its headers survive', () => {
+    // `observe: 'response'` rather than the body: `api/` names what it could not read for this
+    // caller in `X-Restricted-Parts` (backlog items 112 and 126), and a subscriber given only the
+    // body cannot tell a withheld activity log from a patient nobody has touched.
+    let headers: string | null = 'unset';
+    service.find('patient-kojo').subscribe(response => (headers = response.headers.get('X-Restricted-Parts')));
     const req = httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo'));
     expect(req.request.method).toBe('GET');
-    req.flush({});
+    req.flush({}, { headers: { 'X-Restricted-Parts': 'lastActivity' } });
+
+    expect(headers).toBe('lastActivity');
   });
 
   it('posts a new activity log entry', () => {

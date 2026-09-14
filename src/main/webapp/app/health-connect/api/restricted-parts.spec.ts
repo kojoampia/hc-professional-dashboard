@@ -1,6 +1,6 @@
 import { HttpHeaders } from '@angular/common/http';
 
-import { RESTRICTED_PARTS, RESTRICTED_PARTS_HEADER, parseRestrictedParts } from './restricted-parts';
+import { RECORD_RESTRICTED_PARTS, RESTRICTED_PARTS, RESTRICTED_PARTS_HEADER, parseRestrictedParts } from './restricted-parts';
 
 describe('parseRestrictedParts', () => {
   const headers = (value?: string): HttpHeaders =>
@@ -49,5 +49,23 @@ describe('parseRestrictedParts', () => {
     // Derived elsewhere from this array — the page's treatment, the i18n keys and the specs above.
     // A third token added here without a treatment beside it should fail something, and this is it.
     expect(RESTRICTED_PARTS).toEqual(['caseAssignments', 'lastActivity']);
+  });
+
+  describe('the record endpoint names one of them (backlog item 126)', () => {
+    it('knows exactly the one part GET /api/patients/{id} can withhold', () => {
+      // `caseAssignments` is deliberately absent and its absence is the contract, not an omission:
+      // a caller refused the case collection is refused the whole record, because that collection
+      // is what entitlement is decided from. A record is served whole or not at all.
+      expect(RECORD_RESTRICTED_PARTS).toEqual(['lastActivity']);
+    });
+
+    it('names nothing the client would not otherwise recognise', () => {
+      // The record's list is a subset by construction (`satisfies readonly RestrictedPart[]` says
+      // so at compile time); this says it at run time, so a token added to one array and not the
+      // other cannot reach a screen through a parser that never heard of it.
+      const known: readonly string[] = RESTRICTED_PARTS;
+
+      expect(RECORD_RESTRICTED_PARTS.filter(part => !known.includes(part))).toEqual([]);
+    });
   });
 });

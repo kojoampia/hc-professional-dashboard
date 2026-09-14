@@ -91,6 +91,9 @@
         "lastActivity": "You are not permitted to read the activity log, so no last-activity date is shown for any patient. This does not mean these patients have not been seen.",
         "lastActivityCell": "Not permitted"
       },
+      "recordRestricted": {
+        "lastActivity": "You are not permitted to read this patient's activity log, so no entries and no last-activity date are shown here. This patient may well have been seen: this panel is withheld, not empty."
+      },
       "patient": "Patient",
       "record": "Patient: {{name}}",
       "identity": "Patient identity",
