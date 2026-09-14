@@ -84,6 +84,7 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
   private readonly loading = signal(false);
   private readonly error = signal<string | null>(null);
   private readonly restrictions = signal<readonly RestrictedPart[]>([]);
+  private readonly recordRestrictionsByPatient = signal<ReadonlyMap<string, readonly RestrictedPart[]>>(new Map());
 
   readonly patients = this.records.asReadonly();
   readonly dutyRosters = this.rosters.asReadonly();
@@ -158,6 +159,10 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
 
   findPatient(id: string): PatientRecord | undefined {
     return this.records().find(record => record.patient.id === id);
+  }
+
+  recordRestrictions(patientId: string): readonly RestrictedPart[] {
+    return this.recordRestrictionsByPatient().get(patientId) ?? [];
   }
 
   findCase(id: string): ClinicalCase | undefined {
@@ -321,6 +326,17 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     this.restrictions.set(restrictions);
   }
 
+  /**
+   * Stand in for an `X-Restricted-Parts` header on one patient's record read.
+   *
+   * <p>Per patient for the reason the real repository keys its cache that way: a record on screen
+   * and the statement about what was withheld from it must name the same patient. Spec-only and
+   * cleared by {@link reset}, like {@link setDirectoryRestrictions}.
+   */
+  setRecordRestrictions(patientId: string, restrictions: readonly RestrictedPart[]): void {
+    this.recordRestrictionsByPatient.update(cache => new Map(cache).set(patientId, restrictions));
+  }
+
   reset(): void {
     this.records.set(copyRecords());
     this.rosters.set(copyRosters());
@@ -328,5 +344,6 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     this.loading.set(false);
     this.error.set(null);
     this.restrictions.set([]);
+    this.recordRestrictionsByPatient.set(new Map());
   }
 }

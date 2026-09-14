@@ -26,7 +26,7 @@ import { HttpHeaders } from '@angular/common/http';
  * standing per-discipline badge from it would show the badge change when a shift was assigned.
  *
  * @see PatientDirectoryService.RestrictedPart in `api/` — the contract this consumes
- * @see ../../../../../../docs/backlog.md items 107, 111 and 114
+ * @see ../../../../../../docs/backlog.md items 107, 111, 114 and 126
  */
 export const RESTRICTED_PARTS = ['caseAssignments', 'lastActivity'] as const;
 
@@ -36,6 +36,31 @@ export const RESTRICTED_PARTS = ['caseAssignments', 'lastActivity'] as const;
  * against anything, and the parser below needs the values to recognise tokens with.
  */
 export type RestrictedPart = (typeof RESTRICTED_PARTS)[number];
+
+/**
+ * The parts `GET /api/patients/{id}` can withhold — one, and **not** the same list as above.
+ *
+ * <p>`api/`'s item 112 emits the same header on the record, under the same `lastActivity` token,
+ * and `caseAssignments` <b>cannot</b> reach it: a caller refused the case collection is refused the
+ * whole record, because that collection is what entitlement is decided from. So a record is never
+ * served short of cases — it is either served or it is not.
+ *
+ * <p><b>A separate array rather than a filter over {@link RESTRICTED_PARTS}, because the two lists
+ * answer different questions</b> and the day `api/` names a third part it will be answerable for
+ * one endpoint and not necessarily the other. The screen asks per entry here, so a part named on
+ * the wire but absent from this list renders nothing at all — the same rule
+ * {@link parseRestrictedParts} applies to a token it does not recognise, one layer up.
+ *
+ * <p><b>And the token being shared does not make the treatment shareable.</b> On the directory
+ * `lastActivity` blanks one column of rows that are all present; on a record it withholds every
+ * activity entry and the `lastActivityAt` with them. Reusing the list's sentence here would tell a
+ * pharmacist that recent-activity sorting is unavailable while the patient's entire activity
+ * history is missing — a new false sentence written while removing one. See `backlog.md` item 129.
+ */
+export const RECORD_RESTRICTED_PARTS = ['lastActivity'] as const satisfies readonly RestrictedPart[];
+
+/** Derived from the runtime array, for {@link RestrictedPart}'s reason. */
+export type RecordRestrictedPart = (typeof RECORD_RESTRICTED_PARTS)[number];
 
 /** The response header `api/` emits. Named once so a spec and the reader cannot disagree. */
 export const RESTRICTED_PARTS_HEADER = 'X-Restricted-Parts';
@@ -53,6 +78,11 @@ const KNOWN = new Set<string>(RESTRICTED_PARTS);
  *
  * <p>A missing header and a header naming nothing known both yield an empty array, which is the
  * silent case: five disciplines see exactly the screen they saw before any of this existed.
+ *
+ * <p>Shared by the directory read and the record read, which emit the same header. It recognises
+ * every token the client knows rather than only the ones a given endpoint can send, so the value
+ * stored is what actually arrived; deciding what is renderable is the screen's job, and each asks
+ * per part from its own list.
  */
 export function parseRestrictedParts(headers: HttpHeaders): readonly RestrictedPart[] {
   const value = headers.get(RESTRICTED_PARTS_HEADER);

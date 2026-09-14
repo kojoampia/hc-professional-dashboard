@@ -91,6 +91,9 @@
         "lastActivity": "Vous n'êtes pas autorisé à lire l'historique d'activité ; aucune date de dernière activité n'est donc affichée pour aucun patient. Cela ne signifie pas que ces patients n'ont pas été vus.",
         "lastActivityCell": "Non autorisé"
       },
+      "recordRestricted": {
+        "lastActivity": "Vous n'êtes pas autorisé à lire l'historique d'activité de ce patient ; aucune entrée ni date de dernière activité n'est donc affichée ici. Ce patient a peut-être bien été vu : ce panneau est restreint, et non vide."
+      },
       "patient": "Patient",
       "record": "Patient : {{name}}",
       "identity": "Identité du patient",

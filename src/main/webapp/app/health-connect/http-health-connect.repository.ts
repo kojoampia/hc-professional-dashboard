@@ -86,6 +86,16 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
    */
   private readonly patientRestrictions = signal<readonly RestrictedPart[]>([]);
   private readonly recordCache = signal<ReadonlyMap<string, PatientRecord>>(new Map());
+  /**
+   * What each cached record's own read was refused, keyed by the same patient id.
+   *
+   * <p>Keyed rather than a single signal like {@link patientRestrictions}, because records persist
+   * in {@link recordCache} and the screen shows whichever one the route names. One value would
+   * describe the newest response while an older cached record is on screen, and "you are not
+   * permitted to read this patient's activity log" would then be printed against a patient nobody
+   * asked about. Written and removed in the same handlers as the record itself.
+   */
+  private readonly recordRestrictionCache = signal<ReadonlyMap<string, readonly RestrictedPart[]>>(new Map());
   private readonly pendingRecordFetches = new Set<string>();
   private readonly clinicalCaseCache = signal<readonly ClinicalCaseDto[]>([]);
   private readonly archivedCaseIds = signal<ReadonlySet<string>>(new Set());
@@ -199,7 +209,16 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
     }
     this.pendingRecordFetches.add(id);
     this.patientApi.find(id).subscribe({
-      next: dto => {
+      next: response => {
+        const dto = response.body;
+        if (!dto) {
+          // A 200 carrying no body is a broken contract, not a state to render. Substituting an
+          // empty record would manufacture precisely the screen item 126 exists to remove: a
+          // patient who looks as though nobody has ever touched them.
+          this.pendingRecordFetches.delete(id);
+          this.error.set(LOAD_ERROR_KEY);
+          return;
+        }
         const record: PatientRecord = {
           patient: {
             id: dto.id,
@@ -232,14 +251,28 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
           reports: dto.reports,
         };
         this.recordCache.update(cache => new Map(cache).set(id, record));
+        // Set from the same response as the record, so what is on screen and what is said to be
+        // missing from it can never come from two different reads. Absent header, empty array,
+        // silent screen — the ordinary case for five of the eight disciplines.
+        this.recordRestrictionCache.update(cache => new Map(cache).set(id, parseRestrictedParts(response.headers)));
         this.pendingRecordFetches.delete(id);
       },
       error: () => {
         this.pendingRecordFetches.delete(id);
         this.error.set(LOAD_ERROR_KEY);
+        // Nothing to drop here, and that is a property worth stating rather than a gap. A fetch
+        // only happens for an id that is NOT cached, and the restriction is written in the success
+        // handler beside the record — so on this path the map holds no entry for `id`, and the
+        // clean-up this once carried was dead code that a passing test appeared to cover. If
+        // `findPatient` ever re-reads an already-cached record, that stops being true and a failed
+        // refresh would leave a restriction explaining the previous response: clear it here then.
       },
     });
     return undefined;
+  }
+
+  recordRestrictions(patientId: string): readonly RestrictedPart[] {
+    return this.recordRestrictionCache().get(patientId) ?? [];
   }
 
   findCase(id: string): ClinicalCase | undefined {
@@ -452,6 +485,9 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
 
   reset(): void {
     this.recordCache.set(new Map());
+    // With the records. A restriction that survived the cache it described would be re-read against
+    // whatever the next fetch returns, which may have been refused nothing.
+    this.recordRestrictionCache.set(new Map());
     this.pendingRecordFetches.clear();
     this.archivedCaseIds.set(new Set());
     this.error.set(null);

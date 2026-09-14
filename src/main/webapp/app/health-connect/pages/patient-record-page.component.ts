@@ -9,6 +9,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { AlertService } from 'app/core/util/alert.service';
 
 import { hasHealthConnectPermission } from '../authority-role';
+import { RecordRestrictedPart } from '../api/restricted-parts';
 import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
 import { Page, RecordEntry } from '../health-connect.models';
 import FileUploadTriggerComponent from '../../shared/health-connect/form-controls/file-upload-trigger.component';
@@ -126,7 +127,30 @@ const PAGE_SIZE = 3;
                 {{ 'healthConnect.actions.edit' | translate }}
               </button>
             }
-            <ng-container [ngTemplateOutlet]="entries" [ngTemplateOutletContext]="{ page: activityPage(), change: activityPageNumber }" />
+            <!--
+              The whole of backlog item 126. The api serves a pharmacist this record without the
+              activity log and names that in the X-Restricted-Parts header; unread, the panel below
+              renders an empty list and "No records found.", which is exactly what a patient nobody
+              has touched looks like. On the directory that conflation cost a column; here it is a
+              clinical reading, made while deciding what to do next.
+
+              In place of the list, not above it: every entry is withheld, so leaving an empty list
+              and a paginator under a notice would go on showing the false sentence beside the true
+              one. The Edit button stays - a pharmacist may write to a log they may not read, which
+              is the server's rule and not this screen's to reinterpret.
+            -->
+            @if (restricted('lastActivity')) {
+              <p
+                class="m-0 flex items-start gap-2 rounded-hpd-sm border border-hpd-border bg-hpd-cream px-3 py-3 text-sm text-hpd-muted"
+                role="status"
+                data-cy="recordRestrictedLastActivity"
+              >
+                <mat-icon class="!h-5 !w-5 shrink-0 !text-[20px]" aria-hidden="true">visibility_off</mat-icon>
+                <span>{{ 'healthConnect.patient.recordRestricted.lastActivity' | translate }}</span>
+              </p>
+            } @else {
+              <ng-container [ngTemplateOutlet]="entries" [ngTemplateOutletContext]="{ page: activityPage(), change: activityPageNumber }" />
+            }
           </section>
           <section
             class="hpd-panel overflow-hidden rounded-hpd border border-hpd-border bg-white p-5 shadow-hpd-sm"
@@ -217,6 +241,22 @@ export default class PatientRecordPageComponent {
   readonly medicationPage = computed(() => this.page(this.record()?.medications ?? [], this.medicationPageNumber()));
   readonly reportPage = computed(() => this.page(this.record()?.reports ?? [], this.reportPageNumber()));
   readonly activityOpen = signal(false);
+
+  /**
+   * Whether the read that produced this record was refused one named part.
+   *
+   * <p>Asked per part from `RECORD_RESTRICTED_PARTS` rather than by looping what arrived, so
+   * a token named by a later `api/` release reaches neither this screen nor a catalogue key that
+   * does not exist — the rule the directory page and `CareersHandoffService` already follow.
+   * `caseAssignments` is the live case of that: it cannot reach this endpoint (a record whose case
+   * read was refused is not served at all), and if it ever did, nothing here would render for it.
+   *
+   * <p>Scoped to {@link patientId}, not to the caller: it is a fact about this read of this record.
+   */
+  restricted(part: RecordRestrictedPart): boolean {
+    return this.repository.recordRestrictions(this.patientId).includes(part);
+  }
+
   initials(name: string): string {
     return name
       .split(/\s+/)

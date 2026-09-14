@@ -47,8 +47,16 @@ export class PatientApiService {
     return this.http.get<PatientListItemDto[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
-  find(id: string): Observable<PatientRecordDto> {
-    return this.http.get<PatientRecordDto>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
+  /**
+   * One patient's composed record.
+   *
+   * <p>`observe: 'response'` for the reason {@link query} has it: the body is not the whole answer.
+   * `api/` names what it could not read for this caller in `X-Restricted-Parts` (item 112), and a
+   * subscriber handed only the body sees an empty `activities` array that is indistinguishable from
+   * a patient nobody has touched. See `restricted-parts.ts`.
+   */
+  find(id: string): Observable<HttpResponse<PatientRecordDto>> {
+    return this.http.get<PatientRecordDto>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   appendActivity(patientId: string, activity: CreateActivityDto): Observable<ActivityLogEntryDto> {

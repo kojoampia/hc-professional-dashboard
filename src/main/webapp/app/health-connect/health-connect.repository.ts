@@ -54,6 +54,22 @@ export interface HealthConnectRepository {
 
   filterPatients(query: string, pageRequest: PageRequest, filters?: PatientDirectoryFilters): Page<PatientListRow>;
   findPatient(id: string): PatientRecord | undefined;
+  /**
+   * What the read behind {@link findPatient}'s record was refused, from its `X-Restricted-Parts`
+   * header.
+   *
+   * <p>**Per patient, not one signal for the last read**, because records are cached and a
+   * clinician moves between them: a single value would describe the most recent response while an
+   * earlier cached record is the one on screen, and the sentence would then be attached to the
+   * wrong patient. Empty for an unrestricted read and for a patient never fetched.
+   *
+   * <p>A method rather than a `Signal` for {@link findPatient}'s reason — it takes an id — and it
+   * reads a signal internally, so a `computed()` calling it re-evaluates when the response lands.
+   *
+   * <p>See `backlog.md` items 112 and 126, and `api/restricted-parts.ts` for why the record's one
+   * reachable token needs its own sentence rather than the directory's.
+   */
+  recordRestrictions(patientId: string): readonly RestrictedPart[];
   findCase(id: string): ClinicalCase | undefined;
   listCases(status?: CaseStatus, rosterScope?: RosterScope, professionalId?: string): readonly CaseQueueRow[];
   recommendations(category?: string): readonly Recommendation[];

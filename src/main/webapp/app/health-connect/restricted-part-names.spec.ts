@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 import { LANGUAGES } from 'app/config/language.constants';
 
-import { RESTRICTED_PARTS } from './api/restricted-parts';
+import { RECORD_RESTRICTED_PARTS, RESTRICTED_PARTS } from './api/restricted-parts';
 
 /**
  * That every restricted part the directory can be handed has a sentence in every catalogue, and
@@ -33,17 +33,31 @@ describe('restricted-part notices', () => {
    * Walked key by key rather than read through `as any`, so a reorganised catalogue names the path
    * that moved instead of failing with `Cannot read properties of undefined`.
    */
-  const notices = (locale: string): Record<string, unknown> => {
-    const path = join(__dirname, '..', '..', 'i18n', locale, 'healthConnect.json');
-    let node: unknown = JSON.parse(readFileSync(path, 'utf8'));
-    for (const key of ['healthConnect', 'patient', 'restricted']) {
+  const block = (locale: string, ...path: string[]): Record<string, unknown> => {
+    const file = join(__dirname, '..', '..', 'i18n', locale, 'healthConnect.json');
+    let node: unknown = JSON.parse(readFileSync(file, 'utf8'));
+    for (const key of path) {
       if (typeof node !== 'object' || node === null || !(key in node)) {
-        throw new Error(`${path} has no healthConnect.patient.restricted — it stops at '${key}'`);
+        throw new Error(`${file} has no ${path.join('.')} — it stops at '${key}'`);
       }
       node = (node as Record<string, unknown>)[key];
     }
     return node as Record<string, unknown>;
   };
+
+  /** The directory's notices: one per part, plus the marker the recency column shows. */
+  const notices = (locale: string): Record<string, unknown> => block(locale, 'healthConnect', 'patient', 'restricted');
+
+  /**
+   * The record's notices, a separate block because the record needs its own sentence.
+   *
+   * <p>The token is the same `lastActivity`; the loss is not. On the list it blanks a column, on a
+   * record it withholds every activity entry and the last-activity date with them — so the list's
+   * sentence, printed here, would say that recency sorting is unavailable while the patient's whole
+   * activity history is missing. `backlog.md` item 129 names that trap; the last check below is it,
+   * made into a guard.
+   */
+  const recordNotices = (locale: string): Record<string, unknown> => block(locale, 'healthConnect', 'patient', 'recordRestricted');
 
   /** Every key this feature renders: one notice per part, plus the marker the recency column shows. */
   const REQUIRED_KEYS = [...RESTRICTED_PARTS, 'lastActivityCell'];
@@ -81,6 +95,53 @@ describe('restricted-part notices', () => {
     const strings = notices(locale);
 
     expect(REQUIRED_KEYS.filter(key => strings[key] === english[key])).toEqual([]);
+  });
+
+  describe('the record screen (backlog item 126)', () => {
+    it('has parts to check', () => {
+      expect(RECORD_RESTRICTED_PARTS.length).toBeGreaterThan(0);
+    });
+
+    it.each(LANGUAGES)('has a %s sentence for every part the record can be refused', locale => {
+      expect(RECORD_RESTRICTED_PARTS.filter(part => !recordNotices(locale)[part])).toEqual([]);
+    });
+
+    it.each(LANGUAGES)('carries no %s key for a part the record cannot be refused', locale => {
+      // `caseAssignments` is the live case: it cannot reach `GET /api/patients/{id}` at all, because
+      // a caller refused the case collection is refused the whole record. A sentence for it here
+      // would read perfectly and be shown to nobody.
+      const recordParts: readonly string[] = RECORD_RESTRICTED_PARTS;
+      const stray = Object.keys(recordNotices(locale)).filter(key => !recordParts.includes(key));
+
+      expect(stray).toEqual([]);
+    });
+
+    it.each(LANGUAGES)('has no blank or key-echoing %s sentence', locale => {
+      const strings = recordNotices(locale);
+      const bad = RECORD_RESTRICTED_PARTS.filter(
+        part => String(strings[part]).trim() === '' || String(strings[part]).includes('healthConnect.patient'),
+      );
+
+      expect(bad).toEqual([]);
+    });
+
+    it.each(LANGUAGES.filter(locale => locale !== 'en'))('says it in %s rather than repeating the English', locale => {
+      const english = recordNotices('en');
+      const strings = recordNotices(locale);
+
+      expect(RECORD_RESTRICTED_PARTS.filter(part => strings[part] === english[part])).toEqual([]);
+    });
+
+    it.each(LANGUAGES)('does not reuse the %s list sentence for the record', locale => {
+      // Item 129's trap, as a guard. Copying the directory's string into the record is the cheap
+      // way to ship this feature and it writes a new false sentence while removing one: "no
+      // last-activity date is shown for any patient" describes a column, not a withheld history.
+      // Every locale, because a copy made in one catalogue is as wrong as a copy made in four.
+      const list = notices(locale);
+      const record = recordNotices(locale);
+
+      expect(RECORD_RESTRICTED_PARTS.filter(part => record[part] === list[part] || record[part] === list.lastActivityCell)).toEqual([]);
+    });
   });
 
   it('says something different about each part in English', () => {

@@ -211,6 +211,124 @@ describe('HttpHealthConnectRepository', () => {
     expect(repository.findPatient('patient-kojo')?.patient.patientName).toBe('Kojo Ampia-Addison');
   });
 
+  describe('X-Restricted-Parts on the record read (backlog item 126)', () => {
+    // `api/`'s item 112 emits the same header on `GET /api/patients/{id}`, under the same
+    // `lastActivity` token, when a pharmacist or chemist is served a record without its activity
+    // log. Unread, the screen shows an empty activity panel — which is what a patient nobody has
+    // touched looks like.
+
+    it('reports nothing restricted when the record response carried no header', () => {
+      flushInitialLoad();
+      expect(repository.findPatient('patient-kojo')).toBeUndefined();
+      flushRecord('patient-kojo');
+
+      expect(repository.recordRestrictions('patient-kojo')).toEqual([]);
+    });
+
+    it('reports the part a pharmacist was refused on this record', () => {
+      flushInitialLoad();
+      repository.findPatient('patient-kojo');
+      flushRecord('patient-kojo', { 'X-Restricted-Parts': 'lastActivity' });
+
+      expect(repository.recordRestrictions('patient-kojo')).toEqual(['lastActivity']);
+      // The record itself still arrives — the whole point of item 112 is that it is served rather
+      // than 503'd, with one collection missing from it.
+      expect(repository.findPatient('patient-kojo')?.patient.patientName).toBe('Kojo Ampia-Addison');
+    });
+
+    it('drops a token it does not know rather than passing it to the screen', () => {
+      flushInitialLoad();
+      repository.findPatient('patient-kojo');
+      flushRecord('patient-kojo', { 'X-Restricted-Parts': 'medications,lastActivity' });
+
+      expect(repository.recordRestrictions('patient-kojo')).toEqual(['lastActivity']);
+    });
+
+    it('keeps each record’s restriction with that record, not with the last read', () => {
+      // The reason this is a map and not a single signal. Records are cached and a clinician moves
+      // between them, so one value would describe the newest response while an older record is on
+      // screen — and "you may not read this patient's activity log" would be printed against a
+      // patient nobody asked about.
+      flushInitialLoad();
+      repository.findPatient('patient-kojo');
+      flushRecord('patient-kojo', { 'X-Restricted-Parts': 'lastActivity' });
+      repository.findPatient('patient-ama');
+      flushRecord('patient-ama');
+
+      expect(repository.recordRestrictions('patient-kojo')).toEqual(['lastActivity']);
+      expect(repository.recordRestrictions('patient-ama')).toEqual([]);
+    });
+
+    it('reports nothing for a patient whose record was never fetched', () => {
+      flushInitialLoad();
+
+      expect(repository.recordRestrictions('patient-never-asked-for')).toEqual([]);
+    });
+
+    it('leaves no restriction behind when the record is dropped and the re-read fails', () => {
+      // The record is gone and the error panel replaces it, so a surviving "part of this record was
+      // withheld" would explain a record that is no longer on screen.
+      //
+      // What holds it is `reset()` clearing the two caches together, NOT a clean-up in the error
+      // handler: `findPatient` only fetches an id it has not cached, and the restriction is written
+      // beside the record, so by the time an error arrives there is nothing under that key. This
+      // spec once carried a clean-up in the error handler and a mutation proved the spec stayed
+      // green without it — the code was dead and this test was passing for another reason.
+      flushInitialLoad();
+      repository.findPatient('patient-kojo');
+      flushRecord('patient-kojo', { 'X-Restricted-Parts': 'lastActivity' });
+      expect(repository.recordRestrictions('patient-kojo')).toEqual(['lastActivity']);
+
+      repository.reset();
+      flushInitialLoad();
+      repository.findPatient('patient-kojo');
+      httpMock
+        .expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo'))
+        .flush('nope', { status: 503, statusText: 'Service Unavailable' });
+
+      expect(repository.asyncState().status).toBe('error');
+      expect(repository.recordRestrictions('patient-kojo')).toEqual([]);
+    });
+
+    it('does not manufacture an empty record from a 200 with no body', () => {
+      // An empty `activities` array conjured out of a broken response is exactly the screen this
+      // item exists to remove, arriving from the other direction — nothing withheld and nothing
+      // recorded, said by the client rather than by the server.
+      flushInitialLoad();
+      repository.findPatient('patient-kojo');
+      httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo')).flush(null);
+
+      expect(repository.findPatient('patient-kojo')).toBeUndefined();
+      expect(repository.asyncState().status).toBe('error');
+      // That second findPatient re-requested, nothing having been cached. Flushed so verify() passes.
+      httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo')).flush(null);
+    });
+
+    /** One record response, with a chosen set of headers on it. */
+    const flushRecord = (id: string, headers: Record<string, string> = {}): void => {
+      httpMock
+        .expectOne(request => request.url.endsWith(`services/professionalservice/api/patients/${id}`))
+        .flush(
+          {
+            id,
+            patientName: 'Kojo Ampia-Addison',
+            lastActivityAt: null,
+            sex: 'male',
+            isChild: false,
+            dateOfBirth: '1976-04-19',
+            phone: '0242286304',
+            email: 'kojo@jac.net',
+            cases: [],
+            visitations: [],
+            activities: [],
+            medications: [],
+            reports: [],
+          },
+          { headers },
+        );
+    };
+  });
+
   it('optimistically applies updateCase and PATCHes the clinical-case fields', () => {
     flushInitialLoad();
 
