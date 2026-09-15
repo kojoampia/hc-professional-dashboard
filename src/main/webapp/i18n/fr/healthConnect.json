@@ -65,6 +65,9 @@
       "caseDistribution": "Répartition des cas",
       "casePatient": "Cas par patient",
       "allPatients": "Tous les patients",
+      "restricted": {
+        "caseAssignments": "Les totaux de patients ne sont pas affichés : vous n'êtes pas autorisé à lire les affectations de cas, de sorte que tout chiffre compté ici serait inférieur à la réalité."
+      },
       "charts": {
         "title": "Graphiques des cas",
         "caseTimeDescription": "Chronologie montrant le nombre cumulé de cas par date.",

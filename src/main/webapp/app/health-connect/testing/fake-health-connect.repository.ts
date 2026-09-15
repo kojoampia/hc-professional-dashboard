@@ -92,13 +92,23 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     status: this.error() ? 'error' : this.loading() ? 'loading' : 'ready',
     error: this.error(),
   }));
-  readonly patientRows = computed(() =>
-    this.records()
-      .map(toPatientRow)
-      // Never-seen patients sort last rather than throwing; an empty string is ordered before any
-      // real timestamp, so this reads as "no activity is the oldest activity".
-      .sort((left, right) => (right.lastActivityAt ?? '').localeCompare(left.lastActivityAt ?? '')),
-  );
+  readonly patientRows = computed(() => {
+    // A `lastActivity` refusal is modelled on the ROWS, not only in the header. `api/` serves every
+    // patient with a null date when it is refused the activity log, and a fake that sets the header
+    // while leaving the dates in place describes a response the service cannot send — under which a
+    // count derived from `lastActivityAt` computes the same restricted and unrestricted, and any
+    // spec asserting "this refusal changes nothing" passes vacuously for ever (backlog item 125,
+    // and item 112's fixture argument in `api/`).
+    const withheld = this.restrictions().includes('lastActivity');
+    return (
+      this.records()
+        .map(toPatientRow)
+        .map(row => (withheld ? { ...row, lastActivityAt: null } : row))
+        // Never-seen patients sort last rather than throwing; an empty string is ordered before any
+        // real timestamp, so this reads as "no activity is the oldest activity".
+        .sort((left, right) => (right.lastActivityAt ?? '').localeCompare(left.lastActivityAt ?? ''))
+    );
+  });
   /** Empty unless a spec calls {@link setDirectoryRestrictions} — the ordinary, unrestricted read. */
   readonly directoryRestrictions = this.restrictions.asReadonly();
   readonly caseQueue = computed(() =>

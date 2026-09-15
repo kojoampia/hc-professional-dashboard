@@ -3,7 +3,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
+import { MatIconModule } from '@angular/material/icon';
+
 import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
+import { ROW_REMOVING_PARTS } from '../api/restricted-parts';
 import GroupedBarChartComponent from '../charts/grouped-bar-chart.component';
 import LineChartComponent from '../charts/line-chart.component';
 import PieChartComponent from '../charts/pie-chart.component';
@@ -30,6 +33,7 @@ const INCOMPLETE_PROFILE_REDIRECT_MS = 2000;
     AsyncStateComponent,
     GroupedBarChartComponent,
     LineChartComponent,
+    MatIconModule,
     PieChartComponent,
     RouterLink,
     StatCardRowComponent,
@@ -41,7 +45,32 @@ const INCOMPLETE_PROFILE_REDIRECT_MS = 2000;
 
       <section aria-labelledby="hpd-dashboard-demographics">
         <h2 id="hpd-dashboard-demographics" class="sr-only">{{ 'healthConnect.dashboard.demographics' | translate }}</h2>
-        <hpd-stat-card-row [cards]="demographicCards()" (selected)="navigateDemographic($event)" />
+        <!--
+          The whole of backlog item 125. These four cards count the directory, and a caseAssignments
+          refusal takes patients out of it — so every figure would be lower than the truth, by an
+          amount nothing here can state, and rendered exactly as a correct one is.
+
+          In place of the cards, not beside them. A marker on a card leaves the number being read,
+          and on a stat card the number is the loudest thing on screen; these are also links into a
+          filtered directory, so the figure is a promise about what the click leads to as well. The
+          sentence is this screen's own, not the directory banner's: there the list is short, here
+          there is no figure at all. Everything else on the dashboard is untouched — the case cards,
+          the earnings card and the charts come from reads this header says nothing about.
+        -->
+        @if (demographicsRestricted()) {
+          @for (noticeKey of demographicRestrictionNotices(); track noticeKey) {
+            <p
+              class="flex items-start gap-2 rounded-hpd-sm bg-hpd-warning-tint px-4 py-3 text-sm text-hpd-warning"
+              role="status"
+              data-cy="restrictedDemographics"
+            >
+              <mat-icon class="!h-5 !w-5 shrink-0 !text-[20px]" aria-hidden="true">report_problem</mat-icon>
+              <span>{{ noticeKey | translate }}</span>
+            </p>
+          }
+        } @else {
+          <hpd-stat-card-row [cards]="demographicCards()" (selected)="navigateDemographic($event)" />
+        }
       </section>
 
       <section aria-labelledby="hpd-dashboard-case-status">
@@ -190,7 +219,50 @@ export default class DashboardPageComponent implements OnInit {
       : new Intl.NumberFormat(locale).format(amount);
   }
 
+  /**
+   * The notices to print in place of the demographic cards — one per row-removing part this read
+   * was actually refused, as catalogue keys.
+   *
+   * <p>Derived from {@link ROW_REMOVING_PARTS} rather than from what arrived on the wire, the rule
+   * the directory and record screens already follow: a token this bundle does not recognise is
+   * dropped by {@link parseRestrictedParts} and never reaches a catalogue key that does not exist.
+   * Empty for an unrestricted read and for a `lastActivity`-only one — five of the eight
+   * disciplines see exactly the dashboard they always saw.
+   *
+   * <p>A key per part rather than one sentence for "restricted", because the day `api/` names a
+   * second row-removing part it will cost something the `caseAssignments` sentence does not
+   * describe, and `restricted-part-names.spec.ts` fails until all four catalogues carry it.
+   */
+  readonly demographicRestrictionNotices = computed<readonly string[]>(() => {
+    const refused = this.repository.directoryRestrictions();
+    return ROW_REMOVING_PARTS.filter(part => refused.includes(part)).map(part => `healthConnect.dashboard.restricted.${part}`);
+  });
+
+  /** Whether any figure below the demographics heading could still be stated honestly. */
+  readonly demographicsRestricted = computed(() => this.demographicRestrictionNotices().length > 0);
+
+  /**
+   * The patient / female / male / children counts — and **nothing at all** when the directory they
+   * count was served short of rows (backlog item 125).
+   *
+   * <p>Empty rather than hidden by the template alone, so the wrong numbers do not exist rather
+   * than existing out of sight: a later caller reading this signal gets no figure instead of a
+   * confidently short one, and the suppression cannot be lost by an edit to the markup.
+   *
+   * <p><b>All four go, not some.</b> Every one of them is a function of directory membership —
+   * `length`, and three filters over the same rows — so each is lower than the truth by an amount
+   * nothing here can state. That is the client-side shape of `api/`'s own `summary()`, which reads
+   * `size()`, `sex()` and `isChild()` and refuses when the case half is refused.
+   *
+   * <p><b>A `lastActivity` refusal leaves them alone</b>, deliberately: it blanks a field no card
+   * reads, so the figures are identical with the activity log and without it — item 112's argument
+   * for counting through that refusal, and the property `dashboard-page.component.spec.ts` pins by
+   * comparing the two rather than by restating today's field list.
+   */
   readonly demographicCards = computed<readonly StatCard[]>(() => {
+    if (this.demographicsRestricted()) {
+      return [];
+    }
     const patients = this.repository.patientRows();
     return [
       { id: 'patients', labelKey: 'healthConnect.stats.patients', count: patients.length, variant: 'neutral' },

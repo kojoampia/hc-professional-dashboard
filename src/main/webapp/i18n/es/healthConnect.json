@@ -65,6 +65,9 @@
       "caseDistribution": "Distribución de casos",
       "casePatient": "Casos por paciente",
       "allPatients": "Todos los pacientes",
+      "restricted": {
+        "caseAssignments": "No se muestran los totales de pacientes: no tiene permiso para leer las asignaciones de casos, por lo que cualquier cifra contada aquí sería inferior a la real."
+      },
       "charts": {
         "title": "Gráficos de casos",
         "caseTimeDescription": "Una línea de tiempo con el número acumulado de casos por fecha.",

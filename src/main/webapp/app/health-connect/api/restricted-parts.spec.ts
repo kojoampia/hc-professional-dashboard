@@ -1,6 +1,12 @@
 import { HttpHeaders } from '@angular/common/http';
 
-import { RECORD_RESTRICTED_PARTS, RESTRICTED_PARTS, RESTRICTED_PARTS_HEADER, parseRestrictedParts } from './restricted-parts';
+import {
+  RECORD_RESTRICTED_PARTS,
+  RESTRICTED_PARTS,
+  RESTRICTED_PARTS_HEADER,
+  ROW_REMOVING_PARTS,
+  parseRestrictedParts,
+} from './restricted-parts';
 
 describe('parseRestrictedParts', () => {
   const headers = (value?: string): HttpHeaders =>
@@ -66,6 +72,30 @@ describe('parseRestrictedParts', () => {
       const known: readonly string[] = RESTRICTED_PARTS;
 
       expect(RECORD_RESTRICTED_PARTS.filter(part => !known.includes(part))).toEqual([]);
+    });
+  });
+
+  describe('which parts remove rows, and so break a count (backlog item 125)', () => {
+    it('knows exactly the one part that takes patients out of the directory', () => {
+      // `api/`'s own `RestrictedPart.removesRows()`, re-derived here. Everything the dashboard's
+      // demographic cards do is decided from this list, so a third row-removing token named by a
+      // later release must be added here rather than to a screen.
+      expect(ROW_REMOVING_PARTS).toEqual(['caseAssignments']);
+    });
+
+    it('does NOT name lastActivity, and that absence is the decision', () => {
+      // The half that is easy to lose. `lastActivity` blanks a field no count reads — item 112 let
+      // `GET /api/dashboard/summary` count straight through the same refusal for that reason — so
+      // listing it here would withhold four correct figures from a pharmacist to no purpose.
+      const rowRemoving: readonly string[] = ROW_REMOVING_PARTS;
+
+      expect(rowRemoving).not.toContain('lastActivity');
+    });
+
+    it('names nothing the client would not otherwise recognise', () => {
+      const known: readonly string[] = RESTRICTED_PARTS;
+
+      expect(ROW_REMOVING_PARTS.filter(part => !known.includes(part))).toEqual([]);
     });
   });
 });

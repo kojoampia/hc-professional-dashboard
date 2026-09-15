@@ -62,6 +62,42 @@ export const RECORD_RESTRICTED_PARTS = ['lastActivity'] as const satisfies reado
 /** Derived from the runtime array, for {@link RestrictedPart}'s reason. */
 export type RecordRestrictedPart = (typeof RECORD_RESTRICTED_PARTS)[number];
 
+/**
+ * The parts whose refusal removes <b>rows</b> from the directory — so anything counted over it is
+ * short, and short by an amount nothing can state.
+ *
+ * <p>This is `api/`'s own `RestrictedPart.removesRows()` (its item 116), which that service uses to
+ * decide which refusal deserves a WARN, re-derived here because the same distinction decides what a
+ * client may render. `caseAssignments` means the caller was refused the case collection, so a
+ * patient reached only through an assigned case is absent from the body; `lastActivity` blanks a
+ * field on rows that are all present.
+ *
+ * <p><b>It is the difference between a marked figure and no figure.</b> A screen showing a
+ * <em>list</em> can carry a `caseAssignments` refusal honestly — the rows it shows are real, and a
+ * banner above them says others are missing. A screen showing a <em>count</em> cannot: the number is
+ * lower than the truth, by an unknown amount, and it is rendered exactly as a correct one is. That
+ * is `api/`'s Decision C (item 111) applied to a count this client computes rather than one the
+ * service computes, and item 112's conclusion carried across: **a count that cannot be honestly
+ * partial should not be shown partial.**
+ *
+ * <p><b>And the converse, which is the half that is easy to lose.</b> Item 112 let
+ * `GET /api/dashboard/summary` count *through* a `lastActivity` refusal, because no field of it
+ * derives from the activity log — there was never a partial number to protect. The same holds of the
+ * demographic cards: they count membership, sex and childhood, none of which is the field
+ * `lastActivity` blanks. Suppressing them for it would withhold four correct numbers to no purpose,
+ * which is its own kind of lie about what the caller may see.
+ *
+ * <p>A part belongs here because of what it does to the <em>body</em>, not because of which screen
+ * reads it — so a third row-removing token named by a later `api/` release belongs here even if no
+ * count is derived from it yet.
+ *
+ * @see ../../../../../../docs/backlog.md items 111 (Decision C), 112 and 125
+ */
+export const ROW_REMOVING_PARTS = ['caseAssignments'] as const satisfies readonly RestrictedPart[];
+
+/** Derived from the runtime array, for {@link RestrictedPart}'s reason. */
+export type RowRemovingPart = (typeof ROW_REMOVING_PARTS)[number];
+
 /** The response header `api/` emits. Named once so a spec and the reader cannot disagree. */
 export const RESTRICTED_PARTS_HEADER = 'X-Restricted-Parts';
 
