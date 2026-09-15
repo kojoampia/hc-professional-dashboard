@@ -56,6 +56,14 @@ const INCOMPLETE_PROFILE_REDIRECT_MS = 2000;
           sentence is this screen's own, not the directory banner's: there the list is short, here
           there is no figure at all. Everything else on the dashboard is untouched — the case cards,
           the earnings card and the charts come from reads this header says nothing about.
+
+          Keeping the tiles with an em dash in place of each number was considered and dropped: it
+          asserts nothing, which is right, but four dashed tiles read as a broken widget rather than
+          as a refusal, StatCard.count has no non-numeric state to put there, and the sentence still
+          has to go somewhere. Losing the shortcut into the directory costs little — that page
+          carries its own gender select and children checkbox.
+
+          The @if exists for the @else below; the @for would render nothing on its own.
         -->
         @if (demographicsRestricted()) {
           @for (noticeKey of demographicRestrictionNotices(); track noticeKey) {
@@ -232,10 +240,18 @@ export default class DashboardPageComponent implements OnInit {
    * <p>A key per part rather than one sentence for "restricted", because the day `api/` names a
    * second row-removing part it will cost something the `caseAssignments` sentence does not
    * describe, and `restricted-part-names.spec.ts` fails until all four catalogues carry it.
+   *
+   * <p><b>Plus one for the part that could not be named at all.</b> Dropping an unknown token is
+   * the right answer to *what do I print* and the wrong one to *may I assert this number*: if the
+   * token `parseRestrictedParts` discarded was row-removing, these figures are short and nothing in
+   * this bundle can know it. `api/`'s enum is still growing and the repos ship as independently
+   * tagged images, so a web bundle older than the service is the structural case. The generic
+   * sentence names nothing, because naming it is precisely what this bundle cannot do.
    */
   readonly demographicRestrictionNotices = computed<readonly string[]>(() => {
     const refused = this.repository.directoryRestrictions();
-    return ROW_REMOVING_PARTS.filter(part => refused.includes(part)).map(part => `healthConnect.dashboard.restricted.${part}`);
+    const named = ROW_REMOVING_PARTS.filter(part => refused.includes(part)).map(part => `healthConnect.dashboard.restricted.${part}`);
+    return this.repository.directoryNamedUnknownPart() ? [...named, 'healthConnect.dashboard.restricted.unknown'] : named;
   });
 
   /** Whether any figure below the demographics heading could still be stated honestly. */

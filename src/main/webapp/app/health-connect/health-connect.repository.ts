@@ -48,6 +48,20 @@ export interface HealthConnectRepository {
    * re-derived per read and never cached as a capability.
    */
   readonly directoryRestrictions: Signal<readonly RestrictedPart[]>;
+  /**
+   * Whether that same read named a part this bundle does not recognise.
+   *
+   * <p>Separate from {@link directoryRestrictions}, which carries only the parts that can be
+   * *reasoned about*; this carries the fact that something could not be. A surface rendering rows
+   * goes on rendering the rows it has, and a surface rendering a **count** declines to state one.
+   *
+   * <p>The asymmetry is the whole of it: dropping an unknown token is right for deciding what to
+   * print and wrong for deciding whether a total may be asserted — and `api/` naming a third
+   * row-removing part on a release this bundle predates is the structural case, not a remote one,
+   * since the repos ship as independently tagged images. See `hasUnrecognisedRestrictedParts` in
+   * `api/restricted-parts.ts`.
+   */
+  readonly directoryNamedUnknownPart: Signal<boolean>;
   readonly caseQueue: Signal<readonly CaseQueueRow[]>;
   readonly caseCounts: Signal<Record<CaseStatus, number>>;
   readonly charts: Signal<ChartData>;

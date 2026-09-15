@@ -5,6 +5,7 @@ import {
   RESTRICTED_PARTS,
   RESTRICTED_PARTS_HEADER,
   ROW_REMOVING_PARTS,
+  hasUnrecognisedRestrictedParts,
   parseRestrictedParts,
 } from './restricted-parts';
 
@@ -72,6 +73,32 @@ describe('parseRestrictedParts', () => {
       const known: readonly string[] = RESTRICTED_PARTS;
 
       expect(RECORD_RESTRICTED_PARTS.filter(part => !known.includes(part))).toEqual([]);
+    });
+  });
+
+  describe('hasUnrecognisedRestrictedParts — reporting what the parser discards (backlog item 125)', () => {
+    // Dropping a token is right for "what do I print" and backwards for "may I assert this number",
+    // so the two functions are read together by anything rendering a count: the first says what can
+    // be explained, the second whether anything could not be.
+    it.each([
+      ['no header at all', undefined, false],
+      ['a header naming only known parts', 'caseAssignments,lastActivity', false],
+      ['an empty header', '', false],
+      ['a trailing comma, which is whitespace rather than a part', 'lastActivity,', false],
+      ['a part named on a later api/ release', 'medications', true],
+      ['a later part beside a known one', 'caseAssignments,medications', true],
+      ['a near miss, which is a service defect or a mangled header either way', 'lastactivity', true],
+    ])('%s', (_label, value, expected) => {
+      expect(hasUnrecognisedRestrictedParts(headers(value))).toBe(expected);
+    });
+
+    it('agrees with the parser about what was dropped', () => {
+      // The two must not disagree: a token counted known by one and unknown by the other either
+      // prints a catalogue key that does not exist or suppresses figures that are perfectly good.
+      const value = 'caseAssignments,medications,lastActivity';
+
+      expect(parseRestrictedParts(headers(value))).toEqual(['caseAssignments', 'lastActivity']);
+      expect(hasUnrecognisedRestrictedParts(headers(value))).toBe(true);
     });
   });
 

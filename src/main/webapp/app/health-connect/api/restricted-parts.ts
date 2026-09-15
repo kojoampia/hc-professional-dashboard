@@ -119,8 +119,46 @@ const KNOWN = new Set<string>(RESTRICTED_PARTS);
  * every token the client knows rather than only the ones a given endpoint can send, so the value
  * stored is what actually arrived; deciding what is renderable is the screen's job, and each asks
  * per part from its own list.
+ *
+ * <p><b>Dropping is the right answer to "what do I print" and the wrong one to "may I assert this
+ * number"</b> — see {@link hasUnrecognisedRestrictedParts}, which reports what this discards.
  */
 export function parseRestrictedParts(headers: HttpHeaders): readonly RestrictedPart[] {
+  return tokensOf(headers).filter((token): token is RestrictedPart => KNOWN.has(token));
+}
+
+/**
+ * Whether the header named a part this bundle does not recognise — the tokens
+ * {@link parseRestrictedParts} silently drops, reported rather than discarded.
+ *
+ * <p>A screen rendering a <em>list</em> can ignore a token it cannot explain and still show rows
+ * that are really there. A screen rendering a <em>count</em> cannot: if the unknown token is a
+ * row-removing one, the figure is short and nothing in this bundle can know it. `api/`'s enum is
+ * under active development — `blocksRecord` arrived with its item 128 — and the repos ship as
+ * independently tagged images, so **a web bundle older than the service answering it is the
+ * structural case rather than the exotic one**.
+ *
+ * <p>So the two directions are deliberately opposite: name nothing you cannot name, and assert no
+ * number you cannot stand behind. A caller reading this should withhold the figure and say
+ * something generic; it still must not render the token, which is the rule above and is unchanged.
+ *
+ * <p>A near miss counts as unrecognised rather than as nothing: `lastactivity` is either a service
+ * defect or a mangled header, and both are reasons to distrust a count rather than grounds to
+ * assume the read was complete.
+ *
+ * @see ../../../../../../docs/backlog.md item 125
+ */
+export function hasUnrecognisedRestrictedParts(headers: HttpHeaders): boolean {
+  return tokensOf(headers).some(token => !KNOWN.has(token));
+}
+
+/**
+ * The non-empty, trimmed tokens of the header, recognised or not.
+ *
+ * <p>Empty tokens go before either question is asked, so a trailing comma is whitespace rather than
+ * an unknown part — `"caseAssignments,"` must not blank a dashboard.
+ */
+function tokensOf(headers: HttpHeaders): readonly string[] {
   const value = headers.get(RESTRICTED_PARTS_HEADER);
   if (value === null) {
     return [];
@@ -128,5 +166,5 @@ export function parseRestrictedParts(headers: HttpHeaders): readonly RestrictedP
   return value
     .split(',')
     .map(token => token.trim())
-    .filter((token): token is RestrictedPart => KNOWN.has(token));
+    .filter(token => token !== '');
 }

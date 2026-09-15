@@ -125,11 +125,42 @@ describe('HttpHealthConnectRepository', () => {
       expect(repository.directoryRestrictions()).toEqual(['lastActivity']);
     });
 
-    it('clears the restrictions when the directory read fails outright', () => {
-      // The rows are gone and the error panel replaces them, so a surviving "part of this list was
-      // withheld" would be a statement about a list that is no longer on screen.
-      flushDirectory({ 'X-Restricted-Parts': 'lastActivity' });
+    it('reports SEPARATELY that a token was dropped, so a count can refuse to be stated', () => {
+      // Item 125. The token is still kept off every screen; what changes is that the fact of it is
+      // no longer thrown away. An unknown part may be row-removing, and a bundle older than the
+      // service it is talking to is the ordinary case here, not a remote one.
+      flushDirectory({ 'X-Restricted-Parts': 'medications,lastActivity' });
+
       expect(repository.directoryRestrictions()).toEqual(['lastActivity']);
+      expect(repository.directoryNamedUnknownPart()).toBe(true);
+    });
+
+    it.each([
+      ['no header at all', {}],
+      ['a header naming only known parts', { 'X-Restricted-Parts': 'caseAssignments,lastActivity' }],
+      ['a trailing comma', { 'X-Restricted-Parts': 'lastActivity,' }],
+    ])('reports no unknown part for %s', (_label, headers) => {
+      // The silent case has to stay silent in both directions: a false positive here suppresses
+      // four correct figures on every dashboard in the estate.
+      flushDirectory(headers);
+
+      expect(repository.directoryNamedUnknownPart()).toBe(false);
+    });
+
+    it('KEEPS the restrictions when a later directory read fails, because the rows it described are still on screen', () => {
+      // The defect item 125's review found, and it restores the very screen item 125 removes.
+      //
+      // This arm used to clear the restrictions. It does not clear `patientRowCache`, and neither
+      // does `reset()` — so after a failed refresh the short rows were still cached with nothing
+      // left saying they were short, and the dashboard's demographic cards, which sit outside
+      // `<hpd-async-state>`, went back to rendering four confident totals over a shortened list.
+      //
+      // The rows and what was withheld from them are written together and must stay together. If
+      // the cache is ever cleared on a failed read, clear these in the same statement.
+      flushDirectory({ 'X-Restricted-Parts': 'caseAssignments,medications' });
+      const rowsBefore = repository.patientRows();
+      expect(repository.directoryRestrictions()).toEqual(['caseAssignments']);
+      expect(repository.directoryNamedUnknownPart()).toBe(true);
 
       repository.reset();
       flushRestOfLoad();
@@ -138,7 +169,11 @@ describe('HttpHealthConnectRepository', () => {
         .flush('nope', { status: 503, statusText: 'Service Unavailable' });
 
       expect(repository.asyncState().status).toBe('error');
-      expect(repository.directoryRestrictions()).toEqual([]);
+      // Both halves, because the pair is the property: stale rows with a stale restriction describe
+      // each other, and either one alone is the wrong screen.
+      expect(repository.patientRows()).toEqual(rowsBefore);
+      expect(repository.directoryRestrictions()).toEqual(['caseAssignments']);
+      expect(repository.directoryNamedUnknownPart()).toBe(true);
     });
 
     /** The initial load, with a chosen set of headers on the directory response alone. */

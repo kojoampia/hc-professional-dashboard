@@ -66,7 +66,8 @@
       "casePatient": "Casos por paciente",
       "allPatients": "Todos los pacientes",
       "restricted": {
-        "caseAssignments": "No se muestran los totales de pacientes: no tiene permiso para leer las asignaciones de casos, por lo que cualquier cifra contada aquí sería inferior a la real."
+        "caseAssignments": "No se muestran los totales de pacientes: no tiene permiso para leer las asignaciones de casos, por lo que cualquier cifra contada aquí sería inferior a la real.",
+        "unknown": "No se muestran los totales de pacientes: se retuvo parte de esta lista por un motivo que esta versión del portal no reconoce, por lo que una cifra contada aquí podría ser inferior a la real."
       },
       "charts": {
         "title": "Gráficos de casos",

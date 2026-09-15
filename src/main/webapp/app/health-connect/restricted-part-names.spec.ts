@@ -155,28 +155,38 @@ describe('restricted-part notices', () => {
   });
 
   describe("the dashboard's demographic cards (backlog item 125)", () => {
+    /**
+     * Every key that screen can print: one per row-removing part, plus the one for a part it could
+     * not name at all.
+     *
+     * <p>`unknown` is not a part and never will be. It is what the screen says when
+     * {@link parseRestrictedParts} dropped a token: the dropped part may be row-removing, in which
+     * case the figures are short and nothing in the bundle can say why. Listed by hand because
+     * nothing can derive it — there is no array of the tokens this client has not heard of.
+     */
+    const DASHBOARD_KEYS = [...ROW_REMOVING_PARTS, 'unknown'];
+
     it('has parts to check', () => {
       expect(ROW_REMOVING_PARTS.length).toBeGreaterThan(0);
     });
 
-    it.each(LANGUAGES)('has a %s sentence for every part that breaks a count', locale => {
-      expect(ROW_REMOVING_PARTS.filter(part => !dashboardNotices(locale)[part])).toEqual([]);
+    it.each(LANGUAGES)('has a %s sentence for every part that breaks a count, and for the unnameable one', locale => {
+      expect(DASHBOARD_KEYS.filter(key => !dashboardNotices(locale)[key])).toEqual([]);
     });
 
     it.each(LANGUAGES)('carries no %s key for a part that leaves the counts standing', locale => {
       // `lastActivity` is the live case: it blanks a field no card reads, so the figures are shown
       // and nothing is said. A sentence for it here would be shown to nobody — or worse, would be
       // found later and wired up, suppressing four correct numbers.
-      const rowRemoving: readonly string[] = ROW_REMOVING_PARTS;
-      const stray = Object.keys(dashboardNotices(locale)).filter(key => !rowRemoving.includes(key));
+      const stray = Object.keys(dashboardNotices(locale)).filter(key => !DASHBOARD_KEYS.includes(key));
 
       expect(stray).toEqual([]);
     });
 
     it.each(LANGUAGES)('has no blank or key-echoing %s sentence', locale => {
       const strings = dashboardNotices(locale);
-      const bad = ROW_REMOVING_PARTS.filter(
-        part => String(strings[part]).trim() === '' || String(strings[part]).includes('healthConnect.dashboard'),
+      const bad = DASHBOARD_KEYS.filter(
+        key => String(strings[key]).trim() === '' || String(strings[key]).includes('healthConnect.dashboard'),
       );
 
       expect(bad).toEqual([]);
@@ -186,7 +196,17 @@ describe('restricted-part notices', () => {
       const english = dashboardNotices('en');
       const strings = dashboardNotices(locale);
 
-      expect(ROW_REMOVING_PARTS.filter(part => strings[part] === english[part])).toEqual([]);
+      expect(DASHBOARD_KEYS.filter(key => strings[key] === english[key])).toEqual([]);
+    });
+
+    it.each(LANGUAGES)('tells a named refusal apart from an unnameable one in %s', locale => {
+      // Two different claims, and the difference is what a reader can act on: one knows what was
+      // withheld, the other knows only that something was. If they ever read alike, the screen has
+      // stopped distinguishing "your role may not read case assignments" from "this portal is older
+      // than the service answering it" — conditions with different remedies and different owners.
+      const strings = dashboardNotices(locale);
+
+      expect(new Set(DASHBOARD_KEYS.map(key => strings[key])).size).toBe(DASHBOARD_KEYS.length);
     });
 
     it.each(LANGUAGES)('does not reuse the %s list sentence on the dashboard', locale => {

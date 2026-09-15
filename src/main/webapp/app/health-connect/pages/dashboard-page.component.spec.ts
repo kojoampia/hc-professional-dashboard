@@ -265,6 +265,14 @@ describe('DashboardPageComponent', () => {
   describe('X-Restricted-Parts and the demographic cards (backlog item 125)', () => {
     const notice = (): Element | null => fixture.nativeElement.querySelector('[data-cy="restrictedDemographics"]');
     const statCards = (): NodeListOf<Element> => fixture.nativeElement.querySelectorAll('hpd-stat-card');
+    /**
+     * Every notice's sentence, in order. The `span`, not the element: `mat-icon` renders its
+     * ligature name as text, so the whole element's `textContent` carries `report_problem` too.
+     */
+    const noticeTexts = (): readonly (string | undefined)[] =>
+      Array.from(fixture.nativeElement.querySelectorAll('[data-cy="restrictedDemographics"] span')).map(
+        span => (span as Element).textContent?.trim(),
+      );
 
     const restrict = (...parts: RestrictedPart[]): void => {
       TestBed.inject(FakeHealthConnectRepository).setDirectoryRestrictions(parts);
@@ -351,14 +359,29 @@ describe('DashboardPageComponent', () => {
       expect(fixture.nativeElement.querySelectorAll('[data-cy^="restricted"]')).toHaveLength(1);
     });
 
-    it('ignores a token it does not know', () => {
-      // `api/` may name a third part on a release this bundle predates. Nothing may render for it,
-      // and it certainly may not suppress a figure that is still correct.
+    it('withholds the figures for a token it cannot name, without naming it', () => {
+      // Fail-open is right for "what do I print" and backwards for "may I assert this number", and
+      // this is the second question. `api/` may name a third ROW-REMOVING part on a release this
+      // bundle predates — its enum is still growing, and the repos ship as independently tagged
+      // images, so web-older-than-api is structural — and a bundle that drops that token silently
+      // goes on publishing four short figures.
+      //
+      // Suppress, and say something generic. The token itself still reaches no screen, which is
+      // item 114's rule and is untouched.
       restrict('medications' as RestrictedPart);
 
-      expect(component.demographicCards()).toHaveLength(4);
-      expect(notice()).toBeNull();
+      expect(component.demographicCards()).toEqual([]);
+      expect(notice()?.querySelector('span')?.textContent?.trim()).toBe('healthConnect.dashboard.restricted.unknown');
       expect(fixture.nativeElement.textContent).not.toContain('medications');
+    });
+
+    it('names the part it could name, and says separately that one could not be named', () => {
+      // Two sentences, because a reader can act on them differently: a refused role is permanent
+      // and expected, an unrecognised part means this bundle is older than the service answering it.
+      restrict('caseAssignments', 'medications' as RestrictedPart);
+
+      expect(component.demographicCards()).toEqual([]);
+      expect(noticeTexts()).toEqual(['healthConnect.dashboard.restricted.caseAssignments', 'healthConnect.dashboard.restricted.unknown']);
     });
   });
 });

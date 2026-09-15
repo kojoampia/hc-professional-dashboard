@@ -7,7 +7,7 @@ import { ClinicalCaseDto } from './api/clinical-case-api.model';
 import { DutyRosterAssignmentDto, DutyRosterAssignmentsService } from './api/duty-roster-assignments.service';
 import { PatientListItemDto } from './api/patient-api.model';
 import { PatientApiService } from './api/patient-api.service';
-import { RestrictedPart, parseRestrictedParts } from './api/restricted-parts';
+import { RestrictedPart, hasUnrecognisedRestrictedParts, parseRestrictedParts } from './api/restricted-parts';
 import {
   ActivityLogEntry,
   AsyncViewState,
@@ -81,10 +81,32 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
    *
    * <p>Set from the same response as {@link patientRowCache} and in the same handler, so the rows
    * on screen and the statement about what is missing from them can never come from two different
-   * reads. Cleared on the error path for the same reason: a stale restriction outliving the list it
-   * described would explain the wrong list.
+   * reads. **That is an invariant, not a convenience**, which is why the error path now leaves both
+   * alone rather than clearing this one: a failed read replaces neither, so the rows still on screen
+   * are still the rows this describes.
+   *
+   * <p>It said the opposite until item 125 — *"cleared on the error path, because a stale
+   * restriction outliving the list it described would explain the wrong list"* — and the premise was
+   * false. **The list does not go anywhere**: `patientRowCache` is untouched on error, and untouched
+   * by {@link reset} too. So clearing this alone produced the only genuinely inconsistent state — a
+   * short list with nothing left saying so. On the dashboard, whose demographic cards sit outside
+   * `<hpd-async-state>`, that put four confidently short totals back on screen with no notice: the
+   * exact screen item 125 exists to remove, restored by an outage.
+   *
+   * <p>If the row cache is ever cleared on a failed read, this must be cleared in the same
+   * statement. The invariant is that the two move together, not that either has a preferred value.
    */
   private readonly patientRestrictions = signal<readonly RestrictedPart[]>([]);
+  /**
+   * Whether that same response named a part this bundle does not recognise.
+   *
+   * <p>Beside {@link patientRestrictions} rather than in it, because it is not a part: nothing can
+   * be said *about* it, and it must never reach a screen as a token or a catalogue key. It exists so
+   * that a surface rendering a **count** can decline to assert one — `api/` may name a third
+   * row-removing part on a release this bundle predates, and dropping that token silently is how
+   * four short figures get published under a header that named the reason.
+   */
+  private readonly patientUnknownRestriction = signal(false);
   private readonly recordCache = signal<ReadonlyMap<string, PatientRecord>>(new Map());
   /**
    * What each cached record's own read was refused, keyed by the same patient id.
@@ -121,6 +143,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
   }));
   readonly patientRows = computed(() => this.patientRowCache());
   readonly directoryRestrictions = computed(() => this.patientRestrictions());
+  readonly directoryNamedUnknownPart = computed(() => this.patientUnknownRestriction());
   readonly caseQueue = computed<readonly CaseQueueRow[]>(() =>
     this.clinicalCaseCache()
       .map(toCaseQueueRow)
@@ -509,12 +532,18 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
         this.patientRowCache.set((response.body ?? []).map(toPatientListRow));
         // The header is absent whenever nothing was withheld, which is the ordinary case; parsing
         // it then yields an empty array and the directory renders exactly as it always did.
+        //
+        // All three set together, from one response: the rows, what was withheld from them, and
+        // whether something was withheld that this bundle cannot name.
         this.patientRestrictions.set(parseRestrictedParts(response.headers));
+        this.patientUnknownRestriction.set(hasUnrecognisedRestrictedParts(response.headers));
       },
-      error: () => {
-        this.error.set(LOAD_ERROR_KEY);
-        this.patientRestrictions.set([]);
-      },
+      // The rows are NOT cleared here, and neither is what was withheld from them (item 125). A
+      // failed read replaces nothing, so the cache still holds the previous response's rows and the
+      // previous response's restrictions still describe them. Clearing only the second — which this
+      // did until item 125 — is what put four confidently short totals back on the dashboard, whose
+      // cards are outside the error panel and go on rendering whatever the cache holds.
+      error: () => this.error.set(LOAD_ERROR_KEY),
     });
 
     this.clinicalCaseService.query().subscribe({
