@@ -65,6 +65,10 @@
       "caseDistribution": "Case distribution",
       "casePatient": "Cases by patient",
       "allPatients": "All patients",
+      "restricted": {
+        "caseAssignments": "Patient totals are not shown: you are not permitted to read case assignments, so every figure counted here would be lower than the true one.",
+        "unknown": "Patient totals are not shown: part of this list was withheld for a reason this version of the portal does not recognise, so a figure counted here could be lower than the true one."
+      },
       "charts": {
         "title": "Case charts",
         "caseTimeDescription": "A timeline showing the cumulative number of cases by date.",

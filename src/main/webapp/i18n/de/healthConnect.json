@@ -65,6 +65,10 @@
       "caseDistribution": "Fallverteilung",
       "casePatient": "Fälle nach Patient",
       "allPatients": "Alle Patienten",
+      "restricted": {
+        "caseAssignments": "Patientenzahlen werden nicht angezeigt: Sie sind nicht berechtigt, Fallzuweisungen zu lesen, daher wäre jede hier gezählte Zahl niedriger als der tatsächliche Wert.",
+        "unknown": "Patientenzahlen werden nicht angezeigt: Ein Teil dieser Liste wurde aus einem Grund zurückgehalten, den diese Version des Portals nicht kennt, daher könnte eine hier gezählte Zahl niedriger als der tatsächliche Wert sein."
+      },
       "charts": {
         "title": "Falldiagramme",
         "caseTimeDescription": "Eine Zeitachse mit der kumulierten Anzahl von Fällen nach Datum.",

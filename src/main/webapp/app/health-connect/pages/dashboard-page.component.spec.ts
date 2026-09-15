@@ -8,6 +8,10 @@ import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
 import { FakeHealthConnectRepository } from '../testing/fake-health-connect.repository';
 import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
+import { RestrictedPart } from '../api/restricted-parts';
+import GroupedBarChartComponent from '../charts/grouped-bar-chart.component';
+import LineChartComponent from '../charts/line-chart.component';
+import PieChartComponent from '../charts/pie-chart.component';
 import DashboardPageComponent from './dashboard-page.component';
 
 describe('DashboardPageComponent', () => {
@@ -30,11 +34,20 @@ describe('DashboardPageComponent', () => {
 
   const flushProgress = (complete: boolean): void => progressRequest().flush({ percent: complete ? 100 : 25, complete, requirements: [] });
 
-  beforeEach(async () => {
+  /**
+   * Builds the component.
+   *
+   * <p>`renderTemplate` is off by default and that is not an oversight: most of what this page does
+   * is computed, and rendering the real markup drags in the charts, the async-state wrapper and a
+   * `routerLink` that a plain object `Router` cannot serve. The restriction block at the bottom
+   * turns it on, because *the whole of item 125 is what reaches the screen* — a suppression proved
+   * only against a signal survives someone deleting the `@if` that acts on it.
+   */
+  const setUp = async (options: { renderTemplate?: boolean } = {}): Promise<void> => {
     // Installed before the component exists: ngOnInit schedules the incomplete-profile timer, and a
     // timer registered against the real clock cannot be advanced by jest.advanceTimersByTime later.
     jest.useFakeTimers();
-    await TestBed.configureTestingModule({
+    const testBed = TestBed.configureTestingModule({
       imports: [DashboardPageComponent, TranslateModule.forRoot()],
       providers: [
         { provide: HEALTH_CONNECT_REPOSITORY, useExisting: FakeHealthConnectRepository },
@@ -42,16 +55,28 @@ describe('DashboardPageComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
       ],
-    })
-      .overrideComponent(DashboardPageComponent, { set: { template: '' } })
-      .compileComponents();
+    });
+    if (options.renderTemplate) {
+      // The three charts, and only the three charts. `ng2-charts` asks jsdom for a 2D canvas
+      // context, gets null, and dies reading `.id` off it — a limitation of the test DOM that has
+      // nothing to do with this page. Their host elements still render, so "the charts are still
+      // there" remains an assertion about the dashboard's own markup.
+      for (const chart of [GroupedBarChartComponent, LineChartComponent, PieChartComponent]) {
+        testBed.overrideComponent(chart, { set: { template: '' } });
+      }
+    } else {
+      testBed.overrideComponent(DashboardPageComponent, { set: { template: '' } });
+    }
+    await testBed.compileComponents();
     fixture = TestBed.createComponent(DashboardPageComponent);
     component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
     TestBed.inject(FakeHealthConnectRepository).reset();
     fixture.detectChanges();
     router.navigate.mockClear();
-  });
+  };
+
+  beforeEach(() => setUp());
 
   afterEach(() => {
     jest.useRealTimers();
@@ -220,6 +245,143 @@ describe('DashboardPageComponent', () => {
       jest.advanceTimersByTime(2000);
 
       expect(router.navigate).not.toHaveBeenCalled();
+    });
+  });
+
+  /**
+   * Backlog item 125. These four cards count the patient directory, and `caseAssignments` means the
+   * directory arrived short of rows — so every figure is lower than the truth, by an amount nothing
+   * on this screen can state, and is rendered exactly as a correct one is.
+   *
+   * <p>The three cases are mutated **separately**, because the whole decision is that they are not
+   * the same case: no header must leave the dashboard untouched (the positive control — five of the
+   * eight disciplines see it), `lastActivity` must leave the figures alone, and only
+   * `caseAssignments` suppresses. A single "restricted" test would pass on a treatment that fired
+   * on all three, which is the defect pointing the other way.
+   *
+   * <p>Rendered for real here, unlike the specs above: a suppression proved only against a signal
+   * stays green when the `@if` acting on it is deleted.
+   */
+  describe('X-Restricted-Parts and the demographic cards (backlog item 125)', () => {
+    const notice = (): Element | null => fixture.nativeElement.querySelector('[data-cy="restrictedDemographics"]');
+    const statCards = (): NodeListOf<Element> => fixture.nativeElement.querySelectorAll('hpd-stat-card');
+    /**
+     * Every notice's sentence, in order. The `span`, not the element: `mat-icon` renders its
+     * ligature name as text, so the whole element's `textContent` carries `report_problem` too.
+     */
+    const noticeTexts = (): readonly (string | undefined)[] =>
+      Array.from(fixture.nativeElement.querySelectorAll('[data-cy="restrictedDemographics"] span')).map(
+        span => (span as Element).textContent?.trim(),
+      );
+
+    const restrict = (...parts: RestrictedPart[]): void => {
+      TestBed.inject(FakeHealthConnectRepository).setDirectoryRestrictions(parts);
+      fixture.detectChanges();
+    };
+
+    beforeEach(async () => {
+      TestBed.resetTestingModule();
+      await setUp({ renderTemplate: true });
+      flushProgress(true);
+      // Refused rather than filled: the earnings card is the one part of this template carrying a
+      // `routerLink`, and a plain object `Router` cannot serve one. Its absence is the state the
+      // "leaves the rest of the dashboard alone" claim is made against, not a state being asserted.
+      earningsRequest().flush(null, { status: 503, statusText: 'unavailable' });
+      fixture.detectChanges();
+    });
+
+    it('counts exactly as it always did when the response carried no header', () => {
+      // The positive control. A treatment that fired on an unrestricted read would withhold four
+      // correct figures from every clinician in the estate — the same defect, inverted.
+      expect(notice()).toBeNull();
+      expect(component.demographicCards()).toEqual([
+        expect.objectContaining({ id: 'patients', count: 7 }),
+        expect.objectContaining({ id: 'female', count: 3 }),
+        expect.objectContaining({ id: 'male', count: 4 }),
+        expect.objectContaining({ id: 'kids', count: 2 }),
+      ]);
+      expect(statCards()).toHaveLength(7);
+    });
+
+    it('leaves every figure alone when only the activity log was withheld', () => {
+      // Item 112's argument, client-side: no card derives from the field `lastActivity` blanks, so
+      // there was never a partial number to protect and suppressing would withhold four correct
+      // figures for nothing.
+      //
+      // Asserted as *equality with the unrestricted figures* rather than by restating today's four
+      // counts, which is what makes it survive a fifth card: the fake blanks `lastActivityAt` on
+      // every row under this refusal, as the service does, so a card derived from that field would
+      // compute differently in the two runs and this would redden. A rule justified on today's
+      // field list would simply rot.
+      const unrestricted = component.demographicCards();
+
+      restrict('lastActivity');
+
+      expect(component.demographicCards()).toEqual(unrestricted);
+      expect(notice()).toBeNull();
+      expect(statCards()).toHaveLength(7);
+    });
+
+    it('shows no figure at all, and says why, when rows were withheld', () => {
+      restrict('caseAssignments');
+
+      // Empty in the model, not merely hidden: a later caller reading this signal gets no figure
+      // rather than a confidently short one.
+      expect(component.demographicCards()).toEqual([]);
+      expect(notice()).not.toBeNull();
+      // Its own sentence, not the directory banner's. There the list in front of the clinician is
+      // short; here there is no figure at all, and the list's words would describe neither.
+      expect(notice()?.querySelector('span')?.textContent?.trim()).toBe('healthConnect.dashboard.restricted.caseAssignments');
+    });
+
+    it('suppresses the four counts and nothing else on the page', () => {
+      restrict('caseAssignments');
+
+      // The case cards, the charts and the earnings card come from reads this header says nothing
+      // about. Hiding the dashboard over a refusal that cost four numbers would remove more truth
+      // than it removes falsehood.
+      expect(component.caseCards()).toEqual([
+        expect.objectContaining({ id: 'urgent', count: 2 }),
+        expect.objectContaining({ id: 'open', count: 2 }),
+        expect.objectContaining({ id: 'closed', count: 3 }),
+      ]);
+      expect(statCards()).toHaveLength(3);
+      expect(fixture.nativeElement.querySelector('hpd-pie-chart')).not.toBeNull();
+    });
+
+    it('says it once when both parts were refused, and says nothing about the activity log', () => {
+      // The technician case, as measured on quality: `caseAssignments,lastActivity`. The dashboard
+      // has no treatment for the second part and must not grow one — no card reads the field it
+      // blanks, so a notice about it here would report a loss this screen did not suffer.
+      restrict('caseAssignments', 'lastActivity');
+
+      expect(component.demographicCards()).toEqual([]);
+      expect(fixture.nativeElement.querySelectorAll('[data-cy^="restricted"]')).toHaveLength(1);
+    });
+
+    it('withholds the figures for a token it cannot name, without naming it', () => {
+      // Fail-open is right for "what do I print" and backwards for "may I assert this number", and
+      // this is the second question. `api/` may name a third ROW-REMOVING part on a release this
+      // bundle predates — its enum is still growing, and the repos ship as independently tagged
+      // images, so web-older-than-api is structural — and a bundle that drops that token silently
+      // goes on publishing four short figures.
+      //
+      // Suppress, and say something generic. The token itself still reaches no screen, which is
+      // item 114's rule and is untouched.
+      restrict('medications' as RestrictedPart);
+
+      expect(component.demographicCards()).toEqual([]);
+      expect(notice()?.querySelector('span')?.textContent?.trim()).toBe('healthConnect.dashboard.restricted.unknown');
+      expect(fixture.nativeElement.textContent).not.toContain('medications');
+    });
+
+    it('names the part it could name, and says separately that one could not be named', () => {
+      // Two sentences, because a reader can act on them differently: a refused role is permanent
+      // and expected, an unrecognised part means this bundle is older than the service answering it.
+      restrict('caseAssignments', 'medications' as RestrictedPart);
+
+      expect(component.demographicCards()).toEqual([]);
+      expect(noticeTexts()).toEqual(['healthConnect.dashboard.restricted.caseAssignments', 'healthConnect.dashboard.restricted.unknown']);
     });
   });
 });

@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 import { LANGUAGES } from 'app/config/language.constants';
 
-import { RECORD_RESTRICTED_PARTS, RESTRICTED_PARTS } from './api/restricted-parts';
+import { RECORD_RESTRICTED_PARTS, RESTRICTED_PARTS, ROW_REMOVING_PARTS } from './api/restricted-parts';
 
 /**
  * That every restricted part the directory can be handed has a sentence in every catalogue, and
@@ -58,6 +58,16 @@ describe('restricted-part notices', () => {
    * made into a guard.
    */
   const recordNotices = (locale: string): Record<string, unknown> => block(locale, 'healthConnect', 'patient', 'recordRestricted');
+
+  /**
+   * The dashboard's notices, a third block for a third loss.
+   *
+   * <p>Keyed by part like the other two, but it carries a sentence only for the parts that remove
+   * **rows**: those are the ones that make a count wrong, and a count is all these cards are. The
+   * screen prints one in place of the four figures rather than beside them, so the sentence has to
+   * account for their absence — which neither of the other two blocks does.
+   */
+  const dashboardNotices = (locale: string): Record<string, unknown> => block(locale, 'healthConnect', 'dashboard', 'restricted');
 
   /** Every key this feature renders: one notice per part, plus the marker the recency column shows. */
   const REQUIRED_KEYS = [...RESTRICTED_PARTS, 'lastActivityCell'];
@@ -141,6 +151,74 @@ describe('restricted-part notices', () => {
       const record = recordNotices(locale);
 
       expect(RECORD_RESTRICTED_PARTS.filter(part => record[part] === list[part] || record[part] === list.lastActivityCell)).toEqual([]);
+    });
+  });
+
+  describe("the dashboard's demographic cards (backlog item 125)", () => {
+    /**
+     * Every key that screen can print: one per row-removing part, plus the one for a part it could
+     * not name at all.
+     *
+     * <p>`unknown` is not a part and never will be. It is what the screen says when
+     * {@link parseRestrictedParts} dropped a token: the dropped part may be row-removing, in which
+     * case the figures are short and nothing in the bundle can say why. Listed by hand because
+     * nothing can derive it — there is no array of the tokens this client has not heard of.
+     */
+    const DASHBOARD_KEYS = [...ROW_REMOVING_PARTS, 'unknown'];
+
+    it('has parts to check', () => {
+      expect(ROW_REMOVING_PARTS.length).toBeGreaterThan(0);
+    });
+
+    it.each(LANGUAGES)('has a %s sentence for every part that breaks a count, and for the unnameable one', locale => {
+      expect(DASHBOARD_KEYS.filter(key => !dashboardNotices(locale)[key])).toEqual([]);
+    });
+
+    it.each(LANGUAGES)('carries no %s key for a part that leaves the counts standing', locale => {
+      // `lastActivity` is the live case: it blanks a field no card reads, so the figures are shown
+      // and nothing is said. A sentence for it here would be shown to nobody — or worse, would be
+      // found later and wired up, suppressing four correct numbers.
+      const stray = Object.keys(dashboardNotices(locale)).filter(key => !DASHBOARD_KEYS.includes(key));
+
+      expect(stray).toEqual([]);
+    });
+
+    it.each(LANGUAGES)('has no blank or key-echoing %s sentence', locale => {
+      const strings = dashboardNotices(locale);
+      const bad = DASHBOARD_KEYS.filter(
+        key => String(strings[key]).trim() === '' || String(strings[key]).includes('healthConnect.dashboard'),
+      );
+
+      expect(bad).toEqual([]);
+    });
+
+    it.each(LANGUAGES.filter(locale => locale !== 'en'))('says it in %s rather than repeating the English', locale => {
+      const english = dashboardNotices('en');
+      const strings = dashboardNotices(locale);
+
+      expect(DASHBOARD_KEYS.filter(key => strings[key] === english[key])).toEqual([]);
+    });
+
+    it.each(LANGUAGES)('tells a named refusal apart from an unnameable one in %s', locale => {
+      // Two different claims, and the difference is what a reader can act on: one knows what was
+      // withheld, the other knows only that something was. If they ever read alike, the screen has
+      // stopped distinguishing "your role may not read case assignments" from "this portal is older
+      // than the service answering it" — conditions with different remedies and different owners.
+      const strings = dashboardNotices(locale);
+
+      expect(new Set(DASHBOARD_KEYS.map(key => strings[key])).size).toBe(DASHBOARD_KEYS.length);
+    });
+
+    it.each(LANGUAGES)('does not reuse the %s list sentence on the dashboard', locale => {
+      // Item 129's trap again, and here the token is *the same one* the directory has a sentence
+      // for, so copying it across is a single keystroke. The two say different things: on the
+      // directory the list in front of the clinician is short but usable, on the dashboard there is
+      // no figure at all — "this list is incomplete" printed over four missing cards describes
+      // neither.
+      const list = notices(locale);
+      const dashboard = dashboardNotices(locale);
+
+      expect(ROW_REMOVING_PARTS.filter(part => dashboard[part] === list[part])).toEqual([]);
     });
   });
 

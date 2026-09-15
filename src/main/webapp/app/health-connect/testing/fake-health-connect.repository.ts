@@ -19,7 +19,7 @@ import {
   ShiftLabel,
   shiftStartHour,
 } from '../health-connect.models';
-import { RestrictedPart } from '../api/restricted-parts';
+import { RESTRICTED_PARTS, RestrictedPart } from '../api/restricted-parts';
 import { HealthConnectRepository, PatientDirectoryFilters } from '../health-connect.repository';
 import {
   HEALTH_CONNECT_DUTY_ROSTERS,
@@ -84,6 +84,7 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
   private readonly loading = signal(false);
   private readonly error = signal<string | null>(null);
   private readonly restrictions = signal<readonly RestrictedPart[]>([]);
+  private readonly unknownRestriction = signal(false);
   private readonly recordRestrictionsByPatient = signal<ReadonlyMap<string, readonly RestrictedPart[]>>(new Map());
 
   readonly patients = this.records.asReadonly();
@@ -92,15 +93,51 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     status: this.error() ? 'error' : this.loading() ? 'loading' : 'ready',
     error: this.error(),
   }));
-  readonly patientRows = computed(() =>
-    this.records()
-      .map(toPatientRow)
-      // Never-seen patients sort last rather than throwing; an empty string is ordered before any
-      // real timestamp, so this reads as "no activity is the oldest activity".
-      .sort((left, right) => (right.lastActivityAt ?? '').localeCompare(left.lastActivityAt ?? '')),
-  );
+  /**
+   * The directory, with BOTH refusals modelled on the rows rather than only in the header.
+   *
+   * <p>A fake that sets the header and leaves the body alone describes a response the service
+   * cannot send, and every assertion made against that response is vacuous. Both parts had that
+   * defect; both are fixed here (backlog item 125, and item 112's fixture argument in `api/`):
+   *
+   * <ul>
+   *   <li><b>`lastActivity` blanks every date.</b> `api/` lists every patient with a null
+   *       `lastActivityAt` when it is refused the activity log. Without this, a count derived from
+   *       that field computes identically restricted and unrestricted, so a spec asserting "this
+   *       refusal changes nothing" passes whatever the code does.
+   *   <li><b>`caseAssignments` removes the patients reached through a case.</b> That is what the
+   *       refusal costs: the caller never read the case collection, so a patient in the directory
+   *       only by way of an assigned case is not in the body.
+   * </ul>
+   *
+   * <p><b>Every fixture record carries an assigned case, so this fixture's directory empties
+   * entirely under that refusal.</b> That is a real response shape — `api/` returns early for a
+   * caller who reaches nobody, answering `caseAssignments` alone — but it is narrower than the
+   * general case, where some patients survive. A fixture with a caseless patient would leave that
+   * patient behind, and this rule would then model the short-but-not-empty list a technician
+   * actually sees.
+   *
+   * <p>Only the rows: {@link caseQueue} and {@link caseCounts} are left alone deliberately. The
+   * header describes the directory read, not the case read, and a fake that shortened both would
+   * make a claim `X-Restricted-Parts` does not.
+   */
+  readonly patientRows = computed(() => {
+    const datesWithheld = this.restrictions().includes('lastActivity');
+    const rowsWithheld = this.restrictions().includes('caseAssignments');
+    return (
+      this.records()
+        .filter(record => !rowsWithheld || record.cases.length === 0)
+        .map(toPatientRow)
+        .map(row => (datesWithheld ? { ...row, lastActivityAt: null } : row))
+        // Never-seen patients sort last rather than throwing; an empty string is ordered before any
+        // real timestamp, so this reads as "no activity is the oldest activity".
+        .sort((left, right) => (right.lastActivityAt ?? '').localeCompare(left.lastActivityAt ?? ''))
+    );
+  });
   /** Empty unless a spec calls {@link setDirectoryRestrictions} — the ordinary, unrestricted read. */
   readonly directoryRestrictions = this.restrictions.asReadonly();
+  /** Set by {@link setDirectoryRestrictions} when a spec names a token the client cannot recognise. */
+  readonly directoryNamedUnknownPart = this.unknownRestriction.asReadonly();
   readonly caseQueue = computed(() =>
     this.records()
       .flatMap(record =>
@@ -321,9 +358,17 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
    * <p>Spec-only, and deliberately not on {@link HealthConnectRepository}: the real repository
    * derives this from a response and nothing in the application may set it. Cleared by
    * {@link reset}, so a spec that restricts a part cannot leak it into the next one.
+   *
+   * <p><b>It takes what the header named, not what the client understood</b>, and splits the two
+   * exactly as the parser does — known tokens are stored, anything else raises
+   * {@link directoryNamedUnknownPart} and is otherwise discarded. So a spec passing a token
+   * `api/` might name on a later release (`'medications' as RestrictedPart`) reproduces the real
+   * pairing, rather than having to know which of two signals to set.
    */
   setDirectoryRestrictions(restrictions: readonly RestrictedPart[]): void {
-    this.restrictions.set(restrictions);
+    const known: readonly string[] = RESTRICTED_PARTS;
+    this.restrictions.set(restrictions.filter(part => known.includes(part)));
+    this.unknownRestriction.set(restrictions.some(part => !known.includes(part)));
   }
 
   /**
@@ -344,6 +389,7 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     this.loading.set(false);
     this.error.set(null);
     this.restrictions.set([]);
+    this.unknownRestriction.set(false);
     this.recordRestrictionsByPatient.set(new Map());
   }
 }

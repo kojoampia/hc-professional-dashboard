@@ -1,6 +1,13 @@
 import { HttpHeaders } from '@angular/common/http';
 
-import { RECORD_RESTRICTED_PARTS, RESTRICTED_PARTS, RESTRICTED_PARTS_HEADER, parseRestrictedParts } from './restricted-parts';
+import {
+  RECORD_RESTRICTED_PARTS,
+  RESTRICTED_PARTS,
+  RESTRICTED_PARTS_HEADER,
+  ROW_REMOVING_PARTS,
+  hasUnrecognisedRestrictedParts,
+  parseRestrictedParts,
+} from './restricted-parts';
 
 describe('parseRestrictedParts', () => {
   const headers = (value?: string): HttpHeaders =>
@@ -66,6 +73,56 @@ describe('parseRestrictedParts', () => {
       const known: readonly string[] = RESTRICTED_PARTS;
 
       expect(RECORD_RESTRICTED_PARTS.filter(part => !known.includes(part))).toEqual([]);
+    });
+  });
+
+  describe('hasUnrecognisedRestrictedParts — reporting what the parser discards (backlog item 125)', () => {
+    // Dropping a token is right for "what do I print" and backwards for "may I assert this number",
+    // so the two functions are read together by anything rendering a count: the first says what can
+    // be explained, the second whether anything could not be.
+    it.each([
+      ['no header at all', undefined, false],
+      ['a header naming only known parts', 'caseAssignments,lastActivity', false],
+      ['an empty header', '', false],
+      ['a trailing comma, which is whitespace rather than a part', 'lastActivity,', false],
+      ['a part named on a later api/ release', 'medications', true],
+      ['a later part beside a known one', 'caseAssignments,medications', true],
+      ['a near miss, which is a service defect or a mangled header either way', 'lastactivity', true],
+    ])('%s', (_label, value, expected) => {
+      expect(hasUnrecognisedRestrictedParts(headers(value))).toBe(expected);
+    });
+
+    it('agrees with the parser about what was dropped', () => {
+      // The two must not disagree: a token counted known by one and unknown by the other either
+      // prints a catalogue key that does not exist or suppresses figures that are perfectly good.
+      const value = 'caseAssignments,medications,lastActivity';
+
+      expect(parseRestrictedParts(headers(value))).toEqual(['caseAssignments', 'lastActivity']);
+      expect(hasUnrecognisedRestrictedParts(headers(value))).toBe(true);
+    });
+  });
+
+  describe('which parts remove rows, and so break a count (backlog item 125)', () => {
+    it('knows exactly the one part that takes patients out of the directory', () => {
+      // `api/`'s own `RestrictedPart.removesRows()`, re-derived here. Everything the dashboard's
+      // demographic cards do is decided from this list, so a third row-removing token named by a
+      // later release must be added here rather than to a screen.
+      expect(ROW_REMOVING_PARTS).toEqual(['caseAssignments']);
+    });
+
+    it('does NOT name lastActivity, and that absence is the decision', () => {
+      // The half that is easy to lose. `lastActivity` blanks a field no count reads — item 112 let
+      // `GET /api/dashboard/summary` count straight through the same refusal for that reason — so
+      // listing it here would withhold four correct figures from a pharmacist to no purpose.
+      const rowRemoving: readonly string[] = ROW_REMOVING_PARTS;
+
+      expect(rowRemoving).not.toContain('lastActivity');
+    });
+
+    it('names nothing the client would not otherwise recognise', () => {
+      const known: readonly string[] = RESTRICTED_PARTS;
+
+      expect(ROW_REMOVING_PARTS.filter(part => !known.includes(part))).toEqual([]);
     });
   });
 });
