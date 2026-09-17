@@ -114,24 +114,40 @@ describe('restricted-part notices', () => {
    *
    * <p>So the only remaining route to `error.http.503` is a **wrapped**
    * `PatientServiceUnavailableException`, which `ExceptionTranslator.getCustomizedTitle` records as
-   * unreachable today and checked rather than assumed. It is there so that the day a wrapping path
-   * appears, a clinician gets a plain sentence instead of the operator's — not because anything
-   * produces it now.
+   * unreachable today and checked rather than assumed.
+   *
+   * <p><b>And it is an honest fallback for only half of what could arrive there, which is the part not
+   * to misread.</b> A wrapped one is as likely a refusal as an outage, and `error.http.503` says "the
+   * service is temporarily unavailable, please try again shortly" — which for a wrapped refusal is
+   * false retry advice replacing a true `detail`, the same defect the third key below exists to stop,
+   * on the fallback instead of on the mapping. So the key is worth keeping because a plain sentence
+   * beats an operator's log line, **not** because it would be correct; the day a wrapping path
+   * appears, the fix is walking the cause chain in `getMappedMessageKey` and `getCustomizedTitle`
+   * together, not trusting this.
    */
   const outageNotices = (locale: string): Record<string, unknown> => blockIn(locale, 'error.json', 'error', 'patientService');
 
   /**
-   * The two sentences `api/` can name, spelled out rather than imported.
+   * The three sentences `api/` can name, spelled out rather than imported.
    *
    * <p>There is nothing in `web/` to derive them from — unlike `RESTRICTED_PARTS`, the vocabulary is
    * `api/`'s and arrives as a string in a response body, so the only copy on this side is the
-   * catalogue these check. Spelled to match `PatientServiceUnavailableException.REFUSED_MESSAGE_KEY`
-   * and `UNREACHABLE_MESSAGE_KEY`, whose own guard is
+   * catalogue these check. Spelled to match `PatientServiceUnavailableException`'s
+   * `REFUSED_MESSAGE_KEY`, `UNREACHABLE_MESSAGE_KEY` and `FAULTED_MESSAGE_KEY`, whose own guard is
    * `PatientServiceRefusalProblemTest.theMessageKeysAreTheConstantsTheExceptionDeclares`; the two
-   * repositories are held together by nothing but these two literals, which is why they are written
+   * repositories are held together by nothing but these three literals, which is why they are written
    * out here where somebody will read them rather than hidden behind a helper.
+   *
+   * <p><b>`faulted` is the third because two were not enough, and how two failed is worth the line.</b>
+   * `api/`'s key was chosen by `isAuthorisationRefusal()` alone, while the operator-facing `detail`
+   * beside it has always keyed its retry advice on `clearsOnRetry()` as well — so `SCHEMA` and
+   * `NO_TOKEN`, which are neither a refusal nor retryable, took the `unreachable` sentence. The
+   * clinician read a translated "try again in a few minutes" directly under a `detail` reading "will
+   * NOT clear on retry", and the sibling had in fact answered; retrying fails identically until a DTO
+   * ships. Replacing an opaque true sentence with a fluent false one is the trade item 107 exists to
+   * refuse, so both sides split three ways now.
    */
-  const OUTAGE_KEYS = ['refused', 'unreachable'];
+  const OUTAGE_KEYS = ['refused', 'unreachable', 'faulted'];
 
   /** Every key this feature renders: one notice per part, plus the marker the recency column shows. */
   const REQUIRED_KEYS = [...RESTRICTED_PARTS, 'lastActivityCell'];
@@ -327,15 +343,22 @@ describe('restricted-part notices', () => {
   });
 
   describe('the 503 a composed read answers with (backlog item 135)', () => {
-    it.each(LANGUAGES)('has a %s sentence for both things a 503 can mean', locale => {
+    it.each(LANGUAGES)('has a %s sentence for each of the three things a 503 can mean', locale => {
       // Named rather than counted, so a failure says which key to write.
       expect(OUTAGE_KEYS.filter(key => !outageNotices(locale)[key])).toEqual([]);
     });
 
     it.each(LANGUAGES)('carries no %s key `api/` cannot name', locale => {
-      // The mirror. `messageKey()` returns one of exactly two strings, chosen by
-      // `Fault.isAuthorisationRefusal()`; a third sentence here would read perfectly and be shown to
-      // nobody, and would invite somebody to wire up a third fault classification that does not exist.
+      // The mirror. `messageKey()` returns one of exactly three strings, chosen by
+      // `isAuthorisationRefusal()` and then `clearsOnRetry()` — the same two predicates, in the same
+      // order, as the `detail`'s outlook clause. A fourth sentence here would read perfectly and be
+      // shown to nobody, and would invite somebody to wire up a fault classification that does not
+      // exist.
+      //
+      // This check went from two keys to three when `faulted` was added, and that is what it is for
+      // rather than collateral: `api/` and `web/` hold no shared constant, so the set of sentences a
+      // clinician can be shown is pinned only here, and a key added on one side without the other is
+      // exactly the drift this names.
       const stray = Object.keys(outageNotices(locale)).filter(key => !OUTAGE_KEYS.includes(key));
 
       expect(stray).toEqual([]);
@@ -359,12 +382,18 @@ describe('restricted-part notices', () => {
       expect(OUTAGE_KEYS.filter(key => strings[key] === english[key])).toEqual([]);
     });
 
-    it.each(LANGUAGES)('tells a refusal apart from an outage in %s', locale => {
+    it.each(LANGUAGES)('tells a refusal, an outage and a fault apart in %s', locale => {
       // Shaped like the dashboard's `tells a named refusal apart from an unnameable one`, and for the
-      // same reason: two remedies, two owners. A refusal is a scope-of-practice rule working as
+      // same reason: three remedies, three owners. A refusal is a scope-of-practice rule working as
       // designed — retrying never helps and the administrator is who to ask; an outage clears itself
-      // and nobody needs telling unless it persists. One sentence covering both states neither, and
-      // `api/` went to the trouble of two keys precisely so this side could say two things.
+      // and nobody needs telling unless it persists; a fault clears for nobody until somebody ships a
+      // change, so the clinician needs to know that retrying is pointless *and* that it is not their
+      // doing. One sentence covering any two of those states neither, and `api/` went to the trouble
+      // of three keys precisely so this side could say three things.
+      //
+      // `faulted` and `refused` are the pair most likely to converge, because both end in "trying
+      // again will not help" — and they must not, because only one of them is a rule rather than a
+      // defect, and only one of them has anything for an administrator to fix.
       const strings = outageNotices(locale);
 
       expect(new Set(OUTAGE_KEYS.map(key => strings[key])).size).toBe(OUTAGE_KEYS.length);

@@ -14,6 +14,7 @@
     "validation": "Error de validación en el servidor.",
     "patientService": {
       "refused": "Esto no se le puede mostrar: su rol no tiene permiso para leer los expedientes de pacientes con los que se construye esta página. No hay ninguna avería y volver a intentarlo no servirá de nada; hable con su administrador si cree que debería tener acceso.",
+      "faulted": "Un fallo técnico impide rellenar esta página. No ha sido culpa suya y volver a intentarlo tampoco servirá; su administrador dispone de los detalles.",
       "unreachable": "El servicio de expedientes de pacientes no responde en este momento, por lo que no se ha podido rellenar esta página. No ha sido culpa suya. Inténtelo de nuevo en unos minutos e informe a su administrador si sigue ocurriendo."
     }
   }

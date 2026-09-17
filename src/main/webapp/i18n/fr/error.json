@@ -14,6 +14,7 @@
     "validation": "Erreur de validation côté serveur.",
     "patientService": {
       "refused": "Ceci ne peut pas vous être affiché : votre rôle n'est pas autorisé à lire les dossiers patients à partir desquels cette page est construite. Rien n'est en panne et réessayer n'y changera rien ; adressez-vous à votre administrateur si vous pensez devoir y avoir accès.",
+      "faulted": "Un défaut technique empêche de remplir cette page. Vous n'y êtes pour rien et réessayer n'y changera rien ; votre administrateur en a les détails.",
       "unreachable": "Le service des dossiers patients ne répond pas pour le moment ; cette page n'a donc pas pu être remplie. Vous n'y êtes pour rien. Veuillez réessayer dans quelques minutes et prévenir votre administrateur si cela persiste."
     }
   }
