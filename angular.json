@@ -34,7 +34,7 @@
                 "glob": "**/*",
                 "input": "src/main/webapp/content",
                 "output": "content",
-                "ignore": ["fonts/**", "scss/**"]
+                "ignore": ["fonts/**", "scss/**", "css/tailwind.css"]
               },
               "src/main/webapp/favicon.ico",
               "src/main/webapp/manifest.webapp",

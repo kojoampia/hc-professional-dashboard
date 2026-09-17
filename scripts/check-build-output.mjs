@@ -87,46 +87,88 @@ if (cspClean) {
 // professional.abofonsa.com served them: measured 2026-09-17, five anonymous 200s totalling 28,802
 // bytes, including the Material M3 palette derivation and the reasoning written in its comments.
 //
-// THIS READS THE OUTPUT, NOT angular.json, AND THAT IS THE WHOLE POINT. The glob was the right
-// SHAPE — hc-admin and hc-patient use the same one — and three readers looked at this instance of
-// it, one of them while writing a table about which repos were fixed, and all three concluded it
-// was the fix. A check written against the config would have agreed with all three.
+// EVERY ASSERTION HERE IS AGAINST THE OUTPUT, NEVER AGAINST THE `ignore` GLOB, AND THAT IS THE
+// WHOLE POINT. The glob was the right SHAPE — hc-admin and hc-patient use the same one — and three
+// readers looked at this instance of it, one of them while writing a table about which repos were
+// fixed, and all three concluded it was the fix. A check written against the config would have
+// agreed with all three. (Mechanism 3 below does open angular.json, but only to learn what the
+// build compiles; it never reads `ignore`, so a wrong one cannot make it pass. See its comment.)
 //
-// IT LISTS THE DIRECTORY AND ALLOWS EXTENSIONS, rather than looking for the five `.scss` it knows
-// about. hc-admin's equivalent expected eight files and found nine: the ninth was a Vitest spec
-// living beside the stylesheets it reads, published as TypeScript, invisible to any rule phrased
-// about Sass. A guard that enumerates what it expects finds only what somebody already thought of,
-// and the thing that ships is by definition the thing nobody thought of.
+// IT LISTS THE DIRECTORY rather than looking for the five `.scss` it knows about. hc-admin's
+// equivalent expected eight files and found nine: the ninth was a Vitest spec living beside the
+// stylesheets it reads, published as TypeScript, invisible to any rule phrased about Sass. A guard
+// that enumerates what it expects finds only what somebody already thought of.
 //
-// ALLOWLIST, NOT DENYLIST, DELIBERATELY — the two fail in opposite directions and only one of them
-// fails in a direction we can afford. An allowlist fails closed: adding a `.webp` next year reddens
-// CI until someone adds four characters to the set below, which costs a minute and is loud. A
-// denylist fails open: the extension nobody listed ships to the public internet and stays there
-// until an unrelated sweep notices — which is the entire history of this defect, found in a sweep
-// of a sibling product. The directory is served to anonymous callers, so pay the minute.
-const SERVABLE_EXTENSIONS = new Set([
-  // images
-  'avif',
-  'gif',
-  'ico',
-  'jpeg',
-  'jpg',
-  'png',
-  'svg',
-  'webp',
-  // fonts — not copied today, see the font check below; listed so that one day they may be
-  'otf',
-  'ttf',
-  'woff',
-  'woff2',
-  // things a page loads directly
-  'css',
-  'js',
-  'json',
-  'mjs',
-  'txt',
-  'webmanifest',
-]);
+// THREE MECHANISMS ON THREE DIFFERENT AXES. Read them together:
+//
+//   1. an ALLOWLIST OF EXTENSIONS, below. Fails closed: an extension nobody listed reddens CI.
+//   2. a DENYLIST OF FILENAMES, below that. Fails open: a name nobody listed passes.
+//   3. a CROSS-CHECK AGAINST THE COMPILATION INPUTS, derived rather than listed. Enumerates
+//      nothing, so it has no closed/open direction to get wrong.
+//
+// The allowlist is the primary and the denylist does not weaken it, because THEY ARE NOT THE SAME
+// AXIS. Saying `.scss` is unservable is a claim about a format; saying `*.spec.*` is source is a
+// claim about a name, and the second catches files whose extension is perfectly servable. Adding a
+// second extension denylist WOULD be the failure this file argues against — adding a name denylist
+// beside an extension allowlist composes with it.
+//
+// BE PRECISE ABOUT WHAT THE ALLOWLIST BUYS: it fails closed PER EXTENSION, NOT PER FILE. It cannot
+// catch a build input wearing a servable extension, and one is standing in this very repository —
+// `content/css/tailwind.css` is a Tailwind v4 entry point (`@import 'tailwindcss/theme'`, which
+// resolves to nothing over HTTP), compiled into the bundle through angular.json's `styles` exactly
+// as the five `.scss` are, and it was ALSO copied out verbatim and certified green by an earlier
+// version of this check. It is now ignored by path in angular.json; `content/css/loading.css`
+// beside it is genuinely runtime and index.html links it.
+//
+// Mechanisms 2 and 3 both exist because of that miss, and mechanism 3 is the one that covers it:
+// a name denylist would only have caught it by someone writing `tailwind.css` into a list, which is
+// the enumeration this whole check refuses to do.
+//
+// THE ALLOWLIST HOLDS ONLY WHAT IS ACTUALLY UNDER content/ TODAY, and that is the rule for editing
+// it: no speculative entries. Every unused entry is silent-pass surface for a class of file nobody
+// is thinking about — a `.json` nobody listed is a config file, a `.txt` is notes. Font extensions
+// were here and are deliberately gone: the font check below argues that copying `content/fonts/`
+// would ship a second unhashed unreferenced set, so pre-authorising `woff2` here contradicted it
+// and made the `fonts/**` ignore unguarded. Adding an entry back costs four characters and a loud
+// red build, which is exactly the price the allowlist argument budgets for.
+const SERVABLE_EXTENSIONS = new Set(['css', 'ico', 'js', 'png', 'svg']);
+
+// Mechanism 2. Matched against the FILENAME, so it sees what the extension lens cannot.
+//
+// hc-admin's ninth file transposed here is worse than it was there: jest.conf.js matches
+// `src/main/webapp/app/**/*.spec.ts` only, so a `boot.spec.js` beside `content/js/boot.js` would be
+// published AND never run — two silences, where hc-admin's at least executed. `.map` is here
+// because a source map is the source, and the production build only happens not to emit one.
+const UNSERVABLE_NAMES = [/\.spec\./, /\.test\./, /\.map$/];
+
+// Mechanism 3. A FILE THE BUILD COMPILES MUST NOT ALSO BE SHIPPED AS SOURCE — that is the whole
+// invariant this check exists for, and it can be stated without knowing a single extension or name.
+//
+// It DERIVES the list from angular.json's own `styles` — today five entries: four `.scss` and
+// tailwind.css. Being derived, it needs no maintenance and covers entry points nobody has added
+// yet, because the generator of the list is the build configuration rather than a reader.
+//
+// IT COVERS FIVE OF THE SIX FILES THIS ITEM WAS ABOUT, NOT ALL SIX, and the gap is the argument for
+// keeping all three mechanisms. `_theme-colors.scss` is a Sass PARTIAL, pulled in by
+// material-theme.scss with `@use`, so it is compiled without ever appearing in `styles` and
+// mechanism 3 cannot see it. Mechanism 1 catches it on its extension. Run the negative control and
+// the two lists differ by exactly that file — which is what composition looks like when it works.
+//
+// READING angular.json HERE IS NOT THE THING THE BACKLOG ROW WARNS AGAINST, and the difference is
+// the direction. The failure was reading the config to CONCLUDE the output was fine — three readers
+// looked at a plausible `ignore` and stopped. This never reads `ignore` at all: it reads the config
+// only to learn what gets compiled, then asserts against the OUTPUT that none of it was also
+// copied. A wrong `ignore` cannot make it pass, which is exactly what a config check could not say.
+const projectStyles = (() => {
+  const configPath = new URL('../angular.json', import.meta.url);
+  const config = JSON.parse(readFileSync(configPath, 'utf8'));
+  const projects = Object.values(config.projects ?? {});
+  return projects.flatMap(project => project?.architect?.build?.options?.styles ?? []);
+})();
+const CONTENT_INPUT = 'src/main/webapp/content/';
+const compiledFromContent = projectStyles
+  .filter(entry => typeof entry === 'string' && entry.startsWith(CONTENT_INPUT))
+  .map(entry => entry.slice(CONTENT_INPUT.length));
 
 const contentDir = join(dist, 'content');
 if (!existsSync(contentDir)) {
@@ -141,22 +183,61 @@ if (!existsSync(contentDir)) {
       names.push(relative(contentDir, join(entry.parentPath, entry.name)));
     }
   }
-  const unservable = [];
+  const wrongExtension = [];
+  const wrongName = [];
   for (const name of names) {
     const ext = extname(name).slice(1).toLowerCase();
+    const base = name.slice(name.lastIndexOf('/') + 1);
     if (!SERVABLE_EXTENSIONS.has(ext)) {
-      unservable.push(name);
+      wrongExtension.push(name);
+    } else if (UNSERVABLE_NAMES.some(pattern => pattern.test(base))) {
+      wrongName.push(name);
     }
   }
   if (names.length === 0) {
     fail(`${contentDir} exists but is empty — the asset copy produced nothing, so this check proved nothing`);
-  } else if (unservable.length) {
-    fail(
-      `${contentDir} holds ${unservable.length} file(s) a browser is never meant to fetch: ${unservable.sort().join(', ')} — ` +
-        `widen the \`ignore\` on the content asset entry in angular.json, or add the extension to SERVABLE_EXTENSIONS here if it really is an asset`,
-    );
   } else {
-    pass(`${names.length} files under content/, every one a servable asset`);
+    if (wrongExtension.length) {
+      fail(
+        `${contentDir} holds ${wrongExtension.length} file(s) whose extension a browser is never meant to fetch: ` +
+          `${wrongExtension.sort().join(', ')} — widen the \`ignore\` on the content asset entry in angular.json, or add the ` +
+          `extension to SERVABLE_EXTENSIONS here if it really is an asset that is actually under content/`,
+      );
+    }
+    if (wrongName.length) {
+      fail(
+        `${contentDir} holds ${wrongName.length} file(s) whose NAME says source rather than asset, whatever the extension says: ` +
+          `${wrongName.sort().join(', ')} — widen the \`ignore\` on the content asset entry in angular.json`,
+      );
+    }
+    // Mechanism 3, and its own vacuity guard first: if angular.json's shape ever changes under
+    // this, the derivation silently yields [] and the check passes over everything. Going green by
+    // finding nothing is the failure mode this estate keeps rediscovering, so refuse it here too.
+    let compiledClean = true;
+    if (compiledFromContent.length === 0) {
+      compiledClean = false;
+      fail(
+        "derived no compilation inputs from angular.json's `styles` under " +
+          `${CONTENT_INPUT} — the config shape changed, so mechanism 3 is checking nothing. Fix this derivation; do not let it pass by finding nothing`,
+      );
+    } else {
+      const alsoCopied = compiledFromContent.filter(entry => names.includes(entry));
+      if (alsoCopied.length) {
+        compiledClean = false;
+        fail(
+          `${contentDir} holds ${alsoCopied.length} file(s) the build COMPILES and therefore must not also publish as source: ` +
+            `${alsoCopied
+              .sort()
+              .join(', ')} — each is an entry in angular.json's \`styles\`; widen the \`ignore\` on the content asset entry`,
+        );
+      }
+    }
+    if (!wrongExtension.length && !wrongName.length && compiledClean) {
+      pass(
+        `${names.length} files under content/, none of them an unservable extension, a source filename, ` +
+          `or one of the ${compiledFromContent.length} stylesheets the build compiles`,
+      );
+    }
   }
 }
 
@@ -168,12 +249,20 @@ if (!existsSync(contentDir)) {
 // time and emitted at the output ROOT with content hashes, which is what styles.*.css references.
 // Copying content/fonts/ as well would ship a second, unhashed, unreferenced set of the same bytes.
 //
-// So the pair means two different things: `scss/**` stops something being published, `fonts/**`
-// stops something being duplicated. What this asserts is the consequence that matters — every font
-// the stylesheet names is actually in the artefact. The app self-hosts Inter and Material Icons and
+// So the three entries mean three different things: `scss/**` and `css/tailwind.css` stop something
+// being published, `fonts/**` stops something being duplicated. THE IGNORE ITSELF IS GUARDED BY THE
+// CHECK ABOVE, not here — font extensions are absent from SERVABLE_EXTENSIONS, so dropping
+// `fonts/**` reddens naming the three .woff2 that appear under content/.
+//
+// What this second check asserts is the other half, and the one no ignore can give: every font the
+// stylesheet names is actually in the artefact. The app self-hosts Inter and Material Icons and
 // sends no request off-origin, so a url() resolving to nothing is a silent fallback to a system
 // font on every page, which no build error and no 200 would report.
-if (stylesCss !== null) {
+if (stylesCss === null) {
+  // Unreachable while green: stylesCss is null only when the styles-count check above already
+  // called fail(). Said out loud so a reader of a red run is not left wondering why it is missing.
+  console.error('  · fonts not checked — no single styles.*.css to read them from');
+} else {
   const fontUrls = [...new Set(stylesCss.match(/url\(([^)]*\.woff2?)\)/g) ?? [])];
   if (fontUrls.length === 0) {
     fail(
