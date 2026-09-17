@@ -6,10 +6,16 @@
       "403": "Sie haben nicht die nötigen Berechtigungen um diese Seite anzuzeigen.",
       "404": "Die Seite existiert nicht.",
       "405": "Die verwendete Anfrage-Methode ist für diese URL nicht erlaubt.",
-      "500": "Interner Serverfehler."
+      "500": "Interner Serverfehler.",
+      "503": "Der Dienst ist vorübergehend nicht verfügbar. Bitte versuchen Sie es in Kürze erneut."
     },
     "fieldError": "Fehler im Feld „{{ fieldName }}“.",
     "concurrencyFailure": "Ein anderer Benutzer hat diese Daten zeitgleich mit Ihnen geändert. Ihre Änderungen wurden abgelehnt.",
-    "validation": "Validierungsfehler auf dem Server."
+    "validation": "Validierungsfehler auf dem Server.",
+    "patientService": {
+      "refused": "Dies kann Ihnen nicht angezeigt werden: Ihre Rolle ist nicht berechtigt, die Patientenakten zu lesen, aus denen diese Seite aufgebaut ist. Es ist nichts defekt und ein erneuter Versuch hilft nicht; wenden Sie sich an Ihre Administration, wenn Sie meinen, Zugriff haben zu müssen.",
+      "faulted": "Ein technischer Fehler verhindert, dass diese Seite gefüllt werden kann. Das liegt nicht an Ihnen, und ein erneuter Versuch hilft ebenfalls nicht; Ihrer Administration liegen die Einzelheiten vor.",
+      "unreachable": "Der Dienst für Patientenakten antwortet derzeit nicht, daher konnte diese Seite nicht gefüllt werden. Das liegt nicht an Ihnen. Bitte versuchen Sie es in einigen Minuten erneut und informieren Sie Ihre Administration, falls es weiterhin auftritt."
+    }
   }
 }

@@ -6,10 +6,16 @@
       "403": "You are not authorized to access this page.",
       "404": "The page does not exist.",
       "405": "The HTTP verb you used is not supported for this URL.",
-      "500": "Internal server error."
+      "500": "Internal server error.",
+      "503": "The service is temporarily unavailable. Please try again shortly."
     },
     "fieldError": "Error on field \"{{ fieldName }}\".",
     "concurrencyFailure": "Another user modified this data at the same time as you. Your changes were rejected.",
-    "validation": "Validation error on the server."
+    "validation": "Validation error on the server.",
+    "patientService": {
+      "refused": "This cannot be shown to you: your role is not permitted to read the patient records this page is built from. Nothing is broken and trying again will not help — speak to your administrator if you believe you should have access.",
+      "faulted": "A technical fault is preventing this page from being filled. Nothing you did caused it, and trying again will not help — your administrator has the details.",
+      "unreachable": "The patient records service is not answering just now, so this page could not be filled. Nothing you did caused it. Please try again in a few minutes, and tell your administrator if it keeps happening."
+    }
   }
 }
