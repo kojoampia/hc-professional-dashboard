@@ -7,7 +7,13 @@ import { ClinicalCaseDto } from './api/clinical-case-api.model';
 import { DutyRosterAssignmentDto, DutyRosterAssignmentsService } from './api/duty-roster-assignments.service';
 import { PatientListItemDto } from './api/patient-api.model';
 import { PatientApiService } from './api/patient-api.service';
-import { RestrictedPart, hasUnrecognisedRestrictedParts, parseRestrictedParts } from './api/restricted-parts';
+import {
+  RestrictedFollowUp,
+  RestrictedPart,
+  hasUnrecognisedRestrictedParts,
+  parseRestrictedFollowUps,
+  parseRestrictedParts,
+} from './api/restricted-parts';
 import {
   ActivityLogEntry,
   AsyncViewState,
@@ -107,6 +113,16 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
    * four short figures get published under a header that named the reason.
    */
   private readonly patientUnknownRestriction = signal(false);
+  /**
+   * Which follow-up reads that same response said will refuse, from `X-Restricted-Follow-Ups`.
+   *
+   * <p>A third signal written in the same statement as the rows, under {@link patientRestrictions}'
+   * invariant and for a sharper version of its reason: what this one withdraws is a **link**. Left
+   * behind by a failed read it would be stale; cleared by one it would put a hundred live-looking
+   * links back over rows that every one of them 503s — the screen item 132 exists to remove,
+   * restored by an outage. The three move together or not at all.
+   */
+  private readonly patientRestrictedFollowUps = signal<readonly RestrictedFollowUp[]>([]);
   private readonly recordCache = signal<ReadonlyMap<string, PatientRecord>>(new Map());
   /**
    * What each cached record's own read was refused, keyed by the same patient id.
@@ -144,6 +160,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
   readonly patientRows = computed(() => this.patientRowCache());
   readonly directoryRestrictions = computed(() => this.patientRestrictions());
   readonly directoryNamedUnknownPart = computed(() => this.patientUnknownRestriction());
+  readonly directoryRestrictedFollowUps = computed(() => this.patientRestrictedFollowUps());
   readonly caseQueue = computed<readonly CaseQueueRow[]>(() =>
     this.clinicalCaseCache()
       .map(toCaseQueueRow)
@@ -533,10 +550,13 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
         // The header is absent whenever nothing was withheld, which is the ordinary case; parsing
         // it then yields an empty array and the directory renders exactly as it always did.
         //
-        // All three set together, from one response: the rows, what was withheld from them, and
-        // whether something was withheld that this bundle cannot name.
+        // All four set together, from one response: the rows, what was withheld from them, whether
+        // something was withheld that this bundle cannot name, and which read reached from a row
+        // will refuse. The last is a second header — `X-Restricted-Follow-Ups`, item 128 — and is
+        // absent for a caller who can open what they can see, which is most disciplines.
         this.patientRestrictions.set(parseRestrictedParts(response.headers));
         this.patientUnknownRestriction.set(hasUnrecognisedRestrictedParts(response.headers));
+        this.patientRestrictedFollowUps.set(parseRestrictedFollowUps(response.headers));
       },
       // The rows are NOT cleared here, and neither is what was withheld from them (item 125). A
       // failed read replaces nothing, so the cache still holds the previous response's rows and the
