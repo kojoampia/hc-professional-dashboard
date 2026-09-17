@@ -6,10 +6,15 @@
       "403": "Vous n'avez pas les droits pour accéder à cette page.",
       "404": "La page n'existe pas.",
       "405": "Le verbe HTTP que vous avez utilisé n'est pas reconnu par cet URL.",
-      "500": "Erreur interne du serveur."
+      "500": "Erreur interne du serveur.",
+      "503": "Le service est temporairement indisponible. Veuillez réessayer sous peu."
     },
     "fieldError": "Erreur sur le champ « {{ fieldName }} ».",
     "concurrencyFailure": "Un autre utilisateur a modifié ces données en même temps que vous. Vos changements n'ont pas été sauvegardés.",
-    "validation": "Erreur de validation côté serveur."
+    "validation": "Erreur de validation côté serveur.",
+    "patientService": {
+      "refused": "Ceci ne peut pas vous être affiché : votre rôle n'est pas autorisé à lire les dossiers patients à partir desquels cette page est construite. Rien n'est en panne et réessayer n'y changera rien ; adressez-vous à votre administrateur si vous pensez devoir y avoir accès.",
+      "unreachable": "Le service des dossiers patients ne répond pas pour le moment ; cette page n'a donc pas pu être remplie. Vous n'y êtes pour rien. Veuillez réessayer dans quelques minutes et prévenir votre administrateur si cela persiste."
+    }
   }
 }

@@ -28,13 +28,16 @@ import { RECORD_RESTRICTED_PARTS, RESTRICTED_FOLLOW_UPS, RESTRICTED_PARTS, ROW_R
  */
 describe('restricted-part notices', () => {
   /**
-   * The `healthConnect.patient.restricted` block of one locale's catalogue.
+   * A named block of one locale's catalogue, from whichever file holds it.
    *
    * Walked key by key rather than read through `as any`, so a reorganised catalogue names the path
    * that moved instead of failing with `Cannot read properties of undefined`.
+   *
+   * <p>The filename is a parameter because the fifth block (item 135) lives in `error.json` rather
+   * than `healthConnect.json` — it is what the *global error alert* says, not what a screen composes.
    */
-  const block = (locale: string, ...path: string[]): Record<string, unknown> => {
-    const file = join(__dirname, '..', '..', 'i18n', locale, 'healthConnect.json');
+  const blockIn = (locale: string, catalogue: string, ...path: string[]): Record<string, unknown> => {
+    const file = join(__dirname, '..', '..', 'i18n', locale, catalogue);
     let node: unknown = JSON.parse(readFileSync(file, 'utf8'));
     for (const key of path) {
       if (typeof node !== 'object' || node === null || !(key in node)) {
@@ -44,6 +47,9 @@ describe('restricted-part notices', () => {
     }
     return node as Record<string, unknown>;
   };
+
+  /** The four screen-composed blocks, all of which are in `healthConnect.json`. */
+  const block = (locale: string, ...path: string[]): Record<string, unknown> => blockIn(locale, 'healthConnect.json', ...path);
 
   /** The directory's notices: one per part, plus the marker the recency column shows. */
   const notices = (locale: string): Record<string, unknown> => block(locale, 'healthConnect', 'patient', 'restricted');
@@ -78,6 +84,54 @@ describe('restricted-part notices', () => {
    * `X-Restricted-Follow-Ups` carries and the two vocabularies are deliberately separate.
    */
   const followUpNotices = (locale: string): Record<string, unknown> => block(locale, 'healthConnect', 'patient', 'restrictedFollowUps');
+
+  /**
+   * The fifth block, and the first one that is not in `healthConnect.json` at all (backlog item 135).
+   *
+   * <p>The four above are notices the *screen* composes from a header it read. This one is what the
+   * global error alert says when `api/` answered **503** and the screen never rendered: the problem
+   * document's `message` property is an i18n key, `alert-error.component.ts` hands it to
+   * ngx-translate, and `PatientServiceUnavailableException.messageKey()` now names
+   * `error.patientService.refused` or `.unreachable` instead of `error.http.503`. Until item 135 the
+   * key always missed and the fallback — the problem's `detail`, written for an operator reading a
+   * log — was printed verbatim, in English, whatever the clinician's locale.
+   *
+   * <p>So the file is `error.json` rather than `healthConnect.json`, and `blockIn` takes the filename
+   * for that reason. Both files contribute to the same top-level `error` group in the merged
+   * catalogue (`catalogues.spec.ts` models the merge); this one nests under `error.patientService`
+   * rather than using a flat dotted key, so that merge stays clean.
+   *
+   * <p><b>`error.http.503` was added in the same change and is deliberately not checked here, because
+   * nothing a clinician can do reaches it.</b> It is not covered by this block and it is not a fifth
+   * sentence — it is the fallback for a 503 that named no key of its own, and it is left honest
+   * rather than left looking covered. Measured 2026-09-17, `grep -rn 'SERVICE_UNAVAILABLE'` over
+   * `api/src/main` and `gateway/src/main` finds exactly two producers of a 503 through `api/`'s
+   * `ExceptionTranslator`: `PatientServiceUnavailableException`, which now names its own key, and
+   * `AccountIdMigrationResource` — an admin migration tool that no `web/` or `mobile/` surface calls
+   * at all (`grep -rn 'account-id-migration' web/src mobile/src` is empty). `gateway/src/main` names
+   * the status nowhere. An nginx 503 never gets here either: it arrives as an HTML string and takes
+   * `alert-error.component.ts`'s `else` arm, which has no key to translate.
+   *
+   * <p>So the only remaining route to `error.http.503` is a **wrapped**
+   * `PatientServiceUnavailableException`, which `ExceptionTranslator.getCustomizedTitle` records as
+   * unreachable today and checked rather than assumed. It is there so that the day a wrapping path
+   * appears, a clinician gets a plain sentence instead of the operator's — not because anything
+   * produces it now.
+   */
+  const outageNotices = (locale: string): Record<string, unknown> => blockIn(locale, 'error.json', 'error', 'patientService');
+
+  /**
+   * The two sentences `api/` can name, spelled out rather than imported.
+   *
+   * <p>There is nothing in `web/` to derive them from — unlike `RESTRICTED_PARTS`, the vocabulary is
+   * `api/`'s and arrives as a string in a response body, so the only copy on this side is the
+   * catalogue these check. Spelled to match `PatientServiceUnavailableException.REFUSED_MESSAGE_KEY`
+   * and `UNREACHABLE_MESSAGE_KEY`, whose own guard is
+   * `PatientServiceRefusalProblemTest.theMessageKeysAreTheConstantsTheExceptionDeclares`; the two
+   * repositories are held together by nothing but these two literals, which is why they are written
+   * out here where somebody will read them rather than hidden behind a helper.
+   */
+  const OUTAGE_KEYS = ['refused', 'unreachable'];
 
   /** Every key this feature renders: one notice per part, plus the marker the recency column shows. */
   const REQUIRED_KEYS = [...RESTRICTED_PARTS, 'lastActivityCell'];
@@ -272,23 +326,75 @@ describe('restricted-part notices', () => {
     });
   });
 
-  it.each(LANGUAGES)('says something different in every one of the four %s restriction blocks', locale => {
+  describe('the 503 a composed read answers with (backlog item 135)', () => {
+    it.each(LANGUAGES)('has a %s sentence for both things a 503 can mean', locale => {
+      // Named rather than counted, so a failure says which key to write.
+      expect(OUTAGE_KEYS.filter(key => !outageNotices(locale)[key])).toEqual([]);
+    });
+
+    it.each(LANGUAGES)('carries no %s key `api/` cannot name', locale => {
+      // The mirror. `messageKey()` returns one of exactly two strings, chosen by
+      // `Fault.isAuthorisationRefusal()`; a third sentence here would read perfectly and be shown to
+      // nobody, and would invite somebody to wire up a third fault classification that does not exist.
+      const stray = Object.keys(outageNotices(locale)).filter(key => !OUTAGE_KEYS.includes(key));
+
+      expect(stray).toEqual([]);
+    });
+
+    it.each(LANGUAGES)('has no blank or key-echoing %s sentence', locale => {
+      const strings = outageNotices(locale);
+      const bad = OUTAGE_KEYS.filter(key => String(strings[key]).trim() === '' || String(strings[key]).includes('error.patientService'));
+
+      expect(bad).toEqual([]);
+    });
+
+    it.each(LANGUAGES.filter(locale => locale !== 'en'))('says it in %s rather than repeating the English', locale => {
+      // Row 123, fourth occurrence — and the one where an untranslated string is hardest to notice,
+      // because this sentence appears only when the sibling stack is refusing or down. The defect
+      // item 135 closes was *exactly* this: a perfectly good English sentence shown to every locale,
+      // green on every key-level gate, for as long as nobody was looking.
+      const english = outageNotices('en');
+      const strings = outageNotices(locale);
+
+      expect(OUTAGE_KEYS.filter(key => strings[key] === english[key])).toEqual([]);
+    });
+
+    it.each(LANGUAGES)('tells a refusal apart from an outage in %s', locale => {
+      // Shaped like the dashboard's `tells a named refusal apart from an unnameable one`, and for the
+      // same reason: two remedies, two owners. A refusal is a scope-of-practice rule working as
+      // designed — retrying never helps and the administrator is who to ask; an outage clears itself
+      // and nobody needs telling unless it persists. One sentence covering both states neither, and
+      // `api/` went to the trouble of two keys precisely so this side could say two things.
+      const strings = outageNotices(locale);
+
+      expect(new Set(OUTAGE_KEYS.map(key => strings[key])).size).toBe(OUTAGE_KEYS.length);
+    });
+  });
+
+  it.each(LANGUAGES)('says something different in every one of the five %s restriction blocks', locale => {
     // Row 129's trap, generalised — and generalised rather than answered with a fifth pairwise
-    // check, which is what adding the follow-up sentence would otherwise have cost. There are four
-    // blocks now (list, follow-up, record, dashboard) and the pairs grow quadratically, so the day
-    // somebody adds a fifth the pairwise checks would cover it only if they remembered to write
-    // three more. This one covers it by construction.
+    // check, which is what adding the follow-up sentence would otherwise have cost. There are five
+    // blocks now (list, follow-up, record, dashboard, 503) and the pairs grow quadratically, so the
+    // day somebody adds a sixth the pairwise checks would cover it only if they remembered to write
+    // four more. This one covers it by construction, and item 135's block joined it by being added
+    // to this one list.
     //
     // Two sentences that read alike have lost a distinction the markup still pretends to draw: the
     // clinician sees two notices and learns one thing. The blocks say, in order, that rows are
     // missing / that this column is blank / that acting on a row will be refused / that a panel is
-    // withheld / that a count cannot be stated — five different remedies and, for two of them, a
-    // different owner.
+    // withheld / that a count cannot be stated / that the page was not filled at all — six different
+    // remedies and, for three of them, a different owner.
+    //
+    // The 503 pair is the one most likely to converge on the others, because it is the same refusal
+    // by the same sibling seen from further away: `error.patientService.refused` and the record's
+    // `caseAssignments` notice both mean "your role may not read this", and the difference is that
+    // one screen rendered with a panel missing while the other never rendered at all.
     const everySentence = [
       ...Object.values(notices(locale)),
       ...Object.values(followUpNotices(locale)),
       ...Object.values(recordNotices(locale)),
       ...Object.values(dashboardNotices(locale)),
+      ...Object.values(outageNotices(locale)),
     ].map(String);
 
     expect(new Set(everySentence).size).toBe(everySentence.length);
