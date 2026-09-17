@@ -19,6 +19,18 @@ import SearchInputComponent from '../../shared/health-connect/form-controls/sear
 
 const DIRECTORY_PAGE_SIZE = 3;
 
+/**
+ * Every action a directory row can offer, before any of them is withdrawn.
+ *
+ * <p>Module-level so that {@link PatientDirectoryPageComponent.actions} filters a fixed list rather
+ * than rebuilding one: what the restriction removes is then visible as a subtraction from a named
+ * set, and an action added here is offered unless something says otherwise — which is the right
+ * default for an affordance.
+ */
+const DIRECTORY_ACTIONS: readonly DataTableAction<PatientListRow>[] = [
+  { id: 'view', labelKey: 'healthConnect.actions.view', icon: 'visibility' },
+];
+
 const isPatientSex = (value: string | null): value is PatientSex => value === 'female' || value === 'male' || value === 'unspecified';
 
 @Component({
@@ -108,39 +120,51 @@ const isPatientSex = (value: string | null): value is PatientSex => value === 'f
           </p>
         }
 
+        <!--
+          What happens when the clinician acts, which is neither of the statements above.
+
+          Those two are about the list: rows are missing, this column is blank. This one is about
+          every row that IS here — each is real, complete and unopenable, and the eye action is
+          withdrawn to match (see the actions computed below).
+
+          OUTSIDE hpd-async-state, BESIDE ITS TWO SIBLINGS, AND THE FIRST VERSION HAD THIS WRONG.
+          It sat inside, on the argument that projected content renders only when the page is
+          non-empty and that the placement therefore WAS the empty-page rule with no redundant
+          check needed. The reasoning was sound and the premise was false: hpd-async-state projects
+          in its final @else only, so it gates on loading AND error as well as empty — three rules,
+          two of which nobody chose.
+
+          That was not hypothetical. loadAll fires three requests and they share one error signal,
+          and patientservice answers a technician 403 on clinical-cases (their ScopeOfPractice
+          grants OBSERVATION and IDENTITY only). So the directory read succeeds, carries the
+          header — and this notice, the table and the withdrawn action column were all unrendered
+          behind "Unable to load this information", whose Retry re-issues the same 403 for ever.
+          The one discipline the header is sent to was the one discipline that never saw the
+          sentence. See the error-state spec, which is the test that was missing.
+
+          KEYED ON THE CASELOAD, NOT ON THE VISIBLE PAGE. patientRows() is the whole cached
+          caseload; directoryPage().items is what survives the search box. Keying on the latter
+          would make the sentence blink in and out as the clinician types — the same instability
+          item 128 refused when it declined to make the wire value depend on caseload. A filter
+          matching nothing does not make these records openable, so the sentence stays.
+
+          The zero-row case item 128 hands down is still honoured, and now by this guard rather
+          than by a projection nobody chose: a technician with no tasks has no rows, so nothing is
+          said. It is NOT item 126's dead code — that was a handler that could never receive an
+          entry; this is a condition deciding what renders, and the specs redden when it goes.
+        -->
+        @if (followUpRestricted('record') && repository.patientRows().length > 0) {
+          <p
+            class="mb-4 flex items-start gap-2 rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger"
+            role="status"
+            data-cy="restrictedFollowUpRecord"
+          >
+            <mat-icon class="!h-5 !w-5 shrink-0 !text-[20px]" aria-hidden="true">block</mat-icon>
+            <span>{{ 'healthConnect.patient.restrictedFollowUps.record' | translate }}</span>
+          </p>
+        }
+
         <hpd-async-state [status]="repository.asyncState().status" [empty]="directoryPage().totalItems === 0" (retry)="repository.reset()">
-          <!--
-            What happens when the clinician acts, which is neither of the statements above.
-
-            Those two are about the list: rows are missing, this column is blank. This one is about
-            every row that IS here — each is real, complete and unopenable, and the eye action has
-            been withdrawn to match (see the actions computed below). It is placed here, in the
-            table's own frame and immediately above it, rather than stacked with the other two at
-            the top of the card: it explains a missing affordance rather than missing data, and a
-            technician is sent all three at once.
-
-            INSIDE hpd-async-state ON PURPOSE, AND THAT PLACEMENT IS THE EMPTY-PAGE RULE.
-            api/'s item 128 sends the marker to a technician with no tasks at all, on a zero-row
-            page, deliberately — suppressing it there would make the wire value depend on caseload,
-            and mobile/ caches the restricted set beside page zero, so the marker would appear and
-            vanish as shifts were assigned. Suppressing it is therefore the client's job, and the
-            rule handed down is: key it on having rows to describe. Content projected here renders
-            only when the state is ready and the page is not empty, so an empty, errored or loading
-            directory shows its own panel and this sentence is not printed over nothing. An explicit
-            items.length check beside the condition would be dead code that a passing test appeared
-            to cover — the shape item 126 found on the record path and removed.
-          -->
-          @if (followUpRestricted('record')) {
-            <p
-              class="mb-4 flex items-start gap-2 rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger"
-              role="status"
-              data-cy="restrictedFollowUpRecord"
-            >
-              <mat-icon class="!h-5 !w-5 shrink-0 !text-[20px]" aria-hidden="true">block</mat-icon>
-              <span>{{ 'healthConnect.patient.restrictedFollowUps.record' | translate }}</span>
-            </p>
-          }
-
           <hpd-data-table
             [columns]="columns()"
             [rows]="directoryPage().items"
@@ -263,11 +287,17 @@ export default class PatientDirectoryPageComponent {
    * encode a per-row judgement the header does not make, and would leave an empty actions column
    * under a header suggesting there was something to do.
    *
+   * <p><b>`view` is withdrawn by name, not by emptying the list.</b> With one action today the two
+   * are indistinguishable — the column vanishes either way — but they age differently: a message,
+   * print or flag action added later would be taken away with it by an all-or-nothing rule, and
+   * withdrawing something that works is the failure this item is the mirror of. The header names
+   * one follow-up read, so exactly the affordance that reaches that read goes.
+   *
    * <p>A `computed` for {@link columns}' reason: `<hpd-data-table>` is `OnPush` over `@Input()`s, so
    * a plain array mutated in place would keep rendering the previous state.
    */
   readonly actions = computed<readonly DataTableAction<PatientListRow>[]>(() =>
-    this.followUpRestricted('record') ? [] : [{ id: 'view', labelKey: 'healthConnect.actions.view', icon: 'visibility' }],
+    DIRECTORY_ACTIONS.filter(action => action.id !== 'view' || !this.followUpRestricted('record')),
   );
   readonly trackById = (patient: PatientListRow): string => patient.id;
 

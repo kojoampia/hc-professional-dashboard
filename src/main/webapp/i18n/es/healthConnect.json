@@ -96,7 +96,7 @@
         "lastActivityCell": "Sin permiso"
       },
       "restrictedFollowUps": {
-        "record": "Estos expedientes no son suyos para abrirlos. Los pacientes que figuran abajo sí están en su lista, pero el expediente detrás de cada fila será rechazado, por lo que aquí no se ofrece ningún enlace para abrirlo."
+        "record": "No tiene permiso para abrir estos expedientes. Los pacientes que figuran abajo sí están en su lista, pero se rechazará el expediente que hay detrás de cada fila, por lo que aquí no se ofrece ningún enlace para abrirlo."
       },
       "recordRestricted": {
         "lastActivity": "No tiene permiso para leer el historial de actividad de este paciente, por lo que aquí no se muestra ninguna entrada ni la fecha de última actividad. Es posible que sí se haya atendido a este paciente: este panel está restringido, no vacío."

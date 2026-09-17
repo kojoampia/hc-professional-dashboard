@@ -96,7 +96,7 @@
         "lastActivityCell": "Nicht berechtigt"
       },
       "restrictedFollowUps": {
-        "record": "Diese Datensätze dürfen Sie nicht öffnen. Die unten aufgeführten Patienten stehen tatsächlich auf Ihrer Liste, aber der Datensatz hinter jeder Zeile wird verweigert; daher wird hier kein Link zum Öffnen angeboten."
+        "record": "Sie sind nicht berechtigt, diese Patientenakten zu öffnen. Die unten aufgeführten Patienten stehen tatsächlich auf Ihrer Liste, aber die Akte hinter jeder Zeile wird verweigert; daher wird hier kein Link zum Öffnen angeboten."
       },
       "recordRestricted": {
         "lastActivity": "Sie sind nicht berechtigt, den Aktivitätsverlauf dieses Patienten zu lesen; daher werden hier weder Einträge noch ein Datum der letzten Aktivität angezeigt. Dieser Patient wurde möglicherweise sehr wohl gesehen: dieser Bereich wird zurückgehalten, er ist nicht leer."

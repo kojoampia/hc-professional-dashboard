@@ -190,18 +190,46 @@ describe('PatientDirectoryPageComponent', () => {
       expect(table.querySelectorAll('thead th')).toHaveLength(component.columns().length);
     });
 
-    it('does NOT say it over a page with no rows on it', () => {
-      // Decided in item 128 and not this client's to re-open: a technician with no tasks is sent the
-      // marker on a zero-row page, deliberately, because suppressing it server-side would make the
-      // wire value depend on caseload. So the suppression is the client's, and the rule is *rows to
-      // describe* — a banner over an empty table describes nothing. Such a page wants
-      // `X-Restricted-Parts`' sentence, which is about what is missing, not this one.
+    it('STILL says it when another read fails and the table is replaced by an error panel', () => {
+      // The blocking defect the first version of this shipped with, and the test that was missing
+      // from BOTH repos.
+      //
+      // `loadAll` fires three requests sharing one error signal, and `patientservice` answers a
+      // technician 403 on `clinical-cases` — their `ScopeOfPractice` grants OBSERVATION and IDENTITY
+      // only, which item 111's Decision A already recorded as measured. So the directory read
+      // succeeds and carries the header while `asyncState` is `error`, and `<hpd-async-state>`
+      // projects its content in the final `@else` alone. With the notice inside it, the one
+      // discipline the header is sent to was the one discipline that never saw the sentence: two
+      // item-114 notices, then "Unable to load this information", and a Retry that re-issues the
+      // same 403 for ever.
+      //
+      // The header is a fact about the read that SUCCEEDED. A different request failing does not
+      // make these records openable — and the clinician needs the permanent explanation exactly when
+      // the screen is otherwise offering them a transient one.
+      restrictFollowUps('record');
+      TestBed.inject(FakeHealthConnectRepository).setError('healthConnect.states.error');
+      fixture.detectChanges();
+
+      expect(component.repository.asyncState().status).toBe('error');
+      expect(fixture.nativeElement.querySelector('.hpd-data-table')).toBeNull();
+      expect(followUpNotice()).not.toBeNull();
+    });
+
+    it('does not blink out when a search empties the visible page, because it describes the caseload', () => {
+      // Keyed on `patientRows()` — the whole cached caseload — rather than on the filtered page.
+      // Keying on what survives the search box would make the sentence appear and vanish as the
+      // clinician types, which is the instability item 128 refused when it declined to let the wire
+      // value depend on caseload. A filter matching nothing does not make these records openable.
+      //
+      // The zero-row rule item 128 hands down is about a technician with no TASKS, and that case is
+      // held by the caseAssignments test below, where the caseload itself is empty.
       restrictFollowUps('record');
       queryParamMap.next(convertToParamMap({ q: 'no-such-patient' }));
       fixture.detectChanges();
 
       expect(component.directoryPage().items).toEqual([]);
-      expect(followUpNotice()).toBeNull();
+      expect(component.repository.patientRows().length).toBeGreaterThan(0);
+      expect(followUpNotice()).not.toBeNull();
     });
 
     it('ignores a follow-up it does not know, leaving both the sentence and the action alone', () => {
@@ -252,13 +280,15 @@ describe('PatientDirectoryPageComponent', () => {
       // every seeded record carries an assigned case, so the refusal empties the directory
       // altogether — a real response shape, and the narrower one the fake's own docstring flags.
       //
-      // Which makes it a better exercise of the empty-page rule than a search that matches nothing,
-      // because the cause is a refusal rather than a filter. The division of labour is the point:
-      // the caseAssignments banner sits above the async state and explains why there is nothing
-      // here, and this sentence — which describes rows — correctly says nothing about none.
+      // Which makes it THE exercise of the empty-page rule item 128 hands down, and a better one
+      // than a search that matches nothing: the cause is a refusal rather than a filter, so the
+      // caseload itself is empty and there are genuinely no rows to describe. The division of
+      // labour is the point: the caseAssignments banner explains why there is nothing here, and
+      // this sentence — which describes rows — correctly says nothing about none.
       restrict('caseAssignments');
       restrictFollowUps('record');
 
+      expect(component.repository.patientRows()).toEqual([]);
       expect(component.directoryPage().items).toEqual([]);
       expect(fixture.nativeElement.querySelector('[data-cy="restrictedCaseAssignments"]')).not.toBeNull();
       expect(followUpNotice()).toBeNull();

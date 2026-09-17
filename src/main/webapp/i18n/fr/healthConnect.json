@@ -96,7 +96,7 @@
         "lastActivityCell": "Non autorisé"
       },
       "restrictedFollowUps": {
-        "record": "Ces dossiers ne vous sont pas ouverts. Les patients ci-dessous figurent bien sur votre liste, mais le dossier situé derrière chaque ligne sera refusé ; aucun lien permettant de l'ouvrir n'est donc proposé ici."
+        "record": "Vous n'êtes pas autorisé à ouvrir ces dossiers. Les patients ci-dessous figurent bien sur votre liste, mais le dossier correspondant à chaque ligne sera refusé ; aucun lien permettant de l'ouvrir n'est donc proposé ici."
       },
       "recordRestricted": {
         "lastActivity": "Vous n'êtes pas autorisé à lire l'historique d'activité de ce patient ; aucune entrée ni date de dernière activité n'est donc affichée ici. Ce patient a peut-être bien été vu : ce panneau est restreint, et non vide."
