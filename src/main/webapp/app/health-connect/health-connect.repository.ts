@@ -18,7 +18,7 @@ import {
   RosterScope,
   ShiftLabel,
 } from './health-connect.models';
-import { RestrictedPart } from './api/restricted-parts';
+import { RestrictedFollowUp, RestrictedPart } from './api/restricted-parts';
 import { HttpHealthConnectRepository } from './http-health-connect.repository';
 
 export interface PatientDirectoryFilters {
@@ -62,6 +62,21 @@ export interface HealthConnectRepository {
    * `api/restricted-parts.ts`.
    */
   readonly directoryNamedUnknownPart: Signal<boolean>;
+  /**
+   * Which reads reached *from* that directory the caller will be refused, from its
+   * `X-Restricted-Follow-Ups` header.
+   *
+   * <p>**Not a restatement of {@link directoryRestrictions}, and not derivable from it.** That one
+   * says what this read lost; this one says what a *different* read will refuse. A pharmacist is
+   * refused `lastActivity` and opens records perfectly well, so a client inferring one from the
+   * other would withdraw a link that works. `api/` derives it there, from its own record path, which
+   * is the only place the fact is known — see item 128.
+   *
+   * <p>Empty for a caller who can open what they can see, which is most disciplines. Beside
+   * `patientRows` rather than inside `PatientListRow` for {@link directoryRestrictions}' reason: it
+   * is a fact about the read, and it is the same fact for every row in it.
+   */
+  readonly directoryRestrictedFollowUps: Signal<readonly RestrictedFollowUp[]>;
   readonly caseQueue: Signal<readonly CaseQueueRow[]>;
   readonly caseCounts: Signal<Record<CaseStatus, number>>;
   readonly charts: Signal<ChartData>;

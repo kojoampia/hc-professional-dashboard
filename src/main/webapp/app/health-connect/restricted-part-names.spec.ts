@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 import { LANGUAGES } from 'app/config/language.constants';
 
-import { RECORD_RESTRICTED_PARTS, RESTRICTED_PARTS, ROW_REMOVING_PARTS } from './api/restricted-parts';
+import { RECORD_RESTRICTED_PARTS, RESTRICTED_FOLLOW_UPS, RESTRICTED_PARTS, ROW_REMOVING_PARTS } from './api/restricted-parts';
 
 /**
  * That every restricted part the directory can be handed has a sentence in every catalogue, and
@@ -68,6 +68,16 @@ describe('restricted-part notices', () => {
    * account for their absence — which neither of the other two blocks does.
    */
   const dashboardNotices = (locale: string): Record<string, unknown> => block(locale, 'healthConnect', 'dashboard', 'restricted');
+
+  /**
+   * The directory's *other* notice, and the fourth block because it is a fourth kind of statement.
+   *
+   * <p>The three above all say what is **missing** — a column, a set of rows, a count. This one says
+   * what will happen when the clinician **acts**: the rows are all here and complete, and the read
+   * behind each of them will refuse. Keyed by follow-up rather than by part, because that is what
+   * `X-Restricted-Follow-Ups` carries and the two vocabularies are deliberately separate.
+   */
+  const followUpNotices = (locale: string): Record<string, unknown> => block(locale, 'healthConnect', 'patient', 'restrictedFollowUps');
 
   /** Every key this feature renders: one notice per part, plus the marker the recency column shows. */
   const REQUIRED_KEYS = [...RESTRICTED_PARTS, 'lastActivityCell'];
@@ -154,6 +164,46 @@ describe('restricted-part notices', () => {
     });
   });
 
+  describe('the follow-up reads a directory row leads to (backlog item 132)', () => {
+    it('has follow-ups to check', () => {
+      expect(RESTRICTED_FOLLOW_UPS.length).toBeGreaterThan(0);
+    });
+
+    it.each(LANGUAGES)('has a %s sentence for every follow-up the directory can say will refuse', locale => {
+      expect(RESTRICTED_FOLLOW_UPS.filter(followUp => !followUpNotices(locale)[followUp])).toEqual([]);
+    });
+
+    it.each(LANGUAGES)('carries no %s key for a follow-up this client would not render', locale => {
+      // `cases` is the live case: `api/` refuses `GET /api/patients/{id}/cases` to exactly the same
+      // callers and deliberately does not name it (its items 127 and 128), because the cases screen
+      // is reached *through* the record. A sentence for it here would read perfectly and be shown to
+      // nobody — and would invite someone to wire it up, stacking a second notice saying the same.
+      const followUps: readonly string[] = RESTRICTED_FOLLOW_UPS;
+      const stray = Object.keys(followUpNotices(locale)).filter(key => !followUps.includes(key));
+
+      expect(stray).toEqual([]);
+    });
+
+    it.each(LANGUAGES)('has no blank or key-echoing %s sentence', locale => {
+      const strings = followUpNotices(locale);
+      const bad = RESTRICTED_FOLLOW_UPS.filter(
+        followUp => String(strings[followUp]).trim() === '' || String(strings[followUp]).includes('healthConnect.patient'),
+      );
+
+      expect(bad).toEqual([]);
+    });
+
+    it.each(LANGUAGES.filter(locale => locale !== 'en'))('says it in %s rather than repeating the English', locale => {
+      // Row 123, third occurrence. Pasting the English sentence into the other three catalogues
+      // leaves every key-level gate in `core/i18n/` green — all 265 of them — because they compare
+      // key sets and this is the only check in the repository that compares a value.
+      const english = followUpNotices('en');
+      const strings = followUpNotices(locale);
+
+      expect(RESTRICTED_FOLLOW_UPS.filter(followUp => strings[followUp] === english[followUp])).toEqual([]);
+    });
+  });
+
   describe("the dashboard's demographic cards (backlog item 125)", () => {
     /**
      * Every key that screen can print: one per row-removing part, plus the one for a part it could
@@ -220,6 +270,28 @@ describe('restricted-part notices', () => {
 
       expect(ROW_REMOVING_PARTS.filter(part => dashboard[part] === list[part])).toEqual([]);
     });
+  });
+
+  it.each(LANGUAGES)('says something different in every one of the four %s restriction blocks', locale => {
+    // Row 129's trap, generalised — and generalised rather than answered with a fifth pairwise
+    // check, which is what adding the follow-up sentence would otherwise have cost. There are four
+    // blocks now (list, follow-up, record, dashboard) and the pairs grow quadratically, so the day
+    // somebody adds a fifth the pairwise checks would cover it only if they remembered to write
+    // three more. This one covers it by construction.
+    //
+    // Two sentences that read alike have lost a distinction the markup still pretends to draw: the
+    // clinician sees two notices and learns one thing. The blocks say, in order, that rows are
+    // missing / that this column is blank / that acting on a row will be refused / that a panel is
+    // withheld / that a count cannot be stated — five different remedies and, for two of them, a
+    // different owner.
+    const everySentence = [
+      ...Object.values(notices(locale)),
+      ...Object.values(followUpNotices(locale)),
+      ...Object.values(recordNotices(locale)),
+      ...Object.values(dashboardNotices(locale)),
+    ].map(String);
+
+    expect(new Set(everySentence).size).toBe(everySentence.length);
   });
 
   it('says something different about each part in English', () => {

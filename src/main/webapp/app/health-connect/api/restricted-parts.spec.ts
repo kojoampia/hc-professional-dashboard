@@ -2,10 +2,13 @@ import { HttpHeaders } from '@angular/common/http';
 
 import {
   RECORD_RESTRICTED_PARTS,
+  RESTRICTED_FOLLOW_UPS,
+  RESTRICTED_FOLLOW_UPS_HEADER,
   RESTRICTED_PARTS,
   RESTRICTED_PARTS_HEADER,
   ROW_REMOVING_PARTS,
   hasUnrecognisedRestrictedParts,
+  parseRestrictedFollowUps,
   parseRestrictedParts,
 } from './restricted-parts';
 
@@ -99,6 +102,73 @@ describe('parseRestrictedParts', () => {
 
       expect(parseRestrictedParts(headers(value))).toEqual(['caseAssignments', 'lastActivity']);
       expect(hasUnrecognisedRestrictedParts(headers(value))).toBe(true);
+    });
+  });
+
+  describe('parseRestrictedFollowUps — what the same refusal blocks behind a row (backlog item 132)', () => {
+    const followUps = (value?: string): HttpHeaders =>
+      value === undefined ? new HttpHeaders() : new HttpHeaders({ [RESTRICTED_FOLLOW_UPS_HEADER]: value });
+
+    it('reads nothing from a response that carries no header — the ordinary case, and six of the eight disciplines', () => {
+      // Measured through the gateway on quality, 2026-09-17: technician `record`, pharmacist and
+      // nurse no header at all. A false positive here withdraws the only way into a patient record
+      // from every clinician in the estate.
+      expect(parseRestrictedFollowUps(followUps())).toEqual([]);
+    });
+
+    it('reads the one token api/ sends', () => {
+      expect(parseRestrictedFollowUps(followUps('record'))).toEqual(['record']);
+    });
+
+    it('drops a follow-up it does not know, and still reads the ones it does', () => {
+      // `api/`'s item 128 argued a `cases` token buys a client nothing *today* and left the header
+      // comma-separated so a later release can name one. This bundle would then be older than the
+      // service answering it, which is the structural case here rather than the exotic one.
+      expect(parseRestrictedFollowUps(followUps('cases,record'))).toEqual(['record']);
+    });
+
+    it('reads nothing from a header naming only follow-ups it does not know', () => {
+      expect(parseRestrictedFollowUps(followUps('cases'))).toEqual([]);
+    });
+
+    it('tolerates the whitespace and the trailing comma a comma-separated header may carry', () => {
+      expect(parseRestrictedFollowUps(followUps(' record, '))).toEqual(['record']);
+    });
+
+    it('matches exactly, so a near miss is dropped rather than guessed at', () => {
+      // Header *values* are case-sensitive, and the token is lower case on the wire. Guessing here
+      // would hide a service defect behind a screen that looks deliberate.
+      expect(parseRestrictedFollowUps(followUps('Record,RECORD,records,record-page'))).toEqual([]);
+    });
+
+    it('is a different header from X-Restricted-Parts, and reads neither from the other', () => {
+      // The two travel together — a technician is sent both — and they say different things: one
+      // names what was withheld from THIS read, the other what a DIFFERENT read will refuse. Parsing
+      // one out of the other's header is the single mistake that would collapse them back into one.
+      const both = new HttpHeaders({
+        [RESTRICTED_PARTS_HEADER]: 'caseAssignments,lastActivity',
+        [RESTRICTED_FOLLOW_UPS_HEADER]: 'record',
+      });
+
+      expect(parseRestrictedParts(both)).toEqual(['caseAssignments', 'lastActivity']);
+      expect(parseRestrictedFollowUps(both)).toEqual(['record']);
+      expect(parseRestrictedParts(followUps('record'))).toEqual([]);
+      expect(parseRestrictedFollowUps(new HttpHeaders({ [RESTRICTED_PARTS_HEADER]: 'caseAssignments' }))).toEqual([]);
+    });
+
+    it('knows exactly the one follow-up api/ declares', () => {
+      // `PatientResource.RECORD`. Derived from elsewhere — the page's treatment and the i18n keys —
+      // so a second token added here without a sentence beside it fails `restricted-part-names`.
+      expect(RESTRICTED_FOLLOW_UPS).toEqual(['record']);
+    });
+
+    it('names no follow-up that is also a part, because the two vocabularies are not one', () => {
+      // A follow-up is a *read that will refuse*, a part is *what this read lost*. `api/` spells
+      // them in separate constants for that reason; if a token ever appeared in both lists, a screen
+      // asking "was this refused" could not tell which question it had answered.
+      const parts: readonly string[] = RESTRICTED_PARTS;
+
+      expect(RESTRICTED_FOLLOW_UPS.filter(followUp => parts.includes(followUp))).toEqual([]);
     });
   });
 

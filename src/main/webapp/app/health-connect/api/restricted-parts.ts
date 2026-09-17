@@ -101,7 +101,52 @@ export type RowRemovingPart = (typeof ROW_REMOVING_PARTS)[number];
 /** The response header `api/` emits. Named once so a spec and the reader cannot disagree. */
 export const RESTRICTED_PARTS_HEADER = 'X-Restricted-Parts';
 
+/**
+ * The second header the directory read carries, and it answers a different question.
+ *
+ * <p>{@link RESTRICTED_PARTS_HEADER} names what was withheld from <em>this</em> read.
+ * `X-Restricted-Follow-Ups` names a <em>different</em> read that will refuse — one reached from a row
+ * the caller can see. Both are absent for a caller refused nothing; a technician is sent both.
+ *
+ * @see ../../../../../../docs/backlog.md items 128 and 132
+ */
+export const RESTRICTED_FOLLOW_UPS_HEADER = 'X-Restricted-Follow-Ups';
+
+/**
+ * The follow-up reads a directory response can say will refuse.
+ *
+ * <p>One token, `record` — `GET /api/patients/{id}`, the read behind a directory row. `api/` emits
+ * it when a part it was refused is one the record path reads <b>strictly</b>: the refusal is
+ * observed, by this same read, and the strictness is that service's own code rather than a copy of
+ * hc-patient's scope-of-practice matrix held here. That derivation is the whole of item 128 and the
+ * reason this is not a per-discipline capability list.
+ *
+ * <p><b>Present, it is never wrong; absent, it is not a promise.</b> `api/` records the marker as
+ * *sufficient rather than complete* — a record could still refuse over a collection the directory
+ * never reads, and the gap is only empty today because two sets in another product's table happen to
+ * coincide. So a client may act on the token's presence and must not read its absence as an
+ * assurance that a record will open.
+ *
+ * <p><b>`cases` is deliberately not here, and its absence is `api/`'s decision rather than an
+ * omission.</b> `GET /api/patients/{id}/cases` refuses the same callers for the same reason (item
+ * 127, which decided it keeps refusing), and a token for it would be true and useless: the cases
+ * screen is reached *through* the record, so a client that has already withdrawn the record has said
+ * everything a second token could add. A follow-up earns its place by letting a client render
+ * something different.
+ *
+ * <p>An array rather than a bare union for {@link RESTRICTED_PARTS}'s reason — the parser needs the
+ * values at run time, and the i18n spec derives its expected key set from it.
+ *
+ * @see PatientResource.RESTRICTED_FOLLOW_UPS and PatientResource.RECORD in `api/`
+ */
+export const RESTRICTED_FOLLOW_UPS = ['record'] as const;
+
+/** Derived from the runtime array, for {@link RestrictedPart}'s reason. */
+export type RestrictedFollowUp = (typeof RESTRICTED_FOLLOW_UPS)[number];
+
 const KNOWN = new Set<string>(RESTRICTED_PARTS);
+
+const KNOWN_FOLLOW_UPS = new Set<string>(RESTRICTED_FOLLOW_UPS);
 
 /**
  * The tokens of `X-Restricted-Parts` this client understands, in the order the server sent them.
@@ -124,7 +169,28 @@ const KNOWN = new Set<string>(RESTRICTED_PARTS);
  * number"</b> — see {@link hasUnrecognisedRestrictedParts}, which reports what this discards.
  */
 export function parseRestrictedParts(headers: HttpHeaders): readonly RestrictedPart[] {
-  return tokensOf(headers).filter((token): token is RestrictedPart => KNOWN.has(token));
+  return tokensOf(headers, RESTRICTED_PARTS_HEADER).filter((token): token is RestrictedPart => KNOWN.has(token));
+}
+
+/**
+ * The follow-up reads this response says will refuse, as far as this client can name them.
+ *
+ * <p>Same rules as {@link parseRestrictedParts}, on the other header: unknown tokens are dropped
+ * rather than rendered, whitespace and a trailing comma are tolerated, a near miss is a drop rather
+ * than a guess, and a missing header yields an empty array — the silent case, which is most
+ * disciplines and must stay exactly as it was before any of this existed.
+ *
+ * <p><b>No `hasUnrecognisedRestrictedFollowUps` beside it, deliberately.</b> The counterpart exists
+ * for {@link RESTRICTED_PARTS_HEADER} because a dropped part may be row-removing, and a screen
+ * showing a *count* then has to decline to state one. Nothing is counted from this header: it names
+ * reads that will refuse, and a follow-up this bundle cannot name is one it has no affordance for
+ * either — there is no link to withdraw and no figure to withhold. Adding the function now would be
+ * a second copy of a rule with no caller, which is how this estate arrives at one wrong one.
+ *
+ * @see ../../../../../../docs/backlog.md item 132
+ */
+export function parseRestrictedFollowUps(headers: HttpHeaders): readonly RestrictedFollowUp[] {
+  return tokensOf(headers, RESTRICTED_FOLLOW_UPS_HEADER).filter((token): token is RestrictedFollowUp => KNOWN_FOLLOW_UPS.has(token));
 }
 
 /**
@@ -149,17 +215,23 @@ export function parseRestrictedParts(headers: HttpHeaders): readonly RestrictedP
  * @see ../../../../../../docs/backlog.md item 125
  */
 export function hasUnrecognisedRestrictedParts(headers: HttpHeaders): boolean {
-  return tokensOf(headers).some(token => !KNOWN.has(token));
+  return tokensOf(headers, RESTRICTED_PARTS_HEADER).some(token => !KNOWN.has(token));
 }
 
 /**
- * The non-empty, trimmed tokens of the header, recognised or not.
+ * The non-empty, trimmed tokens of one named header, recognised or not.
  *
  * <p>Empty tokens go before either question is asked, so a trailing comma is whitespace rather than
  * an unknown part — `"caseAssignments,"` must not blank a dashboard.
+ *
+ * <p><b>The header name is a parameter rather than this function having a twin</b>, because the two
+ * headers carry the identical grammar and the tolerances above are the part that would drift: item
+ * 132 added the second one, and a copy of this body would have had to re-learn the trailing comma.
+ * The *vocabularies* stay apart — each caller filters against its own known set — which is what
+ * keeps the two questions from collapsing into one.
  */
-function tokensOf(headers: HttpHeaders): readonly string[] {
-  const value = headers.get(RESTRICTED_PARTS_HEADER);
+function tokensOf(headers: HttpHeaders, name: string): readonly string[] {
+  const value = headers.get(name);
   if (value === null) {
     return [];
   }

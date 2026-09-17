@@ -6,7 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { FakeHealthConnectRepository } from '../testing/fake-health-connect.repository';
 import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
-import { RestrictedPart } from '../api/restricted-parts';
+import { RestrictedFollowUp, RestrictedPart } from '../api/restricted-parts';
 import { PatientListRow } from '../health-connect.models';
 import { DataTableColumn } from '../../shared/health-connect/data-table/data-table.component';
 import SearchInputComponent from '../../shared/health-connect/form-controls/search-input.component';
@@ -137,6 +137,142 @@ describe('PatientDirectoryPageComponent', () => {
       isChild: false,
       lastActivityAt: `${lastActivityAt}T09:00:00Z`,
     });
+  });
+
+  describe('X-Restricted-Follow-Ups (backlog item 132)', () => {
+    // The defect: `api/`'s item 128 emits the header, nothing read it, and a technician saw a
+    // hundred tappable rows, tapped one and got a 503. Every row here is real and complete — this is
+    // not a statement about the list, it is a statement about what acting on the list will do, which
+    // is why it is neither of the two notices above and why it sits at the table rather than with
+    // them at the top of the card.
+    const followUpNotice = (): Element | null => fixture.nativeElement.querySelector('[data-cy="restrictedFollowUpRecord"]');
+    const openButtons = (): NodeListOf<Element> => fixture.nativeElement.querySelectorAll('.hpd-data-table__actions button');
+
+    it('says nothing, and offers the eye action, when the response carried no header', () => {
+      // The positive control for everything below. If the rows had no action to begin with, every
+      // "the action is withdrawn" assertion would pass against a table that never offered one.
+      expect(followUpNotice()).toBeNull();
+      expect(component.followUpRestricted('record')).toBe(false);
+      expect(component.actions()).toEqual([expect.objectContaining({ id: 'view' })]);
+      expect(openButtons().length).toBeGreaterThan(0);
+    });
+
+    it('tells the clinician the records will not open, and withdraws the link into them', () => {
+      restrictFollowUps('record');
+
+      expect(followUpNotice()?.querySelector('span')?.textContent?.trim()).toBe('healthConnect.patient.restrictedFollowUps.record');
+      // Withdrawn rather than left to 503. A sentence saying the record will refuse, printed beside
+      // a button that opens it, is a screen arguing with itself — and the button is the half the
+      // clinician acts on. `api/` records the marker as never wrong when present, so nothing that
+      // would have worked is being taken away; it is not a guard, and the record path refuses on its
+      // own account whether or not this column is here.
+      expect(component.actions()).toEqual([]);
+      expect(openButtons()).toHaveLength(0);
+    });
+
+    it('leaves no dead target behind — nothing disabled, nothing focusable, no orphaned column', () => {
+      // The accessibility half, and the reason withdrawing beats disabling here. A control that
+      // looks interactive and is not costs a screen-reader user more than a sighted one: they reach
+      // it, are told it is a button, and nothing happens. Absent, it is not announced at all, and
+      // the sentence above the table carries the whole explanation.
+      //
+      // `mobile/` had to disable rather than remove because there the row itself is the control.
+      // This table's rows are inert `<tr>`s, so there is nothing to leave behind — asserted rather
+      // than assumed, because a later `isAvailable` refactor would reintroduce exactly the empty
+      // action cell and orphaned header this checks for.
+      restrictFollowUps('record');
+      const table = fixture.nativeElement.querySelector('.hpd-data-table');
+
+      expect(table.querySelectorAll('button, a, [tabindex], [aria-disabled], [disabled]')).toHaveLength(0);
+      expect(table.querySelectorAll('.hpd-data-table__actions')).toHaveLength(0);
+      // The header cell too: three columns and no fourth, so no column announces an action that is
+      // not there. `<hpd-data-table>` renders it under the same `actions.length`.
+      expect(table.querySelectorAll('thead th')).toHaveLength(component.columns().length);
+    });
+
+    it('does NOT say it over a page with no rows on it', () => {
+      // Decided in item 128 and not this client's to re-open: a technician with no tasks is sent the
+      // marker on a zero-row page, deliberately, because suppressing it server-side would make the
+      // wire value depend on caseload. So the suppression is the client's, and the rule is *rows to
+      // describe* — a banner over an empty table describes nothing. Such a page wants
+      // `X-Restricted-Parts`' sentence, which is about what is missing, not this one.
+      restrictFollowUps('record');
+      queryParamMap.next(convertToParamMap({ q: 'no-such-patient' }));
+      fixture.detectChanges();
+
+      expect(component.directoryPage().items).toEqual([]);
+      expect(followUpNotice()).toBeNull();
+    });
+
+    it('ignores a follow-up it does not know, leaving both the sentence and the action alone', () => {
+      // `api/` may name a second follow-up on a release this bundle predates — it left the header
+      // comma-separated for exactly that. Nothing may render for it, and nothing may be withdrawn
+      // on account of it: taking the only way into a record away over a token this code cannot
+      // explain is a worse failure than the one item 132 fixes.
+      //
+      // A NEGATIVE CONTROL, AND IT CANNOT REDDEN ON THE DROP ITSELF — labelled rather than left to
+      // be mistaken for cover, which is item 126's lesson arriving one header along. This screen
+      // asks `includes('record')`, and `['cases']` and `[]` answer that identically, so the test is
+      // green whether the unknown token was dropped or carried the whole way here. Verified by
+      // mutation: deleting the fake's filter leaves it passing.
+      //
+      // The drop IS proved, twice and elsewhere — `restricted-parts.spec.ts` on the parser and
+      // `http-health-connect.repository.spec.ts` on the wire, both of which redden when
+      // `parseRestrictedFollowUps` stops filtering. What this one is worth is the other half: that
+      // an unrecognised token changes NOTHING on screen, neither printing a wire token nor
+      // withdrawing the action. That part is real, and it is what the assertions below say.
+      //
+      // `mobile/` had to go further because it caches the parsed set across a cold start, so an
+      // unparsed token there is written today and read back by a release that may have learned the
+      // word. Nothing here is persisted — the signal lives in the tab and dies with it — so there is
+      // no stored value to assert against.
+      restrictFollowUps('cases' as RestrictedFollowUp);
+
+      expect(followUpNotice()).toBeNull();
+      expect(component.actions()).toEqual([expect.objectContaining({ id: 'view' })]);
+      expect(fixture.nativeElement.textContent).not.toContain('cases');
+    });
+
+    it('reads unalike beside the notice about the list, when both arrive on one read', () => {
+      // Two statements on one screen, and they must not read as one: this column is blank / acting
+      // on the rows that are here will be refused. Two elements, two keys, two tints, and the
+      // stronger tint is on the stronger claim — the other two say what cannot be seen, this one
+      // says what cannot be done.
+      restrict('lastActivity');
+      restrictFollowUps('record');
+
+      expect(fixture.nativeElement.querySelectorAll('[data-cy^="restricted"]')).toHaveLength(2);
+      expect(followUpNotice()?.className).toContain('bg-hpd-danger-tint');
+      expect(fixture.nativeElement.querySelector('[data-cy="restrictedLastActivity"]')?.className).not.toContain('bg-hpd-danger-tint');
+    });
+
+    it('stays silent under a caseAssignments refusal that leaves no rows, while that notice still speaks', () => {
+      // The live technician is sent `caseAssignments,lastActivity` AND `record`, so all three would
+      // be on screen at once on a real caseload of a hundred rows. On THIS fixture they cannot be:
+      // every seeded record carries an assigned case, so the refusal empties the directory
+      // altogether — a real response shape, and the narrower one the fake's own docstring flags.
+      //
+      // Which makes it a better exercise of the empty-page rule than a search that matches nothing,
+      // because the cause is a refusal rather than a filter. The division of labour is the point:
+      // the caseAssignments banner sits above the async state and explains why there is nothing
+      // here, and this sentence — which describes rows — correctly says nothing about none.
+      restrict('caseAssignments');
+      restrictFollowUps('record');
+
+      expect(component.directoryPage().items).toEqual([]);
+      expect(fixture.nativeElement.querySelector('[data-cy="restrictedCaseAssignments"]')).not.toBeNull();
+      expect(followUpNotice()).toBeNull();
+    });
+
+    const restrictFollowUps = (...followUps: RestrictedFollowUp[]): void => {
+      TestBed.inject(FakeHealthConnectRepository).setDirectoryRestrictedFollowUps(followUps);
+      fixture.detectChanges();
+    };
+
+    const restrict = (...parts: RestrictedPart[]): void => {
+      TestBed.inject(FakeHealthConnectRepository).setDirectoryRestrictions(parts);
+      fixture.detectChanges();
+    };
   });
 
   const activityColumn = (): DataTableColumn<PatientListRow> | undefined =>

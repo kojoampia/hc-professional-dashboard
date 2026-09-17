@@ -190,6 +190,57 @@ describe('HttpHealthConnectRepository', () => {
       httpMock.expectOne(request => request.url.endsWith('services/patientservice/api/clinical-cases')).flush([], { headers: {} });
       httpMock.expectOne('services/professionalservice/api/duty-roster').flush([]);
     };
+
+    describe('X-Restricted-Follow-Ups on the same read (backlog item 132)', () => {
+      // A second header on the same response, answering a different question: not what this read
+      // lost, but which read reached from a row will refuse. Measured through the gateway on
+      // quality, 2026-09-17 — technician `record`, pharmacist and nurse no header at all.
+      it('reports no blocked follow-up when the response carried no header', () => {
+        flushInitialLoad();
+
+        expect(repository.directoryRestrictedFollowUps()).toEqual([]);
+      });
+
+      it('reports the record read a technician cannot open', () => {
+        flushDirectory({ 'X-Restricted-Parts': 'caseAssignments,lastActivity', 'X-Restricted-Follow-Ups': 'record' });
+
+        expect(repository.directoryRestrictedFollowUps()).toEqual(['record']);
+      });
+
+      it('reports no blocked follow-up for a pharmacist, who is refused a part that still serves a record', () => {
+        // The live asymmetry, and the reason this is a second header rather than a second reading of
+        // the first: `lastActivity` is withheld from the list and the record opens anyway, so a
+        // client inferring "refused something ⇒ cannot open" would withdraw a working link.
+        flushDirectory({ 'X-Restricted-Parts': 'lastActivity' });
+
+        expect(repository.directoryRestrictions()).toEqual(['lastActivity']);
+        expect(repository.directoryRestrictedFollowUps()).toEqual([]);
+      });
+
+      it('drops a follow-up it does not know rather than passing it to the screen', () => {
+        flushDirectory({ 'X-Restricted-Follow-Ups': 'cases,record' });
+
+        expect(repository.directoryRestrictedFollowUps()).toEqual(['record']);
+      });
+
+      it('KEEPS the blocked follow-up when a later directory read fails, with the rows it describes', () => {
+        // Item 125's invariant, extended to the third signal written from that one response. The
+        // rows are not cleared on a failed read, so neither is what was said about them — clearing
+        // this one alone would put a hundred live-looking links back over rows that still 503.
+        flushDirectory({ 'X-Restricted-Parts': 'caseAssignments', 'X-Restricted-Follow-Ups': 'record' });
+        const rowsBefore = repository.patientRows();
+
+        repository.reset();
+        flushRestOfLoad();
+        httpMock
+          .expectOne(request => request.url.endsWith('services/professionalservice/api/patients'))
+          .flush('nope', { status: 503, statusText: 'Service Unavailable' });
+
+        expect(repository.asyncState().status).toBe('error');
+        expect(repository.patientRows()).toEqual(rowsBefore);
+        expect(repository.directoryRestrictedFollowUps()).toEqual(['record']);
+      });
+    });
   });
 
   it('reads the caller’s own roster and scopes "my roster" to assignments held by that professional', () => {

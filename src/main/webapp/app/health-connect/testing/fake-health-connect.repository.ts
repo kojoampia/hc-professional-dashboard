@@ -19,7 +19,7 @@ import {
   ShiftLabel,
   shiftStartHour,
 } from '../health-connect.models';
-import { RESTRICTED_PARTS, RestrictedPart } from '../api/restricted-parts';
+import { RESTRICTED_FOLLOW_UPS, RESTRICTED_PARTS, RestrictedFollowUp, RestrictedPart } from '../api/restricted-parts';
 import { HealthConnectRepository, PatientDirectoryFilters } from '../health-connect.repository';
 import {
   HEALTH_CONNECT_DUTY_ROSTERS,
@@ -85,6 +85,7 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
   private readonly error = signal<string | null>(null);
   private readonly restrictions = signal<readonly RestrictedPart[]>([]);
   private readonly unknownRestriction = signal(false);
+  private readonly restrictedFollowUps = signal<readonly RestrictedFollowUp[]>([]);
   private readonly recordRestrictionsByPatient = signal<ReadonlyMap<string, readonly RestrictedPart[]>>(new Map());
 
   readonly patients = this.records.asReadonly();
@@ -138,6 +139,8 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
   readonly directoryRestrictions = this.restrictions.asReadonly();
   /** Set by {@link setDirectoryRestrictions} when a spec names a token the client cannot recognise. */
   readonly directoryNamedUnknownPart = this.unknownRestriction.asReadonly();
+  /** Empty unless a spec calls {@link setDirectoryRestrictedFollowUps} — the caller can open what they can see. */
+  readonly directoryRestrictedFollowUps = this.restrictedFollowUps.asReadonly();
   readonly caseQueue = computed(() =>
     this.records()
       .flatMap(record =>
@@ -194,7 +197,21 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     return page(matches, pageRequest);
   }
 
+  /**
+   * The record — unless the directory read said this follow-up will refuse, in which case there is
+   * no record to be had.
+   *
+   * <p>Modelled rather than left alone, for the reason {@link patientRows} models both parts of
+   * `X-Restricted-Parts`: a fake that carries a header while behaving as though nothing were
+   * restricted describes a response the service cannot send, and every assertion against it is
+   * vacuous. Here the header names a *different* endpoint, so the directory body is genuinely
+   * unchanged and the fidelity owed is on this method — `api/` answers 503, the record never lands,
+   * and the real repository's `findPatient` returns `undefined` exactly as this does.
+   */
   findPatient(id: string): PatientRecord | undefined {
+    if (this.restrictedFollowUps().includes('record')) {
+      return undefined;
+    }
     return this.records().find(record => record.patient.id === id);
   }
 
@@ -372,6 +389,20 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
   }
 
   /**
+   * Stand in for an `X-Restricted-Follow-Ups` header on the directory read.
+   *
+   * <p>Separate from {@link setDirectoryRestrictions} because the two headers are separate on the
+   * wire and say different things — a spec that could only set them together could not reproduce the
+   * pharmacist, who is refused a part and opens records anyway. Known/unknown is split exactly as the
+   * parser splits it, so a spec passing a follow-up `api/` might name on a later release
+   * (`'cases' as RestrictedFollowUp`) reproduces the real drop rather than inventing one.
+   */
+  setDirectoryRestrictedFollowUps(followUps: readonly RestrictedFollowUp[]): void {
+    const known: readonly string[] = RESTRICTED_FOLLOW_UPS;
+    this.restrictedFollowUps.set(followUps.filter(followUp => known.includes(followUp)));
+  }
+
+  /**
    * Stand in for an `X-Restricted-Parts` header on one patient's record read.
    *
    * <p>Per patient for the reason the real repository keys its cache that way: a record on screen
@@ -390,6 +421,7 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     this.error.set(null);
     this.restrictions.set([]);
     this.unknownRestriction.set(false);
+    this.restrictedFollowUps.set([]);
     this.recordRestrictionsByPatient.set(new Map());
   }
 }

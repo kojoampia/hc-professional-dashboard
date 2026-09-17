@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
-import { RestrictedPart } from '../api/restricted-parts';
+import { RestrictedFollowUp, RestrictedPart } from '../api/restricted-parts';
 import { PatientListRow, PatientSex } from '../health-connect.models';
 import AsyncStateComponent from '../../shared/health-connect/async-state/async-state.component';
 import DataTableComponent, {
@@ -109,10 +109,42 @@ const isPatientSex = (value: string | null): value is PatientSex => value === 'f
         }
 
         <hpd-async-state [status]="repository.asyncState().status" [empty]="directoryPage().totalItems === 0" (retry)="repository.reset()">
+          <!--
+            What happens when the clinician acts, which is neither of the statements above.
+
+            Those two are about the list: rows are missing, this column is blank. This one is about
+            every row that IS here — each is real, complete and unopenable, and the eye action has
+            been withdrawn to match (see the actions computed below). It is placed here, in the
+            table's own frame and immediately above it, rather than stacked with the other two at
+            the top of the card: it explains a missing affordance rather than missing data, and a
+            technician is sent all three at once.
+
+            INSIDE hpd-async-state ON PURPOSE, AND THAT PLACEMENT IS THE EMPTY-PAGE RULE.
+            api/'s item 128 sends the marker to a technician with no tasks at all, on a zero-row
+            page, deliberately — suppressing it there would make the wire value depend on caseload,
+            and mobile/ caches the restricted set beside page zero, so the marker would appear and
+            vanish as shifts were assigned. Suppressing it is therefore the client's job, and the
+            rule handed down is: key it on having rows to describe. Content projected here renders
+            only when the state is ready and the page is not empty, so an empty, errored or loading
+            directory shows its own panel and this sentence is not printed over nothing. An explicit
+            items.length check beside the condition would be dead code that a passing test appeared
+            to cover — the shape item 126 found on the record path and removed.
+          -->
+          @if (followUpRestricted('record')) {
+            <p
+              class="mb-4 flex items-start gap-2 rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger"
+              role="status"
+              data-cy="restrictedFollowUpRecord"
+            >
+              <mat-icon class="!h-5 !w-5 shrink-0 !text-[20px]" aria-hidden="true">block</mat-icon>
+              <span>{{ 'healthConnect.patient.restrictedFollowUps.record' | translate }}</span>
+            </p>
+          }
+
           <hpd-data-table
             [columns]="columns()"
             [rows]="directoryPage().items"
-            [actions]="actions"
+            [actions]="actions()"
             [trackBy]="trackById"
             (actionTriggered)="handleAction($event)"
           />
@@ -192,9 +224,51 @@ export default class PatientDirectoryPageComponent {
           : patient.lastActivityAt?.slice(0, 10) ?? '—',
     },
   ]);
-  readonly actions: readonly DataTableAction<PatientListRow>[] = [
-    { id: 'view', labelKey: 'healthConnect.actions.view', icon: 'visibility' },
-  ];
+  /**
+   * The eye, unless the read said the record behind every row will refuse — in which case there is
+   * no action to offer.
+   *
+   * <p><b>Withdrawn rather than left to fail.</b> Item 132's whole subject is a clinician learning
+   * by tapping, and a sentence saying the record will not open printed beside a button that opens it
+   * is a screen arguing with itself — the button being the half they act on. `api/` states the
+   * marker is never wrong when present, so nothing that would have worked is taken away.
+   *
+   * <p><b>`mobile/` reached the same behaviour by a different route, and the difference is worth
+   * stating so the agreement is a decision rather than a coincidence.</b> There the row <em>is</em>
+   * the affordance — an `ion-item` — so it had to disable the control <em>and</em> guard the
+   * handler, because Ionic delivers a click to a plain item either way and a target that depresses
+   * and does nothing is what a hung app looks like. Here the row is an inert `<tr>`:
+   * `<hpd-data-table>` puts no handler on it, and the only way into a record is this eye button in
+   * the action cell. So the honest move is <b>not to render it</b>, which is strictly better than
+   * disabling — nothing is left focusable, so there is no dead target and no `aria-disabled` needed
+   * to explain one. The action column's header cell goes with it, since the table renders both under
+   * `actions.length`, leaving nothing that suggests there is something to do.
+   *
+   * <p><b>The row was never a link, so no link affordance is lost.</b> Middle-click, open-in-new-tab
+   * and copy-address are the usual reasons to prefer an anchor, and they would argue against
+   * suppressing one — but they do not arise: this has always been a `<button type="button">` calling
+   * `Router.navigate`, and there is no `<a href>` in the table to take away. Were the directory ever
+   * rebuilt out of real links, this decision would have to be made again rather than carried over.
+   *
+   * <p><b>Not a guard, and must not be read as one.</b> The record path refuses on its own account;
+   * this only stops offering a door that is locked. The route is still reachable by URL and still
+   * answers 503, which is correct — a client-side affordance is not an authorisation decision. It is
+   * also why {@link handleAction} gains <b>no</b> matching check: with no button rendered nothing can
+   * emit the event, so a guard there would be unreachable code that a passing test appeared to cover
+   * — the exact shape item 126 found on the record path and deleted.
+   *
+   * <p><b>The whole column, not `isAvailable` per row.</b> `X-Restricted-Follow-Ups` is a fact about
+   * the read and the same fact for every row in it, exactly as `caseAssignments` is — item 114's
+   * reason for answering that one above the list rather than on a row. A per-row predicate would
+   * encode a per-row judgement the header does not make, and would leave an empty actions column
+   * under a header suggesting there was something to do.
+   *
+   * <p>A `computed` for {@link columns}' reason: `<hpd-data-table>` is `OnPush` over `@Input()`s, so
+   * a plain array mutated in place would keep rendering the previous state.
+   */
+  readonly actions = computed<readonly DataTableAction<PatientListRow>[]>(() =>
+    this.followUpRestricted('record') ? [] : [{ id: 'view', labelKey: 'healthConnect.actions.view', icon: 'visibility' }],
+  );
   readonly trackById = (patient: PatientListRow): string => patient.id;
 
   /**
@@ -208,6 +282,22 @@ export default class PatientDirectoryPageComponent {
    */
   restricted(part: RestrictedPart): boolean {
     return this.repository.directoryRestrictions().includes(part);
+  }
+
+  /**
+   * Whether this directory read said a named follow-up read will refuse.
+   *
+   * <p>Beside {@link restricted} and not derived from it: the two headers answer different
+   * questions, and a pharmacist is the proof — refused `lastActivity` on the list and served records
+   * perfectly well. Inferring one from the other would withdraw a working link from a clinician
+   * whose only loss was a column.
+   *
+   * <p>Asked per follow-up for {@link restricted}'s reason: a token this bundle does not recognise
+   * never reaches here, so nothing can ask for a catalogue key that does not exist, and nothing is
+   * withdrawn over a refusal this code cannot explain.
+   */
+  followUpRestricted(followUp: RestrictedFollowUp): boolean {
+    return this.repository.directoryRestrictedFollowUps().includes(followUp);
   }
 
   setSearch(query: string): void {

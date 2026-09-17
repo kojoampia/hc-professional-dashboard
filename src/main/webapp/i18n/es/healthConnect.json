@@ -95,6 +95,9 @@
         "lastActivity": "No tiene permiso para leer el historial de actividad, por lo que no se muestra la fecha de última actividad de ningún paciente. Esto no significa que no se haya atendido a estos pacientes.",
         "lastActivityCell": "Sin permiso"
       },
+      "restrictedFollowUps": {
+        "record": "Estos expedientes no son suyos para abrirlos. Los pacientes que figuran abajo sí están en su lista, pero el expediente detrás de cada fila será rechazado, por lo que aquí no se ofrece ningún enlace para abrirlo."
+      },
       "recordRestricted": {
         "lastActivity": "No tiene permiso para leer el historial de actividad de este paciente, por lo que aquí no se muestra ninguna entrada ni la fecha de última actividad. Es posible que sí se haya atendido a este paciente: este panel está restringido, no vacío."
       },
