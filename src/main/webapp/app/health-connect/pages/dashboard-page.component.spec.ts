@@ -526,6 +526,21 @@ describe('DashboardPageComponent', () => {
       expect(textIn('case-status')).not.toContain('healthConnect.dashboard.refused');
     });
 
+    it('prints no number before a read has answered, which the guard claims and nothing pinned', () => {
+      // `countable` is a POSITIVE test on 'ready', and its comment calls excluding `idle` "the
+      // deliberate half". Nothing asserted it: review found that `countable = ready || idle` survives
+      // the whole suite. `idle` is unreachable in practice — the repository's constructor calls
+      // loadAll(), which sets both reads to `loading` before first render — but a claimed property
+      // with no test is how the thing this row fixes got in. The wrapper cannot help here: its own
+      // content branch is `ready || idle`, so on `idle` it PROJECTS, and the model guard is the only
+      // thing between an unanswered read and a tile reading 0.
+      repository().setReadState('caseQueue', { status: 'idle', error: null });
+      fixture.detectChanges();
+
+      expect(component.caseCards()).toEqual([]);
+      expect(tilesIn('case-status')).toHaveLength(0);
+    });
+
     it('tells an outage apart from a refusal, and keeps the Retry a failure deserves', () => {
       repository().setReadState('caseQueue', { status: 'error', error: 'healthConnect.states.error' });
       fixture.detectChanges();
