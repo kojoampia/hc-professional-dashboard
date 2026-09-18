@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
+import { CLINICAL_ROLES } from 'app/health-connect/authority-role';
 import SharedModule from 'app/shared/shared.module';
 
 /**
@@ -32,9 +33,25 @@ export default class AuthShellComponent {
    * The four figures under the blurb. Translation keys rather than numbers: the values are as
    * user-visible as the labels, and a "24/7" that stays "24/7" in German is a decision to take
    * deliberately in the catalogue rather than by hardcoding it here.
+   *
+   * <p><b>The clinical-role figure is the exception, because it is a count and not a claim.</b> Its
+   * catalogue value is `{{count}}` and the number arrives through `translateValues` from
+   * {@link CLINICAL_ROLES}; `footer.copyright` injects the year the same way for the same reason. It
+   * was a literal `"9"` in four catalogues and stayed nine for nine days after `ROLE_ANGEL` stopped
+   * being a discipline — `../../../../docs/backlog.md` items 44 and 149. `auth-shell.component.spec.ts`
+   * renders this row in every locale and holds the numeral to that list.
+   *
+   * <p>The other three are not counts of anything this code can reach — one shared record,
+   * round-the-clock cover. `languagesValue` is the near miss: `4` agrees with `LANGUAGES.length`
+   * today by coincidence rather than by derivation, and is deliberately left alone here because item
+   * 149's scope is the role count. Item 149 records it.
    */
-  readonly facts = [
-    { valueKey: 'healthConnect.brand.facts.rolesValue', labelKey: 'healthConnect.brand.facts.roles' },
+  readonly facts: readonly { valueKey: string; labelKey: string; valueParams?: Record<string, unknown> }[] = [
+    {
+      valueKey: 'healthConnect.brand.facts.rolesValue',
+      labelKey: 'healthConnect.brand.facts.roles',
+      valueParams: { count: CLINICAL_ROLES.length },
+    },
     { valueKey: 'healthConnect.brand.facts.recordsValue', labelKey: 'healthConnect.brand.facts.records' },
     { valueKey: 'healthConnect.brand.facts.rostersValue', labelKey: 'healthConnect.brand.facts.rosters' },
     { valueKey: 'healthConnect.brand.facts.languagesValue', labelKey: 'healthConnect.brand.facts.languages' },

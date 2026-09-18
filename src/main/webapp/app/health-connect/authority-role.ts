@@ -28,6 +28,63 @@ const ROLE_PRECEDENCE: readonly AuthorityRole[] = [
   AuthorityRole.USER,
 ];
 
+/**
+ * The clinical disciplines this portal recognises — the eight, and the answer to "how many clinical
+ * roles are there".
+ *
+ * <p><b>This exists because that number was written down and went stale.</b> The sign-in page
+ * advertised nine clinical roles for nine days after `ROLE_ANGEL` stopped being one of them
+ * (`../../../docs/backlog.md` items 44 and 149). The count lived as a literal `"9"` in four
+ * translation catalogues, and no gate in this repo could see it: key parity passed because the key
+ * existed everywhere, `untranslated-literals.spec.ts` passed because it *was* translated, and
+ * `brand-terms.spec.ts` passed because a digit is not a denied term. Nothing related a catalogue
+ * value to an enum's cardinality.
+ *
+ * <p><b>Why a list and not a subtraction.</b> The obvious derivation is arithmetic over
+ * {@link AuthorityRole} — and item 149 was originally filed prescribing exactly that,
+ * `Object.keys(AuthorityRole).length - 1`, which yields <b>9</b>: the enum holds ten members, the
+ * eight disciplines plus `ADMIN` plus `USER`, and the subtraction forgot one. It would have
+ * reproduced the very number it was meant to remove, wearing the authority of a derived constant.
+ * Any subtraction has that failure mode permanently, because the next non-discipline member added to
+ * the enum makes the arithmetic silently wrong again. An explicit list cannot drift that way: it can
+ * only be incomplete, and {@link NON_CLINICAL_ROLES} plus `clinical-roles.spec.ts` is what makes
+ * incompleteness fail loudly.
+ *
+ * <p>Ordered as {@link ROLE_PRECEDENCE} orders them, minus the two that are not disciplines.
+ *
+ * @see NON_CLINICAL_ROLES, the other half of the partition
+ * @see clinical-roles.spec.ts, which fails when this list moves
+ */
+export const CLINICAL_ROLES: readonly AuthorityRole[] = [
+  AuthorityRole.DOCTOR,
+  AuthorityRole.NURSE,
+  AuthorityRole.PARAMEDIC,
+  AuthorityRole.PHARMACIST,
+  AuthorityRole.THERAPIST,
+  AuthorityRole.CARER,
+  AuthorityRole.CHEMIST,
+  AuthorityRole.TECHNICIAN,
+];
+
+/**
+ * The members of {@link AuthorityRole} that are <b>not</b> clinical disciplines.
+ *
+ * <p><b>This is not a list anybody needs to read — it is the half that makes the other half
+ * checkable.</b> Deriving it as "everything not in {@link CLINICAL_ROLES}" would compile, read
+ * better, and silently absorb the next authority somebody adds: a new discipline would land here by
+ * default and the advertised count would be wrong again, which is this row's own defect recurring
+ * through its own fix. Written out, the two together must cover {@link AuthorityRole} exactly once
+ * each, so adding any member to that enum fails `clinical-roles.spec.ts` until a human says which
+ * kind of thing it is.
+ *
+ * <p>`ADMIN` is here rather than beside the disciplines deliberately, and it is the distinction
+ * {@link hasClinicalAuthority} does <em>not</em> draw: that predicate is true for an administrator,
+ * because it asks "does somebody work here and need the portal around them". "Is one of the eight
+ * disciplines" is a different question, and using either to answer the other is wrong in one
+ * direction each.
+ */
+export const NON_CLINICAL_ROLES: readonly AuthorityRole[] = [AuthorityRole.ADMIN, AuthorityRole.USER];
+
 // Carer, Chemist, and Technician are read-only in v1 — keep this aligned
 // with the api's AuthoritiesConstants.CLINICAL_MUTATION matrix.
 const CLINICAL_MUTATION_ROLES = new Set<AuthorityRole>([

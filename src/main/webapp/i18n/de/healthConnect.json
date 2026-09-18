@@ -302,7 +302,7 @@
       "signInHint": "Melden Sie sich bei Ihrem Fachkräfte-Konto an.",
       "portal": "Portal",
       "facts": {
-        "rolesValue": "9",
+        "rolesValue": "{{count}}",
         "roles": "Klinische Rollen",
         "recordsValue": "1",
         "records": "Gemeinsame Patientenakte",

@@ -302,7 +302,7 @@
       "signInHint": "Connectez-vous à votre compte clinicien.",
       "portal": "Portail",
       "facts": {
-        "rolesValue": "9",
+        "rolesValue": "{{count}}",
         "roles": "Rôles cliniques",
         "recordsValue": "1",
         "records": "Dossier patient partagé",
