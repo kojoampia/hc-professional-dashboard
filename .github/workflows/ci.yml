@@ -51,14 +51,23 @@ jobs:
       - name: Check formatting
         run: npm run prettier:check
 
-      # `npm test` here is `ng test --coverage -w=2`. The worker cap matters on a two-core runner:
-      # Jest's default of one worker per core swaps and then times out.
-      - name: Test
-        run: npm test
-
       # `ng build`, not `tsc`. Unrouted files are never type-checked by tsc alone — an entity
       # component nothing routes to compiles as dead code and fails only when someone routes it.
       # web/CLAUDE.md names this explicitly.
+      #
+      # THIS RUNS BEFORE `npm test`, AND THE ORDER IS LOAD-BEARING — docs/backlog.md item 160.
+      # `catalogues.spec.ts` checks its model of MergeJsonWebpackPlugin against what the plugin
+      # actually emitted, which needs target/classes/static/i18n to exist; a job starts from a fresh
+      # `npm ci` checkout, so while this step came *after* the tests those four cases skipped on every
+      # single CI run, printing a warning inside a green build that nobody read. That is the same
+      # ordering fault as the one recorded at the bottom of this file, found again three items later.
+      #
+      # MEASURED COST, run 35353786345 (the last run of the old order): this build took 46.8 s and
+      # `npm test` 57.6 s. On a green run the job total is unchanged — the same two steps in the other
+      # order. What is paid is FEEDBACK LATENCY ON A RED RUN: a failing test now reports ~47 s later,
+      # and in exchange a failing build reports ~58 s earlier. Both directions were weighed; a broken
+      # build is the cheaper thing to be told about first, and the four cases are the only check in
+      # this repository that looks at the i18n the browser is actually served.
       - name: Production build
         run: npm run webapp:prod
 
@@ -66,6 +75,16 @@ jobs:
       # and is invisible to the type checker.
       - name: Check the built output
         run: node scripts/check-build-output.mjs
+
+      # `npm test` here is `ng test --coverage -w=2`. The worker cap matters on a two-core runner:
+      # Jest's default of one worker per core swaps and then times out.
+      #
+      # Also an artefact check, since item 160: `catalogues.spec.ts` compares the four built
+      # catalogues above against its own model of the merge. It FAILS rather than skips whenever CI is
+      # set and that output is absent, so moving this step back above the build does not quietly
+      # disarm it — it reddens, naming this file. Do not "fix" such a failure by unsetting CI.
+      - name: Test
+        run: npm test
 
       # Four languages are a shipping condition, and ngx-translate gives no runtime signal when a key
       # is missing — it renders the key itself. **That is asserted by `catalogues.spec.ts` inside
