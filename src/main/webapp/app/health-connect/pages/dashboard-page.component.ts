@@ -10,7 +10,7 @@ import { ROW_REMOVING_PARTS } from '../api/restricted-parts';
 import GroupedBarChartComponent from '../charts/grouped-bar-chart.component';
 import LineChartComponent from '../charts/line-chart.component';
 import PieChartComponent from '../charts/pie-chart.component';
-import { CaseStatus } from '../health-connect.models';
+import { AsyncViewState, CaseStatus } from '../health-connect.models';
 import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
 import { OnboardingProgressService } from 'app/core/onboarding/onboarding-progress.service';
@@ -25,6 +25,23 @@ import AsyncStateComponent from '../../shared/health-connect/async-state/async-s
  * move reads as deliberate, short enough that nobody starts reading.
  */
 const INCOMPLETE_PROFILE_REDIRECT_MS = 2000;
+
+/**
+ * Whether a read answered with something a total may be counted from (backlog item 165).
+ *
+ * <p><b>`ready` and nothing else, and the omission of `idle` is the deliberate half.</b> A read
+ * nobody has made yet holds an empty cache, and counting one is the same fabricated emptiness the
+ * record page was taught to stop reporting in item 146 — `idle` is not "ready with nothing in it".
+ * `loading` counts the previous response or nothing at all, `error` counts whatever survived a read
+ * that failed, and `forbidden` counts a read that was never served.
+ *
+ * <p>Written as a positive test on one member rather than as a list of the states to exclude, so it
+ * <b>fails closed</b>: a sixth `AsyncStatus` withholds a figure until somebody decides a figure may
+ * be stated from it, which is the direction `<hpd-async-state>`'s own final branch chose for the
+ * same reason. A negative list would admit it silently, and the thing a status nobody has considered
+ * cannot be evidence of is a correct total.
+ */
+const countable = (state: AsyncViewState): boolean => state.status === 'ready';
 
 @Component({
   standalone: true,
@@ -46,44 +63,97 @@ const INCOMPLETE_PROFILE_REDIRECT_MS = 2000;
       <section aria-labelledby="hpd-dashboard-demographics">
         <h2 id="hpd-dashboard-demographics" class="sr-only">{{ 'healthConnect.dashboard.demographics' | translate }}</h2>
         <!--
-          The whole of backlog item 125. These four cards count the directory, and a caseAssignments
-          refusal takes patients out of it — so every figure would be lower than the truth, by an
-          amount nothing here can state, and rendered exactly as a correct one is.
+          THE DIRECTORY READ, because that is what the four cards inside are counted from (item 165).
 
-          In place of the cards, not beside them. A marker on a card leaves the number being read,
-          and on a stat card the number is the loudest thing on screen; these are also links into a
-          filtered directory, so the figure is a promise about what the click leads to as well. The
-          sentence is this screen's own, not the directory banner's: there the list is short, here
-          there is no figure at all. Everything else on the dashboard is untouched — the case cards,
-          the earnings card and the charts come from reads this header says nothing about.
+          These tiles rendered from the cache whatever had happened to the read that fills it, so a
+          refused directory printed PATIENTS 0 · FEMALE 0 · MALE 0 · KIDS 0 — four numbers asserting
+          emptiness about a read that was never answered. Item 125 suppressed them for a read served
+          SHORT of rows; this wrapper suppresses them for a read not served at all. The two are
+          different facts and both are now said: the restricted.* sentences for the first, the
+          refused.* ones for the second, which is why the notices below stay inside the projected
+          content and only a ready read reaches them.
 
-          Keeping the tiles with an em dash in place of each number was considered and dropped: it
-          asserts nothing, which is right, but four dashed tiles read as a broken widget rather than
-          as a refusal, StatCard.count has no non-numeric state to put there, and the sentence still
-          has to go somewhere. Losing the shortcut into the directory costs little — that page
-          carries its own gender select and children checkbox.
+          NO BACKTICKS ANYWHERE IN THESE COMMENTS. They sit inside the component's template literal,
+          so one of them ends the string — the compiler then reports a missing comma on a line of
+          prose, several lines further down.
 
-          The @if exists for the @else below; the @for would render nothing on its own.
+          empty is bound false on purpose. A caller with genuinely no patients must still read 0 —
+          that is the honest number, and "no records found" over a stat row would be this row's
+          defect pointing the other way.
         -->
-        @if (demographicsRestricted()) {
-          @for (noticeKey of demographicRestrictionNotices(); track noticeKey) {
-            <p
-              class="flex items-start gap-2 rounded-hpd-sm bg-hpd-warning-tint px-4 py-3 text-sm text-hpd-warning"
-              role="status"
-              data-cy="restrictedDemographics"
-            >
-              <mat-icon class="!h-5 !w-5 shrink-0 !text-[20px]" aria-hidden="true">report_problem</mat-icon>
-              <span>{{ noticeKey | translate }}</span>
-            </p>
+        <hpd-async-state
+          [status]="repository.directoryState().status"
+          [empty]="false"
+          forbiddenKey="healthConnect.dashboard.refused.patientCounts"
+          (retry)="repository.reset()"
+        >
+          <!--
+            The whole of backlog item 125. These four cards count the directory, and a
+            caseAssignments refusal takes patients out of it — so every figure would be lower than
+            the truth, by an amount nothing here can state, and rendered exactly as a correct one is.
+
+            In place of the cards, not beside them. A marker on a card leaves the number being read,
+            and on a stat card the number is the loudest thing on screen; these are also links into a
+            filtered directory, so the figure is a promise about what the click leads to as well. The
+            sentence is this screen's own, not the directory banner's: there the list is short, here
+            there is no figure at all. Everything else on the dashboard is untouched — the case
+            cards, the earnings card and the charts come from reads this header says nothing about.
+
+            Keeping the tiles with an em dash in place of each number was considered and dropped: it
+            asserts nothing, which is right, but four dashed tiles read as a broken widget rather
+            than as a refusal, StatCard.count has no non-numeric state to put there, and the sentence
+            still has to go somewhere. Losing the shortcut into the directory costs little — that
+            page carries its own gender select and children checkbox.
+
+            The @if exists for the @else below; the @for would render nothing on its own.
+          -->
+          @if (demographicsRestricted()) {
+            @for (noticeKey of demographicRestrictionNotices(); track noticeKey) {
+              <p
+                class="flex items-start gap-2 rounded-hpd-sm bg-hpd-warning-tint px-4 py-3 text-sm text-hpd-warning"
+                role="status"
+                data-cy="restrictedDemographics"
+              >
+                <mat-icon class="!h-5 !w-5 shrink-0 !text-[20px]" aria-hidden="true">report_problem</mat-icon>
+                <span>{{ noticeKey | translate }}</span>
+              </p>
+            }
+          } @else {
+            <hpd-stat-card-row [cards]="demographicCards()" (selected)="navigateDemographic($event)" />
           }
-        } @else {
-          <hpd-stat-card-row [cards]="demographicCards()" (selected)="navigateDemographic($event)" />
-        }
+        </hpd-async-state>
       </section>
 
       <section aria-labelledby="hpd-dashboard-case-status">
         <h2 id="hpd-dashboard-case-status" class="sr-only">{{ 'healthConnect.dashboard.caseStatus' | translate }}</h2>
-        <hpd-stat-card-row [cards]="caseCards()" [columns]="3" (selected)="navigateCaseStatus($event)" />
+        <!--
+          THE CASE READ, and the whole of backlog item 165. hc-patient refuses a technician the case
+          collection on every load, and these three tiles sat outside every wrapper: the page said
+          "you are not permitted to read case assignments" at the top, then URGENT 0 · OPEN 0 ·
+          CLOSED 0, then — from the charts below — "your role does not give you access to this
+          information". Three zeros between two sentences denying them.
+
+          The same wrapper as the charts, bound to the same state, rather than a second notion of
+          refusal: caseQueueState() already discriminates 403 from everything else (item 146), and
+          a bespoke @if here would be a second rendering of five statuses that nothing holds to the
+          set. It also fails closed — a status this bundle does not know renders a failure rather
+          than the tiles.
+
+          TWO WRAPPERS ON ONE READ, deliberately, and the alternative was rejected on layout. Moving
+          these tiles inside the charts wrapper below would say it once, and would put the second row
+          of KPI tiles underneath the earnings card — a change to the dashboard nobody asked for. So
+          the tiles carry their own sentence, naming what is missing (refused.caseCounts), and the
+          charts keep the generic one; under an outage both say the generic error, which is repeated
+          but true.
+        -->
+        <hpd-async-state
+          [status]="repository.caseQueueState().status"
+          [empty]="false"
+          forbiddenKey="healthConnect.dashboard.refused.caseCounts"
+          (retry)="repository.reset()"
+        >
+          <hpd-stat-card-row [cards]="caseCards()" [columns]="3" (selected)="navigateCaseStatus($event)" />
+        </hpd-async-state>
       </section>
 
       <!--
@@ -282,9 +352,15 @@ export default class DashboardPageComponent implements OnInit {
    * reads, so the figures are identical with the activity log and without it — item 112's argument
    * for counting through that refusal, and the property `dashboard-page.component.spec.ts` pins by
    * comparing the two rather than by restating today's field list.
+   *
+   * <p><b>And nothing at all when the directory read did not answer</b> (backlog item 165). Item 125
+   * covered a read served *short of rows*; a read refused outright carries no header to be short in,
+   * so `demographicsRestricted()` is false and these four counted an empty cache. Two conditions
+   * because they are two facts — a partial answer and no answer — and the sentences printed for them
+   * differ accordingly.
    */
   readonly demographicCards = computed<readonly StatCard[]>(() => {
-    if (this.demographicsRestricted()) {
+    if (!countable(this.repository.directoryState()) || this.demographicsRestricted()) {
       return [];
     }
     const patients = this.repository.patientRows();
@@ -306,7 +382,25 @@ export default class DashboardPageComponent implements OnInit {
     ];
   });
 
+  /**
+   * The urgent / open / closed counts — and **nothing at all** unless the case read answered
+   * (backlog item 165).
+   *
+   * <p>Emptied in the model as well as hidden by the wrapper, for the reason item 125 gives one
+   * computed up: a later caller reading this signal gets no figure rather than a confidently wrong
+   * one, and the suppression cannot be lost by an edit to the markup. The two halves guard
+   * different things — the wrapper decides what is on screen, this decides what the number *is* —
+   * and a test against only one of them passes while the other is deleted.
+   *
+   * <p><b>A `ready` read with three zeros still shows three zeros.</b> That is the whole difficulty
+   * of this row: a technician may genuinely have no open cases, and "never print a number" would be
+   * the same defect wearing the other coat. Only the read's own state can tell the two apart, which
+   * is why {@link countable} keys on it and on nothing about the counts themselves.
+   */
   readonly caseCards = computed<readonly StatCard[]>(() => {
+    if (!countable(this.repository.caseQueueState())) {
+      return [];
+    }
     const counts = this.repository.caseCounts();
     return (['urgent', 'open', 'closed'] as const).map(status => ({
       id: status,

@@ -86,6 +86,18 @@ describe('restricted-part notices', () => {
   const followUpNotices = (locale: string): Record<string, unknown> => block(locale, 'healthConnect', 'patient', 'restrictedFollowUps');
 
   /**
+   * The dashboard's *other* notices, and a sixth block because it is a sixth kind of statement
+   * (backlog item 165).
+   *
+   * <p>{@link dashboardNotices} says a count would be **short**: that read answered, and some rows
+   * were withheld from it. This one says there is no count at all, because the read was **refused**
+   * — and it is keyed by the stat row it replaces rather than by a part, since a refused read
+   * carries no `X-Restricted-Parts` header to name one. Two facts, two blocks, two sentences;
+   * collapsing them would have the dashboard claim a list was served short when it was never served.
+   */
+  const refusedNotices = (locale: string): Record<string, unknown> => block(locale, 'healthConnect', 'dashboard', 'refused');
+
+  /**
    * The fifth block, and the first one that is not in `healthConnect.json` at all (backlog item 135).
    *
    * <p>The four above are notices the *screen* composes from a header it read. This one is what the
@@ -342,6 +354,68 @@ describe('restricted-part notices', () => {
     });
   });
 
+  describe("the dashboard's refused stat rows (backlog item 165)", () => {
+    /**
+     * One key per stat row the dashboard can be refused, spelled out because nothing derives it.
+     *
+     * <p>There is no array to key on here, and that is the difference from every block above: those
+     * are indexed by a token `api/` sends, this one by a row of this screen's own markup. The two
+     * rows come from two different reads — the patient directory and the clinical cases — which is
+     * exactly why one sentence could not cover both: a refused directory and a refused case
+     * collection withhold different figures and are refused by different services.
+     */
+    const REFUSED_KEYS = ['patientCounts', 'caseCounts'];
+
+    it.each(LANGUAGES)('has a %s sentence for every stat row a refusal can empty', locale => {
+      expect(REFUSED_KEYS.filter(key => !refusedNotices(locale)[key])).toEqual([]);
+    });
+
+    it.each(LANGUAGES)('carries no %s key for a stat row that has no refusal of its own', locale => {
+      // The mirror. The earnings card is the live case: it fails silently and renders nothing at
+      // all, by its own decision, so a sentence for it here would be shown to nobody — or would be
+      // found later and wired up, replacing a deliberate absence with a notice about a sibling
+      // stack the clinician cannot act on.
+      const stray = Object.keys(refusedNotices(locale)).filter(key => !REFUSED_KEYS.includes(key));
+
+      expect(stray).toEqual([]);
+    });
+
+    it.each(LANGUAGES)('has no blank or key-echoing %s sentence', locale => {
+      const strings = refusedNotices(locale);
+      const bad = REFUSED_KEYS.filter(
+        key => String(strings[key]).trim() === '' || String(strings[key]).includes('healthConnect.dashboard'),
+      );
+
+      expect(bad).toEqual([]);
+    });
+
+    it.each(LANGUAGES.filter(locale => locale !== 'en'))('says it in %s rather than repeating the English', locale => {
+      const english = refusedNotices('en');
+      const strings = refusedNotices(locale);
+
+      expect(REFUSED_KEYS.filter(key => strings[key] === english[key])).toEqual([]);
+    });
+
+    it.each(LANGUAGES)('tells a refused patient list apart from refused cases in %s', locale => {
+      // Two reads, two services, two different sets of figures withheld — and on a technician both
+      // can be true at once. One sentence covering both would print twice and say nothing about
+      // which row it was standing in.
+      const strings = refusedNotices(locale);
+
+      expect(new Set(REFUSED_KEYS.map(key => strings[key])).size).toBe(REFUSED_KEYS.length);
+    });
+
+    it.each(LANGUAGES)('does not reuse the %s short-count sentence for a read that never answered', locale => {
+      // Item 129's trap at its cheapest: the block next door already says "Patient totals are not
+      // shown", and copying that line across is one keystroke. It would be false. There the list
+      // arrived and was incomplete — a fact about rows — here it did not arrive at all, and telling
+      // a clinician that some patients were withheld invites them to trust the ones they can see.
+      const shortCounts = Object.values(dashboardNotices(locale)).map(String);
+
+      expect(REFUSED_KEYS.filter(key => shortCounts.includes(String(refusedNotices(locale)[key])))).toEqual([]);
+    });
+  });
+
   describe('the 503 a composed read answers with (backlog item 135)', () => {
     it.each(LANGUAGES)('has a %s sentence for each of the three things a 503 can mean', locale => {
       // Named rather than counted, so a failure says which key to write.
@@ -400,13 +474,14 @@ describe('restricted-part notices', () => {
     });
   });
 
-  it.each(LANGUAGES)('says something different in every one of the five %s restriction blocks', locale => {
+  it.each(LANGUAGES)('says something different in every one of the six %s restriction blocks', locale => {
     // Row 129's trap, generalised — and generalised rather than answered with a fifth pairwise
-    // check, which is what adding the follow-up sentence would otherwise have cost. There are five
-    // blocks now (list, follow-up, record, dashboard, 503) and the pairs grow quadratically, so the
-    // day somebody adds a sixth the pairwise checks would cover it only if they remembered to write
-    // four more. This one covers it by construction, and item 135's block joined it by being added
-    // to this one list.
+    // check, which is what adding the follow-up sentence would otherwise have cost. There are six
+    // blocks now (list, follow-up, record, dashboard-short, dashboard-refused, 503) and the pairs
+    // grow quadratically, so a seventh would be covered by the pairwise checks only if somebody
+    // remembered to write five more. This one covers it by construction, and item 135's block and
+    // item 165's each joined it by being added to this one list — which is the whole argument for
+    // it, since both were written by somebody who had not read the checks above.
     //
     // Two sentences that read alike have lost a distinction the markup still pretends to draw: the
     // clinician sees two notices and learns one thing. The blocks say, in order, that rows are
@@ -423,6 +498,7 @@ describe('restricted-part notices', () => {
       ...Object.values(followUpNotices(locale)),
       ...Object.values(recordNotices(locale)),
       ...Object.values(dashboardNotices(locale)),
+      ...Object.values(refusedNotices(locale)),
       ...Object.values(outageNotices(locale)),
     ].map(String);
 

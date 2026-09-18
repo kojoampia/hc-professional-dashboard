@@ -69,6 +69,10 @@
         "caseAssignments": "No se muestran los totales de pacientes: no tiene permiso para leer las asignaciones de casos, por lo que cualquier cifra contada aquí sería inferior a la real.",
         "unknown": "No se muestran los totales de pacientes: se retuvo parte de esta lista por un motivo que esta versión del portal no reconoce, por lo que una cifra contada aquí podría ser inferior a la real."
       },
+      "refused": {
+        "patientCounts": "No se muestran los totales de pacientes: no tiene permiso para leer la lista de pacientes, por lo que aquí no hay ninguna cifra que contar.",
+        "caseCounts": "No se muestran los totales de casos: no tiene permiso para leer los casos clínicos, por lo que aquí no hay ninguna cifra que contar."
+      },
       "charts": {
         "title": "Gráficos de casos",
         "caseTimeDescription": "Una línea de tiempo con el número acumulado de casos por fecha.",

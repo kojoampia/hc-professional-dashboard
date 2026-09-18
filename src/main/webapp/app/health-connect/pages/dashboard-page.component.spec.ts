@@ -439,4 +439,164 @@ describe('DashboardPageComponent', () => {
       expect(retryButton()).not.toBeNull();
     });
   });
+
+  /**
+   * Backlog item 165. The two stat rows render from the caches, and until this item they rendered
+   * whatever the caches held however the read that fills them had gone — so a technician, refused
+   * the case collection by hc-patient on every load, read URGENT 0 · OPEN 0 · CLOSED 0 directly
+   * above a panel saying their role has no access to case data. The page contradicted itself twice
+   * on one screen.
+   *
+   * <p><b>Three states, asserted separately, because two would not be enough.</b> "Never print a
+   * number" passes a test that only checks the refusal — and would be this same defect inverted,
+   * since a technician may genuinely have no open cases and is entitled to read that zero. So the
+   * genuine zero is its own test, and the outage is a third: a refusal offers no Retry and a failure
+   * must go on offering one.
+   *
+   * <p>Rendered for real, like the item 125 block above and for its reason: a suppression proved
+   * only against a signal survives someone deleting the wrapper that acts on it, and a wrapper
+   * proved alone survives someone restoring the count to the signal.
+   */
+  describe('a read that did not answer prints no total (backlog item 165)', () => {
+    const repository = (): FakeHealthConnectRepository => TestBed.inject(FakeHealthConnectRepository);
+    /**
+     * The tiles of one section, by the heading each section is labelled by.
+     *
+     * <p>Scoped rather than counted across the page: the whole claim is that one read's failure
+     * leaves the *other* read's tiles standing, and a count of every `hpd-stat-card` on the
+     * dashboard cannot tell four-and-none from none-and-three.
+     */
+    const tilesIn = (section: 'demographics' | 'case-status'): NodeListOf<Element> =>
+      fixture.nativeElement.querySelectorAll(`[aria-labelledby="hpd-dashboard-${section}"] hpd-stat-card`);
+    const textIn = (section: 'demographics' | 'case-status'): string =>
+      fixture.nativeElement.querySelector(`[aria-labelledby="hpd-dashboard-${section}"]`)?.textContent ?? '';
+    const retryButtonIn = (section: 'demographics' | 'case-status'): Element | null =>
+      Array.from(fixture.nativeElement.querySelectorAll(`[aria-labelledby="hpd-dashboard-${section}"] button`) as NodeListOf<Element>).find(
+        button => button.textContent?.includes('healthConnect.actions.retry'),
+      ) ?? null;
+
+    beforeEach(async () => {
+      TestBed.resetTestingModule();
+      await setUp({ renderTemplate: true });
+      flushProgress(true);
+      // Refused for the reason the two blocks above refuse it: the earnings card is the one part of
+      // this template carrying a routerLink, which a plain object Router cannot serve.
+      earningsRequest().flush(null, { status: 503, statusText: 'unavailable' });
+      fixture.detectChanges();
+    });
+
+    it('prints its three case totals when the case read answered', () => {
+      // The positive control. A treatment that fired on a healthy read would withhold three correct
+      // figures from every clinician in the estate.
+      expect(component.caseCards()).toHaveLength(3);
+      expect(tilesIn('case-status')).toHaveLength(3);
+      expect(tilesIn('demographics')).toHaveLength(4);
+    });
+
+    it('prints NO case total when the case read was refused, and says why instead', () => {
+      repository().setReadState('caseQueue', { status: 'forbidden', error: 'healthConnect.states.forbidden' });
+      fixture.detectChanges();
+
+      // Empty in the model, not merely hidden: a later caller reading this signal gets no figure
+      // rather than a confidently wrong one.
+      expect(component.caseCards()).toEqual([]);
+      expect(tilesIn('case-status')).toHaveLength(0);
+      // Its own sentence, naming what is missing. The charts below carry the generic refusal, which
+      // over an absent stat row would say nothing about which figures went.
+      expect(textIn('case-status')).toContain('healthConnect.dashboard.refused.caseCounts');
+      // A refusal is a decision, not an outage: retrying re-issues the same 403 for ever.
+      expect(retryButtonIn('case-status')).toBeNull();
+    });
+
+    it('STILL prints 0 when the caller genuinely has no cases', () => {
+      // The inverse, and the reason "never print a number" is not the fix. This read ANSWERED; the
+      // answer is that there is nothing in it, and the clinician is entitled to read that zero the
+      // same way a doctor reads a correct 12.
+      for (const row of [...repository().caseQueue()]) {
+        repository().archiveCase(row.id, 'emptied for this test');
+      }
+      fixture.detectChanges();
+
+      expect(component.caseCards()).toEqual([
+        expect.objectContaining({ id: 'urgent', count: 0 }),
+        expect.objectContaining({ id: 'open', count: 0 }),
+        expect.objectContaining({ id: 'closed', count: 0 }),
+      ]);
+      expect(tilesIn('case-status')).toHaveLength(3);
+      expect(textIn('case-status')).not.toContain('healthConnect.dashboard.refused');
+    });
+
+    it('prints no number before a read has answered, which the guard claims and nothing pinned', () => {
+      // `countable` is a POSITIVE test on 'ready', and its comment calls excluding `idle` "the
+      // deliberate half". Nothing asserted it: review found that `countable = ready || idle` survives
+      // the whole suite. `idle` is unreachable in practice — the repository's constructor calls
+      // loadAll(), which sets both reads to `loading` before first render — but a claimed property
+      // with no test is how the thing this row fixes got in. The wrapper cannot help here: its own
+      // content branch is `ready || idle`, so on `idle` it PROJECTS, and the model guard is the only
+      // thing between an unanswered read and a tile reading 0.
+      repository().setReadState('caseQueue', { status: 'idle', error: null });
+      fixture.detectChanges();
+
+      expect(component.caseCards()).toEqual([]);
+      expect(tilesIn('case-status')).toHaveLength(0);
+    });
+
+    it('tells an outage apart from a refusal, and keeps the Retry a failure deserves', () => {
+      repository().setReadState('caseQueue', { status: 'error', error: 'healthConnect.states.error' });
+      fixture.detectChanges();
+
+      // No number either — a failed read leaves the cache holding the last response or nothing at
+      // all, and neither is a total.
+      expect(component.caseCards()).toEqual([]);
+      expect(tilesIn('case-status')).toHaveLength(0);
+      // But it is NOT the refusal sentence, and it does offer the Retry that may fix it.
+      expect(textIn('case-status')).not.toContain('healthConnect.dashboard.refused.caseCounts');
+      expect(textIn('case-status')).toContain('healthConnect.states.error');
+      expect(retryButtonIn('case-status')).not.toBeNull();
+    });
+
+    it('prints no patient total when the DIRECTORY read was refused, and says why instead', () => {
+      // The same defect on the other stat row. Item 125 covered a directory served short of rows;
+      // a refused read carries no header to be short in, so its four figures counted an empty cache.
+      repository().setReadState('directory', { status: 'forbidden', error: 'healthConnect.states.forbidden' });
+      fixture.detectChanges();
+
+      expect(component.demographicCards()).toEqual([]);
+      expect(tilesIn('demographics')).toHaveLength(0);
+      expect(textIn('demographics')).toContain('healthConnect.dashboard.refused.patientCounts');
+      expect(retryButtonIn('demographics')).toBeNull();
+    });
+
+    it('leaves item 125 to say it when the directory answered SHORT rather than not at all', () => {
+      // The two facts must not collapse into one sentence. A read served short of rows still
+      // answered, so the restriction notice is what belongs there — not the refusal sentence, which
+      // would claim the list was never read.
+      repository().setDirectoryRestrictions(['caseAssignments']);
+      fixture.detectChanges();
+
+      expect(component.demographicCards()).toEqual([]);
+      expect(fixture.nativeElement.querySelector('[data-cy="restrictedDemographics"]')).not.toBeNull();
+      expect(textIn('demographics')).toContain('healthConnect.dashboard.restricted.caseAssignments');
+      expect(textIn('demographics')).not.toContain('healthConnect.dashboard.refused.patientCounts');
+    });
+
+    it('suppresses only the row whose own read went wrong', () => {
+      // The isolation item 146 bought, at this surface. A refused case read costs the case totals
+      // and the charts; the demographic totals come from a read that answered, and hiding them
+      // would remove more truth than falsehood.
+      repository().setReadState('caseQueue', { status: 'forbidden', error: 'healthConnect.states.forbidden' });
+      fixture.detectChanges();
+
+      expect(tilesIn('demographics')).toHaveLength(4);
+      expect(component.demographicCards()).toHaveLength(4);
+    });
+
+    it('suppresses only the row whose own read went wrong, the other way round', () => {
+      repository().setReadState('directory', { status: 'error', error: 'healthConnect.states.error' });
+      fixture.detectChanges();
+
+      expect(tilesIn('case-status')).toHaveLength(3);
+      expect(component.caseCards()).toHaveLength(3);
+    });
+  });
 });

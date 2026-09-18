@@ -69,6 +69,10 @@
         "caseAssignments": "Les totaux de patients ne sont pas affichés : vous n'êtes pas autorisé à lire les affectations de cas, de sorte que tout chiffre compté ici serait inférieur à la réalité.",
         "unknown": "Les totaux de patients ne sont pas affichés : une partie de cette liste a été retenue pour un motif que cette version du portail ne reconnaît pas, de sorte qu'un chiffre compté ici pourrait être inférieur à la réalité."
       },
+      "refused": {
+        "patientCounts": "Les totaux de patients ne sont pas affichés : vous n'êtes pas autorisé à lire la liste des patients, il n'y a donc aucun chiffre à compter ici.",
+        "caseCounts": "Les totaux de cas ne sont pas affichés : vous n'êtes pas autorisé à lire les cas cliniques, il n'y a donc aucun chiffre à compter ici."
+      },
       "charts": {
         "title": "Graphiques des cas",
         "caseTimeDescription": "Chronologie montrant le nombre cumulé de cas par date.",
