@@ -161,8 +161,14 @@ function builtCatalogueState(): { comparable: boolean; why: string } {
  *
  * <p>Keyed on `CI`, which GitHub Actions sets to `true`, rather than on a variable this repository
  * invents and sets on one step: a bespoke flag guards nothing once somebody deletes the step that
- * sets it, and the deletion is exactly the regression item 160 is about. `CI=false` and `CI=` are
- * read as "not CI" because that is what tooling means by them.
+ * sets it, and the deletion is exactly the regression item 160 is about.
+ *
+ * <p>The falsy set is `undefined`, `''`, `'0'` and `'false'` in any case — what tooling means by "not
+ * CI". <b>Every other value enforces, including one this never anticipated</b> (`no`, `off`): the
+ * unlisted direction is deliberately fail-closed, because a runner with an odd `CI` value should cost
+ * a red build rather than restore the silent skip this row exists to remove. Stated in full because
+ * review found this paragraph naming only two of the four falsy values, and an understated comment is
+ * how the next reader concludes the guard is narrower than it is.
  */
 function enforcedRun(): boolean {
   const ci = process.env.CI;
