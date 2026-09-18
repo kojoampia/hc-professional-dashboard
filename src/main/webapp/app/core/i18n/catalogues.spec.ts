@@ -25,8 +25,17 @@ import { LANGUAGES } from 'app/config/language.constants';
  * a claim that goes stale quietly. So it is checked against the real thing: when a build output is
  * present and no older than the catalogues, `%s built catalogue matches the merge model` compares
  * every key **and value** of `target/classes/static/i18n/<lang>.json` with what this file computes.
- * With no build output it skips — visibly, with the reason in the test name, because a check that
- * silently passes when it did not run is worse than no check.
+ *
+ * <p>**With no build output those four cases skip on a developer's machine and FAIL in CI**, and that
+ * asymmetry is the whole of `docs/backlog.md` item 160. They were written to skip *visibly* — a
+ * `console.warn` and the reason in the test name — on the reasoning that a check which silently
+ * passes when it did not run is worse than no check. The reasoning was right and insufficient:
+ * `.github/workflows/ci.yml` ran `npm test` **before** `npm run webapp:prod`, and a job starts from a
+ * fresh `npm ci` checkout, so the output never existed and all four skipped on **every CI run for as
+ * long as they had existed**. The warning was printed every time and read by nobody — a warning
+ * inside a green run is not a signal. The workflow now builds first, and {@link enforcedRun} turns
+ * "cannot compare" into a failure there, so putting the build back after the tests reddens CI rather
+ * than quietly disarming this check again.
  *
  * @see docs/CLAUDE.md § Cross-repo invariants, "Four languages, everywhere, always"
  */
@@ -142,6 +151,30 @@ function builtCatalogueState(): { comparable: boolean; why: string } {
     : { comparable: false, why: 'build output is older than the catalogues; run npx ng build' };
 }
 
+/**
+ * Whether this is a run where *not being able to compare* is a failure rather than a skip.
+ *
+ * <p>CI is that run and a developer's machine is not, because the two want opposite things from the
+ * same missing file. A developer who types `npm test` on a fresh clone wants the rest of the suite,
+ * not a red build demanding a 40-second production build first; CI has already produced the artefact
+ * one step earlier, so a skip there can only mean the workflow stopped doing so.
+ *
+ * <p>Keyed on `CI`, which GitHub Actions sets to `true`, rather than on a variable this repository
+ * invents and sets on one step: a bespoke flag guards nothing once somebody deletes the step that
+ * sets it, and the deletion is exactly the regression item 160 is about.
+ *
+ * <p>The falsy set is `undefined`, `''`, `'0'` and `'false'` in any case — what tooling means by "not
+ * CI". <b>Every other value enforces, including one this never anticipated</b> (`no`, `off`): the
+ * unlisted direction is deliberately fail-closed, because a runner with an odd `CI` value should cost
+ * a red build rather than restore the silent skip this row exists to remove. Stated in full because
+ * review found this paragraph naming only two of the four falsy values, and an understated comment is
+ * how the next reader concludes the guard is narrower than it is.
+ */
+function enforcedRun(): boolean {
+  const ci = process.env.CI;
+  return ci !== undefined && ci !== '' && ci !== '0' && ci.toLowerCase() !== 'false';
+}
+
 describe('translation catalogues', () => {
   it('ships exactly the four languages the workspace requires', () => {
     // en/es/fr/de is a shipping condition, not a roadmap item. Spanish arrived with the careers
@@ -200,12 +233,29 @@ describe('translation catalogues', () => {
   });
 
   const built = builtCatalogueState();
-  if (!built.comparable) {
+  const enforced = enforcedRun();
+  if (!built.comparable && !enforced) {
     // Belt and braces with the test name: a reporter that hides skipped cases still prints this.
+    // Not printed when enforced, because there the four cases run and say it themselves, loudly.
     console.warn(`translation catalogues: built-catalogue verification SKIPPED — ${built.why}`);
   }
 
-  (built.comparable ? it : it.skip).each(LOCALES)(`%s built catalogue matches the merge model — ${built.why}`, locale => {
+  // Run when there is something to compare, and — the point of item 160 — run *anyway* in CI, where
+  // the only way to have nothing to compare is for the workflow to have stopped building first.
+  (built.comparable || enforced ? it : it.skip).each(LOCALES)(`%s built catalogue matches the merge model — ${built.why}`, locale => {
+    if (!built.comparable) {
+      // Reachable only under CI. Thrown rather than expected so the message is the whole output: an
+      // ENOENT from the readFileSync below would be just as red and would send the reader to the
+      // filesystem instead of to the workflow, which is where the fault actually is.
+      throw new Error(
+        `built-catalogue verification could not run: ${built.why}. This is CI (CI=${process.env.CI ?? ''}), ` +
+          'where a skipped check is a check that did not happen — see docs/backlog.md item 160. ' +
+          '`.github/workflows/ci.yml` runs `npm run webapp:prod` before `npm test` for exactly this ' +
+          'reason; restore that order rather than making this skip again. Locally, run `npx ng build` ' +
+          'first, or leave CI unset and these four cases skip as before.',
+      );
+    }
+
     // The model in `deepMerge` is a *claim about someone else's code*, and an untested claim about
     // a dependency ages badly: the plugin resolves a leaf against a group in a way no reasonable
     // person would guess (see its docblock), and if it ever changed, every parity check above would
