@@ -313,7 +313,7 @@
         "records": "Dossier patient partagé",
         "rostersValue": "24/7",
         "rosters": "Couverture des gardes",
-        "languagesValue": "4",
+        "languagesValue": "{{count}}",
         "languages": "Langues"
       }
     },
