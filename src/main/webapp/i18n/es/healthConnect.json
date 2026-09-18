@@ -302,7 +302,7 @@
       "signInHint": "Inicie sesión en su cuenta clínica.",
       "portal": "Portal",
       "facts": {
-        "rolesValue": "9",
+        "rolesValue": "{{count}}",
         "roles": "Roles clínicos",
         "recordsValue": "1",
         "records": "Expediente compartido",

@@ -41,12 +41,22 @@
       What the portal is for, in four figures. The sibling portals both carry this row — hc-admin
       fills it from live network totals, hc-patient from the record on screen. Neither source exists
       before sign-in here, and inventing plausible numbers on a sign-in page would be a lie a
-      clinician could not check, so these describe the product rather than counting anything.
+      clinician could not check, so three of the four describe the product rather than counting
+      anything.
+
+      The clinical-role figure is the fourth, and it does count something: the disciplines in
+      CLINICAL_ROLES, passed in through `translateValues` because a number written into four
+      catalogues is a number that goes stale, and did — `../../../../docs/backlog.md` item 149.
     -->
       <ul class="mt-9 grid list-none grid-cols-2 gap-x-6 gap-y-5 p-0 xl:grid-cols-4">
         @for (fact of facts; track fact.labelKey) {
           <li>
-            <b class="block text-[22px] font-extrabold leading-none text-hpd-gold-bright" [jhiTranslate]="fact.valueKey">—</b>
+            <b
+              class="block text-[22px] font-extrabold leading-none text-hpd-gold-bright"
+              [jhiTranslate]="fact.valueKey"
+              [translateValues]="fact.valueParams"
+              >—</b
+            >
             <span class="mt-1.5 block text-[12.5px] leading-snug text-hpd-on-navy-muted" [jhiTranslate]="fact.labelKey"></span>
           </li>
         }

@@ -302,7 +302,7 @@
       "signInHint": "Sign in to your clinician account.",
       "portal": "Portal",
       "facts": {
-        "rolesValue": "9",
+        "rolesValue": "{{count}}",
         "roles": "Clinical roles",
         "recordsValue": "1",
         "records": "Shared patient record",
