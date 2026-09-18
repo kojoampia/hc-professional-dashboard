@@ -1,6 +1,9 @@
 import { readdirSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
+import dayjs from 'dayjs/esm';
+
+import 'app/config/dayjs';
 import FindLanguageFromKeyPipe from 'app/shared/language/find-language-from-key.pipe';
 
 import { LANGUAGES } from './language.constants';
@@ -25,6 +28,15 @@ import { LANGUAGES } from './language.constants';
  * because four languages is a product condition. This file asserts the different thing item 162 needs
  * — that whatever the set is, the code and the catalogues agree on it, so a figure derived from
  * `LANGUAGES` is a figure about what the portal actually ships.
+ *
+ * <p><b>`dayjs.ts` carries a fourth copy, and review found this docstring had missed it.</b> Its
+ * `jhipster-needle-i18n-language-dayjs-imports` registers one locale per language, and a language in
+ * `LANGUAGES` without a matching import is the quietest failure of the four: `main.component.ts` calls
+ * `dayjs.locale(lang)` on every switch, and an unregistered locale is a **silent no-op that leaves
+ * dayjs on the previously selected language** — it does not fall back to English. Month names, weekday
+ * names and humanized durations then render in whatever locale was chosen before, which is invisible to
+ * anyone testing in English. It is guarded below off `dayjs.Ls`, dayjs's own registry of loaded locales,
+ * so nothing here is hand-kept.
  *
  * <p><b>What is deliberately not guarded here.</b> `find-language-from-key.pipe.ts` and
  * `webpack/webpack.custom.js` each carry their own copy of the set behind their own needle. The pipe
@@ -54,7 +66,11 @@ describe('LANGUAGES', () => {
     // A count is only as honest as the list it counts. The region form is allowed because `pt-BR` is
     // a locale somebody may legitimately add; what this refuses is a member that is not a locale at
     // all — a needle written as a string, a placeholder, a comment that became data.
-    expect(LANGUAGES.filter(language => !/^[a-z]{2}(-[A-Za-z]{2,4})?$/.test(language))).toEqual([]);
+    // Up to two subtags, because generator-jhipster 8.1.0's own languageTag list includes the
+    // script+region form — az-Latn-az, kr-Latn-kr, uz-Cyrl-uz, uz-Latn-uz. Review found the
+    // one-subtag form refused all four, which failed this guard's own stated standard: refusing a
+    // locale the generator can legitimately emit is a guard that punishes the correct change.
+    expect(LANGUAGES.filter(language => !/^[a-z]{2}(-[A-Za-z]{2,4}){0,2}$/.test(language))).toEqual([]);
   });
 
   it('names each language once, so the count is a count of languages and not of entries', () => {
@@ -66,6 +82,15 @@ describe('LANGUAGES', () => {
     // loud — `catalogues.spec.ts` cannot read the directory. A catalogue with no entry in the list is
     // silent: it is built and served, nobody can select it, and the advertised figure undercounts it.
     expect([...LANGUAGES].sort()).toEqual(catalogueDirectories());
+  });
+
+  it('has a dayjs locale loaded for every language it offers, so dates are not silently left behind', () => {
+    // The quietest of the four copies. main.component.ts calls dayjs.locale(lang) on every switch, and
+    // an unregistered locale is a NO-OP: dayjs stays on the previously selected language rather than
+    // falling back to English, so dates render in whatever was chosen before. Invisible to anyone
+    // testing in English, and invisible to every other check here. Derived from dayjs's own registry,
+    // not from a second list — importing app/config/dayjs above is what populates it.
+    expect(LANGUAGES.filter(language => !(language in dayjs.Ls))).toEqual([]);
   });
 
   it('has a display name for every language it offers', () => {
