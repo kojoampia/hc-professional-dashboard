@@ -379,6 +379,28 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     return true;
   }
 
+  /**
+   * Put one collection read into a chosen state.
+   *
+   * <p>Spec-only and, since backlog item 168, **deliberately not on {@link HealthConnectRepository}**
+   * — like {@link setRecordState} and the restriction setters beside it, and for the same reason. It
+   * was on the interface and on `HttpHealthConnectRepository` with no production caller, which made a
+   * read outcome settable by anything holding the repository: a state no read produced, asserting
+   * something the network never said. That is the shape items 146 and 165 exist to remove. The real
+   * repository derives these two states from a response and from nothing else.
+   *
+   * <p>It stays *here* because the cases those items turn on — a refused read, an outage, a read that
+   * never answered — are reached through this seam wherever a spec needs one. Deliberately no list of
+   * which specs: the first version of this sentence carried one and it was already wrong — "three page
+   * specs and this file's own" missed `async-state.component.spec.ts` — and a hand-kept enumeration in
+   * a comment is the next wrong count. Grep for the callers instead. Removing the seam without this
+   * replacement would have made those cases unreachable and cost both rows their guards.
+   *
+   * <p>One method rather than one per state because the states are a closed set: `'forbidden'` would
+   * otherwise have needed a third setter on the day item 146 added it, which is how a fourth arrives
+   * without one. `health-connect.repository.spec.ts` enumerates `ASYNC_STATUSES` through this method
+   * so a member added later is covered without anyone editing the check.
+   */
   setReadState(read: RepositoryRead, state: AsyncViewState): void {
     this.reads.update(reads => ({ ...reads, [read]: state }));
   }

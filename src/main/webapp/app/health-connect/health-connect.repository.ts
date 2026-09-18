@@ -36,6 +36,11 @@ export interface PatientDirectoryFilters {
  * <p>The roster read is not one either, deliberately: `DutyRosterAssignmentsService` swallows its own
  * failure into an empty list, so a roster outage empties the "my roster" scope instead of erroring a
  * page. Item 146 generalised that isolation to the other two reads; it did not replace it.
+ *
+ * <p>Since item 168 its only consumer is `FakeHealthConnectRepository` — the seam that names a read
+ * is spec-only now. It stays declared here regardless: which reads this repository makes is a fact
+ * about the repository, not about the double, and `directoryState` / `caseQueueState` below are the
+ * two members it names.
  */
 export type RepositoryRead = 'directory' | 'caseQueue';
 
@@ -156,17 +161,30 @@ export interface HealthConnectRepository {
   ): ClinicalReport | null;
   /** Retires a case from the queue. The reason is required by the server and is not defaulted. */
   archiveCase(id: string, reason: string): boolean;
-  /**
-   * Put one read into a chosen state. Spec-only in practice — nothing in the application calls it.
+  /*
+   * There is deliberately no `setReadState` on this interface — backlog item 168. This note is here
+   * so its absence reads as a decision rather than an omission somebody should tidy up.
    *
-   * <p>It replaces `setLoading(boolean)` and `setError(string | null)`, which were forced out rather
-   * than tidied away: with one state per read, "loading" and "failed" are no longer facts about the
-   * repository, and a setter that cannot name which read it means can only restore the shared signal
-   * item 146 removed. One method rather than three because the states are one closed set —
-   * `'forbidden'` would otherwise have needed a third setter on the day it was added, which is how a
-   * fourth arrives without one.
+   * It sat here, and on `HttpHealthConnectRepository`, with **no production caller**: every use was a
+   * spec putting a read into a state the real reads would otherwise have to be provoked into. That is
+   * legitimate for a spec and wrong for this surface. A mutator declared here is reachable from
+   * production code, and the day something calls it the repository has a second way to set a state
+   * that no read produced — a signal asserting something the network never said. That is the shape
+   * items 146 and 165 exist to remove, one layer down.
+   *
+   * The seam was not deleted, it moved: `FakeHealthConnectRepository.setReadState` keeps it, beside
+   * `setRecordState`, which was already spec-only for exactly this reason. Deleting it outright would
+   * have made the refused-read, outage and unanswered-read cases those two items turn on unreachable,
+   * and quietly cost both rows their guards.
+   *
+   * `health-connect.repository.spec.ts` holds both halves: that every `AsyncStatus` is still reachable
+   * from a spec — enumerated from `ASYNC_STATUSES`, so a sixth member is covered without anyone
+   * editing the check — and that the name is back on neither this interface nor the HTTP
+   * implementation.
+   *
+   * `reset()` is **not** the same shape and stays: it has five production callers, every one a
+   * `(retry)` handler on a page template.
    */
-  setReadState(read: RepositoryRead, state: AsyncViewState): void;
   reset(): void;
 }
 

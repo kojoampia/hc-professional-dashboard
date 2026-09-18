@@ -1,7 +1,10 @@
+import { Signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
+import { ASYNC_STATUSES, AsyncViewState } from './health-connect.models';
 import { FakeHealthConnectRepository } from './testing/fake-health-connect.repository';
-import { HEALTH_CONNECT_REPOSITORY } from './health-connect.repository';
+import { HEALTH_CONNECT_REPOSITORY, HealthConnectRepository, RepositoryRead } from './health-connect.repository';
+import { HttpHealthConnectRepository } from './http-health-connect.repository';
 
 describe('FakeHealthConnectRepository', () => {
   let repository: FakeHealthConnectRepository;
@@ -131,6 +134,70 @@ describe('FakeHealthConnectRepository', () => {
     repository.reset();
     expect(repository.directoryState()).toEqual({ status: 'ready', error: null });
     expect(repository.caseQueueState()).toEqual({ status: 'ready', error: null });
+  });
+
+  /**
+   * Item 168's constraint, held by a check rather than by somebody having looked.
+   *
+   * <p>Moving `setReadState` off the production interface is only safe while the specs that reach a
+   * refused read, an outage and an unanswered read can still reach every state those cases live in —
+   * the property items 146 and 165 bought with their guards. So: every `AsyncStatus`, on every read.
+   *
+   * <p><b>Both axes are derived, and that is the point.</b> The statuses come from `ASYNC_STATUSES`,
+   * the runtime array item 146 introduced precisely so a bare union could not hide an unexercised
+   * member; a sixth arrives here with no edit. The reads come from a `Record<RepositoryRead, …>`,
+   * which the compiler will not let be built with a member missing, so a third read fails to compile
+   * rather than going unchecked. A hand-written list of either would be worse than nothing — it would
+   * report on the set somebody remembered.
+   *
+   * <p>Each status is approached from a *different* one first, chosen from the array rather than
+   * named, because `'ready'` is the fake's resting state: a `setReadState` that silently did nothing
+   * would still satisfy an assertion that the read is `'ready'`.
+   */
+  describe('every AsyncStatus stays reachable from a spec (item 168)', () => {
+    const readStates = (): Readonly<Record<RepositoryRead, Signal<AsyncViewState>>> => ({
+      directory: repository.directoryState,
+      caseQueue: repository.caseQueueState,
+    });
+
+    it.each(ASYNC_STATUSES.map(status => [status] as const))('reaches %s on every read', status => {
+      // `error` is null throughout: what is under test is which statuses the seam can express, not
+      // which key each carries. The catalogue keys are asserted by the page specs that render them.
+      const target: AsyncViewState = { status, error: null };
+      const approachFrom = ASYNC_STATUSES.find(candidate => candidate !== status)!;
+
+      for (const [read, state] of Object.entries(readStates()) as [RepositoryRead, Signal<AsyncViewState>][]) {
+        repository.setReadState(read, { status: approachFrom, error: null });
+        expect(state().status).toBe(approachFrom);
+
+        repository.setReadState(read, target);
+        expect(state()).toEqual(target);
+      }
+    });
+  });
+
+  /**
+   * The other half of item 168: the seam is the fake's, and it is on nothing the application holds.
+   *
+   * <p>`setReadState` was declared on {@link HealthConnectRepository} and implemented on
+   * {@link HttpHealthConnectRepository} with no production caller. A mutator there is reachable from
+   * production code, and a read state that no read produced is a signal asserting something the
+   * network never said — the shape items 146 and 165 exist to remove, one layer down. Nothing today
+   * calls it; this asserts that nothing *can*.
+   */
+  it('keeps the read-state seam off the production surface', () => {
+    // @ts-expect-error — `setReadState` must not be a member of `HealthConnectRepository`, and this
+    // line is the guard rather than a workaround: it is a type error today, and `@ts-expect-error`
+    // itself becomes an error on the day it stops being one — the day somebody puts the seam back on
+    // the interface. Re-declaring it there alone would also break `implements` on the two classes; it
+    // is re-declaring it there *and* implementing it, which compiles cleanly everywhere else, that
+    // nothing but this line would notice.
+    const seamOnTheInterface: keyof HealthConnectRepository = 'setReadState';
+    expect(seamOnTheInterface).toBe('setReadState');
+
+    // And the implementation the application is actually bound to. Its own prototype rather than
+    // `in`, so a method inherited from somewhere else is not mistaken for this one coming back.
+    expect(Object.getOwnPropertyNames(HttpHealthConnectRepository.prototype)).not.toContain('setReadState');
   });
 
   /**
