@@ -43,13 +43,31 @@ const SESSION_AUTHORITATIVE_SERVICES = ['professionalservice'];
  * foreign by default, which is the safe direction: the cost of a wrong answer is one 401 that
  * fails to sign a clinician out, against a valid session destroyed.
  *
- * ⚠ Known and accepted: sibling calls are proxied *through* our own gateway, which gates
- * `/services/**` itself, so a genuinely dead token produces a 401 on a sibling URL that is
- * indistinguishable here from the sibling's own refusal. Such a token fails every other call too —
- * including the bare and `professionalservice` ones every screen but `/earnings` makes — so the
- * expiry is still caught. On `/earnings`, whose only backend call is to `adminservice`, it is
- * caught on the next navigation instead. That is the trade item 156 chose: only the issuer of a
- * token may declare it dead, and a late sign-out is worth less harm than a wrongful one.
+ * ⚠ The alternative this rejects, and the trade it makes — both measured, not reasoned about.
+ *
+ * Sibling calls are proxied *through* our own gateway, which gates `/services/**` itself, so a
+ * genuinely dead token also produces a 401 on a sibling URL. Those two 401s are **not**
+ * indistinguishable, and an earlier version of this comment claimed they were. Measured against
+ * the quality stack, the sibling's own refusal answers `WWW-Authenticate: Bearer
+ * error="invalid_token", error_description="An error occurred while attempting to decode the Jwt:
+ * Signed JWT rejected: Invalid signature", …, resource_metadata="…/services/adminservice/
+ * .well-known/oauth-protected-resource"`, while this gateway's own rejection answers
+ * `error_description="Failed to validate the token"` and carries no `resource_metadata` at all.
+ * Both are same-origin, so a client can read either.
+ *
+ * So a header-keyed rule is buildable — and it is still the wrong one, for a better reason than
+ * impossibility. It would key this portal's session on **another product's framework output**:
+ * that metadata comes from hc-admin's Spring Security, not from any contract this estate has
+ * agreed. The day hc-admin upgrades, reconfigures, or changes its refusal path, the header changes
+ * and this interceptor silently resumes signing clinicians out on a sibling's refusal — item 156
+ * returning, undetectable by every test in this repository, because the signal that changed
+ * originates in a repository these tests cannot see. **The prefix rule fails safe; a header-keyed
+ * rule fails open.** That asymmetry is the reason, and it is why this one wins.
+ *
+ * What failing safe costs: a dead token is still caught by every bare and `professionalservice`
+ * call, which is every screen except `/earnings`, whose only backend call is to `adminservice`.
+ * There an expiry is caught on the next navigation instead. A late sign-out is less harm than a
+ * wrongful one — the trade item 156 chose.
  */
 function canEndTheSession(url: string): boolean {
   const routed = ROUTED_SERVICE.exec(url);
