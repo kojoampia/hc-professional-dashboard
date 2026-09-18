@@ -136,6 +136,48 @@ describe('PatientRecordPageComponent', () => {
     };
   });
 
+  describe('why there is no record (backlog item 146)', () => {
+    // `findPatient`'s two failure handlers wrote the repository's single shared error signal — which
+    // THIS page never read — so their whole visible effect was to blank the directory, the dashboard
+    // and the case queue, while the one screen actually waiting on that read said "no records found"
+    // about a response that had been refused or had 503'd. Both halves were wrong.
+    const sentence = (): string | undefined => fixture.nativeElement.textContent?.trim();
+    const repository = (): FakeHealthConnectRepository => TestBed.inject(FakeHealthConnectRepository);
+
+    beforeEach(() => {
+      // The fake serves a record unless the directory read said this follow-up will refuse, which is
+      // the only way to reach the branch under test.
+      repository().setDirectoryRestrictedFollowUps(['record']);
+    });
+
+    it('says the read was REFUSED, not that the patient has nothing', () => {
+      repository().setRecordState('patient-kojo', { status: 'forbidden', error: 'healthConnect.states.forbidden' });
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('[data-cy="recordForbidden"]')).not.toBeNull();
+      expect(sentence()).toContain('healthConnect.states.forbidden');
+      expect(sentence()).not.toContain('healthConnect.states.empty');
+    });
+
+    it('says the read FAILED when it failed, which is a different sentence again', () => {
+      repository().setRecordState('patient-kojo', { status: 'error', error: 'healthConnect.states.error' });
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('[data-cy="recordFailed"]')).not.toBeNull();
+      expect(sentence()).toContain('healthConnect.states.error');
+    });
+
+    it('still says "no records found" for a read that succeeded and found nothing', () => {
+      // The positive control, and why the empty sentence stays the default: it is the right one for
+      // a patient with nothing recorded, and the wrong one for every other reason there is no record.
+      repository().setRecordState('patient-kojo', { status: 'ready', error: null });
+      fixture.detectChanges();
+
+      expect(sentence()).toContain('healthConnect.states.empty');
+      expect(fixture.nativeElement.querySelector('[data-cy="recordForbidden"]')).toBeNull();
+    });
+  });
+
   it('blocks report mutations for a read-only role, including direct method invocation', () => {
     authenticationState.next({ ...authenticationState.value, authorities: ['ROLE_USER'] });
     fixture.detectChanges();

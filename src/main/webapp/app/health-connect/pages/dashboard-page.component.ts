@@ -114,7 +114,15 @@ const INCOMPLETE_PROFILE_REDIRECT_MS = 2000;
         </section>
       }
 
-      <hpd-async-state [status]="repository.asyncState().status" [empty]="false" (retry)="repository.reset()">
+      <!--
+        THE CASE READ, because that is what these three charts are made of (item 146). Every one is a
+        pure function of the case collection — charts is a computed over the cached cases, not a
+        fetch of its own — so the case read's state is the only one that describes them. The
+        demographic cards above already sit outside this wrapper and come from the directory read,
+        which now carries its own. Binding one shared state here made a refused case queue and a
+        failed single-patient record fetch equally able to blank a panel neither had a part in.
+      -->
+      <hpd-async-state [status]="repository.caseQueueState().status" [empty]="false" (retry)="repository.reset()">
         <section class="mt-4 grid grid-cols-1 gap-3.5" [attr.aria-label]="'healthConnect.dashboard.charts.title' | translate">
           <hpd-line-chart
             [points]="repository.charts().caseTimeline"

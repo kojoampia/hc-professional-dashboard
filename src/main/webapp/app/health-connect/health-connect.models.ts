@@ -46,7 +46,26 @@ export const caseStatusVariant = (status: CaseStatus | undefined): 'urgent' | 'o
 };
 export type PatientSex = 'female' | 'male' | 'unspecified';
 export type RosterScope = 'all' | 'mine';
-export type AsyncStatus = 'idle' | 'loading' | 'error' | 'ready';
+/**
+ * Every state a read reported through {@link AsyncViewState} can be in.
+ *
+ * <p><b>`forbidden` is not a kind of `error`, and that is the whole point of it</b> (backlog item
+ * 146). An error is a failure to read, and a Retry may fix it; a refusal is a decision, and offering
+ * a Retry for one re-issues the same 403 for ever. hc-patient's `ScopeOfPractice` grants
+ * `TECHNICIAN` `{OBSERVATION, IDENTITY}` only, so the cross-stack case read is refused for a whole
+ * discipline on every load — a permanent state rendered as a transient one.
+ *
+ * <p>The vocabulary is not invented here: `roster/day-list.component.ts` already discriminates the
+ * same key into the same word — `state: response.status === 403 ? 'forbidden' : 'error'` — and a
+ * second spelling of one concept in one repo is a cost this estate pays too often already.
+ *
+ * <p><b>A runtime array with the union derived from it</b>, for `DUTY_ROSTER_SHIFTS`' reason: a bare
+ * union cannot be enumerated, so nothing can assert that every member of it is handled. It is
+ * `async-state.component.spec.ts` that enumerates this, and that spec would silently check four of
+ * five members if this were written the other way round.
+ */
+export const ASYNC_STATUSES = ['idle', 'loading', 'error', 'forbidden', 'ready'] as const;
+export type AsyncStatus = (typeof ASYNC_STATUSES)[number];
 
 export interface HealthConnectProfessional {
   id: string;

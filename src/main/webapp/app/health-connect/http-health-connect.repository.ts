@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 
 import { AlertService } from 'app/core/util/alert.service';
@@ -31,16 +32,46 @@ import {
   RosterScope,
   ShiftLabel,
 } from './health-connect.models';
-import { HealthConnectRepository, PatientDirectoryFilters } from './health-connect.repository';
+import { HealthConnectRepository, PatientDirectoryFilters, RepositoryRead } from './health-connect.repository';
 
 /**
- * What {@link HttpHealthConnectRepository.asyncState} reports when a load fails.
+ * What a read reports when it fails.
  *
- * A catalogue key, and the same one `<hpd-async-state>` renders by default — the three loads used to
- * set English sentences here ("Failed to load case queue"), which nothing displayed and nothing
- * translated. One key for all three, because none of them was ever distinguished on screen.
+ * A catalogue key, and the same one `<hpd-async-state>` renders by default — the loads used to set
+ * English sentences here ("Failed to load case queue"), which nothing displayed and nothing
+ * translated. Still one key for every read, because no surface distinguishes *which* read failed.
+ * What item 146 separated is the **state**, and each read now carries its own.
  */
 const LOAD_ERROR_KEY = 'healthConnect.states.error';
+
+/**
+ * What a read reports when it was refused.
+ *
+ * <p>A different key as well as a different status, because the sentence is different: "unable to
+ * load this information" invites a Retry that cannot help. See {@link classifyFailure}.
+ */
+const REFUSED_KEY = 'healthConnect.states.forbidden';
+
+/** {@link AsyncViewState} is immutable data, so the three unremarkable ones are shared values. */
+const IDLE: AsyncViewState = { status: 'idle', error: null };
+const LOADING: AsyncViewState = { status: 'loading', error: null };
+const READY: AsyncViewState = { status: 'ready', error: null };
+
+/**
+ * A failed response, as the state the read it belongs to should report.
+ *
+ * <p><b>403 is the boundary and anything else is a failure to read</b> — the same discrimination on
+ * the same key that `roster/day-list.component.ts:286` already makes, lifted to a function so every
+ * read in this repository makes it rather than one feature making it alone.
+ *
+ * <p>Typed on `unknown` deliberately: `HttpClient` hands an error callback `any`, and a non-HTTP
+ * throw reaches it too. Anything with no readable status is classified as a **failure**, which is
+ * the safe direction — calling something a refusal withdraws the Retry that would have fixed it.
+ */
+const classifyFailure = (response: unknown): AsyncViewState =>
+  response instanceof HttpErrorResponse && response.status === 403
+    ? { status: 'forbidden', error: REFUSED_KEY }
+    : { status: 'error', error: LOAD_ERROR_KEY };
 
 /**
  * Real HttpClient-backed implementation of HealthConnectRepository, built
@@ -137,15 +168,33 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
   private readonly pendingRecordFetches = new Set<string>();
   private readonly clinicalCaseCache = signal<readonly ClinicalCaseDto[]>([]);
   private readonly archivedCaseIds = signal<ReadonlySet<string>>(new Set());
-  private readonly loading = signal(false);
   /**
-   * The failure carried by {@link asyncState}, as a **catalogue key** rather than a sentence.
+   * How the patient-directory read went, and **nothing else's read** (backlog item 146).
    *
-   * Only `asyncState().status` is read today — `<hpd-async-state>` renders its own `errorKey`, which
-   * defaults to this same key — but the value is typed as a string that something may one day
-   * display, and an English sentence here would ship untranslated on the day it does.
+   * <p>There was one `error` signal here, written by four handlers belonging to three unrelated
+   * reads, and `<hpd-async-state>` blanks everything it wraps on `'error'`. So a refused case queue
+   * emptied the directory table, and opening one patient whose record read failed emptied pages the
+   * clinician was not even looking at. The reads fail for unrelated reasons; they now say so
+   * separately.
+   *
+   * <p>The failure is carried as a **catalogue key** rather than a sentence. Only `.status` is read
+   * today — `<hpd-async-state>` renders its own `errorKey` — but the value is typed as something
+   * that may one day be displayed, and an English sentence here would ship untranslated on the day
+   * it is.
    */
-  private readonly error = signal<string | null>(null);
+  private readonly directoryRead = signal<AsyncViewState>(IDLE);
+  /** How the clinical-case read went. Refused outright for a technician — see {@link REFUSED_KEY}. */
+  private readonly caseQueueRead = signal<AsyncViewState>(IDLE);
+  /**
+   * How each patient's own record read went, keyed by patient id.
+   *
+   * <p>Keyed for {@link recordRestrictionCache}'s reason and written beside it: records persist in
+   * {@link recordCache} and the screen shows whichever one the route names, so one value would
+   * describe the newest response while an older record is on screen. These were the two writers
+   * that reached furthest — a failed record read set the shared signal, which blanked the directory,
+   * the dashboard and the case queue at once.
+   */
+  private readonly recordReads = signal<ReadonlyMap<string, AsyncViewState>>(new Map());
 
   readonly patients = computed<readonly PatientRecord[]>(() => Array.from(this.recordCache().values()));
   /**
@@ -153,10 +202,8 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
    * dashboard and the sidebar user card cannot disagree about what the caller is on duty for.
    */
   readonly dutyRosters = computed<readonly DutyRoster[]>(() => this.rosterApi.myAssignments().map(toDutyRoster));
-  readonly asyncState = computed<AsyncViewState>(() => ({
-    status: this.error() ? 'error' : this.loading() ? 'loading' : 'ready',
-    error: this.error(),
-  }));
+  readonly directoryState = computed<AsyncViewState>(() => this.directoryRead());
+  readonly caseQueueState = computed<AsyncViewState>(() => this.caseQueueRead());
   readonly patientRows = computed(() => this.patientRowCache());
   readonly directoryRestrictions = computed(() => this.patientRestrictions());
   readonly directoryNamedUnknownPart = computed(() => this.patientUnknownRestriction());
@@ -248,6 +295,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
       return cached;
     }
     this.pendingRecordFetches.add(id);
+    this.recordReads.update(states => new Map(states).set(id, LOADING));
     this.patientApi.find(id).subscribe({
       next: response => {
         const dto = response.body;
@@ -255,8 +303,12 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
           // A 200 carrying no body is a broken contract, not a state to render. Substituting an
           // empty record would manufacture precisely the screen item 126 exists to remove: a
           // patient who looks as though nobody has ever touched them.
+          //
+          // An error against THIS patient, not against the application (item 146). The old line set
+          // the shared signal, which blanked the directory, the dashboard and the case queue — three
+          // surfaces the clinician was not looking at, none of which had read anything broken.
           this.pendingRecordFetches.delete(id);
-          this.error.set(LOAD_ERROR_KEY);
+          this.recordReads.update(states => new Map(states).set(id, { status: 'error', error: LOAD_ERROR_KEY }));
           return;
         }
         const record: PatientRecord = {
@@ -296,10 +348,14 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
         // silent screen — the ordinary case for five of the eight disciplines.
         this.recordRestrictionCache.update(cache => new Map(cache).set(id, parseRestrictedParts(response.headers)));
         this.pendingRecordFetches.delete(id);
+        this.recordReads.update(states => new Map(states).set(id, READY));
       },
-      error: () => {
+      error: (response: unknown) => {
         this.pendingRecordFetches.delete(id);
-        this.error.set(LOAD_ERROR_KEY);
+        // Against this patient alone, and discriminated: `api/` answers 403 for a record outside the
+        // caller's scope of practice, and "unable to load" with a Retry is the wrong sentence for a
+        // boundary that will refuse every time (item 146).
+        this.recordReads.update(states => new Map(states).set(id, classifyFailure(response)));
         // Nothing to drop here, and that is a property worth stating rather than a gap. A fetch
         // only happens for an id that is NOT cached, and the restriction is written in the success
         // handler beside the record — so on this path the map holds no entry for `id`, and the
@@ -313,6 +369,13 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
 
   recordRestrictions(patientId: string): readonly RestrictedPart[] {
     return this.recordRestrictionCache().get(patientId) ?? [];
+  }
+
+  recordState(patientId: string): AsyncViewState {
+    // `idle` for a patient never asked for, which is not the same as "ready and empty": the record
+    // page renders "no records found" on `ready`, and saying that about a read nobody has made yet
+    // is the fabricated-emptiness item 126 removed.
+    return this.recordReads().get(patientId) ?? IDLE;
   }
 
   findCase(id: string): ClinicalCase | undefined {
@@ -490,10 +553,12 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
   /**
    * Reports a failed WRITE without blanking what is on screen.
    *
-   * <p>Every mutation here used to call `this.error.set(...)`, and `this.error` is what
-   * `asyncState.status` reads to decide between the list and "Unable to load this information". So a
-   * failed write replaced the whole collection with an error panel — and `Retry` re-ran the load,
-   * which succeeded, but never cleared the signal, so only a full page reload brought the list back.
+   * <p>Every mutation here used to call `this.error.set(...)` — the single shared load-failure signal
+   * that item 146 has since split per read, and that `<hpd-async-state>` reads to decide between the
+   * list and "Unable to load this information". So a failed write replaced the whole collection with
+   * an error panel — and `Retry` re-ran the load, which succeeded, but never cleared the signal, so
+   * only a full page reload brought the list back. **A write still reports through an alert and
+   * touches no read's state**; splitting the reads did not give a write one to blank.
    *
    * <p>Reachable from all four writes. Archive used to be the one that failed every time, because
    * hc-patient gated `/archive` on `ROLE_PROFESSIONAL` and this portal issues no such authority —
@@ -515,12 +580,8 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
     this.alertService.addAlert({ type: 'danger', translationKey, translationParams: params, toast: true, timeout: 5000 });
   }
 
-  setLoading(loading: boolean): void {
-    this.loading.set(loading);
-  }
-
-  setError(error: string | null): void {
-    this.error.set(error);
+  setReadState(read: RepositoryRead, state: AsyncViewState): void {
+    (read === 'directory' ? this.directoryRead : this.caseQueueRead).set(state);
   }
 
   reset(): void {
@@ -529,14 +590,18 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
     // whatever the next fetch returns, which may have been refused nothing.
     this.recordRestrictionCache.set(new Map());
     this.pendingRecordFetches.clear();
+    // And with them, how each record read went — for the same reason, one layer up: a `forbidden`
+    // left behind by the cleared cache would explain a record that is no longer there.
+    this.recordReads.set(new Map());
     this.archivedCaseIds.set(new Set());
-    this.error.set(null);
     this.loadAll();
   }
 
   private loadAll(): void {
-    this.loading.set(true);
-    this.error.set(null);
+    // Each read announces its own loading state and clears its own failure. One shared pair of
+    // signals here is what let the last read to fail speak for all of them (item 146).
+    this.directoryRead.set(LOADING);
+    this.caseQueueRead.set(LOADING);
 
     // `size: 200` is now a REAL ceiling. Until 2026-08-22 `GET /api/patients` accepted no paging
     // parameters and answered with the whole caseload, so this asked for 200 and received however
@@ -557,26 +622,35 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
         this.patientRestrictions.set(parseRestrictedParts(response.headers));
         this.patientUnknownRestriction.set(hasUnrecognisedRestrictedParts(response.headers));
         this.patientRestrictedFollowUps.set(parseRestrictedFollowUps(response.headers));
+        this.directoryRead.set(READY);
       },
       // The rows are NOT cleared here, and neither is what was withheld from them (item 125). A
       // failed read replaces nothing, so the cache still holds the previous response's rows and the
       // previous response's restrictions still describe them. Clearing only the second — which this
       // did until item 125 — is what put four confidently short totals back on the dashboard, whose
       // cards are outside the error panel and go on rendering whatever the cache holds.
-      error: () => this.error.set(LOAD_ERROR_KEY),
+      error: (response: unknown) => this.directoryRead.set(classifyFailure(response)),
     });
 
+    // The read hc-patient refuses a technician outright, every time: their `ScopeOfPractice` grants
+    // {OBSERVATION, IDENTITY}, so this answers 403 on every load for a whole discipline. Its own
+    // state, so the refusal empties the case queue and the dashboard charts — which are derived from
+    // it — and nothing else.
     this.clinicalCaseService.query().subscribe({
-      next: response => this.clinicalCaseCache.set(response.body ?? []),
-      error: () => this.error.set(LOAD_ERROR_KEY),
+      next: response => {
+        this.clinicalCaseCache.set(response.body ?? []);
+        this.caseQueueRead.set(READY);
+      },
+      error: (response: unknown) => this.caseQueueRead.set(classifyFailure(response)),
     });
 
     // Owns its own load rather than relying on the sidebar having run first — same request count as
     // before, since this class already made one of its own. The service swallows its errors into an
     // empty list, so a roster outage empties the "my roster" scope instead of erroring the page.
+    //
+    // Untouched by item 146: this read was ALREADY isolated, deliberately and by having no error
+    // handler at all, which is what the per-read states above generalise rather than replace.
     this.rosterApi.loadMyAssignments();
-
-    this.loading.set(false);
   }
 }
 

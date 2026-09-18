@@ -62,7 +62,12 @@ const isRosterScope = (value: string | null): value is RosterScope => value === 
           </button>
         </section>
 
-        <hpd-async-state [status]="repository.asyncState().status" [empty]="rows().length === 0" (retry)="repository.reset()">
+        <!--
+          The CASE read's state (item 146). This is the queue those cases fill, so a refusal belongs
+          here and is rendered as a refusal — no Retry, because patientservice will answer 403 to a
+          technician every time it is asked.
+        -->
+        <hpd-async-state [status]="repository.caseQueueState().status" [empty]="rows().length === 0" (retry)="repository.reset()">
           <hpd-data-table
             [columns]="columns"
             [rows]="rows()"

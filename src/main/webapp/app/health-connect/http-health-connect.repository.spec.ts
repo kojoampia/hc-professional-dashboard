@@ -32,24 +32,26 @@ describe('HttpHealthConnectRepository', () => {
 
   it('does NOT blank the collection when a WRITE fails', () => {
     // The regression this exists for, found by clicking Archive on the quality stack. Every mutation
-    // used to call `this.error.set(...)`, and `this.error` is what asyncState.status reads to choose
-    // between the list and "Unable to load this information" — so one failed write replaced the
-    // whole case queue with an error panel, Retry re-ran the load and never cleared the signal, and
-    // only a full page reload brought the list back.
+    // used to call `this.error.set(...)` — the shared load-failure signal item 146 has since split
+    // per read — which is what decides between the list and "Unable to load this information". So
+    // one failed write replaced the whole case queue with an error panel, Retry re-ran the load and
+    // never cleared the signal, and only a full page reload brought the list back.
     //
     // A LOAD failure blanking the collection is right: there is nothing to show. A WRITE failure is
-    // not: the data on screen is still there and still correct.
+    // not: the data on screen is still there and still correct. Splitting the reads gave a write no
+    // state to blank either — the 403 below must not become the case read's refusal.
     // flushInitialLoad puts case-1 in the queue; without a real case archiveCase returns at its
     // guard and the test passes while exercising nothing.
     flushInitialLoad();
-    expect(repository.asyncState().status).not.toBe('error');
+    expect(repository.caseQueueState().status).toBe('ready');
 
     expect(repository.archiveCase('case-1', 'a reason')).toBe(true);
     httpMock
       .match(request => request.url.includes('archive'))
       .forEach(request => request.flush({ message: 'denied' }, { status: 403, statusText: 'Forbidden' }));
 
-    expect(repository.asyncState().status).not.toBe('error');
+    expect(repository.caseQueueState().status).toBe('ready');
+    expect(repository.directoryState().status).toBe('ready');
     expect(alerts).toContain('healthConnect.toast.archiveFailed');
   });
 
@@ -94,6 +96,96 @@ describe('HttpHealthConnectRepository', () => {
     expect(repository.caseQueue()).toHaveLength(1);
     expect(repository.caseQueue()[0]).toMatchObject({ id: 'case-1', status: 'urgent', brief: 'High fever', patientId: 'patient-kojo' });
     expect(repository.caseCounts()).toEqual({ urgent: 1, open: 0, treatment: 0, closed: 0 });
+  });
+
+  describe('one state per read, and a refusal is not an error (backlog item 146)', () => {
+    // Measured on the quality stack as a technician, 2026-09-17, against the image these tests were
+    // written for: `api/patients` 200 with 100 rows, `patientservice/api/clinical-cases` 403,
+    // `api/duty-roster` 200. Every assertion below reproduces one leg of that.
+    it('serves the directory rows it received while the case read is REFUSED', () => {
+      httpMock
+        .expectOne(request => request.url.endsWith('services/professionalservice/api/patients'))
+        .flush([{ id: 'patient-kojo', patientName: 'Kojo Ampia-Addison', lastActivityAt: null, sex: 'male', isChild: false }], {
+          headers: { 'X-Total-Count': '1' },
+        });
+      httpMock
+        .expectOne(request => request.url.endsWith('services/patientservice/api/clinical-cases'))
+        .flush('nope', { status: 403, statusText: 'Forbidden' });
+      httpMock.expectOne('services/professionalservice/api/duty-roster').flush([]);
+
+      expect(repository.patientRows()).toHaveLength(1);
+      expect(repository.directoryState()).toEqual({ status: 'ready', error: null });
+      // Refused, not failed — and with its own key, because "unable to load this information"
+      // invites a Retry that re-issues the same 403 for ever.
+      expect(repository.caseQueueState()).toEqual({ status: 'forbidden', error: 'healthConnect.states.forbidden' });
+    });
+
+    it('calls a 503 on the same read an error, because that one IS transient', () => {
+      // The discrimination in both directions. Without this, mapping every failure to `forbidden`
+      // would pass the test above and withdraw the Retry from an outage that a Retry would fix.
+      httpMock
+        .expectOne(request => request.url.endsWith('services/professionalservice/api/patients'))
+        .flush([], { headers: { 'X-Total-Count': '0' } });
+      httpMock
+        .expectOne(request => request.url.endsWith('services/patientservice/api/clinical-cases'))
+        .flush('nope', { status: 503, statusText: 'Service Unavailable' });
+      httpMock.expectOne('services/professionalservice/api/duty-roster').flush([]);
+
+      expect(repository.caseQueueState()).toEqual({ status: 'error', error: 'healthConnect.states.error' });
+      expect(repository.directoryState().status).toBe('ready');
+    });
+
+    it('keeps a failed directory read out of the case queue’s state, and the converse', () => {
+      httpMock
+        .expectOne(request => request.url.endsWith('services/professionalservice/api/patients'))
+        .flush('nope', { status: 503, statusText: 'Service Unavailable' });
+      httpMock.expectOne(request => request.url.endsWith('services/patientservice/api/clinical-cases')).flush([], { headers: {} });
+      httpMock.expectOne('services/professionalservice/api/duty-roster').flush([]);
+
+      expect(repository.directoryState().status).toBe('error');
+      expect(repository.caseQueueState().status).toBe('ready');
+    });
+
+    it('CONTAINS a failed record read to that patient, leaving the directory and the queue alone', () => {
+      // The two writers the row calls the worst of the four: a record read that went wrong used to
+      // blank the directory, the dashboard and the case queue — pages the clinician was not looking
+      // at and that had read nothing broken.
+      flushInitialLoad();
+      repository.findPatient('patient-kojo');
+      httpMock
+        .expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo'))
+        .flush('nope', { status: 403, statusText: 'Forbidden' });
+
+      expect(repository.recordState('patient-kojo')).toEqual({ status: 'forbidden', error: 'healthConnect.states.forbidden' });
+      expect(repository.directoryState().status).toBe('ready');
+      expect(repository.caseQueueState().status).toBe('ready');
+      expect(repository.patientRows()).toHaveLength(1);
+      expect(repository.caseQueue()).toHaveLength(1);
+    });
+
+    it('contains a 200-with-no-body to that patient too, which is the other record writer', () => {
+      flushInitialLoad();
+      repository.findPatient('patient-kojo');
+      httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo')).flush(null);
+
+      expect(repository.recordState('patient-kojo')).toEqual({ status: 'error', error: 'healthConnect.states.error' });
+      expect(repository.directoryState().status).toBe('ready');
+      expect(repository.caseQueueState().status).toBe('ready');
+    });
+
+    it('reports one patient’s refused record without touching another’s', () => {
+      // Keyed per patient for `recordRestrictionCache`'s reason: records are cached and a clinician
+      // moves between them, so one value would describe the newest read while an older record is on
+      // screen.
+      flushInitialLoad();
+      repository.findPatient('patient-kojo');
+      httpMock
+        .expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo'))
+        .flush('nope', { status: 403, statusText: 'Forbidden' });
+
+      expect(repository.recordState('patient-kojo').status).toBe('forbidden');
+      expect(repository.recordState('patient-ama').status).toBe('idle');
+    });
   });
 
   describe('X-Restricted-Parts on the directory read (backlog item 114)', () => {
@@ -168,7 +260,7 @@ describe('HttpHealthConnectRepository', () => {
         .expectOne(request => request.url.endsWith('services/professionalservice/api/patients'))
         .flush('nope', { status: 503, statusText: 'Service Unavailable' });
 
-      expect(repository.asyncState().status).toBe('error');
+      expect(repository.directoryState().status).toBe('error');
       // Both halves, because the pair is the property: stale rows with a stale restriction describe
       // each other, and either one alone is the wrong screen.
       expect(repository.patientRows()).toEqual(rowsBefore);
@@ -236,7 +328,7 @@ describe('HttpHealthConnectRepository', () => {
           .expectOne(request => request.url.endsWith('services/professionalservice/api/patients'))
           .flush('nope', { status: 503, statusText: 'Service Unavailable' });
 
-        expect(repository.asyncState().status).toBe('error');
+        expect(repository.directoryState().status).toBe('error');
         expect(repository.patientRows()).toEqual(rowsBefore);
         expect(repository.directoryRestrictedFollowUps()).toEqual(['record']);
       });
@@ -372,7 +464,7 @@ describe('HttpHealthConnectRepository', () => {
         .expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo'))
         .flush('nope', { status: 503, statusText: 'Service Unavailable' });
 
-      expect(repository.asyncState().status).toBe('error');
+      expect(repository.recordState('patient-kojo').status).toBe('error');
       expect(repository.recordRestrictions('patient-kojo')).toEqual([]);
     });
 
@@ -384,8 +476,11 @@ describe('HttpHealthConnectRepository', () => {
       repository.findPatient('patient-kojo');
       httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo')).flush(null);
 
+      // Asserted BEFORE asking again, because asking again re-requests: the read's state is
+      // `loading` from the line below onwards, which is right and is not what this test is about.
+      expect(repository.recordState('patient-kojo').status).toBe('error');
       expect(repository.findPatient('patient-kojo')).toBeUndefined();
-      expect(repository.asyncState().status).toBe('error');
+      expect(repository.recordState('patient-kojo').status).toBe('loading');
       // That second findPatient re-requested, nothing having been cached. Flushed so verify() passes.
       httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo')).flush(null);
     });

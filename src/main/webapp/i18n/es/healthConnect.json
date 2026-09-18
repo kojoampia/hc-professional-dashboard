@@ -280,6 +280,7 @@
       "loading": "Cargando…",
       "empty": "No se encontraron registros.",
       "error": "No se pudo cargar esta información.",
+      "forbidden": "Su rol no le da acceso a esta información.",
       "readOnly": "Tiene acceso de solo lectura."
     },
     "pagination": {

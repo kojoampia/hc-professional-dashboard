@@ -20,7 +20,7 @@ import {
   shiftStartHour,
 } from '../health-connect.models';
 import { RESTRICTED_FOLLOW_UPS, RESTRICTED_PARTS, RestrictedFollowUp, RestrictedPart } from '../api/restricted-parts';
-import { HealthConnectRepository, PatientDirectoryFilters } from '../health-connect.repository';
+import { HealthConnectRepository, PatientDirectoryFilters, RepositoryRead } from '../health-connect.repository';
 import {
   HEALTH_CONNECT_DUTY_ROSTERS,
   HEALTH_CONNECT_PATIENT_RECORDS,
@@ -81,8 +81,20 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
   private readonly records = signal<readonly PatientRecord[]>(copyRecords());
   private readonly rosters = signal<readonly DutyRoster[]>(copyRosters());
   private readonly archivedCaseIds = signal<ReadonlySet<string>>(new Set());
-  private readonly loading = signal(false);
-  private readonly error = signal<string | null>(null);
+  /**
+   * One state per read, mirroring the real repository (backlog item 146).
+   *
+   * <p>A single pair of loading/error signals here would let a spec assert an isolation the fake
+   * cannot break: every page would go on sharing one state, and "the directory survives a refused
+   * case read" would pass by construction. `'ready'` rather than `'idle'` at rest because the fixture
+   * data is already present — a fake whose reads have not happened yet would render every page as
+   * unread until a spec said otherwise.
+   */
+  private readonly reads = signal<Readonly<Record<RepositoryRead, AsyncViewState>>>({
+    directory: { status: 'ready', error: null },
+    caseQueue: { status: 'ready', error: null },
+  });
+  private readonly recordReads = signal<ReadonlyMap<string, AsyncViewState>>(new Map());
   private readonly restrictions = signal<readonly RestrictedPart[]>([]);
   private readonly unknownRestriction = signal(false);
   private readonly restrictedFollowUps = signal<readonly RestrictedFollowUp[]>([]);
@@ -90,10 +102,8 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
 
   readonly patients = this.records.asReadonly();
   readonly dutyRosters = this.rosters.asReadonly();
-  readonly asyncState = computed<AsyncViewState>(() => ({
-    status: this.error() ? 'error' : this.loading() ? 'loading' : 'ready',
-    error: this.error(),
-  }));
+  readonly directoryState = computed<AsyncViewState>(() => this.reads().directory);
+  readonly caseQueueState = computed<AsyncViewState>(() => this.reads().caseQueue);
   /**
    * The directory, with BOTH refusals modelled on the rows rather than only in the header.
    *
@@ -217,6 +227,14 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
 
   recordRestrictions(patientId: string): readonly RestrictedPart[] {
     return this.recordRestrictionsByPatient().get(patientId) ?? [];
+  }
+
+  /**
+   * How one patient's record read went. `ready` for a record the fixture holds, so a spec that says
+   * nothing about a read gets the unremarkable case rather than a page claiming nothing was read.
+   */
+  recordState(patientId: string): AsyncViewState {
+    return this.recordReads().get(patientId) ?? { status: 'ready', error: null };
   }
 
   findCase(id: string): ClinicalCase | undefined {
@@ -361,12 +379,20 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     return true;
   }
 
-  setLoading(loading: boolean): void {
-    this.loading.set(loading);
+  setReadState(read: RepositoryRead, state: AsyncViewState): void {
+    this.reads.update(reads => ({ ...reads, [read]: state }));
   }
 
-  setError(error: string | null): void {
-    this.error.set(error);
+  /**
+   * Stand in for one patient's record read failing or being refused.
+   *
+   * <p>Spec-only and deliberately not on {@link HealthConnectRepository}, like the restriction
+   * setters beside it: the real repository derives this from a response. It exists so a spec can
+   * prove the containment item 146 is mostly about — a record read that goes wrong must leave the
+   * directory, the dashboard and the case queue exactly as they were.
+   */
+  setRecordState(patientId: string, state: AsyncViewState): void {
+    this.recordReads.update(states => new Map(states).set(patientId, state));
   }
 
   /**
@@ -417,8 +443,8 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     this.records.set(copyRecords());
     this.rosters.set(copyRosters());
     this.archivedCaseIds.set(new Set());
-    this.loading.set(false);
-    this.error.set(null);
+    this.reads.set({ directory: { status: 'ready', error: null }, caseQueue: { status: 'ready', error: null } });
+    this.recordReads.set(new Map());
     this.restrictions.set([]);
     this.unknownRestriction.set(false);
     this.restrictedFollowUps.set([]);
