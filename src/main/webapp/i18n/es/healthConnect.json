@@ -313,7 +313,7 @@
         "records": "Expediente compartido",
         "rostersValue": "24/7",
         "rosters": "Cobertura de turnos",
-        "languagesValue": "4",
+        "languagesValue": "{{count}}",
         "languages": "Idiomas"
       }
     },

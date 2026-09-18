@@ -313,7 +313,7 @@
         "records": "Gemeinsame Patientenakte",
         "rostersValue": "24/7",
         "rosters": "Dienstplan-Abdeckung",
-        "languagesValue": "4",
+        "languagesValue": "{{count}}",
         "languages": "Sprachen"
       }
     },

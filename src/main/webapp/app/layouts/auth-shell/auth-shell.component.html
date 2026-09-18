@@ -41,12 +41,15 @@
       What the portal is for, in four figures. The sibling portals both carry this row — hc-admin
       fills it from live network totals, hc-patient from the record on screen. Neither source exists
       before sign-in here, and inventing plausible numbers on a sign-in page would be a lie a
-      clinician could not check, so three of the four describe the product rather than counting
+      clinician could not check, so TWO of the four describe the product rather than counting
       anything.
 
-      The clinical-role figure is the fourth, and it does count something: the disciplines in
-      CLINICAL_ROLES, passed in through `translateValues` because a number written into four
-      catalogues is a number that goes stale, and did — `../../../../docs/backlog.md` item 149.
+      The other TWO do count something, and both are derived rather than written: the clinical-role
+      figure from CLINICAL_ROLES (item 149) and the languages figure from LANGUAGES (item 162), each
+      passed in through `translateValues` because a number written into four catalogues is a number
+      that goes stale — and both of these did. This said "three of the four" until item 162 derived
+      the second one: a comment describing a count is itself a count, and goes stale the same way.
+      `../../../../docs/backlog.md` items 149 and 162.
     -->
       <ul class="mt-9 grid list-none grid-cols-2 gap-x-6 gap-y-5 p-0 xl:grid-cols-4">
         @for (fact of facts; track fact.labelKey) {

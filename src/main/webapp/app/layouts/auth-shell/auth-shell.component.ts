@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
+import { LANGUAGES } from 'app/config/language.constants';
 import { CLINICAL_ROLES } from 'app/health-connect/authority-role';
 import SharedModule from 'app/shared/shared.module';
 
@@ -34,17 +35,20 @@ export default class AuthShellComponent {
    * user-visible as the labels, and a "24/7" that stays "24/7" in German is a decision to take
    * deliberately in the catalogue rather than by hardcoding it here.
    *
-   * <p><b>The clinical-role figure is the exception, because it is a count and not a claim.</b> Its
-   * catalogue value is `{{count}}` and the number arrives through `translateValues` from
-   * {@link CLINICAL_ROLES}; `footer.copyright` injects the year the same way for the same reason. It
-   * was a literal `"9"` in four catalogues and stayed nine for nine days after `ROLE_ANGEL` stopped
-   * being a discipline — `../../../../docs/backlog.md` items 44 and 149. `auth-shell.component.spec.ts`
-   * renders this row in every locale and holds the numeral to that list.
+   * <p><b>Two of the four are exceptions, because they are counts and not claims.</b> Their catalogue
+   * values are `{{count}}` and the numbers arrive through `translateValues` from
+   * {@link CLINICAL_ROLES} and {@link LANGUAGES}; `footer.copyright` injects the year the same way for
+   * the same reason. The role figure was a literal `"9"` in four catalogues and stayed nine for nine
+   * days after `ROLE_ANGEL` stopped being a discipline — `../../../../docs/backlog.md` items 44 and
+   * 149. The language figure was a literal `"4"` and was **right**, which is item 162: it agreed with
+   * `LANGUAGES.length` by coincidence, the way the role figure once agreed with the disciplines, and
+   * `jhipster-needle-i18n-language-constant` means the generator can move that list without anybody
+   * deciding to change a number. `auth-shell.component.spec.ts` renders both rows in every locale and
+   * holds each numeral to its list.
    *
-   * <p>The other three are not counts of anything this code can reach — one shared record,
-   * round-the-clock cover. `languagesValue` is the near miss: `4` agrees with `LANGUAGES.length`
-   * today by coincidence rather than by derivation, and is deliberately left alone here because item
-   * 149's scope is the role count. Item 149 records it.
+   * <p>The other two are not counts of anything this code can reach — one shared record,
+   * round-the-clock cover — so their text stays in the catalogues, digits and all, and the same spec
+   * holds them there.
    */
   readonly facts: readonly { valueKey: string; labelKey: string; valueParams?: Record<string, unknown> }[] = [
     {
@@ -54,6 +58,10 @@ export default class AuthShellComponent {
     },
     { valueKey: 'healthConnect.brand.facts.recordsValue', labelKey: 'healthConnect.brand.facts.records' },
     { valueKey: 'healthConnect.brand.facts.rostersValue', labelKey: 'healthConnect.brand.facts.rosters' },
-    { valueKey: 'healthConnect.brand.facts.languagesValue', labelKey: 'healthConnect.brand.facts.languages' },
+    {
+      valueKey: 'healthConnect.brand.facts.languagesValue',
+      labelKey: 'healthConnect.brand.facts.languages',
+      valueParams: { count: LANGUAGES.length },
+    },
   ];
 }

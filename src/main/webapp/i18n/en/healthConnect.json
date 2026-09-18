@@ -313,7 +313,7 @@
         "records": "Shared patient record",
         "rostersValue": "24/7",
         "rosters": "Duty roster cover",
-        "languagesValue": "4",
+        "languagesValue": "{{count}}",
         "languages": "Languages"
       }
     },
