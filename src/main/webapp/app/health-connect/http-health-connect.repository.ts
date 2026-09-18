@@ -32,7 +32,7 @@ import {
   RosterScope,
   ShiftLabel,
 } from './health-connect.models';
-import { HealthConnectRepository, PatientDirectoryFilters, RepositoryRead } from './health-connect.repository';
+import { HealthConnectRepository, PatientDirectoryFilters } from './health-connect.repository';
 
 /**
  * What a read reports when it fails.
@@ -181,6 +181,13 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
    * today — `<hpd-async-state>` renders its own `errorKey` — but the value is typed as something
    * that may one day be displayed, and an English sentence here would ship untranslated on the day
    * it is.
+   *
+   * <p>Since item 168 this signal and {@link caseQueueRead} are written **only by the reads
+   * themselves** — {@link loadAll} and the two subscribers below, and nothing else in this class or
+   * out of it. `setReadState` used to sit on this class with no production caller and let anything
+   * holding the repository state a read outcome the network never produced; the seam it existed for
+   * is now `FakeHealthConnectRepository`'s alone. Keep it that way: a writer that is not a read is
+   * how a signal starts lying.
    */
   private readonly directoryRead = signal<AsyncViewState>(IDLE);
   /** How the clinical-case read went. Refused outright for a technician — see {@link REFUSED_KEY}. */
@@ -578,10 +585,6 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
    */
   private reportWriteFailure(translationKey: string, params?: Record<string, unknown>): void {
     this.alertService.addAlert({ type: 'danger', translationKey, translationParams: params, toast: true, timeout: 5000 });
-  }
-
-  setReadState(read: RepositoryRead, state: AsyncViewState): void {
-    (read === 'directory' ? this.directoryRead : this.caseQueueRead).set(state);
   }
 
   reset(): void {
