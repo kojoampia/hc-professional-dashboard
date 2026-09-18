@@ -164,7 +164,18 @@ const isPatientSex = (value: string | null): value is PatientSex => value === 'f
           </p>
         }
 
-        <hpd-async-state [status]="repository.asyncState().status" [empty]="directoryPage().totalItems === 0" (retry)="repository.reset()">
+        <!--
+          THE DIRECTORY'S OWN READ, not the application's (item 146). This bound one state shared
+          with the case queue and with every record fetch, so a technician — whose case read
+          patientservice refuses on every single load — got "Unable to load this information" over
+          rows that had arrived perfectly well, under two notices explaining the restrictions on a
+          table that was not there.
+        -->
+        <hpd-async-state
+          [status]="repository.directoryState().status"
+          [empty]="directoryPage().totalItems === 0"
+          (retry)="repository.reset()"
+        >
           <hpd-data-table
             [columns]="columns()"
             [rows]="directoryPage().items"

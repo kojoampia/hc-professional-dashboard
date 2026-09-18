@@ -280,6 +280,7 @@
       "loading": "Loading...",
       "empty": "No records found.",
       "error": "Unable to load this information.",
+      "forbidden": "Your role does not give you access to this information.",
       "readOnly": "You have read-only access."
     },
     "pagination": {

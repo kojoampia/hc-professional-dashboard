@@ -190,28 +190,29 @@ describe('PatientDirectoryPageComponent', () => {
       expect(table.querySelectorAll('thead th')).toHaveLength(component.columns().length);
     });
 
-    it('STILL says it when another read fails and the table is replaced by an error panel', () => {
+    it('STILL says it when another read fails — and the table it describes is now still there too', () => {
       // The blocking defect the first version of this shipped with, and the test that was missing
-      // from BOTH repos.
+      // from BOTH repos. `patientservice` answers a technician 403 on `clinical-cases` — their
+      // `ScopeOfPractice` grants OBSERVATION and IDENTITY only, which item 111's Decision A recorded
+      // as measured — so the directory read succeeds and carries the header while a DIFFERENT read
+      // has failed.
       //
-      // `loadAll` fires three requests sharing one error signal, and `patientservice` answers a
-      // technician 403 on `clinical-cases` — their `ScopeOfPractice` grants OBSERVATION and IDENTITY
-      // only, which item 111's Decision A already recorded as measured. So the directory read
-      // succeeds and carries the header while `asyncState` is `error`, and `<hpd-async-state>`
-      // projects its content in the final `@else` alone. With the notice inside it, the one
-      // discipline the header is sent to was the one discipline that never saw the sentence: two
-      // item-114 notices, then "Unable to load this information", and a Retry that re-issues the
-      // same 403 for ever.
+      // ITEM 146 CHANGED THE SECOND ASSERTION AND THE TITLE WITH IT. `loadAll` used to give both
+      // reads one error signal, so the surviving directory rows were replaced by "Unable to load
+      // this information" and a Retry that re-issues the same 403 for ever; item 132 could only move
+      // the notice out of the wrapper, leaving the clinician reading "these records are not yours to
+      // open" above an error panel. The reads now carry their own states, so the sentence and the
+      // table it is about are on screen together.
       //
-      // The header is a fact about the read that SUCCEEDED. A different request failing does not
-      // make these records openable — and the clinician needs the permanent explanation exactly when
-      // the screen is otherwise offering them a transient one.
+      // The header is a fact about the read that SUCCEEDED, which is why the notice survives either
+      // way — and why a different request failing must not take the rows with it.
       restrictFollowUps('record');
-      TestBed.inject(FakeHealthConnectRepository).setError('healthConnect.states.error');
+      TestBed.inject(FakeHealthConnectRepository).setReadState('caseQueue', { status: 'error', error: 'healthConnect.states.error' });
       fixture.detectChanges();
 
-      expect(component.repository.asyncState().status).toBe('error');
-      expect(fixture.nativeElement.querySelector('.hpd-data-table')).toBeNull();
+      expect(component.repository.caseQueueState().status).toBe('error');
+      expect(component.repository.directoryState().status).toBe('ready');
+      expect(fixture.nativeElement.querySelector('.hpd-data-table')).not.toBeNull();
       expect(followUpNotice()).not.toBeNull();
     });
 
@@ -303,6 +304,68 @@ describe('PatientDirectoryPageComponent', () => {
       TestBed.inject(FakeHealthConnectRepository).setDirectoryRestrictions(parts);
       fixture.detectChanges();
     };
+  });
+
+  describe('one read per state (backlog item 146)', () => {
+    // The row's headline: a technician loading the directory sees their rows. Measured on the
+    // quality stack before the change — `GET api/patients` 200 with 100 rows, `GET
+    // api/clinical-cases` 403 — and the rendered page carried three sentences about restrictions,
+    // no table at all, and a Retry button.
+    const table = (): Element | null => fixture.nativeElement.querySelector('.hpd-data-table');
+    const retryButton = (): Element | null =>
+      Array.from(fixture.nativeElement.querySelectorAll('button') as NodeListOf<Element>).find(
+        button => button.textContent?.includes('healthConnect.actions.retry'),
+      ) ?? null;
+    const repository = (): FakeHealthConnectRepository => TestBed.inject(FakeHealthConnectRepository);
+
+    it('SHOWS A TECHNICIAN THEIR ROWS while the case read is refused', () => {
+      repository().setReadState('caseQueue', { status: 'forbidden', error: 'healthConnect.states.forbidden' });
+      fixture.detectChanges();
+
+      expect(table()).not.toBeNull();
+      expect(retryButton()).toBeNull();
+    });
+
+    it('survives a case-queue read that failed outright, not only one that was refused', () => {
+      // Refusal and failure are different states now, and only one of them is the technician's. The
+      // isolation has to hold for both, or the fix is a special case for a 403.
+      repository().setReadState('caseQueue', { status: 'error', error: 'healthConnect.states.error' });
+      fixture.detectChanges();
+
+      expect(table()).not.toBeNull();
+    });
+
+    it('survives a record read that failed for a patient nobody is looking at', () => {
+      // `findPatient`'s two handlers were the shared signal's worst writers: opening one patient
+      // whose record 503'd blanked this page, the dashboard and the case queue at once — three
+      // surfaces with no part in that read.
+      repository().setRecordState('patient-ama', { status: 'error', error: 'healthConnect.states.error' });
+      repository().setRecordState('patient-kojo', { status: 'forbidden', error: 'healthConnect.states.forbidden' });
+      fixture.detectChanges();
+
+      expect(table()).not.toBeNull();
+      expect(retryButton()).toBeNull();
+    });
+
+    it('STILL blanks itself, with a Retry, when the DIRECTORY read is the one that failed', () => {
+      // The inverse, and the test without which "stop blanking things" would pass as the fix. This
+      // read is the table's own: there is nothing to show, an outage is transient, and Retry is the
+      // right offer.
+      repository().setReadState('directory', { status: 'error', error: 'healthConnect.states.error' });
+      fixture.detectChanges();
+
+      expect(table()).toBeNull();
+      expect(retryButton()).not.toBeNull();
+    });
+
+    it('blanks itself with NO Retry when the directory read was refused', () => {
+      repository().setReadState('directory', { status: 'forbidden', error: 'healthConnect.states.forbidden' });
+      fixture.detectChanges();
+
+      expect(table()).toBeNull();
+      expect(retryButton()).toBeNull();
+      expect(fixture.nativeElement.querySelector('[data-cy="asyncForbidden"]')).not.toBeNull();
+    });
   });
 
   const activityColumn = (): DataTableColumn<PatientListRow> | undefined =>

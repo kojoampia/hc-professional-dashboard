@@ -129,4 +129,48 @@ describe('CaseQueuePageComponent', () => {
     component.handleAction({ actionId: 'reopen', row: protectedCase });
     expect(TestBed.inject(FakeHealthConnectRepository).findCase(protectedCase.id)?.status).toBe('closed');
   });
+
+  describe('one read per state (backlog item 146)', () => {
+    // The converse of the directory page's group, asserted separately: an aggregate "the reads are
+    // isolated" cannot tell one isolated read from all of them.
+    const table = (): Element | null => fixture.nativeElement.querySelector('.hpd-data-table');
+    const retryButton = (): Element | null =>
+      Array.from(fixture.nativeElement.querySelectorAll('button') as NodeListOf<Element>).find(
+        button => button.textContent?.includes('healthConnect.actions.retry'),
+      ) ?? null;
+    const repository = (): FakeHealthConnectRepository => TestBed.inject(FakeHealthConnectRepository);
+
+    it('KEEPS ITS CASES when the patient-directory read fails', () => {
+      repository().setReadState('directory', { status: 'error', error: 'healthConnect.states.error' });
+      fixture.detectChanges();
+
+      expect(table()).not.toBeNull();
+    });
+
+    it('keeps its cases when one patient’s record read fails', () => {
+      repository().setRecordState('patient-ama', { status: 'error', error: 'healthConnect.states.error' });
+      fixture.detectChanges();
+
+      expect(table()).not.toBeNull();
+    });
+
+    it('says a refused case read was REFUSED, with no Retry, rather than calling it an outage', () => {
+      // The technician's real screen: hc-patient's ScopeOfPractice grants {OBSERVATION, IDENTITY},
+      // so this read answers 403 on every load and retrying re-issues the same 403 for ever.
+      repository().setReadState('caseQueue', { status: 'forbidden', error: 'healthConnect.states.forbidden' });
+      fixture.detectChanges();
+
+      expect(table()).toBeNull();
+      expect(retryButton()).toBeNull();
+      expect(fixture.nativeElement.querySelector('[data-cy="asyncForbidden"]')).not.toBeNull();
+    });
+
+    it('STILL blanks itself, with a Retry, when the case read genuinely failed', () => {
+      repository().setReadState('caseQueue', { status: 'error', error: 'healthConnect.states.error' });
+      fixture.detectChanges();
+
+      expect(table()).toBeNull();
+      expect(retryButton()).not.toBeNull();
+    });
+  });
 });

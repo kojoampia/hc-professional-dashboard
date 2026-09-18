@@ -280,6 +280,7 @@
       "loading": "Wird geladen...",
       "empty": "Keine Einträge gefunden.",
       "error": "Diese Informationen konnten nicht geladen werden.",
+      "forbidden": "Ihre Rolle gibt Ihnen keinen Zugriff auf diese Informationen.",
       "readOnly": "Sie haben schreibgeschützten Zugriff."
     },
     "pagination": {

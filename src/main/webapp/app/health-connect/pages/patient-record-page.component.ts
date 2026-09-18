@@ -204,7 +204,34 @@ const PAGE_SIZE = 3;
         }
       </article>
     } @else {
-      <p role="alert">{{ 'healthConnect.states.empty' | translate }}</p>
+      <!--
+        WHY THERE IS NO RECORD, rather than one sentence for every reason there might not be (item
+        146).
+
+        The record read's two failure handlers used to write the repository's single shared error
+        signal — which this page does not read — so their only visible effect was to blank the
+        directory, the dashboard and the case queue, while this page went on saying "no records
+        found" about a read that had been refused or had 503'd. Both halves were wrong: three
+        surfaces were blanked by a read they had no part in, and the one surface that WAS looking at
+        it was told the patient had nothing.
+
+        The empty sentence survives as the default because it is still the right one for a ready
+        read of a patient with nothing recorded, and for idle — an id nobody has asked for yet.
+      -->
+      @switch (recordState().status) {
+        @case ('forbidden') {
+          <p role="status" data-cy="recordForbidden">{{ 'healthConnect.states.forbidden' | translate }}</p>
+        }
+        @case ('error') {
+          <p role="alert" data-cy="recordFailed">{{ 'healthConnect.states.error' | translate }}</p>
+        }
+        @case ('loading') {
+          <p role="status" data-cy="recordLoading">{{ 'healthConnect.states.loading' | translate }}</p>
+        }
+        @default {
+          <p role="alert">{{ 'healthConnect.states.empty' | translate }}</p>
+        }
+      }
     }
     <ng-template #entries let-page="page" let-change="change">
       <ul class="m-0 list-none divide-y divide-hpd-border/60 p-0 text-sm">
@@ -227,6 +254,14 @@ export default class PatientRecordPageComponent {
   private readonly alertService = inject(AlertService);
   readonly patientId = this.route.parent?.snapshot.paramMap.get('patientId') ?? '';
   readonly record = computed(() => this.repository.findPatient(this.patientId));
+  /**
+   * How this patient's read went, for the `@else` above.
+   *
+   * <p>A `computed` over a method that reads a signal internally — the same shape `record` uses —
+   * so it re-evaluates when the response lands. Read only when there is no record: a record on
+   * screen is a record, whatever a later refresh reports.
+   */
+  readonly recordState = computed(() => this.repository.recordState(this.patientId));
   private readonly currentAccount = toSignal(this.account.getAuthenticationState(), { initialValue: null });
   readonly canMutate = computed(() => hasHealthConnectPermission(this.currentAccount()?.authorities, 'manageActivity'));
   readonly canManageReports = computed(() => hasHealthConnectPermission(this.currentAccount()?.authorities, 'manageReport'));

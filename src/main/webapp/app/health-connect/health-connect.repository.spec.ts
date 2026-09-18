@@ -116,15 +116,21 @@ describe('FakeHealthConnectRepository', () => {
     expect(repository.findPatient('patient-kwabena')?.reports).toEqual([]);
   });
 
-  it('exposes resettable loading and error states', () => {
-    repository.setLoading(true);
-    expect(repository.asyncState()).toEqual({ status: 'loading', error: null });
+  it('exposes resettable per-read states, and one read’s state is not the other’s', () => {
+    // Per read since item 146. The second block is the property: putting the case queue into a
+    // state says nothing about the directory — which is exactly what one shared signal could not
+    // express, and what three page templates were bound to.
+    repository.setReadState('directory', { status: 'loading', error: null });
+    expect(repository.directoryState()).toEqual({ status: 'loading', error: null });
+    expect(repository.caseQueueState()).toEqual({ status: 'ready', error: null });
 
-    repository.setError('offline');
-    expect(repository.asyncState()).toEqual({ status: 'error', error: 'offline' });
+    repository.setReadState('caseQueue', { status: 'forbidden', error: 'healthConnect.states.forbidden' });
+    expect(repository.caseQueueState()).toEqual({ status: 'forbidden', error: 'healthConnect.states.forbidden' });
+    expect(repository.directoryState()).toEqual({ status: 'loading', error: null });
 
     repository.reset();
-    expect(repository.asyncState()).toEqual({ status: 'ready', error: null });
+    expect(repository.directoryState()).toEqual({ status: 'ready', error: null });
+    expect(repository.caseQueueState()).toEqual({ status: 'ready', error: null });
   });
 
   /**

@@ -26,6 +26,19 @@ export interface PatientDirectoryFilters {
   childrenOnly?: boolean;
 }
 
+/**
+ * The collection reads this repository makes eagerly, as the names their states are addressed by.
+ *
+ * <p>The per-patient record read is **not** one of them: it takes an id, so its state is a method —
+ * {@link HealthConnectRepository.recordState} — exactly as
+ * {@link HealthConnectRepository.recordRestrictions} is, and for the same reason.
+ *
+ * <p>The roster read is not one either, deliberately: `DutyRosterAssignmentsService` swallows its own
+ * failure into an empty list, so a roster outage empties the "my roster" scope instead of erroring a
+ * page. Item 146 generalised that isolation to the other two reads; it did not replace it.
+ */
+export type RepositoryRead = 'directory' | 'caseQueue';
+
 export interface HealthConnectRepository {
   readonly patients: Signal<readonly PatientRecord[]>;
   /**
@@ -36,7 +49,19 @@ export interface HealthConnectRepository {
    * `/{id}/subscription` endpoints they called were never built on either side.
    */
   readonly dutyRosters: Signal<readonly DutyRoster[]>;
-  readonly asyncState: Signal<AsyncViewState>;
+  /**
+   * How the patient-directory read went — and **nothing else's read** (backlog item 146).
+   *
+   * <p>There was one `asyncState` here for every read this repository makes, and `<hpd-async-state>`
+   * blanks everything it wraps when it is `error`. hc-patient refuses a technician the case read on
+   * every load, so a directory that had answered `200` with rows, columns and its restriction notice
+   * was replaced by "Unable to load this information" and a Retry that re-issues the same 403 for
+   * ever. One status per read is half the fix; `'forbidden'` being a status of its own is the other
+   * half. See `AsyncStatus`.
+   */
+  readonly directoryState: Signal<AsyncViewState>;
+  /** How the clinical-case read went. What the dashboard's charts are derived from, so what they report. */
+  readonly caseQueueState: Signal<AsyncViewState>;
   readonly patientRows: Signal<readonly PatientListRow[]>;
   /**
    * What the last patient-directory read was refused, from its `X-Restricted-Parts` header.
@@ -99,6 +124,19 @@ export interface HealthConnectRepository {
    * reachable token needs its own sentence rather than the directory's.
    */
   recordRestrictions(patientId: string): readonly RestrictedPart[];
+  /**
+   * How one patient's record read went, by the same id {@link findPatient} takes.
+   *
+   * <p>Per patient for {@link recordRestrictions}' reason — records are cached and a clinician moves
+   * between them — and a method rather than a signal for {@link findPatient}'s. `idle` for a patient
+   * never asked for, which is **not** "ready with nothing in it": the record page says "no records
+   * found" on a ready read, and saying that about a read nobody has made is fabricated emptiness.
+   *
+   * <p>This read's two failure handlers were the shared signal's worst writers (item 146): opening
+   * one patient whose record 503'd blanked the directory, the dashboard and the case queue — three
+   * surfaces the clinician was not even looking at.
+   */
+  recordState(patientId: string): AsyncViewState;
   findCase(id: string): ClinicalCase | undefined;
   listCases(status?: CaseStatus, rosterScope?: RosterScope, professionalId?: string): readonly CaseQueueRow[];
   recommendations(category?: string): readonly Recommendation[];
@@ -118,8 +156,17 @@ export interface HealthConnectRepository {
   ): ClinicalReport | null;
   /** Retires a case from the queue. The reason is required by the server and is not defaulted. */
   archiveCase(id: string, reason: string): boolean;
-  setLoading(loading: boolean): void;
-  setError(error: string | null): void;
+  /**
+   * Put one read into a chosen state. Spec-only in practice — nothing in the application calls it.
+   *
+   * <p>It replaces `setLoading(boolean)` and `setError(string | null)`, which were forced out rather
+   * than tidied away: with one state per read, "loading" and "failed" are no longer facts about the
+   * repository, and a setter that cannot name which read it means can only restore the shared signal
+   * item 146 removed. One method rather than three because the states are one closed set —
+   * `'forbidden'` would otherwise have needed a third setter on the day it was added, which is how a
+   * fourth arrives without one.
+   */
+  setReadState(read: RepositoryRead, state: AsyncViewState): void;
   reset(): void;
 }
 

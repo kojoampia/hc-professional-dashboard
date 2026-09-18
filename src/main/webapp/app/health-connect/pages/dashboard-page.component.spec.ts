@@ -384,4 +384,59 @@ describe('DashboardPageComponent', () => {
       expect(noticeTexts()).toEqual(['healthConnect.dashboard.restricted.caseAssignments', 'healthConnect.dashboard.restricted.unknown']);
     });
   });
+
+  describe('one read per state (backlog item 146)', () => {
+    // The third surface the shared signal reached. These charts are a pure function of the cached
+    // cases, so the case read is the one that describes them — and a failed read of the directory,
+    // or of one patient's record, must leave them alone.
+    const charts = (): Element | null => fixture.nativeElement.querySelector('hpd-pie-chart');
+    const retryButton = (): Element | null =>
+      Array.from(fixture.nativeElement.querySelectorAll('button') as NodeListOf<Element>).find(
+        button => button.textContent?.includes('healthConnect.actions.retry'),
+      ) ?? null;
+    const repository = (): FakeHealthConnectRepository => TestBed.inject(FakeHealthConnectRepository);
+
+    beforeEach(async () => {
+      TestBed.resetTestingModule();
+      await setUp({ renderTemplate: true });
+      flushProgress(true);
+      // Refused for the reason the restriction block above refuses it: the earnings card is the one
+      // part of this template carrying a routerLink, which a plain object Router cannot serve.
+      earningsRequest().flush(null, { status: 503, statusText: 'unavailable' });
+      fixture.detectChanges();
+    });
+
+    it('KEEPS ITS CHARTS when the patient-directory read fails', () => {
+      repository().setReadState('directory', { status: 'error', error: 'healthConnect.states.error' });
+      fixture.detectChanges();
+
+      expect(charts()).not.toBeNull();
+    });
+
+    it('keeps its charts when one patient’s record read fails — a page nobody opened it from', () => {
+      // Opening a patient whose record 503'd used to blank this page, which the clinician was not
+      // even looking at, along with the directory and the case queue.
+      repository().setRecordState('patient-ama', { status: 'error', error: 'healthConnect.states.error' });
+      fixture.detectChanges();
+
+      expect(charts()).not.toBeNull();
+    });
+
+    it('reports a refused case read as a refusal, without a Retry', () => {
+      repository().setReadState('caseQueue', { status: 'forbidden', error: 'healthConnect.states.forbidden' });
+      fixture.detectChanges();
+
+      expect(charts()).toBeNull();
+      expect(retryButton()).toBeNull();
+      expect(fixture.nativeElement.querySelector('[data-cy="asyncForbidden"]')).not.toBeNull();
+    });
+
+    it('STILL blanks the charts, with a Retry, when the case read genuinely failed', () => {
+      repository().setReadState('caseQueue', { status: 'error', error: 'healthConnect.states.error' });
+      fixture.detectChanges();
+
+      expect(charts()).toBeNull();
+      expect(retryButton()).not.toBeNull();
+    });
+  });
 });

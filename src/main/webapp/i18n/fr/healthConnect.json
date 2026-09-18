@@ -280,6 +280,7 @@
       "loading": "Chargement...",
       "empty": "Aucun dossier trouvé.",
       "error": "Impossible de charger ces informations.",
+      "forbidden": "Votre rôle ne vous donne pas accès à ces informations.",
       "readOnly": "Vous disposez d'un accès en lecture seule."
     },
     "pagination": {
