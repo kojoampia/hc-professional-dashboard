@@ -9,6 +9,11 @@
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { extname, join, relative } from 'node:path';
 
+// TypeScript's parser, used below to read the EMITTED chunks as the JavaScript they are. A direct
+// devDependency — the same compiler the build runs — not a transitive one that an npm dedupe could
+// move from under this script.
+import ts from 'typescript';
+
 const dist = process.argv[2] ?? 'target/classes/static';
 let failed = false;
 
@@ -280,6 +285,236 @@ if (stylesCss === null) {
       fail(`${styles[0]} names ${dangling.length} font file(s) the build did not emit: ${dangling.join(', ')}`);
     } else {
       pass(`${fontUrls.length} self-hosted fonts referenced by ${styles[0]}, all present in ${dist}`);
+    }
+  }
+}
+
+// ---------------------------------------------------------------- a read state is only set by a read
+//
+// docs/backlog.md item 171. Item 168 took `setReadState` off the production surface, and its guards
+// are honest about what they check — but both are NAME-based: they prove nothing named
+// `setReadState` exists, not that the read-state signals are written only by the reads.
+// `directoryRead` and `caseQueueRead` are `private readonly`, which stops the outside and stops
+// reassignment, and stops NO sibling method in the same class — exactly where a new writer would be
+// added. A writer that is not a read is a signal asserting something the network never said, and it
+// compiles, tests green, and is invisible to tsc: this file's charter.
+//
+// So: every write (`.set(` or `.update(`) on those signals in the SHIPPED bundle must sit inside
+// `loadAll`, the one method that performs the reads — its subscribe callbacks are lexically inside
+// it, which is the point. Asserted with a real parser, not a regex: the emitted chunks are valid
+// JavaScript and the production build does not mangle property or method names (measured 2026-09-24:
+// `directoryRead`, `caseQueueRead` and `loadAll` all survive minification byte-for-byte), so "which
+// method encloses this call" is decidable exactly. If a future toolchain DOES mangle them, the
+// carrier scan below finds nothing and this check goes red, not green — blinded must not look clean.
+//
+// BOTH AXES ARE DERIVED, per the item's Done-when:
+//   - the SIGNAL NAMES come from `RepositoryRead`'s own union of string literals
+//     (`'directory' | 'caseQueue'` → `directoryRead`, `caseQueueRead` — the naming rule the class
+//     itself uses), so a third read added to the type is guarded here without an edit, and a
+//     derivation that yields nothing fails rather than checking nothing. Reading that source file
+//     here is mechanism 3's move, not the config-trusting defect this file argues against: the
+//     source is read only to learn WHAT to guard, and where the writes actually sit is asserted
+//     against the output. A wrong source cannot make the artefact check pass.
+//   - the WRITE SITES come from parsing the bundle, so a harmless refactor inside `loadAll` changes
+//     nothing here, while a hand-list of allowed line numbers — the guard this item exists to
+//     refuse — would have to be re-counted on every edit and would rot the first time nobody did.
+//
+// WHAT THIS DOES NOT COVER, said out loud so nobody reads it as more than it is: an ALIASED or
+// DYNAMIC write — `const s = repo['directory' + 'Read']; s.set(…)` — never spells
+// `.directoryRead.set` and is invisible to any lexical check, artefact-level or source-level alike.
+// The residual guards for that are `private` (outside the class it takes a cast written on purpose)
+// and review. Likewise a sibling class declaring its OWN signals under these names is indistinct
+// from the repository's to a name check; the class-identity assertion below (the `loadAll` holding
+// the writes must live in the class that INITIALISES the signals) is what keeps a same-named
+// `loadAll` elsewhere from satisfying this by coincidence.
+{
+  const WRITERS = new Set(['set', 'update']); // WritableSignal's two write methods
+  const OWNING_METHOD = 'loadAll';
+
+  // Axis one: which signals are read states. Derived from `RepositoryRead` — the union item 168's
+  // own spec derives its axes from — never hand-listed here.
+  const readsSource = new URL('../src/main/webapp/app/health-connect/health-connect.repository.ts', import.meta.url);
+  const signalNames = (() => {
+    let text;
+    try {
+      text = readFileSync(readsSource, 'utf8');
+    } catch {
+      return null;
+    }
+    const sf = ts.createSourceFile('health-connect.repository.ts', text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+    let members = null;
+    sf.forEachChild(node => {
+      if (ts.isTypeAliasDeclaration(node) && node.name.text === 'RepositoryRead') {
+        const parts = ts.isUnionTypeNode(node.type) ? node.type.types : [node.type];
+        if (parts.every(p => ts.isLiteralTypeNode(p) && ts.isStringLiteral(p.literal))) {
+          members = parts.map(p => `${p.literal.text}Read`);
+        }
+      }
+    });
+    return members;
+  })();
+
+  if (!signalNames || signalNames.length === 0) {
+    // Same refusal as mechanism 3's: a derivation that found nothing has checked nothing.
+    fail(
+      `could not derive the read-state signal names from \`RepositoryRead\` in ${relative('.', readsSource.pathname)} — ` +
+        'the type moved or stopped being a union of string literals, so this check is guarding nothing. ' +
+        'Fix the derivation; do not let it pass by finding nothing',
+    );
+  } else {
+    // Axis two: where the writes are. Read from the artefact — every emitted chunk that so much as
+    // mentions a signal name is parsed. Zero carriers means the names did not survive the build
+    // (mangling, a rename, a dropped module), and a check that can no longer see its subject fails.
+    const carriers = readdirSync(dist)
+      .filter(f => f.endsWith('.js'))
+      .map(f => ({ name: f, code: readFileSync(join(dist, f), 'utf8') }))
+      .filter(({ code }) => signalNames.some(n => code.includes(n)));
+
+    if (carriers.length === 0) {
+      fail(
+        `no emitted .js in ${dist} mentions ${signalNames.join(' or ')} — the build no longer carries the ` +
+          'read-state signals under the names the source declares, so this check has been blinded and cannot pass',
+      );
+    } else {
+      // The nearest enclosing function that HAS a name. Arrow functions and anonymous function
+      // expressions are callbacks — lexically part of whatever named thing holds them — so the walk
+      // continues through them; a write that reaches the top without meeting a named function is a
+      // violation, not a pass.
+      const namedOwnerOf = node => {
+        for (let p = node.parent; p; p = p.parent) {
+          if ((ts.isMethodDeclaration(p) || ts.isGetAccessorDeclaration(p) || ts.isSetAccessorDeclaration(p)) && ts.isIdentifier(p.name)) {
+            return p;
+          }
+          if (ts.isConstructorDeclaration(p)) {
+            return p;
+          }
+          if ((ts.isFunctionDeclaration(p) || ts.isFunctionExpression(p)) && p.name) {
+            return p;
+          }
+        }
+        return null;
+      };
+      const ownerName = owner => (ts.isConstructorDeclaration(owner) ? 'constructor' : owner.name.text);
+      const classOf = node => {
+        for (let p = node.parent; p; p = p.parent) {
+          if (ts.isClassDeclaration(p) || ts.isClassExpression(p)) {
+            return p;
+          }
+        }
+        return null;
+      };
+      // Does this class create the signal? Either shape the toolchain may emit: a class field with
+      // an initialiser, or the downlevelled `this.X = …` assignment in the constructor.
+      const classInitialises = (cls, signal) => {
+        let found = false;
+        const visit = n => {
+          if (found) {
+            return;
+          }
+          if (ts.isPropertyDeclaration(n) && ts.isIdentifier(n.name) && n.name.text === signal && n.initializer) {
+            found = true;
+          } else if (
+            ts.isBinaryExpression(n) &&
+            n.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
+            ts.isPropertyAccessExpression(n.left) &&
+            n.left.name.text === signal &&
+            n.left.expression.kind === ts.SyntaxKind.ThisKeyword
+          ) {
+            found = true;
+          } else {
+            ts.forEachChild(n, visit);
+          }
+        };
+        visit(cls);
+        return found;
+      };
+
+      const sitesPerSignal = new Map(signalNames.map(n => [n, 0]));
+      const violations = [];
+      let totalSites = 0;
+
+      for (const { name, code } of carriers) {
+        const sf = ts.createSourceFile(name, code, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+        const sites = [];
+        const visit = node => {
+          if (
+            ts.isCallExpression(node) &&
+            ts.isPropertyAccessExpression(node.expression) &&
+            WRITERS.has(node.expression.name.text) &&
+            ts.isPropertyAccessExpression(node.expression.expression) &&
+            signalNames.includes(node.expression.expression.name.text)
+          ) {
+            sites.push({ signal: node.expression.expression.name.text, node });
+          }
+          ts.forEachChild(node, visit);
+        };
+        visit(sf);
+
+        if (sites.length === 0) {
+          continue; // a carrier that only READS the signals; the vacuity guard below still applies globally
+        }
+        totalSites += sites.length;
+
+        const owners = new Set();
+        for (const site of sites) {
+          sitesPerSignal.set(site.signal, sitesPerSignal.get(site.signal) + 1);
+          const owner = namedOwnerOf(site.node);
+          if (owner === null) {
+            violations.push(`${name}: a write to ${site.signal} outside any named function at all`);
+          } else {
+            owners.add(owner);
+          }
+        }
+        // ONE owner node, not "every owner is so named": two methods both called `loadAll` — one of
+        // them somewhere else, reaching in by cast — must redden, and a name test alone would not.
+        if (owners.size > 1) {
+          violations.push(
+            `${name}: writes to the read-state signals in ${owners.size} different functions ` +
+              `(${[...owners].map(ownerName).join(', ')}) — a read state may only be set by the read itself`,
+          );
+        } else if (owners.size === 1) {
+          const [owner] = owners;
+          if (ownerName(owner) !== OWNING_METHOD) {
+            violations.push(`${name}: the read-state signals are written in \`${ownerName(owner)}\`, not \`${OWNING_METHOD}\``);
+          } else {
+            const cls = classOf(owner);
+            if (cls === null) {
+              violations.push(`${name}: the \`${OWNING_METHOD}\` holding the writes is not a class method`);
+            } else {
+              for (const signal of signalNames) {
+                if (!classInitialises(cls, signal)) {
+                  violations.push(
+                    `${name}: the \`${OWNING_METHOD}\` holding the writes lives in a class that never initialises ` +
+                      `\`${signal}\` — it is not the repository's own read, whatever it is called`,
+                  );
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // The vacuity guard: a signal with no write site anywhere is not a clean bill, it is a read
+      // that never announces its state — or a rename this check did not follow. Both are red.
+      for (const [signal, count] of sitesPerSignal) {
+        if (count === 0) {
+          violations.push(
+            `no write to \`${signal}\` anywhere in the bundle — either the read no longer announces its state, ` +
+              'or the signal was renamed and this check is now watching a name that nothing uses',
+          );
+        }
+      }
+
+      if (violations.length) {
+        for (const v of violations) {
+          fail(v);
+        }
+      } else {
+        pass(
+          `${totalSites} writes to ${signalNames.join(' and ')} in ${carriers.map(c => c.name).join(', ')}, ` +
+            `every one inside \`${OWNING_METHOD}\` of the class that owns the signals`,
+        );
+      }
     }
   }
 }

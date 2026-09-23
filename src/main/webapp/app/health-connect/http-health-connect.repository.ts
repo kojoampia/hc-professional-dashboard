@@ -188,6 +188,15 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
    * holding the repository state a read outcome the network never produced; the seam it existed for
    * is now `FakeHealthConnectRepository`'s alone. Keep it that way: a writer that is not a read is
    * how a signal starts lying.
+   *
+   * <p>Since item 171 "keep it that way" is a mechanism rather than an instruction — and note that
+   * neither keyword on the line below is that mechanism: `private` stops the outside and `readonly`
+   * stops reassignment, and neither stops a sibling method in this class calling `.set` directly.
+   * `scripts/check-build-output.mjs` parses the shipped bundle and fails CI if a write the bundle
+   * spells as `.directoryRead.set(…)` or `.update(…)` — likewise for {@link caseQueueRead} — sits
+   * outside {@link loadAll}. That is a lexical guarantee, not a universal one: what the match
+   * cannot see is listed in that script's own section, beside the mechanism, so the claim and the
+   * check cannot drift apart.
    */
   private readonly directoryRead = signal<AsyncViewState>(IDLE);
   /** How the clinical-case read went. Refused outright for a technician — see {@link REFUSED_KEY}. */
