@@ -13,7 +13,7 @@ A JHipster-generated **Angular frontend gateway** (frontend only) for the Health
 - Angular 19 (19.2.x), standalone components, TypeScript 5.5, RxJS 7.8
 - Angular Material (M3, BridgeCare theme) + Tailwind v4 utilities in `content/css/tailwind.css`; charts are **Chart.js via ng2-charts**
 - **Bootstrap, ng-bootstrap and Font Awesome are gone** — fully removed, `styles.css` dropped 336 kB → 60 kB. Material Icons is the only icon font. Don't reintroduce them or copy patterns that assume them.
-- ngx-translate (**en/es/fr/de** under `src/main/webapp/i18n/`, four complete catalogs)
+- ngx-translate (**en/es/fr/de** under `src/main/webapp/i18n/`, four complete catalogs). **Wording is decided, not re-derived**: `professional-web.md` §2 "Decisions that still bind" carries the per-locale terminology — es `expediente` for the record vs `historial` for the activity log, de `Patientenakte` never `Datensatz`, fr `dossier` record / `cas` case — read it before adding or changing a translation; no gate catches a synonym. (de `me.earnings.noRecord`'s `Berufsdatensatz` is deliberate — the clinician's own hc-admin row, not a patient record.)
 - Build: Angular CLI + `@angular-builders/custom-webpack`; dev API proxy in `webpack/proxy.conf.js` → `http://localhost:5505`. **`webpack/webpack.custom.js` also hand-injects the Tailwind v4 postcss plugin — see `professional-web.md` §4 before touching it.**
 - Tests: Jest 29 via the Angular builder (`jest.conf.js`). **There is no E2E setup at all** — Cypress was removed from `.yo-rc` and its 24 unreachable specs deleted, so the generator no longer emits them. Adding E2E back is a deliberate choice, not a leftover.
 - npm (use `./npmw` if Node isn't installed locally)
