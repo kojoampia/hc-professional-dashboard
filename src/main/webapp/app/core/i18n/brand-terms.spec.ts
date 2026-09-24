@@ -247,4 +247,28 @@ describe('brand terms', () => {
       expect(catalogue.healthConnect?.brand?.product).toBe('Professional');
     });
   });
+
+  describe('the Ghana Card keeps its official name (backlog item 186)', () => {
+    // "Ghana Card" is the official name of Ghana's national identity card — a proper noun, not a
+    // description. fr said "Carte Ghana" until item 186, and that was wrong twice over: the name
+    // is not translatable, and *carte du Ghana* — the idiomatic French the translation was
+    // reaching for — names a map of the country, not the document.
+    //
+    // The contrasting case is two lines away in the same block and is what settles it: `NHIS`
+    // keeps its acronym while the common noun "card" IS translated ("Tarjeta NHIS", "NHIS-Karte",
+    // "Carte NHIS") — es and de split the splittable name and declined to split "Ghana Card".
+    // This repository's own clinician-facing English agrees: the training manual capitalises
+    // "Ghana Card" mid-sentence while lower-casing "passport", "driver's licence", "voter card"
+    // and "NHIS card" in the same list (docs/training/src/10-front.html). Every other type in the
+    // block is a common noun and stays translated. Key-scoped for item 185's reason: a DENIED
+    // entry would reach every value and template, and this rule owns exactly one key.
+    it.each(locales)('%s renders documentTypes.GHANACARD as "Ghana Card"', locale => {
+      const catalogue = JSON.parse(readFileSync(join(I18N_ROOT, locale, 'healthConnect.json'), 'utf8')) as {
+        healthConnect?: { onboarding?: { documentTypes?: { GHANACARD?: string } } };
+      };
+
+      // `undefined` fails too, so a renamed key cannot pass this silently.
+      expect(catalogue.healthConnect?.onboarding?.documentTypes?.GHANACARD).toBe('Ghana Card');
+    });
+  });
 });
