@@ -40,6 +40,24 @@ describe('PatientDirectoryPageComponent', () => {
   // from inside two of them, which is the stronger form of the same demonstration.
   const repository = (): FakeHealthConnectRepository => TestBed.inject(FakeHealthConnectRepository);
 
+  // ONE `restrict`, FOR THE WHOLE FILE (backlog item 200). The two restriction blocks below each
+  // carried a byte-identical copy of this, and item 200 asked first whether they were genuinely one
+  // helper before merging them — because a shared name over two meanings WOULD have been worse than
+  // the duplication. The row warned the two blocks might use it differently; THEY DO NOT. What
+  // differs is the blocks' subject matter, not the call: this page reads ONE directory,
+  // `setDirectoryRestrictions` is the only way to restrict it, and both copies named that same fake
+  // method against the same `fixture`. A body that differed would be restricting something else and
+  // would want its own name. Compare `patient-record-page.component.spec.ts`, whose `restrict` calls
+  // `setRecordRestrictions(id, parts)` — the same name over a different meaning, in a different
+  // file, and deliberately not merged with this one.
+  //
+  // Hoisting is safe on the same ground the arrow above is: nothing is captured but `fixture` and
+  // `repository`, both resolved at call time, inside a `beforeEach` or an `it`.
+  const restrict = (...parts: RestrictedPart[]): void => {
+    repository().setDirectoryRestrictions(parts);
+    fixture.detectChanges();
+  };
+
   beforeEach(async () => {
     queryParamMap = new BehaviorSubject(convertToParamMap({ gender: 'female', q: 'ama', page: '1' }));
     route.queryParamMap = queryParamMap.asObservable();
@@ -140,11 +158,6 @@ describe('PatientDirectoryPageComponent', () => {
       expect(fixture.nativeElement.textContent).not.toContain('medications');
       expect(fixture.nativeElement.querySelectorAll('[data-cy^="restricted"]')).toHaveLength(1);
     });
-
-    const restrict = (...parts: RestrictedPart[]): void => {
-      repository().setDirectoryRestrictions(parts);
-      fixture.detectChanges();
-    };
 
     const rowSeenOn = (lastActivityAt: string): PatientListRow => ({
       id: 'p1',
@@ -313,11 +326,6 @@ describe('PatientDirectoryPageComponent', () => {
 
     const restrictFollowUps = (...followUps: RestrictedFollowUp[]): void => {
       repository().setDirectoryRestrictedFollowUps(followUps);
-      fixture.detectChanges();
-    };
-
-    const restrict = (...parts: RestrictedPart[]): void => {
-      repository().setDirectoryRestrictions(parts);
       fixture.detectChanges();
     };
   });

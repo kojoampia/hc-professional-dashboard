@@ -20,6 +20,21 @@ describe('DashboardPageComponent', () => {
   let httpMock: HttpTestingController;
   const router = { navigate: jest.fn(() => Promise.resolve(true)), url: '/dashboard' };
 
+  // ONE SPELLING OF THE FAKE, FOR THE WHOLE FILE (backlog items 172 and 200). This file carried TWO
+  // byte-identical copies of this arrow, one in each of the last two `describe`s, plus two inline
+  // `TestBed.inject(FakeHealthConnectRepository)` reaches above them — so a later change to the
+  // helper would have left three of the four spellings behind with nothing failing. Item 172 removed
+  // exactly this shape from `patient-directory-page.component.spec.ts`; item 200 found it here.
+  //
+  // It is declared here, above every block, and that is safe for a reason worth stating rather than
+  // re-deriving: this is a LAZY arrow, and it captures NOTHING — `TestBed` and the fake are both
+  // module-level imports, so the body is byte-identical to the inline expression it replaced. It
+  // resolves `TestBed.inject` when it is CALLED, inside a `beforeEach` or an `it`, after `setUp` has
+  // configured (or reset and reconfigured) the module — not where it is written. So the per-block
+  // `TestBed.resetTestingModule()` cannot hand it a stale instance. Only an eager
+  // `const repository = TestBed.inject(…)` would care about placement, and this is not one.
+  const repository = (): FakeHealthConnectRepository => TestBed.inject(FakeHealthConnectRepository);
+
   /** The earnings card, against adminservice. */
   const earningsRequest = (): ReturnType<HttpTestingController['expectOne']> =>
     httpMock.expectOne(request => request.url.endsWith('services/adminservice/api/professionals/me/earnings'));
@@ -71,7 +86,7 @@ describe('DashboardPageComponent', () => {
     fixture = TestBed.createComponent(DashboardPageComponent);
     component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
-    TestBed.inject(FakeHealthConnectRepository).reset();
+    repository().reset();
     fixture.detectChanges();
     router.navigate.mockClear();
   };
@@ -275,7 +290,7 @@ describe('DashboardPageComponent', () => {
       );
 
     const restrict = (...parts: RestrictedPart[]): void => {
-      TestBed.inject(FakeHealthConnectRepository).setDirectoryRestrictions(parts);
+      repository().setDirectoryRestrictions(parts);
       fixture.detectChanges();
     };
 
@@ -394,7 +409,6 @@ describe('DashboardPageComponent', () => {
       Array.from(fixture.nativeElement.querySelectorAll('button') as NodeListOf<Element>).find(
         button => button.textContent?.includes('healthConnect.actions.retry'),
       ) ?? null;
-    const repository = (): FakeHealthConnectRepository => TestBed.inject(FakeHealthConnectRepository);
 
     beforeEach(async () => {
       TestBed.resetTestingModule();
@@ -458,7 +472,6 @@ describe('DashboardPageComponent', () => {
    * proved alone survives someone restoring the count to the signal.
    */
   describe('a read that did not answer prints no total (backlog item 165)', () => {
-    const repository = (): FakeHealthConnectRepository => TestBed.inject(FakeHealthConnectRepository);
     /**
      * The tiles of one section, by the heading each section is labelled by.
      *
