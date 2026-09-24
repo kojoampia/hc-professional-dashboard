@@ -217,21 +217,46 @@ const PAGE_SIZE = 3;
 
         The empty sentence survives as the default because it is still the right one for a ready
         read of a patient with nothing recorded, and for idle — an id nobody has asked for yet.
+
+        WHY THE @switch SITS INSIDE A LIVE REGION IT DOES NOT CREATE (item 204).
+
+        Every arm below is its own live region, and each one used to be INSERTED TOGETHER WITH ITS
+        TEXT by the arm that rendered it. role="alert" is assertive and does announce on insertion;
+        role="status" is polite and generally does not — a polite region has to EXIST BEFORE ITS
+        CONTENT CHANGES to be read out. So the two treatments that announced were the two reporting
+        that something had gone wrong, and the refusal — the one a technician meets on every single
+        load, by hc-patient's scope of practice — was the one least likely to be heard.
+
+        The wrapper is the fix and the roles are not. It is present for as long as there is no
+        record, so swapping one arm for another is a CONTENT CHANGE inside a region that was already
+        there. The status/alert split is item 146's and stays exactly as it was: a refusal and a read
+        in flight are not errors, and announcing them assertively would interrupt.
+
+        aria-live on a stable wrapper is what shared/health-connect/async-state/async-state.component.ts
+        already does one directory over, which is why it is spelled the same way here.
+
+        WHAT THIS CANNOT DO, so nobody reads more into it: the wrapper arrives with the @else itself,
+        so whichever state is on screen at the FIRST render is still inserted with its text. Every
+        transition after that — and a refusal is always one, because the read must be in flight
+        before it can be refused — changes the content of a region that already exists. No screen
+        reader was run; this rests on documented live-region behaviour, not on an observation.
       -->
-      @switch (recordState().status) {
-        @case ('forbidden') {
-          <p role="status" data-cy="recordForbidden">{{ 'healthConnect.states.forbidden' | translate }}</p>
+      <div aria-live="polite" aria-atomic="true" data-cy="recordStateRegion">
+        @switch (recordState().status) {
+          @case ('forbidden') {
+            <p role="status" data-cy="recordForbidden">{{ 'healthConnect.states.forbidden' | translate }}</p>
+          }
+          @case ('error') {
+            <p role="alert" data-cy="recordFailed">{{ 'healthConnect.states.error' | translate }}</p>
+          }
+          @case ('loading') {
+            <p role="status" data-cy="recordLoading">{{ 'healthConnect.states.loading' | translate }}</p>
+          }
+          @default {
+            <p role="alert">{{ 'healthConnect.states.empty' | translate }}</p>
+          }
         }
-        @case ('error') {
-          <p role="alert" data-cy="recordFailed">{{ 'healthConnect.states.error' | translate }}</p>
-        }
-        @case ('loading') {
-          <p role="status" data-cy="recordLoading">{{ 'healthConnect.states.loading' | translate }}</p>
-        }
-        @default {
-          <p role="alert">{{ 'healthConnect.states.empty' | translate }}</p>
-        }
-      }
+      </div>
     }
     <ng-template #entries let-page="page" let-change="change">
       <ul class="m-0 list-none divide-y divide-hpd-border/60 p-0 text-sm">

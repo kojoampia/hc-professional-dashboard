@@ -176,6 +176,54 @@ describe('PatientRecordPageComponent', () => {
       expect(sentence()).toContain('healthConnect.states.empty');
       expect(fixture.nativeElement.querySelector('[data-cy="recordForbidden"]')).toBeNull();
     });
+
+    // Item 204. Each treatment above is its own live region and each was INSERTED WITH ITS TEXT by
+    // the @switch arm that rendered it — and a polite region generally has to exist before its
+    // content changes to be announced at all. So the refusal, the treatment a technician meets on
+    // every load, was the one least likely to be heard, while the two that report a failure
+    // announced on insertion because role="alert" is assertive.
+    //
+    // WHAT THIS CAN AND CANNOT ASSERT. There is no screen reader here, so nothing below observes an
+    // announcement. What it does observe is the structural precondition for one: the region is in
+    // the DOM before the transition, and it is the SAME NODE afterwards — `toBe`, on the element
+    // reference, because a region re-created with its new content is exactly the defect and would
+    // pass a `not.toBeNull()` check on both sides of the transition.
+    describe('and the refusal has a live region to be announced in (item 204)', () => {
+      const region = (): HTMLElement | null => fixture.nativeElement.querySelector('[data-cy="recordStateRegion"]');
+
+      it('keeps one live region across the in-flight → refused transition, rather than replacing it', () => {
+        repository().setRecordState('patient-kojo', { status: 'loading', error: null });
+        fixture.detectChanges();
+        const before = region();
+
+        expect(before).not.toBeNull();
+        expect(before!.getAttribute('aria-live')).toBe('polite');
+        expect(before!.querySelector('[data-cy="recordLoading"]')).not.toBeNull();
+
+        repository().setRecordState('patient-kojo', { status: 'forbidden', error: 'healthConnect.states.forbidden' });
+        fixture.detectChanges();
+
+        expect(region()).toBe(before);
+        expect(before!.querySelector('[data-cy="recordForbidden"]')).not.toBeNull();
+      });
+
+      it('leaves item 146’s status/alert split alone — the wrapper is the fix, the roles are not', () => {
+        repository().setRecordState('patient-kojo', { status: 'forbidden', error: 'healthConnect.states.forbidden' });
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.querySelector('[data-cy="recordForbidden"]').getAttribute('role')).toBe('status');
+
+        repository().setRecordState('patient-kojo', { status: 'error', error: 'healthConnect.states.error' });
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.querySelector('[data-cy="recordFailed"]').getAttribute('role')).toBe('alert');
+
+        repository().setRecordState('patient-kojo', { status: 'loading', error: null });
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.querySelector('[data-cy="recordLoading"]').getAttribute('role')).toBe('status');
+      });
+    });
   });
 
   it('blocks report mutations for a read-only role, including direct method invocation', () => {

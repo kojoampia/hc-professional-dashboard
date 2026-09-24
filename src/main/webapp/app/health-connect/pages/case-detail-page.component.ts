@@ -111,21 +111,48 @@ import CheckboxListComponent from '../../shared/health-connect/form-controls/che
 
         No Retry on any of them, and on the refusal that is the point rather than an omission:
         re-issuing a refused read returns the same 403 for ever.
+
+        WHY THE @switch SITS INSIDE A LIVE REGION IT DOES NOT CREATE (item 204) — again the same
+        change as the record page one file over, because these two are deliberately one shape and a
+        fix on one would leave them disagreeing.
+
+        Every arm below is its own live region, and each one used to be INSERTED TOGETHER WITH ITS
+        TEXT by the arm that rendered it. role="alert" is assertive and does announce on insertion;
+        role="status" is polite and generally does not — a polite region has to EXIST BEFORE ITS
+        CONTENT CHANGES to be read out. So the two treatments that announced were the two reporting
+        that something had gone wrong, and the refusal — the one a technician meets on every single
+        load — was the one least likely to be heard.
+
+        The wrapper is the fix and the roles are not. It is present for as long as there is no case,
+        so swapping one arm for another is a CONTENT CHANGE inside a region that was already there.
+        The status/alert split is item 146's and stays exactly as it was: a refusal and a read in
+        flight are not errors, and announcing them assertively would interrupt.
+
+        aria-live on a stable wrapper is what shared/health-connect/async-state/async-state.component.ts
+        already does one directory over, which is why it is spelled the same way here.
+
+        WHAT THIS CANNOT DO, so nobody reads more into it: the wrapper arrives with the @else itself,
+        so whichever state is on screen at the FIRST render is still inserted with its text. Every
+        transition after that — and a refusal is always one, because the read must be in flight
+        before it can be refused — changes the content of a region that already exists. No screen
+        reader was run; this rests on documented live-region behaviour, not on an observation.
       -->
-      @switch (caseState().status) {
-        @case ('forbidden') {
-          <p role="status" data-cy="caseForbidden">{{ 'healthConnect.case.states.forbidden' | translate }}</p>
+      <div aria-live="polite" aria-atomic="true" data-cy="caseStateRegion">
+        @switch (caseState().status) {
+          @case ('forbidden') {
+            <p role="status" data-cy="caseForbidden">{{ 'healthConnect.case.states.forbidden' | translate }}</p>
+          }
+          @case ('error') {
+            <p role="alert" data-cy="caseFailed">{{ 'healthConnect.case.states.error' | translate }}</p>
+          }
+          @case ('loading') {
+            <p role="status" data-cy="caseLoading">{{ 'healthConnect.case.states.loading' | translate }}</p>
+          }
+          @default {
+            <p role="alert" data-cy="caseEmpty">{{ 'healthConnect.case.states.empty' | translate }}</p>
+          }
         }
-        @case ('error') {
-          <p role="alert" data-cy="caseFailed">{{ 'healthConnect.case.states.error' | translate }}</p>
-        }
-        @case ('loading') {
-          <p role="status" data-cy="caseLoading">{{ 'healthConnect.case.states.loading' | translate }}</p>
-        }
-        @default {
-          <p role="alert" data-cy="caseEmpty">{{ 'healthConnect.case.states.empty' | translate }}</p>
-        }
-      }
+      </div>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
