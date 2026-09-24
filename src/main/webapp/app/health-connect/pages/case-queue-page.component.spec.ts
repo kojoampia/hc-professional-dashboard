@@ -29,6 +29,19 @@ describe('CaseQueuePageComponent', () => {
   let reasonAnswer: string | null = 'Resolved at follow-up';
   const dialogs = { reason: () => ({ afterClosed: () => new BehaviorSubject(reasonAnswer).asObservable() }) };
   let archiveSpy: jest.SpyInstance;
+  // ONE spelling of the fake, for the whole file (backlog item 209). This lived inside the item-146
+  // block below while five sites above it reached `TestBed.inject(FakeHealthConnectRepository)`
+  // longhand — item 172's OTHER shape, and the half items 172 and 200 did not close everywhere. A
+  // duplicate declaration is removed by deleting one of two identical things; an inline reach
+  // outside a block-local helper cannot be routed through it at all until the helper is hoisted.
+  //
+  // Hoisting is safe for the reason item 172 established: the arrow CAPTURES NOTHING. `TestBed` and
+  // the fake are module-level imports, so its body is byte-identical to the expression it replaces
+  // and it resolves the injection when CALLED, not where it is written. Position could only matter
+  // via TDZ or shadowing, and it is called solely from `it`/`beforeEach` callbacks, which run after
+  // every describe body has finished executing.
+  const repository = (): FakeHealthConnectRepository => TestBed.inject(FakeHealthConnectRepository);
+
   const route = {
     get snapshot(): { queryParamMap: ParamMap } {
       return { queryParamMap: queryParamMap.value };
@@ -55,8 +68,8 @@ describe('CaseQueuePageComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(CaseQueuePageComponent);
     component = fixture.componentInstance;
-    TestBed.inject(FakeHealthConnectRepository).reset();
-    archiveSpy = jest.spyOn(TestBed.inject(FakeHealthConnectRepository), 'archiveCase');
+    repository().reset();
+    archiveSpy = jest.spyOn(repository(), 'archiveCase');
     fixture.detectChanges();
     router.navigate.mockClear();
   });
@@ -106,10 +119,10 @@ describe('CaseQueuePageComponent', () => {
     const closedCase = component.rows()[0];
 
     component.handleAction({ actionId: 'reopen', row: closedCase });
-    expect(TestBed.inject(FakeHealthConnectRepository).findCase(closedCase.id)?.status).toBe('open');
+    expect(repository().findCase(closedCase.id)?.status).toBe('open');
     expect(component.rows()).toHaveLength(2);
 
-    TestBed.inject(FakeHealthConnectRepository).reset();
+    repository().reset();
     const archivedCase = component.rows()[0];
     component.handleAction({ actionId: 'archive', row: archivedCase });
     expect(component.rows()).toHaveLength(2);
@@ -127,7 +140,7 @@ describe('CaseQueuePageComponent', () => {
     authenticationState.next({ ...authenticationState.value, authorities: ['ROLE_USER'] });
     const protectedCase = component.rows()[0];
     component.handleAction({ actionId: 'reopen', row: protectedCase });
-    expect(TestBed.inject(FakeHealthConnectRepository).findCase(protectedCase.id)?.status).toBe('closed');
+    expect(repository().findCase(protectedCase.id)?.status).toBe('closed');
   });
 
   describe('one read per state (backlog item 146)', () => {
@@ -138,7 +151,6 @@ describe('CaseQueuePageComponent', () => {
       Array.from(fixture.nativeElement.querySelectorAll('button') as NodeListOf<Element>).find(
         button => button.textContent?.includes('healthConnect.actions.retry'),
       ) ?? null;
-    const repository = (): FakeHealthConnectRepository => TestBed.inject(FakeHealthConnectRepository);
 
     it('KEEPS ITS CASES when the patient-directory read fails', () => {
       repository().setReadState('directory', { status: 'error', error: 'healthConnect.states.error' });
