@@ -129,7 +129,13 @@
       "detail": "Cas n°{{number}}",
       "symptoms": "Symptômes",
       "diagnosis": "Diagnostic",
-      "recommendations": "Recommandations"
+      "recommendations": "Recommandations",
+      "states": {
+        "loading": "Chargement de ce cas...",
+        "empty": "Ce cas est introuvable.",
+        "error": "Impossible de charger ce cas.",
+        "forbidden": "Votre rôle ne vous donne pas accès à ce cas."
+      }
     },
     "activity": {
       "title": "Journal d'activité",

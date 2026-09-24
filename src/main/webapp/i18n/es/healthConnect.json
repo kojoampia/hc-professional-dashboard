@@ -129,7 +129,13 @@
       "detail": "Caso n.º {{number}}",
       "symptoms": "Síntomas",
       "diagnosis": "Diagnóstico",
-      "recommendations": "Recomendaciones"
+      "recommendations": "Recomendaciones",
+      "states": {
+        "loading": "Cargando este caso…",
+        "empty": "No se encontró este caso.",
+        "error": "No se pudo cargar este caso.",
+        "forbidden": "Su rol no le da acceso a este caso."
+      }
     },
     "activity": {
       "title": "Registro de actividad",

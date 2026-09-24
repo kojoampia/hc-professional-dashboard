@@ -93,7 +93,39 @@ import CheckboxListComponent from '../../shared/health-connect/form-controls/che
         </div>
       </form>
     } @else {
-      <p role="alert">{{ 'healthConnect.states.empty' | translate }}</p>
+      <!--
+        WHY THERE IS NO CASE, rather than one sentence for every reason there might not be (item
+        202) — the shape patient-record-page.component.ts already uses for the record, on the read
+        one screen over.
+
+        There was a single role="alert" here saying "Nothing to show.", and it rendered in four
+        unrelated situations: the case read still in flight (a deep link, a refresh, a bookmark —
+        the same cold load the effect below exists for), the read REFUSED, the read FAILED, and a
+        case that genuinely is not there. A technician is refused the clinical-case read outright,
+        on every load, by hc-patient's scope of practice — so for a whole discipline this screen
+        explained a permissions boundary as "there is nothing here".
+
+        The empty sentence survives as the default because it is still the right one for a read
+        that succeeded and found no such case — an archived case, a stale bookmark — and for idle,
+        a repository that has not read yet.
+
+        No Retry on any of them, and on the refusal that is the point rather than an omission:
+        re-issuing a refused read returns the same 403 for ever.
+      -->
+      @switch (caseState().status) {
+        @case ('forbidden') {
+          <p role="status" data-cy="caseForbidden">{{ 'healthConnect.case.states.forbidden' | translate }}</p>
+        }
+        @case ('error') {
+          <p role="alert" data-cy="caseFailed">{{ 'healthConnect.case.states.error' | translate }}</p>
+        }
+        @case ('loading') {
+          <p role="status" data-cy="caseLoading">{{ 'healthConnect.case.states.loading' | translate }}</p>
+        }
+        @default {
+          <p role="alert" data-cy="caseEmpty">{{ 'healthConnect.case.states.empty' | translate }}</p>
+        }
+      }
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -107,6 +139,18 @@ export default class CaseDetailPageComponent {
   private readonly currentAccount = toSignal(this.account.getAuthenticationState(), { initialValue: null });
   readonly caseId = this.route.snapshot.paramMap.get('caseId') ?? this.route.parent?.snapshot.paramMap.get('caseId') ?? '';
   readonly clinicalCase = computed(() => this.repository.findCase(this.caseId));
+  /**
+   * How the read that would have produced this case went, for the `@else` above.
+   *
+   * <p>The clinical-case read is a <b>collection</b> read — {@link HealthConnectRepository.findCase}
+   * looks the id up in the cache that read filled and issues nothing of its own — so its state is
+   * already a signal on the repository and needs no per-id accessor. That is the one structural
+   * difference from `patient-record-page.component.ts`, whose record read takes an id and therefore
+   * states its outcome through a method. Nothing was added to the repository for this.
+   *
+   * <p>Read only when there is no case: a case on screen is a case, whatever a later refresh reports.
+   */
+  readonly caseState = this.repository.caseQueueState;
   readonly parentName = computed(() => this.repository.findPatient(this.clinicalCase()?.patientId ?? '')?.patient.patientName ?? '');
   readonly recommendations = computed(() => this.repository.recommendations().map(item => ({ id: item.id, labelKey: item.label })));
   readonly canManageCases = computed(() => hasHealthConnectPermission(this.currentAccount()?.authorities, 'manageCase'));
