@@ -20,7 +20,7 @@
     "login": "Login",
     "firstName": "Nombre",
     "lastName": "Apellidos",
-    "email": "Email",
+    "email": "Correo electrónico",
     "imageUrl": "Imagen",
     "activated": "Activado",
     "deactivated": "Desactivado",
