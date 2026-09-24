@@ -240,5 +240,55 @@ describe('CaseDetailPageComponent', () => {
       expect(marker('caseFailed')).toBeNull();
       expect(marker('caseLoading')).toBeNull();
     });
+
+    // Item 204, and the same two assertions as patient-record-page.component.spec.ts, because these
+    // two screens are deliberately one shape and a guard on one of them is not a guard on the pair.
+    //
+    // Each treatment above is its own live region and each was INSERTED WITH ITS TEXT by the arm
+    // that rendered it; a polite region generally has to exist before its content changes to be
+    // announced. So the refusal — the treatment a technician meets on every load — was the one
+    // least likely to be heard, while the two reporting a failure announced on insertion because
+    // role="alert" is assertive.
+    //
+    // WHAT THIS CAN AND CANNOT ASSERT. There is no screen reader here, so nothing below observes an
+    // announcement; what it observes is the structural precondition for one. The identity check is
+    // `toBe` on the element reference, because a region re-created with its new content is exactly
+    // the defect and would satisfy `not.toBeNull()` on both sides of the transition.
+    describe('and the refusal has a live region to be announced in (item 204)', () => {
+      const region = (): HTMLElement | null => absent.nativeElement.querySelector('[data-cy="caseStateRegion"]');
+
+      it('keeps one live region across the in-flight → refused transition, rather than replacing it', () => {
+        repository.setReadState('caseQueue', asyncState('loading'));
+        absent.detectChanges();
+        const before = region();
+
+        expect(before).not.toBeNull();
+        expect(before!.getAttribute('aria-live')).toBe('polite');
+        expect(before!.querySelector('[data-cy="caseLoading"]')).not.toBeNull();
+
+        repository.setReadState('caseQueue', asyncState('forbidden', 'healthConnect.case.states.forbidden'));
+        absent.detectChanges();
+
+        expect(region()).toBe(before);
+        expect(before!.querySelector('[data-cy="caseForbidden"]')).not.toBeNull();
+      });
+
+      it('leaves item 146’s status/alert split alone — the wrapper is the fix, the roles are not', () => {
+        repository.setReadState('caseQueue', asyncState('forbidden', 'healthConnect.case.states.forbidden'));
+        absent.detectChanges();
+
+        expect(marker('caseForbidden')!.getAttribute('role')).toBe('status');
+
+        repository.setReadState('caseQueue', asyncState('error', 'healthConnect.case.states.error'));
+        absent.detectChanges();
+
+        expect(marker('caseFailed')!.getAttribute('role')).toBe('alert');
+
+        repository.setReadState('caseQueue', asyncState('loading'));
+        absent.detectChanges();
+
+        expect(marker('caseLoading')!.getAttribute('role')).toBe('status');
+      });
+    });
   });
 });
