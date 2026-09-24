@@ -253,7 +253,7 @@ const PAGE_SIZE = 3;
             <p role="status" data-cy="recordLoading">{{ 'healthConnect.states.loading' | translate }}</p>
           }
           @default {
-            <p role="alert">{{ 'healthConnect.states.empty' | translate }}</p>
+            <p role="alert" data-cy="recordEmpty">{{ 'healthConnect.states.empty' | translate }}</p>
           }
         }
       </div>
