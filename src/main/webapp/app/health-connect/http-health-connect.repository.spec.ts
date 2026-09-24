@@ -188,6 +188,54 @@ describe('HttpHealthConnectRepository', () => {
     });
   });
 
+  describe('every stored state refuses mutation at runtime (backlog item 180)', () => {
+    // The write each of these plants is the one the row names — "clear this error to ready" — cast
+    // past `readonly`, against a STORED failure state. Item 173 froze only the three shared
+    // constants, so this exact write succeeded silently on `error` and `forbidden`, the two states
+    // a caller is most likely to reach for. Every state now comes frozen out of one `asyncState`
+    // builder; the writes throw rather than no-op because specs, like the emitted app modules, run
+    // in strict mode.
+    //
+    // Asserted by attempting the write rather than by `Object.isFrozen`, because the write
+    // throwing IS the guarantee — and the state is re-read afterwards so a silent no-op that
+    // somehow returned would still fail the test on the value.
+    it('throws on a mutation of the directory read’s stored ERROR state, leaving it intact', () => {
+      httpMock
+        .expectOne(request => request.url.endsWith('services/professionalservice/api/patients'))
+        .flush('nope', { status: 503, statusText: 'Service Unavailable' });
+      httpMock.expectOne(request => request.url.endsWith('services/patientservice/api/clinical-cases')).flush([], { headers: {} });
+      httpMock.expectOne('services/professionalservice/api/duty-roster').flush([]);
+
+      const state = repository.directoryState() as { status: string };
+      expect(() => (state.status = 'ready')).toThrow(TypeError);
+      expect(repository.directoryState().status).toBe('error');
+    });
+
+    it('throws on a mutation of the case queue’s stored FORBIDDEN state, leaving it intact', () => {
+      httpMock
+        .expectOne(request => request.url.endsWith('services/professionalservice/api/patients'))
+        .flush([], { headers: { 'X-Total-Count': '0' } });
+      httpMock
+        .expectOne(request => request.url.endsWith('services/patientservice/api/clinical-cases'))
+        .flush('nope', { status: 403, statusText: 'Forbidden' });
+      httpMock.expectOne('services/professionalservice/api/duty-roster').flush([]);
+
+      const state = repository.caseQueueState() as { status: string };
+      expect(() => (state.status = 'ready')).toThrow(TypeError);
+      expect(repository.caseQueueState().status).toBe('forbidden');
+    });
+
+    it('throws on a mutation of a record read’s no-body ERROR state — the site row 181 absorbed', () => {
+      flushInitialLoad();
+      repository.findPatient('patient-kojo');
+      httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo')).flush(null);
+
+      const state = repository.recordState('patient-kojo') as { status: string };
+      expect(() => (state.status = 'ready')).toThrow(TypeError);
+      expect(repository.recordState('patient-kojo').status).toBe('error');
+    });
+  });
+
   describe('X-Restricted-Parts on the directory read (backlog item 114)', () => {
     // `api/` emits the header only when a composed part was refused, so the empty case has to stay
     // empty — and the tokens have to survive the trip from the response to the signal the screen
