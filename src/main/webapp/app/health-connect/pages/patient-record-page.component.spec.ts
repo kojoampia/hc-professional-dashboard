@@ -24,6 +24,24 @@ describe('PatientRecordPageComponent', () => {
     imageUrl: null,
   });
 
+  // ONE spelling of the fake, for the whole file (backlog item 209). This lived inside the item-146
+  // block below while four sites reached `TestBed.inject(FakeHealthConnectRepository)` longhand —
+  // item 172's OTHER shape, and the half items 172 and 200 did not close everywhere. A duplicate
+  // declaration is removed by deleting one of two identical things; an inline reach outside a
+  // block-local helper cannot be routed through it at all until the helper is hoisted.
+  //
+  // Safe for item 172's reason: the arrow CAPTURES NOTHING. `TestBed` and the fake are module-level
+  // imports, so its body is byte-identical to the expression it replaces and it resolves the
+  // injection when CALLED. Position could only matter via TDZ or shadowing, and it is called solely
+  // from `it`/`beforeEach` callbacks, which run after every describe body has executed.
+  //
+  // NOTE the `restrict` below now calls this too. That helper is the RECORD-shaped one
+  // (`setRecordRestrictions(id, parts)`) which backlog item 200 recorded as deliberately NOT merged
+  // with the directory-shaped `restrict` in `patient-directory-page.component.spec.ts`. Routing its
+  // body through this arrow changes nothing about that decision — do not read the shared name as an
+  // invitation to unify the two.
+  const repository = (): FakeHealthConnectRepository => TestBed.inject(FakeHealthConnectRepository);
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [PatientRecordPageComponent, TranslateModule.forRoot()],
@@ -39,7 +57,7 @@ describe('PatientRecordPageComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(PatientRecordPageComponent);
     component = fixture.componentInstance;
-    TestBed.inject(FakeHealthConnectRepository).reset();
+    repository().reset();
     fixture.detectChanges();
   });
 
@@ -111,7 +129,7 @@ describe('PatientRecordPageComponent', () => {
     });
 
     it('reads the restriction for the patient on screen, not for whichever record was read last', () => {
-      TestBed.inject(FakeHealthConnectRepository).setRecordRestrictions('patient-kwabena', ['lastActivity']);
+      repository().setRecordRestrictions('patient-kwabena', ['lastActivity']);
       fixture.detectChanges();
 
       expect(notice()).toBeNull();
@@ -131,7 +149,7 @@ describe('PatientRecordPageComponent', () => {
     });
 
     const restrict = (...parts: RestrictedPart[]): void => {
-      TestBed.inject(FakeHealthConnectRepository).setRecordRestrictions('patient-kojo', parts);
+      repository().setRecordRestrictions('patient-kojo', parts);
       fixture.detectChanges();
     };
   });
@@ -142,7 +160,6 @@ describe('PatientRecordPageComponent', () => {
     // and the case queue, while the one screen actually waiting on that read said "nothing to show"
     // about a response that had been refused or had 503'd. Both halves were wrong.
     const sentence = (): string | undefined => fixture.nativeElement.textContent?.trim();
-    const repository = (): FakeHealthConnectRepository => TestBed.inject(FakeHealthConnectRepository);
 
     beforeEach(() => {
       // The fake serves a record unless the directory read said this follow-up will refuse, which is
@@ -245,6 +262,6 @@ describe('PatientRecordPageComponent', () => {
 
     expect(component.canManageReports()).toBe(false);
     expect(fixture.nativeElement.querySelector('hpd-file-upload-trigger button').disabled).toBe(true);
-    expect(TestBed.inject(FakeHealthConnectRepository).findPatient('patient-kojo')?.reports).toHaveLength(1);
+    expect(repository().findPatient('patient-kojo')?.reports).toHaveLength(1);
   });
 });
