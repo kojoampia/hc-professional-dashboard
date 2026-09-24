@@ -55,7 +55,7 @@ describe('PatientRecordPageComponent', () => {
 
   describe('X-Restricted-Parts on the record (backlog item 126)', () => {
     // The defect: `api/` serves a pharmacist this record without its activity log and names that in
-    // the response header. Unread, the activity panel renders an empty list and "No records found."
+    // the response header. Unread, the activity panel renders an empty list and "Nothing to show."
     // — which is indistinguishable from a patient nobody has touched, on a screen a clinician reads
     // while deciding what to do next.
     //

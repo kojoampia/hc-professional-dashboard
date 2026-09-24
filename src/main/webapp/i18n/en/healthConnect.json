@@ -282,7 +282,7 @@
     },
     "states": {
       "loading": "Loading...",
-      "empty": "No records found.",
+      "empty": "Nothing to show.",
       "error": "Unable to load this information.",
       "forbidden": "Your role does not give you access to this information.",
       "readOnly": "You have read-only access."

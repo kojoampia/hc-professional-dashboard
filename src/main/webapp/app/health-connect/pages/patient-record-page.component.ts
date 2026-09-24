@@ -130,7 +130,7 @@ const PAGE_SIZE = 3;
             <!--
               The whole of backlog item 126. The api serves a pharmacist this record without the
               activity log and names that in the X-Restricted-Parts header; unread, the panel below
-              renders an empty list and "No records found.", which is exactly what a patient nobody
+              renders an empty list and "Nothing to show.", which is exactly what a patient nobody
               has touched looks like. On the directory that conflation cost a column; here it is a
               clinical reading, made while deciding what to do next.
 

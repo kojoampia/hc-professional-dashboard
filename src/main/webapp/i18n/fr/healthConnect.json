@@ -282,7 +282,7 @@
     },
     "states": {
       "loading": "Chargement...",
-      "empty": "Aucun dossier trouvé.",
+      "empty": "Rien à afficher.",
       "error": "Impossible de charger ces informations.",
       "forbidden": "Votre rôle ne vous donne pas accès à ces informations.",
       "readOnly": "Vous disposez d'un accès en lecture seule."
