@@ -50,8 +50,6 @@
       "retry": "Retry",
       "reopen": "Reopen",
       "archive": "Archive",
-      "subscribe": "Subscribe",
-      "unsubscribe": "Unsubscribe",
       "previous": "Previous",
       "next": "Next",
       "confirm": "Confirm",
@@ -341,10 +339,6 @@
       "sendFailed": "The message could not be sent.",
       "noRecipients": "Add a recipient or choose a role."
     },
-    "about": {
-      "title": "Why Abofonsa BridgeCare — Professional",
-      "body": "One platform, two sides: families book and track care through the Abofonsa BridgeCare family portal, while clinicians manage patients, triage, and duty rosters here — sharing the same patient records in real time."
-    },
     "toast": {
       "caseSaved": "Case saved",
       "activityLogged": "Activity logged",
@@ -360,32 +354,21 @@
       "archiveFailed": "The case was not archived. It is still in the queue."
     },
     "onboarding": {
-      "title": "Professional onboarding",
-      "nav": "Onboarding",
       "chooseRole": "Choose your clinical role…",
       "consentIntro": "Apply for verified professional access. Your application is reviewed by the credentialing team before any clinical authority is granted.",
       "consentText": "I consent to the processing of my identity, qualification, and registration information for credentialing, and confirm the information I provide is accurate.",
       "requestedRole": "Requested clinical role",
-      "emergencyContact": "Emergency contact / next of kin",
       "correctionRequired": "Your application was returned for correction",
       "reviewIntro": "Check your details, then submit your application for credential review.",
       "steps": {
-        "consent": "Consent & role",
-        "profile": "Profile",
-        "contact": "Address & contact",
         "documents": "Documents",
-        "review": "Review & submit",
         "status": "Status"
       },
       "fields": {
-        "firstName": "First name",
-        "middleNames": "Middle names",
-        "lastName": "Last name",
         "birthDate": "Date of birth",
         "sex": "Sex",
         "title": "Title / designation",
         "mobilePhone": "Mobile phone",
-        "email": "Email",
         "cardType": "Identity document type",
         "cardNumber": "Identity number",
         "digitalAddress": "Digital address",
@@ -405,8 +388,6 @@
       },
       "actions": {
         "start": "Start application",
-        "saveContinue": "Save & continue",
-        "review": "Review & submit",
         "submit": "Submit for review"
       },
       "statuses": {
@@ -450,7 +431,6 @@
       "replacesNothing": "Nothing — this is a new document",
       "toast": {
         "started": "Application started",
-        "saved": "Progress saved",
         "documentUploaded": "Document uploaded",
         "submitted": "Submitted for review"
       }
