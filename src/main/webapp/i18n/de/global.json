@@ -129,7 +129,7 @@
     "NotNull": "Feld {{fieldName}} kann nicht leer sein!",
     "Size": "Feld {{fieldName}} erfüllt nicht die minimalen/maximalen Voraussetzungen!",
     "userexists": "Benutzername bereits vergeben!",
-    "emailexists": "Email wird bereits verwendet!",
+    "emailexists": "E-Mail wird bereits verwendet!",
     "idexists": "Ein neuer {{entityName}} kann noch keine ID haben",
     "idnull": "Ungültige ID",
     "idinvalid": "Ungültige ID",

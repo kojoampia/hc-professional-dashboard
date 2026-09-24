@@ -36,8 +36,8 @@
       "newpassword.placeholder": "Nouveau mot de passe",
       "confirmpassword.label": "Confirmation du nouveau mot de passe",
       "confirmpassword.placeholder": "Confirmation du nouveau mot de passe",
-      "email.label": "Email",
-      "email.placeholder": "Votre email"
+      "email.label": "E-mail",
+      "email.placeholder": "Votre e-mail"
     },
     "messages": {
       "info": {
@@ -67,10 +67,10 @@
           "maxlength": "Votre confirmation du mot de passe ne doit pas comporter plus de 50 caractères."
         },
         "email": {
-          "required": "Votre email est requis.",
-          "minlength": "Votre email doit comporter au moins 5 caractères.",
-          "maxlength": "Votre email ne doit pas comporter plus de 50 caractères.",
-          "invalid": "Votre email n'est pas valide."
+          "required": "Votre e-mail est requis.",
+          "minlength": "Votre e-mail doit comporter au moins 5 caractères.",
+          "maxlength": "Votre e-mail ne doit pas comporter plus de 50 caractères.",
+          "invalid": "Votre e-mail n'est pas valide."
         }
       }
     },
@@ -129,7 +129,7 @@
     "NotNull": "Le champ {{fieldName}} ne peut pas être vide !",
     "Size": "Le champ {{fieldName}} ne respecte pas les critères minimum et maximum !",
     "userexists": "Login déjà utilisé !",
-    "emailexists": "Email déjà utilisé !",
+    "emailexists": "E-mail déjà utilisé !",
     "idexists": "Une nouvelle entité {{entityName}} ne peut pas avoir d'identifiant !",
     "idnull": "Identifiant invalide",
     "idinvalid": "Identifiant invalide",
