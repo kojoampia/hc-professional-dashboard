@@ -36,8 +36,8 @@
       "newpassword.placeholder": "Neues Passwort",
       "confirmpassword.label": "Neues Passwort bestätigen",
       "confirmpassword.placeholder": "Bestätigen Sie Ihr neues Passwort",
-      "email.label": "Email Adresse",
-      "email.placeholder": "Ihre Email Adresse"
+      "email.label": "E-Mail-Adresse",
+      "email.placeholder": "Ihre E-Mail-Adresse"
     },
     "messages": {
       "info": {
@@ -67,10 +67,10 @@
           "maxlength": "Das bestätigte Passwort darf nicht länger als 50 Zeichen sein"
         },
         "email": {
-          "required": "Ihre Email Adresse wird benötigt.",
-          "invalid": "Ihre Email Adresse ist ungültig.",
-          "minlength": "Ihre Email Adresse muss mindestens 5 Zeichen lang sein",
-          "maxlength": "Ihre Email Adresse darf nicht länger als 50 Zeichen sein"
+          "required": "Ihre E-Mail-Adresse wird benötigt.",
+          "invalid": "Ihre E-Mail-Adresse ist ungültig.",
+          "minlength": "Ihre E-Mail-Adresse muss mindestens 5 Zeichen lang sein",
+          "maxlength": "Ihre E-Mail-Adresse darf nicht länger als 50 Zeichen sein"
         }
       }
     },

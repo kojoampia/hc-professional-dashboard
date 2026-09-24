@@ -51,7 +51,7 @@
         "active": "Aktive Anfragen:",
         "total": "Alle Anfragen:",
         "table": {
-          "code": "Codierung",
+          "code": "Code",
           "count": "Anzahl",
           "mean": "Durchschnittswert",
           "average": "Mittelwert",

@@ -15,7 +15,7 @@
       "mail": "Correo electrónico",
       "livenessState": "Estado de actividad",
       "readinessState": "Estado de preparación",
-      "ping": "Solicitud",
+      "ping": "Aplicación",
       "mongo": "MongoDB"
     },
     "table": {
