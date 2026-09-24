@@ -8,6 +8,7 @@ import { AccountService } from 'app/core/auth/account.service';
 
 import { FakeHealthConnectRepository } from '../testing/fake-health-connect.repository';
 import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
+import { asyncState } from '../health-connect.models';
 import CaseDetailPageComponent from './case-detail-page.component';
 
 describe('CaseDetailPageComponent', () => {
@@ -94,6 +95,7 @@ describe('CaseDetailPageComponent', () => {
       findPatient: () => undefined,
       recommendations: () => [],
       updateCase: jest.fn(),
+      caseQueueState: signal(asyncState('loading')),
     };
 
     TestBed.resetTestingModule();
@@ -137,6 +139,7 @@ describe('CaseDetailPageComponent', () => {
       findPatient: () => undefined,
       recommendations: () => [],
       updateCase: jest.fn(),
+      caseQueueState: signal(asyncState('loading')),
     };
 
     TestBed.resetTestingModule();
@@ -158,5 +161,84 @@ describe('CaseDetailPageComponent', () => {
     late.detectChanges();
 
     expect(late.componentInstance.form.getRawValue().symptoms).toBe('Typed before the response landed');
+  });
+
+  describe('why there is no case (backlog item 202)', () => {
+    // One `role="alert"` reading "Nothing to show." stood for four unrelated situations: the case
+    // read still in flight, refused, failed, and a case that genuinely is not there. hc-patient
+    // refuses a technician the clinical-case read on every load, so a whole discipline had a
+    // permissions boundary explained to them as "there is nothing here".
+    //
+    // Keyed on `data-cy` rather than on the rendered sentence: `TranslateModule.forRoot()` here
+    // carries no catalogue, so every treatment renders its own key and a treatment identifiable
+    // only by its words could not be asserted at all.
+    let absent: ComponentFixture<CaseDetailPageComponent>;
+    let repository: FakeHealthConnectRepository;
+    const sentence = (): string => absent.nativeElement.textContent?.trim() ?? '';
+    const marker = (name: string): HTMLElement | null => absent.nativeElement.querySelector(`[data-cy="${name}"]`);
+
+    beforeEach(() => {
+      // An id the fake does not hold, which is the only way to reach the `@else` at all.
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [CaseDetailPageComponent, TranslateModule.forRoot()],
+        providers: [
+          { provide: HEALTH_CONNECT_REPOSITORY, useExisting: FakeHealthConnectRepository },
+          { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ caseId: 'case-absent' }) } } },
+          { provide: Router, useValue: router },
+          { provide: AccountService, useValue: { getAuthenticationState: () => authenticationState.asObservable() } },
+        ],
+      });
+      repository = TestBed.inject(FakeHealthConnectRepository);
+      repository.reset();
+      absent = TestBed.createComponent(CaseDetailPageComponent);
+      absent.detectChanges();
+    });
+
+    it('says the read was REFUSED, and offers no retry that could only be refused again', () => {
+      repository.setReadState('caseQueue', asyncState('forbidden', 'healthConnect.case.states.forbidden'));
+      absent.detectChanges();
+
+      expect(marker('caseForbidden')).not.toBeNull();
+      expect(sentence()).toContain('healthConnect.case.states.forbidden');
+      expect(sentence()).not.toContain('healthConnect.case.states.empty');
+      // The half a loading guard alone would not buy, and the half that must not regress: a 403 is
+      // refused every time, so nothing here may invite the clinician to re-issue it.
+      expect(absent.nativeElement.querySelector('button')).toBeNull();
+    });
+
+    it('says the read FAILED when it failed, which is a different sentence again', () => {
+      repository.setReadState('caseQueue', asyncState('error', 'healthConnect.case.states.error'));
+      absent.detectChanges();
+
+      expect(marker('caseFailed')).not.toBeNull();
+      expect(sentence()).toContain('healthConnect.case.states.error');
+      expect(marker('caseForbidden')).toBeNull();
+      expect(marker('caseEmpty')).toBeNull();
+    });
+
+    it('says the read is still in FLIGHT rather than that the case is missing', () => {
+      // The cold load — a deep link, a refresh, a bookmark — which is exactly when this screen used
+      // to assert absence about a response that had not arrived.
+      repository.setReadState('caseQueue', asyncState('loading'));
+      absent.detectChanges();
+
+      expect(marker('caseLoading')).not.toBeNull();
+      expect(sentence()).toContain('healthConnect.case.states.loading');
+      expect(marker('caseEmpty')).toBeNull();
+    });
+
+    it('still says the case was not found for a read that succeeded and found none', () => {
+      // The positive control, and why absence stays the default: it is the right sentence for an
+      // archived case or a stale bookmark, and the wrong one for every other reason there is none.
+      repository.setReadState('caseQueue', asyncState('ready'));
+      absent.detectChanges();
+
+      expect(marker('caseEmpty')).not.toBeNull();
+      expect(sentence()).toContain('healthConnect.case.states.empty');
+      expect(marker('caseForbidden')).toBeNull();
+      expect(marker('caseFailed')).toBeNull();
+      expect(marker('caseLoading')).toBeNull();
+    });
   });
 });

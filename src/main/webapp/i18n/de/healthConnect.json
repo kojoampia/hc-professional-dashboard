@@ -129,7 +129,13 @@
       "detail": "Fall #{{number}}",
       "symptoms": "Symptome",
       "diagnosis": "Diagnose",
-      "recommendations": "Empfehlungen"
+      "recommendations": "Empfehlungen",
+      "states": {
+        "loading": "Dieser Fall wird geladen...",
+        "empty": "Dieser Fall wurde nicht gefunden.",
+        "error": "Dieser Fall konnte nicht geladen werden.",
+        "forbidden": "Ihre Rolle gibt Ihnen keinen Zugriff auf diesen Fall."
+      }
     },
     "activity": {
       "title": "Aktivitätsprotokoll",

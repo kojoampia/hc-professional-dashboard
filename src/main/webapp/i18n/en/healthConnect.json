@@ -129,7 +129,13 @@
       "detail": "Case #{{number}}",
       "symptoms": "Symptoms",
       "diagnosis": "Diagnosis",
-      "recommendations": "Recommendations"
+      "recommendations": "Recommendations",
+      "states": {
+        "loading": "Loading this case...",
+        "empty": "This case was not found.",
+        "error": "Unable to load this case.",
+        "forbidden": "Your role does not give you access to this case."
+      }
     },
     "activity": {
       "title": "Activity log",
