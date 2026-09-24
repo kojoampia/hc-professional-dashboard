@@ -144,7 +144,7 @@
       "FLEXIBLE": "Flexible (blocs de 2–4 h)"
     },
     "roster": {
-      "subtitle": "Les dossiers des gardes qui vous sont attribuées apparaissent dans votre file « Ma garde ».",
+      "subtitle": "Les cas des gardes qui vous sont attribuées apparaissent dans votre file « Ma garde ».",
       "allCases": "Tous les cas",
       "myRoster": "Mon planning",
       "activeShift": "En service jusqu'à {{time}}",
@@ -349,10 +349,10 @@
       "acknowledged": "Confirmation enregistrée",
       "sweepDone": "Contrôle terminé : {{suspended}} candidature(s) restreinte(s)",
       "messageSent": "Message envoyé",
-      "caseSaveFailed": "Cette modification du dossier n'a pas été enregistrée.",
+      "caseSaveFailed": "Cette modification du cas n'a pas été enregistrée.",
       "activityFailed": "Cette activité n'a pas été enregistrée.",
       "reportFailed": "Ce rapport n'a pas été enregistré.",
-      "archiveFailed": "Le dossier n'a pas été archivé. Il est toujours dans la file."
+      "archiveFailed": "Le cas n'a pas été archivé. Il est toujours dans la file."
     },
     "onboarding": {
       "title": "Intégration professionnelle",
@@ -606,7 +606,7 @@
     },
     "caseQueue": {
       "archive": {
-        "title": "Archiver ce dossier",
+        "title": "Archiver ce cas",
         "message": "Il quitte la file d'attente et reste au dossier du patient. Indiquez pourquoi, afin que le prochain clinicien qui l'ouvre le sache.",
         "label": "Motif",
         "confirm": "Archiver"

@@ -66,7 +66,15 @@ this is why selectors are `hpd-`, not the `app-` prefix every spec proposed.
     credentialing dossier — kept distinct by its qualifier.
   - **de: `Patientenakte`/`Akte`** — the clinical word, **never `Datensatz`**, a database word.
     That was item 132's fix, and `copyConfirmation` was its leftover.
-  - **fr: `dossier`** — already uniform, not in question.
+  - **fr: `dossier` — the record only. The _clinical case_ is `cas`, never `dossier`** — decided
+    by the architect on `../docs/backlog.md` item 175, which made `web/`'s existing dashboard and
+    case-queue `Cas` the estate-wide answer. This line used to read _"already uniform, not in
+    question"_, and that was true of the **record** noun while false of the pair: `dossier` was
+    simultaneously naming the case in ~20 `mobile/` fr keys and four here, so `mobile/`'s
+    `cases.archiveHint` read _"Le dossier reste dans le dossier du patient"_ — one word, two
+    meanings, in one sentence, and `mobile/`'s side-by-side refusals `rowsRestricted` (cases) and
+    `recordsRestricted` (records) were indistinguishable. If stale copy shows `dossier` for a
+    case, the case sense is the wrong one.
 - **Clinical reports are a separate model from professional-registration documents.** Do not merge
   them on the assumption they are both "documents".
 - **Copy creates a draft duplicate only after explicit confirmation.** Closed-case actions are
