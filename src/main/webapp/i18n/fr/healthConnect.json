@@ -150,7 +150,6 @@
       "FLEXIBLE": "Flexible (blocs de 2–4 h)"
     },
     "roster": {
-      "subtitle": "Les cas des gardes qui vous sont attribuées apparaissent dans votre file « Ma garde ».",
       "allCases": "Tous les cas",
       "myRoster": "Mon planning",
       "activeShift": "En service jusqu'à {{time}}",

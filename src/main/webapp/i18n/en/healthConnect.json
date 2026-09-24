@@ -150,7 +150,6 @@
       "FLEXIBLE": "Flexible (2–4 h blocks)"
     },
     "roster": {
-      "subtitle": "Cases on the rosters you are assigned to appear in your \"My roster\" queue.",
       "allCases": "All cases",
       "myRoster": "My roster",
       "activeShift": "On duty until {{time}}",
