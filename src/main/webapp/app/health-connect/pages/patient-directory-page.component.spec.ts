@@ -24,6 +24,19 @@ describe('PatientDirectoryPageComponent', () => {
     queryParamMap: undefined as unknown,
   };
 
+  // ONE SPELLING OF THE FAKE, FOR THE WHOLE FILE (backlog item 172). Five of the six reaches used to
+  // be written `TestBed.inject(FakeHealthConnectRepository).…` inline and the rest went through a
+  // copy of this arrow declared inside the last `describe`, so a later change to the helper would
+  // have left the inline ones behind with nothing failing.
+  //
+  // It is declared here, above every block, and that is safe for a reason worth stating rather than
+  // re-deriving: this is a LAZY arrow. It resolves `TestBed.inject` when it is CALLED — inside an
+  // `it`, after `beforeEach` has configured the module — not where it is written, so the TestBed
+  // reset between tests cannot hand it a stale instance. Only an eager `const repository =
+  // TestBed.inject(…)` would care about placement, and this is not one. `activityColumn()` below is
+  // the same shape and has always been called from inside the nested blocks.
+  const repository = (): FakeHealthConnectRepository => TestBed.inject(FakeHealthConnectRepository);
+
   beforeEach(async () => {
     queryParamMap = new BehaviorSubject(convertToParamMap({ gender: 'female', q: 'ama', page: '1' }));
     route.queryParamMap = queryParamMap.asObservable();
@@ -37,7 +50,7 @@ describe('PatientDirectoryPageComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(PatientDirectoryPageComponent);
     component = fixture.componentInstance;
-    TestBed.inject(FakeHealthConnectRepository).reset();
+    repository().reset();
     fixture.detectChanges();
     router.navigate.mockClear();
   });
@@ -126,7 +139,7 @@ describe('PatientDirectoryPageComponent', () => {
     });
 
     const restrict = (...parts: RestrictedPart[]): void => {
-      TestBed.inject(FakeHealthConnectRepository).setDirectoryRestrictions(parts);
+      repository().setDirectoryRestrictions(parts);
       fixture.detectChanges();
     };
 
@@ -207,7 +220,7 @@ describe('PatientDirectoryPageComponent', () => {
       // The header is a fact about the read that SUCCEEDED, which is why the notice survives either
       // way — and why a different request failing must not take the rows with it.
       restrictFollowUps('record');
-      TestBed.inject(FakeHealthConnectRepository).setReadState('caseQueue', { status: 'error', error: 'healthConnect.states.error' });
+      repository().setReadState('caseQueue', { status: 'error', error: 'healthConnect.states.error' });
       fixture.detectChanges();
 
       expect(component.repository.caseQueueState().status).toBe('error');
@@ -296,12 +309,12 @@ describe('PatientDirectoryPageComponent', () => {
     });
 
     const restrictFollowUps = (...followUps: RestrictedFollowUp[]): void => {
-      TestBed.inject(FakeHealthConnectRepository).setDirectoryRestrictedFollowUps(followUps);
+      repository().setDirectoryRestrictedFollowUps(followUps);
       fixture.detectChanges();
     };
 
     const restrict = (...parts: RestrictedPart[]): void => {
-      TestBed.inject(FakeHealthConnectRepository).setDirectoryRestrictions(parts);
+      repository().setDirectoryRestrictions(parts);
       fixture.detectChanges();
     };
   });
@@ -316,7 +329,6 @@ describe('PatientDirectoryPageComponent', () => {
       Array.from(fixture.nativeElement.querySelectorAll('button') as NodeListOf<Element>).find(
         button => button.textContent?.includes('healthConnect.actions.retry'),
       ) ?? null;
-    const repository = (): FakeHealthConnectRepository => TestBed.inject(FakeHealthConnectRepository);
 
     it('SHOWS A TECHNICIAN THEIR ROWS while the case read is refused', () => {
       repository().setReadState('caseQueue', { status: 'forbidden', error: 'healthConnect.states.forbidden' });
