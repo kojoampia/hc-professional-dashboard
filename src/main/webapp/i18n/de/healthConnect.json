@@ -50,8 +50,6 @@
       "retry": "Erneut versuchen",
       "reopen": "Wieder öffnen",
       "archive": "Archivieren",
-      "subscribe": "Abonnieren",
-      "unsubscribe": "Abbestellen",
       "previous": "Zurück",
       "next": "Weiter",
       "confirm": "Bestätigen",
@@ -341,10 +339,6 @@
       "sendFailed": "Die Nachricht konnte nicht gesendet werden.",
       "noRecipients": "Fügen Sie einen Empfänger hinzu oder wählen Sie eine Rolle."
     },
-    "about": {
-      "title": "Warum Abofonsa BridgeCare — Professional",
-      "body": "Eine Plattform, zwei Seiten: Familien buchen und verfolgen Pflege über das Abofonsa BridgeCare-Familienportal, während Fachkräfte hier Patienten, Triage und Dienstpläne verwalten — mit denselben Patientenakten in Echtzeit."
-    },
     "toast": {
       "caseSaved": "Fall gespeichert",
       "activityLogged": "Aktivität protokolliert",
@@ -360,32 +354,21 @@
       "archiveFailed": "Der Fall wurde nicht archiviert. Er ist weiterhin in der Liste."
     },
     "onboarding": {
-      "title": "Fachkräfte-Onboarding",
-      "nav": "Onboarding",
       "chooseRole": "Wählen Sie Ihre klinische Rolle…",
       "consentIntro": "Beantragen Sie verifizierten Fachzugang. Ihr Antrag wird vor jeder Vergabe klinischer Berechtigungen vom Prüfungsteam geprüft.",
       "consentText": "Ich willige in die Verarbeitung meiner Identitäts-, Qualifikations- und Registrierungsdaten zur Akkreditierung ein und bestätige die Richtigkeit meiner Angaben.",
       "requestedRole": "Beantragte klinische Rolle",
-      "emergencyContact": "Notfallkontakt / Angehörige",
       "correctionRequired": "Ihr Antrag wurde zur Korrektur zurückgegeben",
       "reviewIntro": "Prüfen Sie Ihre Angaben und reichen Sie den Antrag zur Prüfung ein.",
       "steps": {
-        "consent": "Einwilligung & Rolle",
-        "profile": "Profil",
-        "contact": "Adresse & Kontakt",
         "documents": "Dokumente",
-        "review": "Prüfen & einreichen",
         "status": "Status"
       },
       "fields": {
-        "firstName": "Vorname",
-        "middleNames": "Weitere Vornamen",
-        "lastName": "Nachname",
         "birthDate": "Geburtsdatum",
         "sex": "Geschlecht",
         "title": "Titel / Bezeichnung",
         "mobilePhone": "Mobiltelefon",
-        "email": "E-Mail",
         "cardType": "Ausweisart",
         "cardNumber": "Ausweisnummer",
         "digitalAddress": "Digitale Adresse",
@@ -405,8 +388,6 @@
       },
       "actions": {
         "start": "Antrag starten",
-        "saveContinue": "Speichern & weiter",
-        "review": "Prüfen & einreichen",
         "submit": "Zur Prüfung einreichen"
       },
       "statuses": {
@@ -450,7 +431,6 @@
       "replacesNothing": "Keines – dies ist ein neues Dokument",
       "toast": {
         "started": "Antrag gestartet",
-        "saved": "Fortschritt gespeichert",
         "documentUploaded": "Dokument hochgeladen",
         "submitted": "Zur Prüfung eingereicht"
       }

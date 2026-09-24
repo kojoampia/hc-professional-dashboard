@@ -50,8 +50,6 @@
       "retry": "Reintentar",
       "reopen": "Reabrir",
       "archive": "Archivar",
-      "subscribe": "Suscribirse",
-      "unsubscribe": "Cancelar suscripción",
       "previous": "Anterior",
       "next": "Siguiente",
       "confirm": "Confirmar",
@@ -341,10 +339,6 @@
       "sendFailed": "No se pudo enviar el mensaje.",
       "noRecipients": "Añada un destinatario o elija un rol."
     },
-    "about": {
-      "title": "Por qué Abofonsa BridgeCare — Professional",
-      "body": "Una plataforma, dos caras: las familias reservan y siguen la atención a través del portal familiar de Abofonsa BridgeCare, mientras que el personal clínico gestiona aquí pacientes, triaje y cuadros de turnos, compartiendo los mismos expedientes en tiempo real."
-    },
     "toast": {
       "caseSaved": "Caso guardado",
       "activityLogged": "Actividad registrada",
@@ -360,32 +354,21 @@
       "archiveFailed": "El caso no se archivó. Sigue en la cola."
     },
     "onboarding": {
-      "title": "Incorporación profesional",
-      "nav": "Incorporación",
       "chooseRole": "Elija su rol clínico…",
       "consentIntro": "Solicite acceso profesional verificado. Su solicitud es revisada por el equipo de acreditación antes de conceder cualquier autoridad clínica.",
       "consentText": "Doy mi consentimiento para el tratamiento de mi información de identidad, cualificación y registro con fines de acreditación, y confirmo que la información que proporciono es exacta.",
       "requestedRole": "Rol clínico solicitado",
-      "emergencyContact": "Contacto de emergencia / pariente más cercano",
       "correctionRequired": "Su solicitud fue devuelta para corrección",
       "reviewIntro": "Compruebe sus datos y envíe su solicitud para la revisión de credenciales.",
       "steps": {
-        "consent": "Consentimiento y rol",
-        "profile": "Perfil",
-        "contact": "Dirección y contacto",
         "documents": "Documentos",
-        "review": "Revisar y enviar",
         "status": "Estado"
       },
       "fields": {
-        "firstName": "Nombre",
-        "middleNames": "Segundos nombres",
-        "lastName": "Apellidos",
         "birthDate": "Fecha de nacimiento",
         "sex": "Sexo",
         "title": "Título / cargo",
         "mobilePhone": "Teléfono móvil",
-        "email": "Correo electrónico",
         "cardType": "Tipo de documento de identidad",
         "cardNumber": "Número de identidad",
         "digitalAddress": "Dirección digital",
@@ -405,8 +388,6 @@
       },
       "actions": {
         "start": "Iniciar solicitud",
-        "saveContinue": "Guardar y continuar",
-        "review": "Revisar y enviar",
         "submit": "Enviar a revisión"
       },
       "statuses": {
@@ -450,7 +431,6 @@
       "replacesNothing": "Ninguno: es un documento nuevo",
       "toast": {
         "started": "Solicitud iniciada",
-        "saved": "Progreso guardado",
         "documentUploaded": "Documento subido",
         "submitted": "Enviada a revisión"
       }
