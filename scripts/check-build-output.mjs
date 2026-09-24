@@ -319,11 +319,25 @@ if (stylesCss === null) {
 //     nothing here, while a hand-list of allowed line numbers — the guard this item exists to
 //     refuse — would have to be re-counted on every edit and would rot the first time nobody did.
 //
-// WHAT THIS DOES NOT COVER, said out loud so nobody reads it as more than it is: an ALIASED or
-// DYNAMIC write — `const s = repo['directory' + 'Read']; s.set(…)` — never spells
-// `.directoryRead.set` and is invisible to any lexical check, artefact-level or source-level alike.
-// The residual guards for that are `private` (outside the class it takes a cast written on purpose)
-// and review. Likewise a sibling class declaring its OWN signals under these names is indistinct
+// WHAT THIS DOES NOT COVER, said out loud so nobody reads it as more than it is:
+//
+//   - an ALIASED or DYNAMIC write — `const s = repo['directory' + 'Read']; s.set(…)` — never
+//     spells `.directoryRead.set` and is invisible to any lexical check, artefact-level or
+//     source-level alike. The residual guards are `private` (outside the class it takes a cast
+//     written on purpose) and review. A LITERAL bracket spelling is NOT in this bucket: measured
+//     2026-09-24 (backlog item 173), the production minifier normalises
+//     `this['directoryRead'].set(…)` into dot notation — the planted probe shipped as
+//     `this.directoryRead.set(…)` and this check went red naming its method — so only a key the
+//     minifier cannot fold at build time escapes.
+//   - a DEEP MUTATION — `repo.directoryState().status = 'ready'` — writes no signal at all, so
+//     there is no `.set(…)` here to match: the state changes under every holder of the object
+//     with this check green (backlog item 173). The guards for that live where the objects do:
+//     `AsyncViewState`'s fields are `readonly`, which refuses the write at compile time in every
+//     state, and the shared IDLE/LOADING/READY constants are `Object.freeze`d, so against those
+//     three a cast that gets past the compiler throws at runtime too. A stored `error`/`forbidden`
+//     state is a fresh unfrozen object — there `readonly` is the only guard.
+//
+// Likewise a sibling class declaring its OWN signals under these names is indistinct
 // from the repository's to a name check; the class-identity assertion below (the `loadAll` holding
 // the writes must live in the class that INITIALISES the signals) is what keeps a same-named
 // `loadAll` elsewhere from satisfying this by coincidence.

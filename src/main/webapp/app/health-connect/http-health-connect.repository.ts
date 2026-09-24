@@ -52,10 +52,26 @@ const LOAD_ERROR_KEY = 'healthConnect.states.error';
  */
 const REFUSED_KEY = 'healthConnect.states.forbidden';
 
-/** {@link AsyncViewState} is immutable data, so the three unremarkable ones are shared values. */
-const IDLE: AsyncViewState = { status: 'idle', error: null };
-const LOADING: AsyncViewState = { status: 'loading', error: null };
-const READY: AsyncViewState = { status: 'ready', error: null };
+/**
+ * The three unremarkable states, shared values — each is held by both read signals over its
+ * lifetime, so one mutation would set a read state on every holder at once, by something that is
+ * not a read: the property items 168 and 171 establish, arriving by a route neither guards, since
+ * a field write spells no `.set(…)` for the bundle check to see (backlog item 173).
+ *
+ * <p>So immutability is <b>enforced on both axes where a write could land, not asserted</b> — an
+ * earlier comment here called these "immutable data" and nothing held the sentence.
+ * `Object.freeze` makes the runtime refuse a mutation (the emitted modules are strict mode, so it
+ * throws rather than silently doing nothing), and {@link AsyncViewState}'s fields are `readonly`,
+ * which refuses `state.status = …` at compile time, where such a write would originate.
+ * {@link classifyFailure} below returns a fresh unfrozen object per call — stored in exactly one
+ * signal, though every consumer of that read is handed the same reference — so it leans on the
+ * type alone, and a cast-and-mutate there corrupts one read's state rather than every read's. The
+ * inline error state in {@link findPatient}'s no-body branch is the second unfrozen source, with
+ * the same one-signal blast radius.
+ */
+const IDLE: AsyncViewState = Object.freeze({ status: 'idle', error: null });
+const LOADING: AsyncViewState = Object.freeze({ status: 'loading', error: null });
+const READY: AsyncViewState = Object.freeze({ status: 'ready', error: null });
 
 /**
  * A failed response, as the state the read it belongs to should report.
