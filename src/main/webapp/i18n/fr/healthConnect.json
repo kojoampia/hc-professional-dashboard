@@ -24,7 +24,7 @@
       "therapist": "Thérapeute",
       "carer": "Aidant",
       "user": "Utilisateur",
-      "chemist": "Chimiste",
+      "chemist": "Préparateur·rice",
       "technician": "Technicien"
     },
     "stats": {
@@ -167,7 +167,7 @@
         "PHARMACIST": "Pharmacien·ne",
         "THERAPIST": "Thérapeute",
         "CARER": "Aide-soignant·e",
-        "CHEMIST": "Chimiste",
+        "CHEMIST": "Préparateur·rice",
         "TECHNICIAN": "Technicien·ne",
         "OTHER": "Autre"
       },
