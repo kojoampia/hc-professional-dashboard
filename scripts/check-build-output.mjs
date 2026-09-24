@@ -330,12 +330,15 @@ if (stylesCss === null) {
 //     `this.directoryRead.set(…)` and this check went red naming its method — so only a key the
 //     minifier cannot fold at build time escapes.
 //   - a DEEP MUTATION — `repo.directoryState().status = 'ready'` — writes no signal at all, so
-//     there is no `.set(…)` here to match: the state changes under every holder of the object
+//     there is no `.set(…)` here to match: the state would change under every holder of the object
 //     with this check green (backlog item 173). The guards for that live where the objects do:
 //     `AsyncViewState`'s fields are `readonly`, which refuses the write at compile time in every
-//     state, and the shared IDLE/LOADING/READY constants are `Object.freeze`d, so against those
-//     three a cast that gets past the compiler throws at runtime too. A stored `error`/`forbidden`
-//     state is a fresh unfrozen object — there `readonly` is the only guard.
+//     state, and every state object is frozen at construction by the one `asyncState` builder in
+//     `health-connect.models.ts` (backlog item 180 — it used to be only the three shared
+//     IDLE/LOADING/READY constants, leaving a stored `error`/`forbidden` state with `readonly` as
+//     its only guard). So a cast that gets past the compiler throws at runtime in every state; a
+//     state built WITHOUT the builder cannot arise short of hand-writing the object literal, which
+//     is a review-visible shape with no remaining production instance.
 //
 // Likewise a sibling class declaring its OWN signals under these names is indistinct
 // from the repository's to a name check; the class-identity assertion below (the `loadAll` holding

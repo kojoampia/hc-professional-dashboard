@@ -18,6 +18,7 @@ import {
 import {
   ActivityLogEntry,
   AsyncViewState,
+  asyncState,
   CaseQueueRow,
   CaseStatus,
   ChartData,
@@ -60,18 +61,20 @@ const REFUSED_KEY = 'healthConnect.states.forbidden';
  *
  * <p>So immutability is <b>enforced on both axes where a write could land, not asserted</b> — an
  * earlier comment here called these "immutable data" and nothing held the sentence.
- * `Object.freeze` makes the runtime refuse a mutation (the emitted modules are strict mode, so it
- * throws rather than silently doing nothing), and {@link AsyncViewState}'s fields are `readonly`,
- * which refuses `state.status = …` at compile time, where such a write would originate.
- * {@link classifyFailure} below returns a fresh unfrozen object per call — stored in exactly one
- * signal, though every consumer of that read is handed the same reference — so it leans on the
- * type alone, and a cast-and-mutate there corrupts one read's state rather than every read's. The
- * inline error state in {@link findPatient}'s no-body branch is the second unfrozen source, with
- * the same one-signal blast radius.
+ * {@link asyncState} freezes every state at construction, so the runtime refuses a mutation (the
+ * emitted modules are strict mode, so it throws rather than silently doing nothing), and
+ * {@link AsyncViewState}'s fields are `readonly`, which refuses `state.status = …` at compile
+ * time, where such a write would originate. The freeze used to stop here, at these three: the
+ * failure states {@link classifyFailure} builds per call were mutable through a cast — precisely
+ * the states a caller reaches for ("clear this error to ready") — until item 180 routed every
+ * construction through the one builder, so a fourth site cannot arrive unfrozen <b>by
+ * accident</b>: only a hand-written object literal bypasses the builder, a review-visible shape
+ * with no remaining production instance. These three stay named module-level values because
+ * the <b>sharing</b> is a property of its own: one IDLE across both signals, not N look-alikes.
  */
-const IDLE: AsyncViewState = Object.freeze({ status: 'idle', error: null });
-const LOADING: AsyncViewState = Object.freeze({ status: 'loading', error: null });
-const READY: AsyncViewState = Object.freeze({ status: 'ready', error: null });
+const IDLE = asyncState('idle');
+const LOADING = asyncState('loading');
+const READY = asyncState('ready');
 
 /**
  * A failed response, as the state the read it belongs to should report.
@@ -86,8 +89,8 @@ const READY: AsyncViewState = Object.freeze({ status: 'ready', error: null });
  */
 const classifyFailure = (response: unknown): AsyncViewState =>
   response instanceof HttpErrorResponse && response.status === 403
-    ? { status: 'forbidden', error: REFUSED_KEY }
-    : { status: 'error', error: LOAD_ERROR_KEY };
+    ? asyncState('forbidden', REFUSED_KEY)
+    : asyncState('error', LOAD_ERROR_KEY);
 
 /**
  * Real HttpClient-backed implementation of HealthConnectRepository, built
@@ -340,7 +343,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
           // the shared signal, which blanked the directory, the dashboard and the case queue — three
           // surfaces the clinician was not looking at, none of which had read anything broken.
           this.pendingRecordFetches.delete(id);
-          this.recordReads.update(states => new Map(states).set(id, { status: 'error', error: LOAD_ERROR_KEY }));
+          this.recordReads.update(states => new Map(states).set(id, asyncState('error', LOAD_ERROR_KEY)));
           return;
         }
         const record: PatientRecord = {

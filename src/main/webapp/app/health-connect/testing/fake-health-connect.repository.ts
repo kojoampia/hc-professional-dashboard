@@ -3,6 +3,7 @@ import { Injectable, Signal, computed, signal } from '@angular/core';
 import {
   ActivityLogEntry,
   AsyncViewState,
+  asyncState,
   CaseQueueRow,
   CaseStatus,
   ChartData,
@@ -89,10 +90,15 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
    * case read" would pass by construction. `'ready'` rather than `'idle'` at rest because the fixture
    * data is already present — a fake whose reads have not happened yet would render every page as
    * unread until a spec said otherwise.
+   *
+   * <p>Built by {@link asyncState} like the real repository's, so every state this fake hands a
+   * component is frozen exactly as production's are: a component that edits a state it was handed
+   * fails here the way it would fail there, instead of passing green against the one repository
+   * whose states forgot to throw (backlog item 180).
    */
   private readonly reads = signal<Readonly<Record<RepositoryRead, AsyncViewState>>>({
-    directory: { status: 'ready', error: null },
-    caseQueue: { status: 'ready', error: null },
+    directory: asyncState('ready'),
+    caseQueue: asyncState('ready'),
   });
   private readonly recordReads = signal<ReadonlyMap<string, AsyncViewState>>(new Map());
   private readonly restrictions = signal<readonly RestrictedPart[]>([]);
@@ -234,7 +240,7 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
    * nothing about a read gets the unremarkable case rather than a page claiming nothing was read.
    */
   recordState(patientId: string): AsyncViewState {
-    return this.recordReads().get(patientId) ?? { status: 'ready', error: null };
+    return this.recordReads().get(patientId) ?? asyncState('ready');
   }
 
   findCase(id: string): ClinicalCase | undefined {
@@ -400,9 +406,15 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
    * otherwise have needed a third setter on the day item 146 added it, which is how a fourth arrives
    * without one. `health-connect.repository.spec.ts` enumerates `ASYNC_STATUSES` through this method
    * so a member added later is covered without anyone editing the check.
+   *
+   * <p>The state is rebuilt through {@link asyncState} rather than stored as handed in, so what this
+   * fake emits is frozen exactly as production's states are — a spec driving a component into an
+   * `error` state must not hand it the one mutable state object in the estate (backlog item 180).
+   * The copy does not freeze the caller's object, and it means a spec cannot steer the fake by
+   * mutating a reference it kept — the seam is this method, not aliasing.
    */
   setReadState(read: RepositoryRead, state: AsyncViewState): void {
-    this.reads.update(reads => ({ ...reads, [read]: state }));
+    this.reads.update(reads => ({ ...reads, [read]: asyncState(state.status, state.error) }));
   }
 
   /**
@@ -414,7 +426,9 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
    * directory, the dashboard and the case queue exactly as they were.
    */
   setRecordState(patientId: string, state: AsyncViewState): void {
-    this.recordReads.update(states => new Map(states).set(patientId, state));
+    // Rebuilt through the builder for setReadState's reason: frozen out of the fake, untouched in
+    // the caller's hands.
+    this.recordReads.update(states => new Map(states).set(patientId, asyncState(state.status, state.error)));
   }
 
   /**
@@ -465,7 +479,7 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     this.records.set(copyRecords());
     this.rosters.set(copyRosters());
     this.archivedCaseIds.set(new Set());
-    this.reads.set({ directory: { status: 'ready', error: null }, caseQueue: { status: 'ready', error: null } });
+    this.reads.set({ directory: asyncState('ready'), caseQueue: asyncState('ready') });
     this.recordReads.set(new Map());
     this.restrictions.set([]);
     this.unknownRestriction.set(false);

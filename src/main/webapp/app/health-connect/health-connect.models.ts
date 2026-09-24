@@ -290,17 +290,29 @@ export interface ChartData {
 /**
  * How a read went, as a surface renders it.
  *
- * <p>The fields are `readonly` because instances are <b>shared</b>:
- * `http-health-connect.repository.ts` keeps one frozen IDLE/LOADING/READY across both of its read
- * signals, so `state.status = 'ready'` would be a read state set by something that is not a read —
- * on every holder of the object at once (backlog item 173). `readonly` refuses that write at
- * compile time, where it would originate; the `Object.freeze` on those constants is what refuses
- * the writes the compiler cannot see. Replace a state, never edit one.
+ * <p>The fields are `readonly` because instances are <b>shared</b> — some deliberately, like the
+ * one IDLE/LOADING/READY `http-health-connect.repository.ts` keeps across both of its read
+ * signals, and every one with each holder of the same reference — so `state.status = 'ready'`
+ * would be a read state set by something that is not a read (backlog items 173 and 180).
+ * `readonly` refuses that write at compile time, where it would originate; {@link asyncState}
+ * below is what refuses the writes the compiler cannot see. Replace a state, never edit one.
  */
 export interface AsyncViewState {
   readonly status: AsyncStatus;
   readonly error: string | null;
 }
+
+/**
+ * The one way an {@link AsyncViewState} comes into existence, and it comes frozen.
+ *
+ * <p>A builder rather than `Object.freeze` at each construction site, because the sites are what
+ * rot: item 173 froze the three shared constants and the per-call failure states stayed mutable —
+ * precisely the states a caller reaches for ("clear this error to ready") — and a fourth site
+ * would have arrived unfrozen the same way. Built here, a state has to be frozen to exist, so a
+ * cast past `readonly` throws at runtime (the emitted modules and the specs are strict mode)
+ * instead of silently corrupting what every holder of the reference renders (backlog item 180).
+ */
+export const asyncState = (status: AsyncStatus, error: string | null = null): AsyncViewState => Object.freeze({ status, error });
 
 export interface PatientDirectoryViewState extends PageRequest, AsyncViewState {
   query: string;
