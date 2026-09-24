@@ -427,7 +427,7 @@
       },
       "documentTypes": {
         "CERTIFICATE": "Certificat professionnel",
-        "LICENSE": "Licence",
+        "LICENSE": "Autorisation d'exercice",
         "PASSPORT": "Passeport",
         "GHANACARD": "Ghana Card",
         "DRIVERLICENSE": "Permis de conduire",
@@ -438,7 +438,7 @@
       },
       "mandatory": {
         "certificate": "Certificat professionnel téléversé",
-        "license": "Licence avec date d'expiration téléversée",
+        "license": "Autorisation d'exercice avec date d'expiration téléversée",
         "identity": "Pièce d'identité officielle téléversée",
         "photo": "Photo d'identité téléversée"
       },
@@ -519,12 +519,12 @@
       "title": "Conformité",
       "byStatus": "Candidatures par statut",
       "bySource": "Candidatures par source",
-      "expiring": "Licences expirées ou expirant sous 30 jours ({{count}})",
+      "expiring": "Autorisations d'exercice expirées ou expirant sous 30 jours ({{count}})",
       "runSweep": "Lancer le contrôle d'expiration",
       "expires": "expire le",
       "lapsed": "Expirée",
       "expiringSoon": "Expire bientôt",
-      "noneExpiring": "Aucune licence n’expire dans les 30 prochains jours.",
+      "noneExpiring": "Aucune autorisation d'exercice n’expire dans les 30 prochains jours.",
       "auditFeed": "Derniers événements d'audit d'intégration"
     },
     "earnings": {
@@ -587,7 +587,7 @@
           "address": "Adresse",
           "nextOfKin": "Contact d'urgence",
           "certificate": "Diplôme",
-          "license": "Licence d'exercice",
+          "license": "Autorisation d'exercice",
           "identity": "Pièce d'identité",
           "photo": "Photo d'identité"
         }
