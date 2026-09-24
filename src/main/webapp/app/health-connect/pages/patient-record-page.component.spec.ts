@@ -173,6 +173,12 @@ describe('PatientRecordPageComponent', () => {
       repository().setRecordState('patient-kojo', { status: 'ready', error: null });
       fixture.detectChanges();
 
+      // Item 205, and it is spelled like `caseEmpty` one file over because these two screens are
+      // deliberately one shape. This was the last treatment on this page assertable only by its
+      // translation key — and these specs run against an EMPTY `TranslateModule`, so that key IS
+      // the rendered text. A guard keyed on it is therefore a guard on the copy: rename the key on
+      // the arm and it goes red for a reason that is not a defect, while the marker holds.
+      expect(fixture.nativeElement.querySelector('[data-cy="recordEmpty"]')).not.toBeNull();
       expect(sentence()).toContain('healthConnect.states.empty');
       expect(fixture.nativeElement.querySelector('[data-cy="recordForbidden"]')).toBeNull();
     });
