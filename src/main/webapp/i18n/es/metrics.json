@@ -58,7 +58,7 @@
           "max": "Máx."
         },
         "code": {
-          "ok": "Aceptar",
+          "ok": "Ok",
           "notfound": "No encontrado",
           "servererror": "Error del servidor"
         }

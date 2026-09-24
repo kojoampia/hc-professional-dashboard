@@ -6,8 +6,8 @@
         "button": "Passwort zurücksetzen"
       },
       "messages": {
-        "info": "Geben Sie die Email Adresse ein, welche Sie bei der Registrierung verwendet haben.",
-        "success": "Eine Email mit weiteren Instruktionen für das Zurücksetzen des Passworts wurde gesendet."
+        "info": "Geben Sie die E-Mail-Adresse ein, welche Sie bei der Registrierung verwendet haben.",
+        "success": "Eine E-Mail mit weiteren Instruktionen für das Zurücksetzen des Passworts wurde gesendet."
       }
     },
     "finish": {
