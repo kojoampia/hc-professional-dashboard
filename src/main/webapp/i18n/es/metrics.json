@@ -4,7 +4,7 @@
     "refresh.button": "Actualizar",
     "updating": "Actualizando…",
     "jvm": {
-      "title": "JVM Metrics",
+      "title": "Métricas de la JVM",
       "memory": {
         "title": "Memoria",
         "total": "Memoria total",

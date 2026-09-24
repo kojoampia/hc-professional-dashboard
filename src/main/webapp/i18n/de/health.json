@@ -5,17 +5,17 @@
     "stacktrace": "Stacktrace",
     "details": {
       "details": "Details",
-      "properties": "Properties",
+      "properties": "Eigenschaften",
       "name": "Name",
       "value": "Wert",
-      "error": "Error"
+      "error": "Fehler"
     },
     "indicator": {
       "diskSpace": "Festplattenspeicher",
-      "mail": "Email",
-      "livenessState": "Liveness state",
-      "readinessState": "Readiness state",
-      "ping": "Application",
+      "mail": "E-Mail",
+      "livenessState": "Liveness-Status",
+      "readinessState": "Readiness-Status",
+      "ping": "Anwendung",
       "mongo": "MongoDB"
     },
     "table": {

@@ -13,8 +13,8 @@
     "indicator": {
       "diskSpace": "Espace disque",
       "mail": "Email",
-      "livenessState": "Liveness state",
-      "readinessState": "Readiness state",
+      "livenessState": "État de vivacité",
+      "readinessState": "État de préparation",
       "ping": "Application",
       "mongo": "MongoDB"
     },
