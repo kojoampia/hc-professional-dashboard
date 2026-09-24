@@ -21,7 +21,7 @@
         "blocked": "Bloqué",
         "expand": "Développer",
         "dump": {
-          "title": "Threads dump",
+          "title": "Dump des threads",
           "id": "Id : ",
           "blockedtime": "Temps bloqué",
           "blockedcount": "Nb fois bloqué",
@@ -34,7 +34,7 @@
         }
       },
       "gc": {
-        "title": "Garbage collections",
+        "title": "Ramasse-miettes (GC)",
         "marksweepcount": "Total de \"Mark Sweep\"",
         "marksweeptime": "Temps \"Mark Sweep\"",
         "scavengecount": "Total \"Scavenge\"",

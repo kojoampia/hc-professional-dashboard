@@ -21,7 +21,7 @@
         "blocked": "Geblockt",
         "expand": "Ausklappen",
         "dump": {
-          "title": "Threads dump",
+          "title": "Thread-Dump",
           "id": "Id: ",
           "blockedtime": "Geblockte Zeit",
           "blockedcount": "Geblockte Zahl",

@@ -2,7 +2,7 @@
   "userManagement": {
     "home": {
       "title": "Benutzer",
-      "refreshListLabel": "Refresh list",
+      "refreshListLabel": "Liste aktualisieren",
       "createLabel": "Neuen Benutzer erstellen",
       "createOrEditLabel": "Benutzer erstellen oder bearbeiten",
       "notFound": "Kein Benutzer gefunden"
