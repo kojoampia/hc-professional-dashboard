@@ -264,6 +264,11 @@ describe('CaseDetailPageComponent', () => {
 
         expect(before).not.toBeNull();
         expect(before!.getAttribute('aria-live')).toBe('polite');
+        // Item 206, and the same line as patient-record-page.component.spec.ts for the same reason
+        // this block is the same one: aria-atomic is the other half of the pair and was the unheld
+        // half. The transition below is a removal plus an insertion, so without it a reader is free
+        // to announce only the node that changed rather than the whole replacement sentence.
+        expect(before!.getAttribute('aria-atomic')).toBe('true');
         expect(before!.querySelector('[data-cy="caseLoading"]')).not.toBeNull();
 
         repository.setReadState('caseQueue', asyncState('forbidden', 'healthConnect.case.states.forbidden'));

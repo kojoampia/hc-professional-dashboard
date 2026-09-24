@@ -198,6 +198,11 @@ describe('PatientRecordPageComponent', () => {
 
         expect(before).not.toBeNull();
         expect(before!.getAttribute('aria-live')).toBe('polite');
+        // Item 206. aria-atomic is the other half of the pair and was the unheld half. The transition
+        // below is a removal plus an insertion, so without it a reader is free to announce only the
+        // node that changed rather than the whole replacement sentence — and deleting the attribute
+        // from the wrapper left every assertion item 204 wrote green, which is the whole of item 206.
+        expect(before!.getAttribute('aria-atomic')).toBe('true');
         expect(before!.querySelector('[data-cy="recordLoading"]')).not.toBeNull();
 
         repository().setRecordState('patient-kojo', { status: 'forbidden', error: 'healthConnect.states.forbidden' });
