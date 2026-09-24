@@ -139,7 +139,7 @@ describe('PatientRecordPageComponent', () => {
   describe('why there is no record (backlog item 146)', () => {
     // `findPatient`'s two failure handlers wrote the repository's single shared error signal — which
     // THIS page never read — so their whole visible effect was to blank the directory, the dashboard
-    // and the case queue, while the one screen actually waiting on that read said "no records found"
+    // and the case queue, while the one screen actually waiting on that read said "nothing to show"
     // about a response that had been refused or had 503'd. Both halves were wrong.
     const sentence = (): string | undefined => fixture.nativeElement.textContent?.trim();
     const repository = (): FakeHealthConnectRepository => TestBed.inject(FakeHealthConnectRepository);
@@ -167,7 +167,7 @@ describe('PatientRecordPageComponent', () => {
       expect(sentence()).toContain('healthConnect.states.error');
     });
 
-    it('still says "no records found" for a read that succeeded and found nothing', () => {
+    it('still says "nothing to show" for a read that succeeded and found nothing', () => {
       // The positive control, and why the empty sentence stays the default: it is the right one for
       // a patient with nothing recorded, and the wrong one for every other reason there is no record.
       repository().setRecordState('patient-kojo', { status: 'ready', error: null });

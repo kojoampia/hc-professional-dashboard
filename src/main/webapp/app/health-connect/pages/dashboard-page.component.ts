@@ -78,7 +78,7 @@ const countable = (state: AsyncViewState): boolean => state.status === 'ready';
           prose, several lines further down.
 
           empty is bound false on purpose. A caller with genuinely no patients must still read 0 —
-          that is the honest number, and "no records found" over a stat row would be this row's
+          that is the honest number, and "nothing to show" over a stat row would be this row's
           defect pointing the other way.
         -->
         <hpd-async-state
