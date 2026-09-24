@@ -150,7 +150,6 @@
       "FLEXIBLE": "Flexible (bloques de 2–4 h)"
     },
     "roster": {
-      "subtitle": "Los casos de los turnos que tienes asignados aparecen en tu cola «Mi turno».",
       "allCases": "Todos los casos",
       "myRoster": "Mi turno",
       "activeShift": "De guardia hasta {{time}}",

@@ -150,7 +150,6 @@
       "FLEXIBLE": "Flexibel (2–4-h-Blöcke)"
     },
     "roster": {
-      "subtitle": "Fälle aus den dir zugeteilten Schichten erscheinen in deiner Liste „Meine Schicht“.",
       "allCases": "Alle Fälle",
       "myRoster": "Mein Dienstplan",
       "activeShift": "Im Dienst bis {{time}}",
