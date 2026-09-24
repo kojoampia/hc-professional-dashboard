@@ -24,7 +24,7 @@
       "therapist": "Terapeuta",
       "carer": "Cuidador",
       "user": "Usuario",
-      "chemist": "Químico farmacéutico",
+      "chemist": "Auxiliar de farmacia",
       "technician": "Técnico"
     },
     "stats": {
@@ -167,7 +167,7 @@
         "PHARMACIST": "Farmacéutico/a",
         "THERAPIST": "Terapeuta",
         "CARER": "Cuidador/a",
-        "CHEMIST": "Químico/a",
+        "CHEMIST": "Auxiliar de farmacia",
         "TECHNICIAN": "Técnico/a",
         "OTHER": "Otro"
       },

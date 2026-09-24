@@ -24,7 +24,7 @@
       "therapist": "Therapeut",
       "carer": "Betreuungskraft",
       "user": "Benutzer",
-      "chemist": "Apotheker",
+      "chemist": "Apothekenhelfer/in",
       "technician": "Techniker"
     },
     "stats": {
@@ -167,7 +167,7 @@
         "PHARMACIST": "Apotheker/in",
         "THERAPIST": "Therapeut/in",
         "CARER": "Betreuungskraft",
-        "CHEMIST": "Chemiker/in",
+        "CHEMIST": "Apothekenhelfer/in",
         "TECHNICIAN": "Techniker/in",
         "OTHER": "Sonstige"
       },
