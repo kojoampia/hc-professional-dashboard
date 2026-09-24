@@ -52,6 +52,21 @@ this is why selectors are `hpd-`, not the `app-` prefix every spec proposed.
 - **Terminology.** "Angel" is **Emergency contact / next of kin** in all user-facing copy. The
   mockup's "Grooming" visitation type became **"Personal care visit"** — this app is human
   healthcare, not veterinary/personal care.
+- **The patient record's noun, per locale — decided by the architect on `../docs/backlog.md`
+  item 147, and the catalogues are JSON, so this is where it is written down.** A new sentence
+  about a patient's clinical record takes its noun from here rather than from a synonym. No gate
+  can catch a synonym — it is not a missing key, and nothing compares nouns across the two
+  clients — so `mobile/`'s anchor comment on `patients.record` in its
+  `src/app/core/i18n/catalogues.ts` states the same rule on that side.
+  - **es: `expediente`** — the clinical record, and nothing else. **`historial` is reserved for
+    the _activity log_** (`historial de actividad`, as in `restrictedFollowUps.lastActivity` and
+    `activityTrail`), never the record: the record refusal and the log refusal render side by
+    side, and one noun doing both jobs left a clinician unable to tell which they had lost.
+    `expediente de acreditación` (the onboarding copy) is a third sense — a clinician's own
+    credentialing dossier — kept distinct by its qualifier.
+  - **de: `Patientenakte`/`Akte`** — the clinical word, **never `Datensatz`**, a database word.
+    That was item 132's fix, and `copyConfirmation` was its leftover.
+  - **fr: `dossier`** — already uniform, not in question.
 - **Clinical reports are a separate model from professional-registration documents.** Do not merge
   them on the assumption they are both "documents".
 - **Copy creates a draft duplicate only after explicit confirmation.** Closed-case actions are
