@@ -24,17 +24,20 @@ describe('PatientDirectoryPageComponent', () => {
     queryParamMap: undefined as unknown,
   };
 
-  // ONE SPELLING OF THE FAKE, FOR THE WHOLE FILE (backlog item 172). Five of the six reaches used to
-  // be written `TestBed.inject(FakeHealthConnectRepository).…` inline and the rest went through a
-  // copy of this arrow declared inside the last `describe`, so a later change to the helper would
-  // have left the inline ones behind with nothing failing.
+  // ONE SPELLING OF THE FAKE, FOR THE WHOLE FILE (backlog item 172). Of the eleven reaches, FIVE were
+  // written `TestBed.inject(FakeHealthConnectRepository).…` inline and SIX went through a copy of this
+  // arrow declared inside the last `describe`, so a later change to the helper would have left the
+  // inline five behind with nothing failing.
   //
   // It is declared here, above every block, and that is safe for a reason worth stating rather than
-  // re-deriving: this is a LAZY arrow. It resolves `TestBed.inject` when it is CALLED — inside an
-  // `it`, after `beforeEach` has configured the module — not where it is written, so the TestBed
-  // reset between tests cannot hand it a stale instance. Only an eager `const repository =
-  // TestBed.inject(…)` would care about placement, and this is not one. `activityColumn()` below is
-  // the same shape and has always been called from inside the nested blocks.
+  // re-deriving: this is a LAZY arrow, and it captures NOTHING — `TestBed` and the fake are both
+  // module-level imports, so the body is byte-identical to the inline expression it replaced. It
+  // resolves `TestBed.inject` when it is CALLED, inside a `beforeEach` or an `it`, after the module
+  // is configured — not where it is written. So the per-test teardown cannot hand it a stale
+  // instance, and every environment property reaches both spellings alike. Only an eager
+  // `const repository = TestBed.inject(…)` would care about placement, and this is not one.
+  // `activityColumn()` below is the same shape, declared AFTER all three nested blocks and called
+  // from inside two of them, which is the stronger form of the same demonstration.
   const repository = (): FakeHealthConnectRepository => TestBed.inject(FakeHealthConnectRepository);
 
   beforeEach(async () => {
