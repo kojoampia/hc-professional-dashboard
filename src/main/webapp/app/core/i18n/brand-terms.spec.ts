@@ -222,4 +222,29 @@ describe('brand terms', () => {
 
     expect(missing).toEqual([]);
   });
+
+  describe('the product word in the brand lockup is brand-English (backlog item 185)', () => {
+    // `healthConnect.brand.product` renders beside the logo — "Abofonsa BridgeCare /
+    // Professional" in the sidebar and the auth shell — and the architect decided it is a BRAND
+    // word, not a descriptive one. The evidence is outside the catalogues: the store listing name
+    // is "Abofonsa BridgeCare Pro", identical and untranslated in all four locales, so wherever
+    // the product is NAMED it is already brand-English. es said "Profesional" until item 185.
+    //
+    // Deliberately NOT a DENIED entry above: a bare /Profesional/ pattern would fire on
+    // `global.title`'s "Panel profesional" — the string item 182 deliberately translated and
+    // which this decision explicitly preserves, because a dashboard's NAME is a descriptive
+    // surface and only the lockup sits beside the logo. A guard that punishes the correct change
+    // is worse than no guard, so this pin is key-scoped: it asserts one key's value in every
+    // locale and reaches nothing else. `mobile/` pins the same surface in its own
+    // `brand-name.spec.ts` — under a different key, `auth.subtitle`, which is why a sweep by key
+    // name misses one of the two.
+    it.each(locales)('%s renders healthConnect.brand.product as "Professional"', locale => {
+      const catalogue = JSON.parse(readFileSync(join(I18N_ROOT, locale, 'healthConnect.json'), 'utf8')) as {
+        healthConnect?: { brand?: { product?: string } };
+      };
+
+      // `undefined` fails too, so a renamed key cannot pass this silently.
+      expect(catalogue.healthConnect?.brand?.product).toBe('Professional');
+    });
+  });
 });
