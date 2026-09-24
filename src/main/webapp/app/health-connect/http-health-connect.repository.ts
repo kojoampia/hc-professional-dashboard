@@ -408,7 +408,7 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
 
   recordState(patientId: string): AsyncViewState {
     // `idle` for a patient never asked for, which is not the same as "ready and empty": the record
-    // page renders "no records found" on `ready`, and saying that about a read nobody has made yet
+    // page renders "nothing to show" on `ready`, and saying that about a read nobody has made yet
     // is the fabricated-emptiness item 126 removed.
     return this.recordReads().get(patientId) ?? IDLE;
   }
