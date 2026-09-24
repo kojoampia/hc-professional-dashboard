@@ -12,7 +12,7 @@
     },
     "indicator": {
       "diskSpace": "Espace disque",
-      "mail": "Email",
+      "mail": "E-mail",
       "livenessState": "État de vivacité",
       "readinessState": "État de préparation",
       "ping": "Application",
