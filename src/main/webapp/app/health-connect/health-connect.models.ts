@@ -287,9 +287,19 @@ export interface ChartData {
   casesByPatient: readonly GroupedBarChartGroup[];
 }
 
+/**
+ * How a read went, as a surface renders it.
+ *
+ * <p>The fields are `readonly` because instances are <b>shared</b>:
+ * `http-health-connect.repository.ts` keeps one frozen IDLE/LOADING/READY across both of its read
+ * signals, so `state.status = 'ready'` would be a read state set by something that is not a read —
+ * on every holder of the object at once (backlog item 173). `readonly` refuses that write at
+ * compile time, where it would originate; the `Object.freeze` on those constants is what refuses
+ * the writes the compiler cannot see. Replace a state, never edit one.
+ */
 export interface AsyncViewState {
-  status: AsyncStatus;
-  error: string | null;
+  readonly status: AsyncStatus;
+  readonly error: string | null;
 }
 
 export interface PatientDirectoryViewState extends PageRequest, AsyncViewState {
