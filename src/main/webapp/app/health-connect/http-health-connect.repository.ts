@@ -345,7 +345,26 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
       return cached;
     }
     this.pendingRecordFetches.add(id);
-    this.recordReads.update(states => new Map(states).set(id, LOADING));
+    // ⛔ DEFERRED for the same reason as findCase — see the long note there.
+    //
+    // `findPatient` is reached from TWO computeds: `patient` on the record page and `parentName` on
+    // the case detail page. Writing `recordReads` during either throws NG0600, and this has been doing
+    // so on a cold load since before item 203 — measured 2026-09-25 on the pre-item-203 image, two
+    // NG0600 per cold case-detail render, silent because Angular recovers and the page still paints.
+    //
+    // ⚠ It stopped being silent when item 203 landed. A case beyond the collection read now RESOLVES,
+    // so `parentName` reaches a patient that is not cached and the throw lands mid-render: eleven
+    // NG0600 and a page that shows no case at all. The latent defect became the visible one because a
+    // neighbouring read started succeeding — which is why this is fixed here rather than filed.
+    queueMicrotask(() => {
+      this.recordReads.update(states => new Map(states).set(id, LOADING));
+      this.startRecordRead(id);
+    });
+    return undefined;
+  }
+
+  /** The network half of {@link findPatient}, reached only from its microtask — see the note there. */
+  private startRecordRead(id: string): void {
     this.patientApi.find(id).subscribe({
       next: response => {
         const dto = response.body;
@@ -414,7 +433,6 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
         // refresh would leave a restriction explaining the previous response: clear it here then.
       },
     });
-    return undefined;
   }
 
   recordRestrictions(patientId: string): readonly RestrictedPart[] {
