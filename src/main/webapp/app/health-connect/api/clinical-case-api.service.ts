@@ -32,6 +32,30 @@ export class ClinicalCaseApiService {
   }
 
   /**
+   * One case by id — and this exists because {@link query} silently truncates.
+   *
+   * <p><b>backlog.md item 203.</b> `query()` sends no `page` and no `size`, and the server answers
+   * with its own default. Measured on quality 2026-09-25: <b>20 rows of 1167</b>,
+   * `X-Total-Count: 1167`, `Link` naming `size=20` and a last page of 58. The case detail page used
+   * to resolve an id inside that collection, so <b>97 of the signed-in clinician's own 105 cases</b>
+   * were reported as "not found" — real cases, assigned to them, on the deployed stack.
+   *
+   * <p>This read cannot truncate. The sibling answers <b>200</b> for a case that exists and
+   * <b>404</b> for one that does not — both verified against the running patientservice the same day
+   * — so absence becomes the server's answer rather than an inference from a collection nobody
+   * bounded.
+   *
+   * <p>⛔ <b>This does not make `query()` safe.</b> The queue, the charts and every other collection
+   * consumer still read 20 rows and still treat them as the collection. Narrowing the fix to the
+   * detail page was item 203's decision; the collection's ceiling is still open.
+   */
+  find(id: string): Observable<HttpResponse<ClinicalCaseDto>> {
+    return this.http
+      .get<RestClinicalCaseDto>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' })
+      .pipe(map(response => response.clone({ body: response.body ? fromRest(response.body) : null })));
+  }
+
+  /**
    * Retires a case from the queue.
    *
    * <p>A POST to a transition endpoint rather than a PATCH setting a field, and that is the api's

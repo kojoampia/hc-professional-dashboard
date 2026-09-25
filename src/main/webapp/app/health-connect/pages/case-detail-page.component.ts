@@ -169,15 +169,22 @@ export default class CaseDetailPageComponent {
   /**
    * How the read that would have produced this case went, for the `@else` above.
    *
-   * <p>The clinical-case read is a <b>collection</b> read — {@link HealthConnectRepository.findCase}
-   * looks the id up in the cache that read filled and issues nothing of its own — so its state is
-   * already a signal on the repository and needs no per-id accessor. That is the one structural
-   * difference from `patient-record-page.component.ts`, whose record read takes an id and therefore
-   * states its outcome through a method. Nothing was added to the repository for this.
+   * <p><b>This was `caseQueueState` — the COLLECTION read's state — until backlog.md item 203, and
+   * this paragraph argued for it.</b> It read: the clinical-case read "is a <b>collection</b> read …
+   * so its state is already a signal on the repository and needs no per-id accessor", which it called
+   * "the one structural difference from `patient-record-page.component.ts`". The reasoning was sound
+   * and the premise was false: a collection read that sends no `page` and no `size` does not hold the
+   * collection. Measured on quality 2026-09-25 — <b>20 rows of 1167</b>, and <b>8</b> of the signed-in
+   * clinician's <b>105</b> cases — so "not in the cache" meant "not in the server's default page",
+   * and this page told a clinician that 97 of their own cases did not exist.
+   *
+   * <p>The structural difference is therefore gone: this page now works exactly like the record page,
+   * a per-id state from a per-id read, where absence is a <b>404 the server sent</b> rather than a
+   * miss in a sample nobody bounded.
    *
    * <p>Read only when there is no case: a case on screen is a case, whatever a later refresh reports.
    */
-  readonly caseState = this.repository.caseQueueState;
+  readonly caseState = computed(() => this.repository.caseReadState(this.caseId));
   readonly parentName = computed(() => this.repository.findPatient(this.clinicalCase()?.patientId ?? '')?.patient.patientName ?? '');
   readonly recommendations = computed(() => this.repository.recommendations().map(item => ({ id: item.id, labelKey: item.label })));
   readonly canManageCases = computed(() => hasHealthConnectPermission(this.currentAccount()?.authorities, 'manageCase'));
