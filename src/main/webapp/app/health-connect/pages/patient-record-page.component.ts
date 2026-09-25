@@ -253,7 +253,14 @@ const PAGE_SIZE = 3;
             <p role="status" data-cy="recordLoading">{{ 'healthConnect.states.loading' | translate }}</p>
           }
           @default {
-            <p role="alert" data-cy="recordEmpty">{{ 'healthConnect.states.empty' | translate }}</p>
+            <!-- role="status", not role="alert" — backlog.md item 208, decided 2026-09-25 by the owner.
+                 Absence is information, not an emergency: an alert interrupts whatever the screen
+                 reader is saying, and "there is nothing here" does not warrant that. This arm is also
+                 the one that can fire about a read which has not happened — it serves the ready state
+                 AND the idle one, and item 203 made idle reachable on this page — so assertive was the
+                 worst fit of any treatment here. This revisits item 146's choice deliberately; the
+                 ERROR arm above keeps role="alert", which is what that split was really about. -->
+            <p role="status" data-cy="recordEmpty">{{ 'healthConnect.states.empty' | translate }}</p>
           }
         }
       </div>

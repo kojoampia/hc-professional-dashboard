@@ -241,6 +241,12 @@ describe('CaseDetailPageComponent', () => {
       absent.detectChanges();
 
       expect(marker('caseEmpty')).not.toBeNull();
+      // Item 208, decided 2026-09-25: absence is POLITE. An alert interrupts whatever the screen
+      // reader is saying, and "there is nothing here" does not warrant that — this is also the one
+      // arm that can fire about a read that has not happened. The error arm keeps role="alert";
+      // that is what item 146's split was really about. Pinned because nothing else holds it and a
+      // silent revert to "alert" would be invisible in review.
+      expect(marker('caseEmpty')!.getAttribute('role')).toBe('status');
       expect(sentence()).toContain('healthConnect.case.states.empty');
       expect(marker('caseForbidden')).toBeNull();
       expect(marker('caseFailed')).toBeNull();

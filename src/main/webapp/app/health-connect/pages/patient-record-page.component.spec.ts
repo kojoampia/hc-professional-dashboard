@@ -196,6 +196,9 @@ describe('PatientRecordPageComponent', () => {
       // the rendered text. A guard keyed on it is therefore a guard on the copy: rename the key on
       // the arm and it goes red for a reason that is not a defect, while the marker holds.
       expect(fixture.nativeElement.querySelector('[data-cy="recordEmpty"]')).not.toBeNull();
+      // Item 208, decided 2026-09-25: polite, not assertive — the same change on both async-state
+      // pages at once, which is how that row asked for it. See the case-detail spec for the reasoning.
+      expect(fixture.nativeElement.querySelector('[data-cy="recordEmpty"]').getAttribute('role')).toBe('status');
       expect(sentence()).toContain('healthConnect.states.empty');
       expect(fixture.nativeElement.querySelector('[data-cy="recordForbidden"]')).toBeNull();
     });
