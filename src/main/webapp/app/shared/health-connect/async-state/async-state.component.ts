@@ -11,6 +11,36 @@ import LoadingSkeletonComponent from './loading-skeleton.component';
   selector: 'hpd-async-state',
   imports: [LoadingSkeletonComponent, MatIconModule, TranslateModule],
   template: `
+    <!--
+      ⭐ THE NESTED LIVE REGIONS ARE DELIBERATE, AND THIS IS THE ONE PLACE THAT SAYS SO.
+      backlog.md item 207, decided 2026-09-25 by the owner. It covers all THREE sites carrying this
+      shape: this component, case-detail-page.component.ts and patient-record-page.component.ts.
+
+      The shape is an implicitly-assertive role="alert" (and a polite role="status") directly inside an
+      aria-live="polite" aria-atomic="true" wrapper. Confirmed on the deployed artefact rather than
+      inferred from this template: the wrapper contains the arm, DOM distance 0.
+
+      WHY BOTH LAYERS EXIST — each is somebody's fix:
+        • the WRAPPER is item 204's. A live region must exist BEFORE content is inserted, or the
+          insertion is not announced on some pairs. So the wrapper is stable and the arms swap inside.
+        • the ARM ROLES are item 146's split: an error is assertive, a refusal is polite. One polite
+          wrapper with role-less arms would make a genuine error polite, which is what that split
+          exists to prevent.
+
+      ⚠ WHAT IS ACCEPTED: on some screen-reader/browser pairs an arm swap into role="alert" may be
+      announced TWICE — once on the alert's insertion, once as the polite wrapper's content change.
+      That is accepted as the lesser cost.
+
+      ⛔ ACCEPTED, NOT DISPROVEN, AND THE DIFFERENCE MATTERS. Nobody has run a screen reader against
+      this. An attempt on 2026-09-25 reached a working AT-SPI bus with the screen-reader flag set and
+      failed for a structural reason: the browser under automation is not a process this workspace can
+      attach an assistive technology to. So the choice was between a known-unmeasured risk and an
+      unknown-unmeasured one, and changing announcement behaviour blind in three places at once is the
+      worse bet. If anyone does run one: measure first, then rewrite this comment.
+
+      ⛔ DO NOT "simplify" by stripping the inner roles or dropping the wrapper's aria-live. Each
+      removes a different person's fix, and neither alternative has been tested either.
+    -->
     <div aria-live="polite" aria-atomic="true">
       @if (status === 'loading') {
         <hpd-loading-skeleton [labelKey]="loadingKey" />
