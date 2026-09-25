@@ -459,7 +459,27 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
       return undefined;
     }
     this.pendingCaseFetches.add(id);
-    this.caseReads.update(states => new Map(states).set(id, LOADING));
+    // ⛔ DEFERRED OUT OF THE CALLER'S REACTIVE CONTEXT, AND THIS IS NOT A STYLE CHOICE.
+    //
+    // `findCase` is called from `case-detail-page.component.ts`'s `clinicalCase` computed. Angular
+    // forbids writing a signal while a computed is evaluating and throws **NG0600** — so setting
+    // `caseReads` inline broke every case detail render. That shipped in item 203's first version,
+    // reached quality, and was rolled back off it: the page rendered no case, no state and no
+    // not-found arm, for every id.
+    //
+    // The microtask leaves the computation before any signal is touched. `pendingCaseFetches` is
+    // claimed synchronously above on purpose — it is a plain Set, not a signal, so writing it here is
+    // safe, and it has to be claimed before this function returns or the next change-detection pass
+    // would queue a second read for the same id.
+    queueMicrotask(() => {
+      this.caseReads.update(states => new Map(states).set(id, LOADING));
+      this.startCaseRead(id);
+    });
+    return undefined;
+  }
+
+  /** The network half of {@link findCase}, reached only from its microtask — see the note there. */
+  private startCaseRead(id: string): void {
     this.clinicalCaseService.find(id).subscribe({
       next: response => {
         this.pendingCaseFetches.delete(id);
@@ -483,7 +503,6 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
         this.caseReads.update(states => new Map(states).set(id, response?.status === 404 ? READY : classifyFailure(response)));
       },
     });
-    return undefined;
   }
 
   caseReadState(caseId: string): AsyncViewState {
