@@ -147,12 +147,13 @@ describe('HttpHealthConnectRepository', () => {
       expect(repository.caseQueueState().status).toBe('ready');
     });
 
-    it('CONTAINS a failed record read to that patient, leaving the directory and the queue alone', () => {
+    it('CONTAINS a failed record read to that patient, leaving the directory and the queue alone', async () => {
       // The two writers the row calls the worst of the four: a record read that went wrong used to
       // blank the directory, the dashboard and the case queue — pages the clinician was not looking
       // at and that had read nothing broken.
       flushInitialLoad();
       repository.findPatient('patient-kojo');
+      await Promise.resolve(); // the read is deferred out of the caller's reactive context — see findPatient
       httpMock
         .expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo'))
         .flush('nope', { status: 403, statusText: 'Forbidden' });
@@ -164,9 +165,10 @@ describe('HttpHealthConnectRepository', () => {
       expect(repository.caseQueue()).toHaveLength(1);
     });
 
-    it('contains a 200-with-no-body to that patient too, which is the other record writer', () => {
+    it('contains a 200-with-no-body to that patient too, which is the other record writer', async () => {
       flushInitialLoad();
       repository.findPatient('patient-kojo');
+      await Promise.resolve(); // the read is deferred out of the caller's reactive context — see findPatient
       httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo')).flush(null);
 
       expect(repository.recordState('patient-kojo')).toEqual({ status: 'error', error: 'healthConnect.states.error' });
@@ -174,12 +176,13 @@ describe('HttpHealthConnectRepository', () => {
       expect(repository.caseQueueState().status).toBe('ready');
     });
 
-    it('reports one patient’s refused record without touching another’s', () => {
+    it('reports one patient’s refused record without touching another’s', async () => {
       // Keyed per patient for `recordRestrictionCache`'s reason: records are cached and a clinician
       // moves between them, so one value would describe the newest read while an older record is on
       // screen.
       flushInitialLoad();
       repository.findPatient('patient-kojo');
+      await Promise.resolve(); // the read is deferred out of the caller's reactive context — see findPatient
       httpMock
         .expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo'))
         .flush('nope', { status: 403, statusText: 'Forbidden' });
@@ -226,9 +229,10 @@ describe('HttpHealthConnectRepository', () => {
       expect(repository.caseQueueState().status).toBe('forbidden');
     });
 
-    it('throws on a mutation of a record read’s no-body ERROR state — the site row 181 absorbed', () => {
+    it('throws on a mutation of a record read’s no-body ERROR state — the site row 181 absorbed', async () => {
       flushInitialLoad();
       repository.findPatient('patient-kojo');
+      await Promise.resolve(); // the read is deferred out of the caller's reactive context — see findPatient
       httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo')).flush(null);
 
       const state = repository.recordState('patient-kojo') as { status: string };
@@ -413,10 +417,11 @@ describe('HttpHealthConnectRepository', () => {
     expect(repository.listCases(undefined, 'mine')).toEqual([]);
   });
 
-  it('lazily fetches a patient record on findPatient and populates it once the response lands', () => {
+  it('lazily fetches a patient record on findPatient and populates it once the response lands', async () => {
     flushInitialLoad();
 
     expect(repository.findPatient('patient-kojo')).toBeUndefined();
+    await Promise.resolve(); // deferred read — see findPatient
 
     const req = httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo'));
     req.flush({
@@ -444,17 +449,19 @@ describe('HttpHealthConnectRepository', () => {
     // log. Unread, the screen shows an empty activity panel — which is what a patient nobody has
     // touched looks like.
 
-    it('reports nothing restricted when the record response carried no header', () => {
+    it('reports nothing restricted when the record response carried no header', async () => {
       flushInitialLoad();
       expect(repository.findPatient('patient-kojo')).toBeUndefined();
+      await Promise.resolve(); // deferred read — see findPatient
       flushRecord('patient-kojo');
 
       expect(repository.recordRestrictions('patient-kojo')).toEqual([]);
     });
 
-    it('reports the part a pharmacist was refused on this record', () => {
+    it('reports the part a pharmacist was refused on this record', async () => {
       flushInitialLoad();
       repository.findPatient('patient-kojo');
+      await Promise.resolve(); // the read is deferred out of the caller's reactive context — see findPatient
       flushRecord('patient-kojo', { 'X-Restricted-Parts': 'lastActivity' });
 
       expect(repository.recordRestrictions('patient-kojo')).toEqual(['lastActivity']);
@@ -463,23 +470,26 @@ describe('HttpHealthConnectRepository', () => {
       expect(repository.findPatient('patient-kojo')?.patient.patientName).toBe('Kojo Ampia-Addison');
     });
 
-    it('drops a token it does not know rather than passing it to the screen', () => {
+    it('drops a token it does not know rather than passing it to the screen', async () => {
       flushInitialLoad();
       repository.findPatient('patient-kojo');
+      await Promise.resolve(); // the read is deferred out of the caller's reactive context — see findPatient
       flushRecord('patient-kojo', { 'X-Restricted-Parts': 'medications,lastActivity' });
 
       expect(repository.recordRestrictions('patient-kojo')).toEqual(['lastActivity']);
     });
 
-    it('keeps each record’s restriction with that record, not with the last read', () => {
+    it('keeps each record’s restriction with that record, not with the last read', async () => {
       // The reason this is a map and not a single signal. Records are cached and a clinician moves
       // between them, so one value would describe the newest response while an older record is on
       // screen — and "you may not read this patient's activity log" would be printed against a
       // patient nobody asked about.
       flushInitialLoad();
       repository.findPatient('patient-kojo');
+      await Promise.resolve(); // the read is deferred out of the caller's reactive context — see findPatient
       flushRecord('patient-kojo', { 'X-Restricted-Parts': 'lastActivity' });
       repository.findPatient('patient-ama');
+      await Promise.resolve(); // the read is deferred out of the caller's reactive context — see findPatient
       flushRecord('patient-ama');
 
       expect(repository.recordRestrictions('patient-kojo')).toEqual(['lastActivity']);
@@ -492,7 +502,7 @@ describe('HttpHealthConnectRepository', () => {
       expect(repository.recordRestrictions('patient-never-asked-for')).toEqual([]);
     });
 
-    it('leaves no restriction behind when the record is dropped and the re-read fails', () => {
+    it('leaves no restriction behind when the record is dropped and the re-read fails', async () => {
       // The record is gone and the error panel replaces it, so a surviving "part of this record was
       // withheld" would explain a record that is no longer on screen.
       //
@@ -503,12 +513,14 @@ describe('HttpHealthConnectRepository', () => {
       // green without it — the code was dead and this test was passing for another reason.
       flushInitialLoad();
       repository.findPatient('patient-kojo');
+      await Promise.resolve(); // the read is deferred out of the caller's reactive context — see findPatient
       flushRecord('patient-kojo', { 'X-Restricted-Parts': 'lastActivity' });
       expect(repository.recordRestrictions('patient-kojo')).toEqual(['lastActivity']);
 
       repository.reset();
       flushInitialLoad();
       repository.findPatient('patient-kojo');
+      await Promise.resolve(); // the read is deferred out of the caller's reactive context — see findPatient
       httpMock
         .expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo'))
         .flush('nope', { status: 503, statusText: 'Service Unavailable' });
@@ -517,18 +529,20 @@ describe('HttpHealthConnectRepository', () => {
       expect(repository.recordRestrictions('patient-kojo')).toEqual([]);
     });
 
-    it('does not manufacture an empty record from a 200 with no body', () => {
+    it('does not manufacture an empty record from a 200 with no body', async () => {
       // An empty `activities` array conjured out of a broken response is exactly the screen this
       // item exists to remove, arriving from the other direction — nothing withheld and nothing
       // recorded, said by the client rather than by the server.
       flushInitialLoad();
       repository.findPatient('patient-kojo');
+      await Promise.resolve(); // the read is deferred out of the caller's reactive context — see findPatient
       httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo')).flush(null);
 
       // Asserted BEFORE asking again, because asking again re-requests: the read's state is
       // `loading` from the line below onwards, which is right and is not what this test is about.
       expect(repository.recordState('patient-kojo').status).toBe('error');
       expect(repository.findPatient('patient-kojo')).toBeUndefined();
+      await Promise.resolve(); // deferred read — see findPatient
       expect(repository.recordState('patient-kojo').status).toBe('loading');
       // That second findPatient re-requested, nothing having been cached. Flushed so verify() passes.
       httpMock.expectOne(request => request.url.endsWith('services/professionalservice/api/patients/patient-kojo')).flush(null);
@@ -610,6 +624,23 @@ describe('HttpHealthConnectRepository', () => {
     // `ready`, not `error`: the read succeeded in telling us there is nothing. A refusal or an
     // outage must NOT arrive here as absence, which the next case pins.
     expect(repository.caseReadState('no-such-case').status).toBe('ready');
+  });
+
+  it('findPatient can be called from inside a computed too (NG0600)', async () => {
+    flushInitialLoad();
+
+    // The same shape as the case below, and the reason it is a separate case: findPatient is reached
+    // from TWO computeds — `patient` on the record page and `parentName` on the case detail page.
+    // It has been throwing NG0600 on a cold render since before item 203 (measured on quality: two per
+    // cold case-detail load, silent because Angular recovers and the page still paints). Item 203 made
+    // it visible rather than introducing it — a case beyond the collection read now RESOLVES, so
+    // parentName reaches an uncached patient and the throw lands mid-render.
+    const viaComputed = computed(() => repository.findPatient('patient-read-from-a-computed'));
+
+    expect(() => viaComputed()).not.toThrow();
+
+    await Promise.resolve();
+    httpMock.expectOne(r => r.url.endsWith('services/professionalservice/api/patients/patient-read-from-a-computed'));
   });
 
   it('can be called from inside a computed without writing a signal there (NG0600)', () => {
