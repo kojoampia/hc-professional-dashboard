@@ -1,5 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { computed } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { AlertService } from 'app/core/util/alert.service';
@@ -580,12 +581,15 @@ describe('HttpHealthConnectRepository', () => {
   // A case outside that sample used to render "This case was not found." — about a real case, to the
   // clinician it belongs to. These three cases pin the read that replaced that inference.
 
-  it('reads a case the collection never returned, rather than calling it absent', () => {
+  it('reads a case the collection never returned, rather than calling it absent', async () => {
     flushInitialLoad();
 
     // case-1 is in the collection; this id is not — exactly the 97-of-105 population.
     expect(repository.findCase('case-beyond-the-page')).toBeUndefined();
 
+    // The read is deferred out of the caller's reactive context (NG0600 — see the repository), so it
+    // exists after a microtask rather than synchronously. Awaiting it here is the timing the app has.
+    await Promise.resolve();
     const req = httpMock.expectOne(r => r.url.endsWith('services/patientservice/api/clinical-cases/case-beyond-the-page'));
     expect(req.request.method).toBe('GET');
     req.flush({ id: 'case-beyond-the-page', symptoms: 'Cough', patientId: 'patient-kojo', status: 'open', brief: 'Beyond page 0' });
@@ -594,10 +598,11 @@ describe('HttpHealthConnectRepository', () => {
     expect(repository.caseReadState('case-beyond-the-page').status).toBe('ready');
   });
 
-  it('treats a 404 as ready-and-absent, so absence is the server answering rather than a cache miss', () => {
+  it('treats a 404 as ready-and-absent, so absence is the server answering rather than a cache miss', async () => {
     flushInitialLoad();
 
     expect(repository.findCase('no-such-case')).toBeUndefined();
+    await Promise.resolve();
     httpMock
       .expectOne(r => r.url.endsWith('services/patientservice/api/clinical-cases/no-such-case'))
       .flush({ detail: 'Not found' }, { status: 404, statusText: 'Not Found' });
@@ -607,12 +612,35 @@ describe('HttpHealthConnectRepository', () => {
     expect(repository.caseReadState('no-such-case').status).toBe('ready');
   });
 
-  it('does not re-request a case while its read is in flight', () => {
+  it('can be called from inside a computed without writing a signal there (NG0600)', () => {
+    flushInitialLoad();
+
+    // THE SHAPE THE APP ACTUALLY USES, and the one the other cases here miss. Every test around this
+    // calls findCase directly; `case-detail-page.component.ts` calls it from a `computed`, and Angular
+    // throws NG0600 — "Writing to signals is not allowed in a computed" — if the read it starts sets
+    // one during the computation.
+    //
+    // Item 203's first version did exactly that. Every unit test passed, CI passed, and the case
+    // detail page rendered nothing at all on quality: no case, no state arm, no not-found. It had to
+    // be rolled back. This case is what would have caught it.
+    const viaComputed = computed(() => repository.findCase('case-read-from-a-computed'));
+
+    expect(() => viaComputed()).not.toThrow();
+
+    // And the read still happens — deferring it must not mean skipping it. The microtask that carries
+    // it out of the computation has to run before the request exists, so flush it first.
+    return Promise.resolve().then(() => {
+      httpMock.expectOne(r => r.url.endsWith('services/patientservice/api/clinical-cases/case-read-from-a-computed'));
+    });
+  });
+
+  it('does not re-request a case while its read is in flight', async () => {
     flushInitialLoad();
 
     repository.findCase('case-inflight');
     repository.findCase('case-inflight');
     repository.findCase('case-inflight');
+    await Promise.resolve();
 
     // One request, not three. Without the guard every change-detection pass starts another, and a
     // case that 404s would loop on the network for as long as the page is open.
