@@ -572,4 +572,50 @@ describe('HttpHealthConnectRepository', () => {
     expect(req.request.body).toMatchObject({ status: 'CLOSED', diagnosis: 'Resolved' });
     req.flush({ id: 'case-1', status: 'CLOSED', diagnosis: 'Resolved' });
   });
+
+  // ---------------------------------------------------------------- item 203
+  //
+  // The collection read sends no page and no size, so the server answers with its own default.
+  // Measured on quality 2026-09-25: 20 rows of 1167, and 8 of the signed-in clinician's 105 cases.
+  // A case outside that sample used to render "This case was not found." — about a real case, to the
+  // clinician it belongs to. These three cases pin the read that replaced that inference.
+
+  it('reads a case the collection never returned, rather than calling it absent', () => {
+    flushInitialLoad();
+
+    // case-1 is in the collection; this id is not — exactly the 97-of-105 population.
+    expect(repository.findCase('case-beyond-the-page')).toBeUndefined();
+
+    const req = httpMock.expectOne(r => r.url.endsWith('services/patientservice/api/clinical-cases/case-beyond-the-page'));
+    expect(req.request.method).toBe('GET');
+    req.flush({ id: 'case-beyond-the-page', symptoms: 'Cough', patientId: 'patient-kojo', status: 'open', brief: 'Beyond page 0' });
+
+    expect(repository.findCase('case-beyond-the-page')?.id).toBe('case-beyond-the-page');
+    expect(repository.caseReadState('case-beyond-the-page').status).toBe('ready');
+  });
+
+  it('treats a 404 as ready-and-absent, so absence is the server answering rather than a cache miss', () => {
+    flushInitialLoad();
+
+    expect(repository.findCase('no-such-case')).toBeUndefined();
+    httpMock
+      .expectOne(r => r.url.endsWith('services/patientservice/api/clinical-cases/no-such-case'))
+      .flush({ detail: 'Not found' }, { status: 404, statusText: 'Not Found' });
+
+    // `ready`, not `error`: the read succeeded in telling us there is nothing. A refusal or an
+    // outage must NOT arrive here as absence, which the next case pins.
+    expect(repository.caseReadState('no-such-case').status).toBe('ready');
+  });
+
+  it('does not re-request a case while its read is in flight', () => {
+    flushInitialLoad();
+
+    repository.findCase('case-inflight');
+    repository.findCase('case-inflight');
+    repository.findCase('case-inflight');
+
+    // One request, not three. Without the guard every change-detection pass starts another, and a
+    // case that 404s would loop on the network for as long as the page is open.
+    httpMock.expectOne(r => r.url.endsWith('services/patientservice/api/clinical-cases/case-inflight'));
+  });
 });

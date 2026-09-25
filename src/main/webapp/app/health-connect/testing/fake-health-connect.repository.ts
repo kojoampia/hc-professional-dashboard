@@ -101,6 +101,8 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     caseQueue: asyncState('ready'),
   });
   private readonly recordReads = signal<ReadonlyMap<string, AsyncViewState>>(new Map());
+  /** Per-case read outcome — {@link recordReads}' twin, added with backlog.md item 203. */
+  private readonly caseReads = signal<ReadonlyMap<string, AsyncViewState>>(new Map());
   private readonly restrictions = signal<readonly RestrictedPart[]>([]);
   private readonly unknownRestriction = signal(false);
   private readonly restrictedFollowUps = signal<readonly RestrictedFollowUp[]>([]);
@@ -247,6 +249,19 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     return this.records()
       .flatMap(record => record.cases)
       .find(clinicalCase => clinicalCase.id === id);
+  }
+
+  /**
+   * How one case's read went — backlog.md item 203's per-id state.
+   *
+   * <p>`ready` for a case the fixture holds and for one it does not, because the real repository
+   * treats a 404 as `ready`-and-absent: the server answered, and what it said is that there is no
+   * such case. A spec that says nothing about a read therefore gets the unremarkable case, exactly
+   * as {@link recordState} does — set it explicitly with {@link setCaseReadState} to exercise
+   * loading, a refusal or an outage.
+   */
+  caseReadState(caseId: string): AsyncViewState {
+    return this.caseReads().get(caseId) ?? asyncState('ready');
   }
 
   listCases(status?: CaseStatus, rosterScope: RosterScope = 'all', professionalId?: string): readonly CaseQueueRow[] {
@@ -431,6 +446,11 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     this.recordReads.update(states => new Map(states).set(patientId, asyncState(state.status, state.error)));
   }
 
+  /** Drive {@link caseReadState} for one case — the case-side twin of {@link setRecordState}. */
+  setCaseReadState(caseId: string, state: AsyncViewState): void {
+    this.caseReads.update(states => new Map(states).set(caseId, asyncState(state.status, state.error)));
+  }
+
   /**
    * Stand in for an `X-Restricted-Parts` header on the directory read.
    *
@@ -481,6 +501,7 @@ export class FakeHealthConnectRepository implements HealthConnectRepository {
     this.archivedCaseIds.set(new Set());
     this.reads.set({ directory: asyncState('ready'), caseQueue: asyncState('ready') });
     this.recordReads.set(new Map());
+    this.caseReads.set(new Map());
     this.restrictions.set([]);
     this.unknownRestriction.set(false);
     this.restrictedFollowUps.set([]);

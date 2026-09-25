@@ -231,6 +231,21 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
    */
   private readonly recordReads = signal<ReadonlyMap<string, AsyncViewState>>(new Map());
 
+  /**
+   * Cases fetched one at a time, by id — backlog.md item 203.
+   *
+   * <p><b>Separate from {@link clinicalCaseCache}, which is a collection read and truncates.</b>
+   * Measured on quality 2026-09-25: `GET /api/clinical-cases` returns the server's default page —
+   * 20 rows of 1167 — so the collection cache is a sample, not the collection. This map holds cases
+   * the detail page asked for by name, and its misses mean "the server said 404" rather than "not in
+   * the sample".
+   */
+  private readonly caseRecordCache = signal<ReadonlyMap<string, ClinicalCaseDto>>(new Map());
+  /** In-flight single-case reads, so a re-render cannot start a second — {@link pendingRecordFetches}'s twin. */
+  private readonly pendingCaseFetches = new Set<string>();
+  /** Per-case read outcome, keyed for {@link recordReads}' reason: one value would describe the newest response. */
+  private readonly caseReads = signal<ReadonlyMap<string, AsyncViewState>>(new Map());
+
   readonly patients = computed<readonly PatientRecord[]>(() => Array.from(this.recordCache().values()));
   /**
    * Derived from {@link DutyRosterAssignmentsService}'s signal rather than cached here, so the
@@ -413,9 +428,71 @@ export class HttpHealthConnectRepository implements HealthConnectRepository {
     return this.recordReads().get(patientId) ?? IDLE;
   }
 
+  /**
+   * One case, from its own read — backlog.md item 203.
+   *
+   * <p><b>This used to look the id up in {@link clinicalCaseCache} and issue nothing.</b> That cache
+   * is filled by a collection read which sends no `page` and no `size`, so it holds whatever the
+   * server chose: measured on quality 2026-09-25, <b>20 rows of 1167</b>. Of the <b>105</b> cases
+   * assigned to the signed-in clinician, <b>8</b> were in it — so opening any of the other 97 told
+   * that clinician their own case did not exist.
+   *
+   * <p>The collection cache is still consulted <b>first</b>, and that is not a leftover: a case the
+   * queue already holds is the same case, and re-reading it over the network to render a row the user
+   * just clicked would add a request and a spinner to the common path for nothing. The single read is
+   * the fallback for everything the sample missed — which is most of them.
+   *
+   * <p>Shaped exactly like {@link findPatient}: return what is known, start one read if nothing is
+   * known and none is in flight, and let {@link caseReadState} carry the outcome. The guard matters —
+   * without it every change detection pass would start another request for a case that is 404ing.
+   */
   findCase(id: string): ClinicalCase | undefined {
-    const clinicalCase = this.clinicalCaseCache().find(candidate => candidate.id === id);
-    return clinicalCase && toClinicalCase(clinicalCase);
+    const fromCollection = this.clinicalCaseCache().find(candidate => candidate.id === id);
+    if (fromCollection) {
+      return toClinicalCase(fromCollection);
+    }
+    const fetched = this.caseRecordCache().get(id);
+    if (fetched) {
+      return toClinicalCase(fetched);
+    }
+    if (!id || this.pendingCaseFetches.has(id)) {
+      return undefined;
+    }
+    this.pendingCaseFetches.add(id);
+    this.caseReads.update(states => new Map(states).set(id, LOADING));
+    this.clinicalCaseService.find(id).subscribe({
+      next: response => {
+        this.pendingCaseFetches.delete(id);
+        const dto = response.body;
+        if (!dto) {
+          // A 200 with no body is a broken contract rather than a state to render, and substituting
+          // an empty case would manufacture the fabricated emptiness item 126 removed. Same call as
+          // findPatient makes one screen over.
+          this.caseReads.update(states => new Map(states).set(id, asyncState('error', LOAD_ERROR_KEY)));
+          return;
+        }
+        this.caseRecordCache.update(cache => new Map(cache).set(id, dto));
+        this.caseReads.update(states => new Map(states).set(id, READY));
+      },
+      error: response => {
+        this.pendingCaseFetches.delete(id);
+        // A 404 is `ready` and absent, not an error: the server answered, and what it said is that
+        // there is no such case. That is the whole point of item 203 — absence now has a source.
+        // Everything else (403, 503, a dead sibling) goes through the shared classifier, so a refusal
+        // still reads as a refusal rather than as "no such case".
+        this.caseReads.update(states => new Map(states).set(id, response?.status === 404 ? READY : classifyFailure(response)));
+      },
+    });
+    return undefined;
+  }
+
+  caseReadState(caseId: string): AsyncViewState {
+    // `idle` for a case nobody has asked about, which is not "ready and empty" — see the interface.
+    // A case already in the collection cache is `ready` without a read of its own ever being made.
+    if (this.clinicalCaseCache().some(candidate => candidate.id === caseId)) {
+      return READY;
+    }
+    return this.caseReads().get(caseId) ?? IDLE;
   }
 
   /**

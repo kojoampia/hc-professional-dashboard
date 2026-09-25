@@ -143,6 +143,21 @@ export interface HealthConnectRepository {
    */
   recordState(patientId: string): AsyncViewState;
   findCase(id: string): ClinicalCase | undefined;
+  /**
+   * How the read for <em>this one case</em> went — the per-id twin of {@link recordState}.
+   *
+   * <p><b>Added by backlog.md item 203, on a measurement rather than for symmetry.</b> The case
+   * detail page used to take its state from the <em>collection</em> read, so "not found" meant "not
+   * in whatever the server chose to return". Measured on quality 2026-09-25:
+   * {@code GET /api/clinical-cases} defaults to <b>page 0, size 20</b> of <b>1167</b>, and of the
+   * <b>105</b> cases assigned to the signed-in clinician only <b>8</b> were in it. Opening any of the
+   * other 97 — real cases, assigned to that clinician — rendered "This case was not found."
+   *
+   * <p>Absence now comes from a read of the case itself, which can 404, rather than from a miss in a
+   * collection nobody bounded. {@code idle} means nobody has asked yet and is not "ready and empty",
+   * the same distinction {@link recordState} draws and for the same item 126 reason.
+   */
+  caseReadState(caseId: string): AsyncViewState;
   listCases(status?: CaseStatus, rosterScope?: RosterScope, professionalId?: string): readonly CaseQueueRow[];
   recommendations(category?: string): readonly Recommendation[];
   professionalIdForAccount(accountLogin: string): string | null;

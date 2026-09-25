@@ -96,6 +96,9 @@ describe('CaseDetailPageComponent', () => {
       recommendations: () => [],
       updateCase: jest.fn(),
       caseQueueState: signal(asyncState('loading')),
+      // item 203: the page reads per-case state now, not the collection's. `loading` here is the
+      // point of these two cases — the case lands AFTER the component was created.
+      caseReadState: () => asyncState('loading'),
     };
 
     TestBed.resetTestingModule();
@@ -140,6 +143,9 @@ describe('CaseDetailPageComponent', () => {
       recommendations: () => [],
       updateCase: jest.fn(),
       caseQueueState: signal(asyncState('loading')),
+      // item 203: the page reads per-case state now, not the collection's. `loading` here is the
+      // point of these two cases — the case lands AFTER the component was created.
+      caseReadState: () => asyncState('loading'),
     };
 
     TestBed.resetTestingModule();
@@ -196,7 +202,7 @@ describe('CaseDetailPageComponent', () => {
     });
 
     it('says the read was REFUSED, and offers no retry that could only be refused again', () => {
-      repository.setReadState('caseQueue', asyncState('forbidden', 'healthConnect.case.states.forbidden'));
+      repository.setCaseReadState('case-absent', asyncState('forbidden', 'healthConnect.case.states.forbidden'));
       absent.detectChanges();
 
       expect(marker('caseForbidden')).not.toBeNull();
@@ -208,7 +214,7 @@ describe('CaseDetailPageComponent', () => {
     });
 
     it('says the read FAILED when it failed, which is a different sentence again', () => {
-      repository.setReadState('caseQueue', asyncState('error', 'healthConnect.case.states.error'));
+      repository.setCaseReadState('case-absent', asyncState('error', 'healthConnect.case.states.error'));
       absent.detectChanges();
 
       expect(marker('caseFailed')).not.toBeNull();
@@ -220,7 +226,7 @@ describe('CaseDetailPageComponent', () => {
     it('says the read is still in FLIGHT rather than that the case is missing', () => {
       // The cold load — a deep link, a refresh, a bookmark — which is exactly when this screen used
       // to assert absence about a response that had not arrived.
-      repository.setReadState('caseQueue', asyncState('loading'));
+      repository.setCaseReadState('case-absent', asyncState('loading'));
       absent.detectChanges();
 
       expect(marker('caseLoading')).not.toBeNull();
@@ -231,7 +237,7 @@ describe('CaseDetailPageComponent', () => {
     it('still says the case was not found for a read that succeeded and found none', () => {
       // The positive control, and why absence stays the default: it is the right sentence for an
       // archived case or a stale bookmark, and the wrong one for every other reason there is none.
-      repository.setReadState('caseQueue', asyncState('ready'));
+      repository.setCaseReadState('case-absent', asyncState('ready'));
       absent.detectChanges();
 
       expect(marker('caseEmpty')).not.toBeNull();
@@ -258,7 +264,7 @@ describe('CaseDetailPageComponent', () => {
       const region = (): HTMLElement | null => absent.nativeElement.querySelector('[data-cy="caseStateRegion"]');
 
       it('keeps one live region across the in-flight → refused transition, rather than replacing it', () => {
-        repository.setReadState('caseQueue', asyncState('loading'));
+        repository.setCaseReadState('case-absent', asyncState('loading'));
         absent.detectChanges();
         const before = region();
 
@@ -271,7 +277,7 @@ describe('CaseDetailPageComponent', () => {
         expect(before!.getAttribute('aria-atomic')).toBe('true');
         expect(before!.querySelector('[data-cy="caseLoading"]')).not.toBeNull();
 
-        repository.setReadState('caseQueue', asyncState('forbidden', 'healthConnect.case.states.forbidden'));
+        repository.setCaseReadState('case-absent', asyncState('forbidden', 'healthConnect.case.states.forbidden'));
         absent.detectChanges();
 
         expect(region()).toBe(before);
@@ -279,17 +285,17 @@ describe('CaseDetailPageComponent', () => {
       });
 
       it('leaves item 146’s status/alert split alone — the wrapper is the fix, the roles are not', () => {
-        repository.setReadState('caseQueue', asyncState('forbidden', 'healthConnect.case.states.forbidden'));
+        repository.setCaseReadState('case-absent', asyncState('forbidden', 'healthConnect.case.states.forbidden'));
         absent.detectChanges();
 
         expect(marker('caseForbidden')!.getAttribute('role')).toBe('status');
 
-        repository.setReadState('caseQueue', asyncState('error', 'healthConnect.case.states.error'));
+        repository.setCaseReadState('case-absent', asyncState('error', 'healthConnect.case.states.error'));
         absent.detectChanges();
 
         expect(marker('caseFailed')!.getAttribute('role')).toBe('alert');
 
-        repository.setReadState('caseQueue', asyncState('loading'));
+        repository.setCaseReadState('case-absent', asyncState('loading'));
         absent.detectChanges();
 
         expect(marker('caseLoading')!.getAttribute('role')).toBe('status');
