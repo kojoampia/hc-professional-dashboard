@@ -118,15 +118,7 @@ export interface OnboardingProgressDto {
  * service's completeness refusal and has to know which tokens in that sentence are requirement keys
  * (backlog.md item 46).
  */
-export const ONBOARDING_REQUIREMENT_KEYS = [
-  'consent',
-  'profile',
-  'address',
-  'nextOfKin',
-  'certificate',
-  'license',
-  'identity',
-] as const;
+export const ONBOARDING_REQUIREMENT_KEYS = ['consent', 'profile', 'address', 'nextOfKin', 'certificate', 'license', 'identity'] as const;
 
 export type OnboardingRequirementKey = (typeof ONBOARDING_REQUIREMENT_KEYS)[number];
 
