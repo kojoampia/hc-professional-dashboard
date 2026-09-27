@@ -126,7 +126,7 @@ export const ONBOARDING_REQUIREMENT_KEYS = [
   'certificate',
   'license',
   'identity',
-  'photo',
+//  'photo',
 ] as const;
 
 export type OnboardingRequirementKey = (typeof ONBOARDING_REQUIREMENT_KEYS)[number];
