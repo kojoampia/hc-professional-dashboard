@@ -1,11 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { of, throwError } from 'rxjs';
+import { last, of, throwError } from 'rxjs';
 
 import { AlertService } from 'app/core/util/alert.service';
 import { OnboardingApiService, OnboardingProfileDto } from 'app/health-connect/api/onboarding-api.service';
 
 import ClinicalProfileComponent from './clinical-profile.component';
+import { AccountService } from '../../core/auth/account.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('Clinical Profile Component', () => {
   let comp: ClinicalProfileComponent;
@@ -37,6 +40,9 @@ describe('Clinical Profile Component', () => {
       providers: [
         { provide: OnboardingApiService, useValue: api },
         { provide: AlertService, useValue: alertService },
+        AccountService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     })
       .overrideTemplate(ClinicalProfileComponent, '')
