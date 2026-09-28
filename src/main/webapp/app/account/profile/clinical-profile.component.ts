@@ -5,6 +5,8 @@ import SharedModule from 'app/shared/shared.module';
 import { AlertService } from 'app/core/util/alert.service';
 import { OnboardingProgressService } from 'app/core/onboarding/onboarding-progress.service';
 import { IDENTITY_TYPES, OnboardingApiService, OnboardingProfileDto } from 'app/health-connect/api/onboarding-api.service';
+import { AccountService } from '../../core/auth/account.service';
+import { Account } from '../../core/auth/account.model';
 
 /**
  * The clinician's own credentialing profile, editable after approval.
@@ -38,10 +40,12 @@ export default class ClinicalProfileComponent implements OnInit {
   private readonly api = inject(OnboardingApiService);
   private readonly alertService = inject(AlertService);
   private readonly progressService = inject(OnboardingProgressService);
+  private readonly accountService = inject(AccountService);
 
   readonly identityTypes = IDENTITY_TYPES;
   readonly loadState = signal<'loading' | 'ready' | 'error'>('loading');
   readonly saving = signal(false);
+  readonly currentUser = signal<Account | null>(null);
 
   /**
    * The profile as the server last gave it to us, kept whole so {@link #save} can merge onto it.
@@ -77,6 +81,7 @@ export default class ClinicalProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
+    this.accountService.identity().subscribe(account => this.currentUser.set(account));
   }
 
   load(): void {
@@ -152,6 +157,9 @@ export default class ClinicalProfileComponent implements OnInit {
     return {
       ...this.loaded,
       title: value.title || null,
+      firstName: this.currentUser()?.firstName || null,
+      lastName: this.currentUser()?.lastName || null,
+      email: this.currentUser()?.email || null,
       birthDate: value.birthDate || null,
       sex: value.sex || null,
       mobilePhone: value.mobilePhone || null,
