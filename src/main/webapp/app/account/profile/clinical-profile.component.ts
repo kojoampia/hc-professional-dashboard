@@ -60,7 +60,7 @@ export default class ClinicalProfileComponent implements OnInit {
    */
   readonly form = new FormGroup({
     title: new FormControl<string>('', { nonNullable: false }),
-    firstName: new FormControl<string>('', { nonNullable: true, }),
+    firstName: new FormControl<string>('', { nonNullable: true }),
     middleNames: new FormControl<string>('', { nonNullable: true }),
     lastName: new FormControl<string>('', { nonNullable: true }),
     email: new FormControl<string>('', { nonNullable: true }),

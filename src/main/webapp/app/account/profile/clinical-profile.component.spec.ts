@@ -40,7 +40,9 @@ describe('Clinical Profile Component', () => {
       providers: [
         { provide: OnboardingApiService, useValue: api },
         { provide: AlertService, useValue: alertService },
-        AccountService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()
+        AccountService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     })
       .overrideTemplate(ClinicalProfileComponent, '')
