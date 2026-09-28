@@ -59,7 +59,11 @@ export default class ClinicalProfileComponent implements OnInit {
    * credentialing profile is, and a screen that let you save less would quietly undo that.
    */
   readonly form = new FormGroup({
-    title: new FormControl<string>('', { nonNullable: true }),
+    title: new FormControl<string>('', { nonNullable: false }),
+    firstName: new FormControl<string>('', { nonNullable: true, }),
+    middleNames: new FormControl<string>('', { nonNullable: true }),
+    lastName: new FormControl<string>('', { nonNullable: true }),
+    email: new FormControl<string>('', { nonNullable: true }),
     birthDate: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),
     sex: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),
     mobilePhone: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),
@@ -128,6 +132,10 @@ export default class ClinicalProfileComponent implements OnInit {
   private prefill(profile: OnboardingProfileDto): void {
     this.form.patchValue({
       title: profile.title ?? '',
+      firstName: profile.firstName ?? this.currentUser()?.firstName ?? '',
+      middleNames: profile.middleNames ?? '',
+      lastName: profile.lastName ?? this.currentUser()?.lastName ?? '',
+      email: profile.email ?? this.currentUser()?.email ?? '',
       birthDate: profile.birthDate ?? '',
       sex: profile.sex ?? '',
       mobilePhone: profile.mobilePhone ?? '',
@@ -157,9 +165,9 @@ export default class ClinicalProfileComponent implements OnInit {
     return {
       ...this.loaded,
       title: value.title || null,
-      firstName: this.currentUser()?.firstName || null,
-      lastName: this.currentUser()?.lastName || null,
-      email: this.currentUser()?.email || null,
+      firstName: value.firstName || (this.currentUser()?.firstName ?? null),
+      lastName: value.lastName || (this.currentUser()?.lastName ?? null),
+      email: value.email || (this.currentUser()?.email ?? null),
       birthDate: value.birthDate || null,
       sex: value.sex || null,
       mobilePhone: value.mobilePhone || null,
