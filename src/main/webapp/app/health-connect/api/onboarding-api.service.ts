@@ -1,6 +1,7 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { SKIP_ERROR_ALERT } from 'app/core/interceptor/error-handler.interceptor';
@@ -174,6 +175,21 @@ export class OnboardingApiService {
   private readonly applicationConfigService = inject(ApplicationConfigService);
   private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/onboarding', 'professionalservice');
 
+  /**
+   * The applicant's own documents, which are no longer under `api/onboarding` (profile.md step 3, T2).
+   *
+   * <p>A second base rather than a second service, deliberately: splitting this file is T6's work and
+   * it carries seven exports besides the service, so doing it here would widen a task that only has
+   * to move three calls. ⚠ What must NOT happen is these calls staying on `api/onboarding/documents`
+   * — the server mappings are gone, so that would be a consumer reading where nobody writes, which is
+   * silence that looks like health.
+   *
+   * <p>⛔ `verifyDocument` and `rejectDocument` below deliberately stay on `resourceUrl`. They are the
+   * reviewer's half, they are still served from `/api/onboarding/documents/{id}/...`, and they migrate
+   * with the rest of the admin surface in T3.
+   */
+  private readonly documentUrl = this.applicationConfigService.getEndpointFor('api/personal-document', 'professionalservice');
+
   acknowledgementStatus(): Observable<{ acknowledged: boolean }> {
     return this.http.get<{ acknowledged: boolean }>(`${this.resourceUrl}/acknowledgement`);
   }
@@ -204,7 +220,7 @@ export class OnboardingApiService {
   }
 
   documentContent(id: string): Observable<Blob> {
-    return this.http.get(`${this.resourceUrl}/documents/${encodeURIComponent(id)}/content`, { responseType: 'blob' });
+    return this.http.get(`${this.documentUrl}/${encodeURIComponent(id)}/content`, { responseType: 'blob' });
   }
 
   decide(id: string, decision: OnboardingStatus, reason?: string, correctionNotes?: string): Observable<OnboardingApplicationDto> {
@@ -299,7 +315,7 @@ export class OnboardingApiService {
   }
 
   listDocuments(): Observable<OnboardingDocumentDto[]> {
-    return this.http.get<OnboardingDocumentDto[]>(`${this.resourceUrl}/documents`);
+    return this.http.get<OnboardingDocumentDto[]>(this.documentUrl);
   }
 
   /**
@@ -309,24 +325,60 @@ export class OnboardingApiService {
    * and it is the only thing that archives a row (backlog.md item 20). The server does not infer the
    * replacement, because it cannot: a renewed certificate and a second, different certificate are the
    * same request. Sending nothing simply adds a document.
+   *
+   * <p>⚠ **A JSON body with `data` base64-encoded, which is `profile.md`'s specified
+   * `PersonalDocument` shape** (step 3, T2). This sent `multipart/form-data` until then. Two things
+   * follow and neither is cosmetic. The file has to be read in the browser before the request can be
+   * built, so this returns a promise-backed observable rather than firing immediately — a 5 MB scan
+   * takes a moment to read and the caller must not treat "the observable exists" as "the upload
+   * started". And base64 is 4/3 of the file, so a 5 MB document — the server's own ceiling — becomes
+   * roughly 6.7 MB of request, against nginx's 8 MB cap: the headroom is real but much smaller than
+   * it was, and anything past ~6 MB of document is refused by nginx with a bare 413 rather than by
+   * the service with a message.
    */
   uploadDocument(
     file: File,
     type: OnboardingDocumentType,
     options: { otherLabel?: string; expiryDate?: string; supersedesDocumentId?: string } = {},
   ): Observable<OnboardingDocumentDto> {
-    const form = new FormData();
-    form.append('file', file);
-    form.append('type', type);
-    if (options.otherLabel) {
-      form.append('otherLabel', options.otherLabel);
-    }
-    if (options.expiryDate) {
-      form.append('expiryDate', options.expiryDate);
-    }
-    if (options.supersedesDocumentId) {
-      form.append('supersedesDocumentId', options.supersedesDocumentId);
-    }
-    return this.http.post<OnboardingDocumentDto>(`${this.resourceUrl}/documents`, form);
+    return from(base64Of(file)).pipe(
+      switchMap(data =>
+        this.http.post<OnboardingDocumentDto>(this.documentUrl, {
+          name: file.name,
+          type,
+          data,
+          dataContentType: file.type,
+          otherLabel: options.otherLabel ?? null,
+          expiryDate: options.expiryDate ?? null,
+          supersedesDocumentId: options.supersedesDocumentId ?? null,
+        }),
+      ),
+    );
   }
+}
+
+/**
+ * The file's bytes as base64, without the `data:` prefix a data URL carries.
+ *
+ * <p>`FileReader.readAsDataURL` rather than `file.arrayBuffer()` plus `btoa`: the latter needs a
+ * binary string built one character at a time, which blows the call stack on a multi-megabyte file
+ * when written the obvious way (`String.fromCharCode(...bytes)`). The reader does the encoding
+ * natively and in one pass.
+ */
+function base64Of(file: File): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    // `reader.error` is a DOMException and is what a caller wants; the fallback is only for the
+    // case the File API allows but does not describe, and it is deliberately NOT a sentence — this
+    // never reaches a screen, and `untranslated-literals.spec.ts` rightly cannot tell a thrown
+    // message from a caption. `NotReadableError` is the File API's own name for this failure.
+    reader.onerror = () => reject(reader.error ?? new DOMException('', 'NotReadableError'));
+    reader.onload = () => {
+      const result = reader.result as string;
+      // `data:<mime>;base64,<payload>` — everything after the comma is the payload, and the comma
+      // cannot appear in base64 itself.
+      resolve(result.slice(result.indexOf(',') + 1));
+    };
+    reader.readAsDataURL(file);
+  });
 }

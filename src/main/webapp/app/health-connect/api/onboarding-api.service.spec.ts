@@ -1,4 +1,4 @@
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController, TestRequest, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 
@@ -10,6 +10,7 @@ describe('OnboardingApiService', () => {
   let service: OnboardingApiService;
   let httpMock: HttpTestingController;
   let base: string;
+  let documentBase: string;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -18,9 +19,28 @@ describe('OnboardingApiService', () => {
     service = TestBed.inject(OnboardingApiService);
     httpMock = TestBed.inject(HttpTestingController);
     base = TestBed.inject(ApplicationConfigService).getEndpointFor('api/onboarding', 'professionalservice');
+    documentBase = TestBed.inject(ApplicationConfigService).getEndpointFor('api/personal-document', 'professionalservice');
   });
 
   afterEach(() => httpMock.verify());
+
+  /**
+   * The one request to `url`, once whatever asynchronous work precedes it has finished.
+   *
+   * <p>`expectOne` asserts against the requests open *now*, so it cannot be used for a call that is
+   * issued after a `FileReader` resolves. `match` is used rather than `expectOne` because it returns
+   * an empty array instead of throwing, which is what makes polling possible at all.
+   */
+  const waitForRequest = async (url: string): Promise<TestRequest> => {
+    for (let attempt = 0; attempt < 100; attempt++) {
+      const [request] = httpMock.match(url);
+      if (request) {
+        return request;
+      }
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
+    throw new Error(`no request to ${url}`);
+  };
 
   it('starts an application with consent against the WP3 endpoint', () => {
     service.startApplication('ROLE_NURSE').subscribe();
@@ -66,24 +86,70 @@ describe('OnboardingApiService', () => {
     put.flush({ id: 'p1', firstName: 'Ama', lastName: 'Serwaa' });
   });
 
-  it('uploads documents as multipart form data with conditional fields', () => {
+  /**
+   * ⚠ The document calls are on `api/personal-document`, not under `api/onboarding` (profile.md
+   * step 3, T2) — and `documentBase` is derived here for the same reason `base` is, so a spec cannot
+   * agree with a hardcoded path the service no longer uses.
+   */
+  it('uploads documents as the specified JSON document with data base64-encoded', async () => {
     const file = new File(['%PDF-fake'], 'license.pdf', { type: 'application/pdf' });
-    service.uploadDocument(file, 'LICENSE', { expiryDate: '2027-01-31' }).subscribe();
-    const req = httpMock.expectOne(`${base}/documents`);
+    let created: unknown;
+    service.uploadDocument(file, 'LICENSE', { expiryDate: '2027-01-31' }).subscribe(document => (created = document));
+
+    // ⚠ The file is read before the request is built, so the request does not exist synchronously —
+    // and ONE macrotask is not enough. jsdom's FileReader schedules its own load event, and whether
+    // that lands before or after a single `setTimeout(0)` depends on machine load: this spec passed
+    // alone and failed inside the full suite, which is the worst kind of flake because the isolated
+    // run is the one a developer repeats. Polling until the request appears removes the race rather
+    // than widening the window.
+    const req = await waitForRequest(documentBase);
     expect(req.request.method).toBe('POST');
-    const body = req.request.body as FormData;
-    expect(body.get('type')).toBe('LICENSE');
-    expect(body.get('expiryDate')).toBe('2027-01-31');
-    expect(body.get('otherLabel')).toBeNull();
-    expect(body.get('file')).toBe(file);
+    expect(req.request.body).toEqual({
+      name: 'license.pdf',
+      type: 'LICENSE',
+      // base64 of '%PDF-fake' — asserted as the value rather than as "some string", because the
+      // server verifies magic bytes against `dataContentType` and a mangled payload would be a 400
+      // that reads as a rejected file.
+      data: btoa('%PDF-fake'),
+      dataContentType: 'application/pdf',
+      otherLabel: null,
+      expiryDate: '2027-01-31',
+      supersedesDocumentId: null,
+    });
     req.flush({ id: 'doc-1', type: 'LICENSE' });
+    expect(created).toEqual({ id: 'doc-1', type: 'LICENSE' });
   });
 
   it('lists own documents', () => {
     service.listDocuments().subscribe();
-    const req = httpMock.expectOne(`${base}/documents`);
+    const req = httpMock.expectOne(documentBase);
     expect(req.request.method).toBe('GET');
     req.flush([]);
+  });
+
+  it('streams document content from the personal-document path', () => {
+    service.documentContent('doc-1').subscribe();
+    const req = httpMock.expectOne(`${documentBase}/doc-1/content`);
+    expect(req.request.method).toBe('GET');
+    req.flush(new Blob(['%PDF']));
+  });
+
+  /**
+   * ⛔ The reviewer's two verbs stay where they are — they are `ROLE_ADMIN`, they are still served
+   * from `/api/onboarding/documents/{id}/...`, and they migrate with the rest of the admin surface in
+   * T3. This case is what fails if somebody "finishes the rename".
+   */
+  it('leaves the reviewer verdicts on the onboarding surface until T3', () => {
+    service.verifyDocument('doc-1').subscribe();
+    const verify = httpMock.expectOne(`${base}/documents/doc-1/verify`);
+    expect(verify.request.method).toBe('PUT');
+    httpMock.expectNone(`${documentBase}/doc-1/verify`);
+    verify.flush({ id: 'doc-1', type: 'LICENSE', verificationStatus: 'VERIFIED' });
+
+    service.rejectDocument('doc-1', 'Blurry scan').subscribe();
+    const reject = httpMock.expectOne(`${base}/documents/doc-1/reject`);
+    expect(reject.request.method).toBe('PUT');
+    reject.flush({ id: 'doc-1', type: 'LICENSE', verificationStatus: 'REJECTED' });
   });
 
   /**
