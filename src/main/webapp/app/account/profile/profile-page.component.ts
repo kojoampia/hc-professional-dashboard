@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import SharedModule from 'app/shared/shared.module';
-import { OnboardingProgressService } from 'app/core/onboarding/onboarding-progress.service';
+import { OnboardingProgressService } from 'app/onboarding/onboarding-progress.service';
 import SettingsComponent from 'app/account/settings/settings.component';
 import PasswordComponent from 'app/account/password/password.component';
 import ClinicalProfileComponent from './clinical-profile.component';

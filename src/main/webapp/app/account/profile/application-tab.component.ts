@@ -4,7 +4,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import SharedModule from 'app/shared/shared.module';
 import { AlertService } from 'app/core/util/alert.service';
 import { CareersHandoffService } from 'app/core/careers/careers-handoff.service';
-import { OnboardingProgressService } from 'app/core/onboarding/onboarding-progress.service';
+import { OnboardingProgressService } from 'app/onboarding/onboarding-progress.service';
 import { OnboardingApiService, OnboardingApplicationDto } from 'app/health-connect/api/onboarding-api.service';
 
 const REQUESTABLE_ROLES = [

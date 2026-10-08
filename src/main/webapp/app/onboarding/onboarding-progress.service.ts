@@ -55,7 +55,14 @@ export class OnboardingProgressService {
     this.load();
   }
 
-  /** Sign-out has to drop this, or the next account inherits the last one's percentage. */
+  /**
+   * Sign-out has to drop this, or the next account inherits the last one's percentage.
+   *
+   * <p>Called by {@code LoginService.logout()}, which is the single sign-out funnel — the sidebar
+   * button and the 401 path in {@code AuthExpiredInterceptor} both route through it. It had no
+   * caller at all until then, so this comment stated a requirement nothing met; `login.service.spec.ts`
+   * now holds the wiring.
+   */
   clear(): void {
     this.state.set(null);
     this.loading.set(false);

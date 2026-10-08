@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 import SharedModule from 'app/shared/shared.module';
-import { OnboardingProgressService } from 'app/core/onboarding/onboarding-progress.service';
+import { OnboardingProgressService } from 'app/onboarding/onboarding-progress.service';
 
 /**
  * The 0–100% completion meter at the top of the profile page.

@@ -13,7 +13,7 @@ import PieChartComponent from '../charts/pie-chart.component';
 import { AsyncViewState, CaseStatus } from '../health-connect.models';
 import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
-import { OnboardingProgressService } from 'app/core/onboarding/onboarding-progress.service';
+import { OnboardingProgressService } from 'app/onboarding/onboarding-progress.service';
 import { hasClinicalAuthority } from '../authority-role';
 import { EarningsApiService } from '../api/earnings-api.service';
 import { ProfessionalEarningsDto } from '../api/earnings-api.model';
