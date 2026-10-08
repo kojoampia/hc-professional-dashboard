@@ -10,7 +10,7 @@ import { EventManager, EventWithContent } from 'app/core/util/event-manager.serv
  *
  * <p>The interceptor otherwise raises a banner for every HTTP error, which is right when nothing
  * else is watching and wrong when the caller treats the failure as an ordinary outcome. The case
- * that forced it: {@code GET /api/onboarding/profile} 404s for a clinician who has no profile
+ * that forced it: {@code GET /api/profile} 404s for a clinician who has no profile
  * document yet — an admin invitation creates the login first — and the profile page answers that
  * with an empty form. Without this the page rendered correctly and put "Not found" on top of it.
  */

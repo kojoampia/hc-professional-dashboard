@@ -5,6 +5,8 @@ import SharedModule from 'app/shared/shared.module';
 import { AlertService } from 'app/core/util/alert.service';
 import { OnboardingProgressService } from 'app/onboarding/onboarding-progress.service';
 import { IDENTITY_TYPES, OnboardingApiService, OnboardingProfileDto } from 'app/health-connect/api/onboarding-api.service';
+import { PersonalDocumentType } from 'app/entities/personal-document/types.enum';
+import { Sex } from 'app/entities/profile/sex.enum';
 import { AccountService } from '../../core/auth/account.service';
 import { Account } from '../../core/auth/account.model';
 
@@ -14,8 +16,13 @@ import { Account } from '../../core/auth/account.model';
  * <p>Until now this data could only be entered once, inside the onboarding wizard, and the wizard
  * closes when the application is approved — so a clinician who moved house or changed their
  * emergency contact had no way to say so. Same endpoints as the wizard
- * ({@code GET/PUT /api/onboarding/profile}, both {@code .authenticated()} rather than clinical-role
- * gated), so this needs nothing new from {@code api/}.
+ * ({@code GET/PUT /api/profile}, both {@code .authenticated()} rather than clinical-role gated), so
+ * this needs nothing new from {@code api/}.
+ *
+ * <p>⚠ <b>Those two moved from {@code /api/onboarding/profile} in F8</b>, per {@code profile.md}
+ * § Other Elements, and the semantics moved with them: the old {@code PUT} was a thirteen-field
+ * whole-document replace and the new one applies only the fields the body names. The merge in
+ * {@link #buildPayload} is therefore no longer load-bearing — see the note there.
  *
  * <p><b>Name and email are deliberately absent.</b> They exist here <i>and</i> on the gateway
  * account, and the account is the owner — it is what signs you in, what the sidebar card greets you
@@ -23,11 +30,16 @@ import { Account } from '../../core/auth/account.model';
  * page twice, with one save silently not affecting the other. What this section keeps is everything
  * the account has no concept of: title, birth date, sex, mobile, identity card, address, next of kin.
  *
- * <p>Because they are absent from the form and {@code upsertProfile} replaces the whole document,
- * {@link #save} merges over the profile it loaded rather than sending the form alone — otherwise
- * saving an address here would blank the name the credentialing record is filed under. That is the
- * one failure this component is most exposed to, and {@code clinical-profile.component.spec.ts}
- * pins it.
+ * <p>Because they are absent from the form, {@link #save} merges over the profile it loaded rather
+ * than sending the form alone, and {@code clinical-profile.component.spec.ts} pins it.
+ *
+ * <p>⭐ <b>That merge used to be the only thing preventing data loss and no longer is.</b>
+ * {@code upsertProfile} wrote through {@code PUT /api/onboarding/profile}, a whole-document replace,
+ * so sending the form alone would have blanked the name the credentialing record is filed under —
+ * correctness was a property of this caller. Since F8 the endpoint is {@code PUT /api/profile}, a
+ * partial write, so a body that omits a field leaves it as stored. The merge is kept because it is
+ * harmless and because the round trip is what the spec asserts; <b>it is no longer the guard</b>,
+ * and the next pane to be written does not need to repeat it.
  */
 @Component({
   standalone: true,
@@ -65,9 +77,16 @@ export default class ClinicalProfileComponent implements OnInit {
     lastName: new FormControl<string>('', { nonNullable: true }),
     email: new FormControl<string>('', { nonNullable: true }),
     birthDate: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),
-    sex: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),
+    // Typed by the enums profile.md specifies (F9) rather than by `string`: a value outside either
+    // enumeration is refused by the server with a 400, so a form that could hold one would be a
+    // form that could only fail on save. `Sex | ''` because an untouched select is empty and `''`
+    // is not a member — which is also what `Validators.required` is checking.
+    sex: new FormControl<Sex | ''>('', { nonNullable: true, validators: Validators.required }),
     mobilePhone: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),
-    cardType: new FormControl<string>('GHANACARD', { nonNullable: true, validators: Validators.required }),
+    cardType: new FormControl<PersonalDocumentType>(PersonalDocumentType.GHANACARD, {
+      nonNullable: true,
+      validators: Validators.required,
+    }),
     cardNumber: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),
 
     digitalAddress: new FormControl<string>('', { nonNullable: true }),
@@ -139,7 +158,7 @@ export default class ClinicalProfileComponent implements OnInit {
       birthDate: profile.birthDate ?? '',
       sex: profile.sex ?? '',
       mobilePhone: profile.mobilePhone ?? '',
-      cardType: profile.cardType ?? 'GHANACARD',
+      cardType: profile.cardType ?? PersonalDocumentType.GHANACARD,
       cardNumber: profile.cardNumber ?? '',
 
       digitalAddress: profile.address?.digitalAddress ?? '',

@@ -9,7 +9,7 @@ describe('Error Handler Interceptor', () => {
   let eventManager: { broadcast: jest.Mock };
   let interceptor: ErrorHandlerInterceptor;
 
-  const handlerFailingWith = (status: number, url = '/services/professionalservice/api/onboarding/profile'): HttpHandler =>
+  const handlerFailingWith = (status: number, url = '/services/professionalservice/api/profile'): HttpHandler =>
     ({ handle: () => throwError(() => new HttpErrorResponse({ status, url })) }) as unknown as HttpHandler;
 
   const run = (request: HttpRequest<unknown>, handler: HttpHandler): void => {
@@ -33,7 +33,7 @@ describe('Error Handler Interceptor', () => {
    * "Not found" sitting on top of it.
    */
   it('should stay quiet when the caller opted out', () => {
-    const request = new HttpRequest('GET', '/api/onboarding/profile', {
+    const request = new HttpRequest('GET', '/api/profile', {
       context: new HttpContext().set(SKIP_ERROR_ALERT, true),
     });
 
@@ -44,7 +44,7 @@ describe('Error Handler Interceptor', () => {
 
   /** Opting out is per-request; it must not leak into the next one. */
   it('should still announce failures on requests that did not opt out', () => {
-    run(new HttpRequest('GET', '/api/onboarding/profile'), handlerFailingWith(404));
+    run(new HttpRequest('GET', '/api/profile'), handlerFailingWith(404));
 
     expect(eventManager.broadcast).toHaveBeenCalled();
   });

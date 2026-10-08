@@ -11,6 +11,7 @@ describe('OnboardingApiService', () => {
   let httpMock: HttpTestingController;
   let base: string;
   let documentBase: string;
+  let profileBase: string;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -20,6 +21,7 @@ describe('OnboardingApiService', () => {
     httpMock = TestBed.inject(HttpTestingController);
     base = TestBed.inject(ApplicationConfigService).getEndpointFor('api/onboarding', 'professionalservice');
     documentBase = TestBed.inject(ApplicationConfigService).getEndpointFor('api/personal-document', 'professionalservice');
+    profileBase = TestBed.inject(ApplicationConfigService).getEndpointFor('api/profile', 'professionalservice');
   });
 
   afterEach(() => httpMock.verify());
@@ -75,12 +77,18 @@ describe('OnboardingApiService', () => {
     httpMock.expectOne(`${base}/applications/app-1/events`).flush([]);
   });
 
-  it('round-trips the profile through the onboarding surface', () => {
+  /**
+   * ⚠ **On `api/profile`, not under `api/onboarding` (profile.md step 2, F8).** The server mappings
+   * for `GET`/`PUT /api/onboarding/profile` are gone, so this assertion is what notices if the base
+   * is ever put back: a request to the old path would be a consumer reading where nobody serves,
+   * which on the read half is a 404 the page treats as "no profile yet" and therefore cannot see.
+   */
+  it('round-trips the profile through its own endpoint', () => {
     service.getOwnProfile().subscribe();
-    httpMock.expectOne(`${base}/profile`).flush({ firstName: 'Ama' });
+    httpMock.expectOne(profileBase).flush({ firstName: 'Ama' });
 
     service.upsertProfile({ firstName: 'Ama', lastName: 'Serwaa' }).subscribe();
-    const put = httpMock.expectOne(`${base}/profile`);
+    const put = httpMock.expectOne(profileBase);
     expect(put.request.method).toBe('PUT');
     expect(put.request.body).toMatchObject({ firstName: 'Ama', lastName: 'Serwaa' });
     put.flush({ id: 'p1', firstName: 'Ama', lastName: 'Serwaa' });
@@ -160,12 +168,13 @@ describe('OnboardingApiService', () => {
    * "Not found" over every page in the portal.
    */
   it.each([
-    ['getOwnApplication', 'applications/me'],
-    ['getOwnProfile', 'profile'],
-  ])('should keep %s out of the global error banner', (method, path) => {
+    ['getOwnApplication', () => `${base}/applications/me`],
+    // Its own base since F8 — see the round-trip case above.
+    ['getOwnProfile', () => profileBase],
+  ])('should keep %s out of the global error banner', (method, url) => {
     (service as any)[method]().subscribe({ error: () => undefined });
 
-    const req = httpMock.expectOne(`${base}/${path}`);
+    const req = httpMock.expectOne((url as () => string)());
     expect(req.request.context.get(SKIP_ERROR_ALERT)).toBe(true);
     req.flush(null, { status: 404, statusText: 'Not Found' });
   });

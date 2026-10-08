@@ -4,6 +4,8 @@ import { Observable, from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
+import { PersonalDocumentType } from 'app/entities/personal-document/types.enum';
+import { Sex } from 'app/entities/profile/sex.enum';
 import { SKIP_ERROR_ALERT } from 'app/core/interceptor/error-handler.interceptor';
 
 /**
@@ -68,8 +70,20 @@ export interface OnboardingEventDto {
  * <p>Lives here rather than beside either screen that uses it: the onboarding wizard collects the
  * card and the profile page edits it afterwards, and a list that disagreed between the two would
  * let a clinician pick a type the wizard would not have accepted.
+ *
+ * <p>⚠ **Typed `PersonalDocumentType[]` rather than `OnboardingDocumentType[]` since F9.** The two
+ * hold the same nine names, but `profile.md` types `Profile.cardType` by `types.enum.ts` and a TS
+ * string enum is **nominal** — a bare `'GHANACARD'` literal is not assignable to it — so this list,
+ * which is what the card dropdown iterates, has to be members rather than literals or the dropdown
+ * cannot produce a value the wire type accepts. `OnboardingDocumentType` stays as it is for
+ * `PersonalDocument.type`, which is T2's and T3's.
  */
-export const IDENTITY_TYPES: OnboardingDocumentType[] = ['PASSPORT', 'GHANACARD', 'DRIVERLICENSE', 'VOTERCARD'];
+export const IDENTITY_TYPES: PersonalDocumentType[] = [
+  PersonalDocumentType.PASSPORT,
+  PersonalDocumentType.GHANACARD,
+  PersonalDocumentType.DRIVERLICENSE,
+  PersonalDocumentType.VOTERCARD,
+];
 
 export interface OnboardingAddressDto {
   digitalAddress?: string | null;
@@ -130,11 +144,25 @@ export interface OnboardingProfileDto {
   middleNames?: string | null;
   lastName?: string | null;
   birthDate?: string | null;
-  sex?: string | null;
+  /**
+   * One of `Sex`'s two members, typed since F9.
+   *
+   * <p>`profile.md`'s Profile model types this field `enum` and names the file it specifies for it,
+   * `app/entities/profile/sex.enum.ts`. It was `string | null`, so `{"sex":"banana"}` type-checked
+   * here and stored on the server.
+   */
+  sex?: Sex | null;
   mobilePhone?: string | null;
   email?: string | null;
   title?: string | null;
-  cardType?: string | null;
+  /**
+   * Which identity document `cardNumber` is the number of — typed since F9.
+   *
+   * <p>`profile.md` names the vocabulary explicitly: *"PersonalDocumentType: `types.enum.ts`"*. That
+   * is the same nine members a `PersonalDocument.type` carries, which is the point — a card type and
+   * a document type are one vocabulary and were two, one of them free text.
+   */
+  cardType?: PersonalDocumentType | null;
   cardNumber?: string | null;
   address?: OnboardingAddressDto | null;
   emergencyContact?: OnboardingEmergencyContactDto | null;
@@ -189,6 +217,25 @@ export class OnboardingApiService {
    * with the rest of the admin surface in T3.
    */
   private readonly documentUrl = this.applicationConfigService.getEndpointFor('api/personal-document', 'professionalservice');
+
+  /**
+   * The clinician's own profile, which is no longer under `api/onboarding` (profile.md step 2, F8).
+   *
+   * <p>`profile.md` § Other Elements: *"`api/onboarding/profile` should migrate to `api/profile`"*.
+   * The server mappings are **gone**, so leaving these two calls on the old base would be a consumer
+   * reading and writing where nobody serves — silence that looks like health, which on the write half
+   * means a pane answering 404 where it used to answer 200.
+   *
+   * <p>⚠ **The semantics changed with the path and that is the point of the migration.**
+   * `PUT /api/onboarding/profile` was a thirteen-field whole-document replace with no null guards;
+   * `PUT /api/profile` applies only the fields the body names. {@link ClinicalProfileComponent} still
+   * spreads `{...this.loaded, …}` and no longer has to — see the note there — but a pane that posts a
+   * subset is now safe, which it was not.
+   *
+   * <p>A third base rather than a third service, for the reason `documentUrl` above gives: splitting
+   * this file is T6's work and it carries seven exports besides the service.
+   */
+  private readonly profileUrl = this.applicationConfigService.getEndpointFor('api/profile', 'professionalservice');
 
   acknowledgementStatus(): Observable<{ acknowledged: boolean }> {
     return this.http.get<{ acknowledged: boolean }>(`${this.resourceUrl}/acknowledgement`);
@@ -305,13 +352,13 @@ export class OnboardingApiService {
    * ordinary outcome stops rendering as "Not found" over a page that is working.
    */
   getOwnProfile(): Observable<OnboardingProfileDto> {
-    return this.http.get<OnboardingProfileDto>(`${this.resourceUrl}/profile`, {
+    return this.http.get<OnboardingProfileDto>(this.profileUrl, {
       context: new HttpContext().set(SKIP_ERROR_ALERT, true),
     });
   }
 
   upsertProfile(profile: OnboardingProfileDto): Observable<OnboardingProfileDto> {
-    return this.http.put<OnboardingProfileDto>(`${this.resourceUrl}/profile`, profile);
+    return this.http.put<OnboardingProfileDto>(this.profileUrl, profile);
   }
 
   listDocuments(): Observable<OnboardingDocumentDto[]> {
