@@ -74,7 +74,7 @@ export default class ReviewQueuePageComponent implements OnInit {
       id: 'role',
       labelKey: 'healthConnect.onboarding.requestedRole',
       value: row =>
-        row.requestedRole ? this.translate.instant('healthConnect.roles.' + row.requestedRole.replace('ROLE_', '').toLowerCase()) : '—',
+        row.authority ? this.translate.instant('healthConnect.roles.' + row.authority.replace('ROLE_', '').toLowerCase()) : '—',
     },
     {
       id: 'status',

@@ -1,13 +1,20 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
+import { PersonalDocumentType } from 'app/entities/personal-document/types.enum';
+import { Sex } from 'app/entities/profile/sex.enum';
 import { SKIP_ERROR_ALERT } from 'app/core/interceptor/error-handler.interceptor';
 
 /**
- * Applicant-facing onboarding API (professional-onboarding-workflow.md WP4)
- * against the professionalService `/api/onboarding` surface built in WP3.
+ * Applicant-facing onboarding API (professional-onboarding-workflow.md WP4).
+ *
+ * <p>⚠ **It is no longer one surface.** The `/api/onboarding` base it was built against in WP3 now
+ * carries only `/progress` and `/acknowledgement`; the profile moved to `api/profile` (F8),
+ * documents to `api/personal-document` (T2) and the application to `api/professional-application`
+ * (T3), each a base of its own below. Splitting this file follows in T6.
  */
 
 export type OnboardingStatus =
@@ -42,9 +49,23 @@ export interface OnboardingApplicationDto {
   id: string;
   accountId: string;
   login?: string | null;
+  /** Set to `Profile.id` by the server; never sent by a client. */
   profileId?: string | null;
-  requestedRole?: string | null;
+  /**
+   * The clinical role being applied for — `requestedRole` until T3.
+   *
+   * <p>`profile.md` § Gap Update: *"Refactor the `String requestedRole` to `authority`"*, and
+   * *"`Authority` is a class defined in the gateway. The `api` service holds only the role
+   * string."* — so this is a `string` and not `UserAuthority`, deliberately, even though its values
+   * are that enum's members. The `Authority` enum shape in `web` exists only to simplify the view
+   * model.
+   */
+  authority?: string | null;
   status: OnboardingStatus;
+  /** Whether consent was ticked (`profile.md` step 4). Rendered by the consent statement. */
+  agreed?: boolean | null;
+  /** When consent was given — a **server stamp**; `profile.md` renders it beside the statement. */
+  agreedDate?: string | null;
   submittedAt?: string | null;
   decisionReason?: string | null;
   correctionNotes?: string | null;
@@ -67,8 +88,20 @@ export interface OnboardingEventDto {
  * <p>Lives here rather than beside either screen that uses it: the onboarding wizard collects the
  * card and the profile page edits it afterwards, and a list that disagreed between the two would
  * let a clinician pick a type the wizard would not have accepted.
+ *
+ * <p>⚠ **Typed `PersonalDocumentType[]` rather than `OnboardingDocumentType[]` since F9.** The two
+ * hold the same nine names, but `profile.md` types `Profile.cardType` by `types.enum.ts` and a TS
+ * string enum is **nominal** — a bare `'GHANACARD'` literal is not assignable to it — so this list,
+ * which is what the card dropdown iterates, has to be members rather than literals or the dropdown
+ * cannot produce a value the wire type accepts. `OnboardingDocumentType` stays as it is for
+ * `PersonalDocument.type`, which is T2's and T3's.
  */
-export const IDENTITY_TYPES: OnboardingDocumentType[] = ['PASSPORT', 'GHANACARD', 'DRIVERLICENSE', 'VOTERCARD'];
+export const IDENTITY_TYPES: PersonalDocumentType[] = [
+  PersonalDocumentType.PASSPORT,
+  PersonalDocumentType.GHANACARD,
+  PersonalDocumentType.DRIVERLICENSE,
+  PersonalDocumentType.VOTERCARD,
+];
 
 export interface OnboardingAddressDto {
   digitalAddress?: string | null;
@@ -109,14 +142,29 @@ export interface OnboardingProgressDto {
 }
 
 /**
- * Keys the server sends, in display order; each maps to a translated label in all four catalogues
- * under `healthConnect.profile.completion.requirements.*`.
+ * Requirement keys this build has a label for; each maps to a translated label in all four
+ * catalogues under `healthConnect.profile.completion.requirements.*`.
  *
  * <p>A runtime array with the union derived from it, rather than a bare union, for the reason
  * `DUTY_ROSTER_SHIFTS` is one: a union cannot be enumerated at run time, so it cannot be matched
  * against anything. The review page needs exactly that — it reads the requirement names out of the
  * service's completeness refusal and has to know which tokens in that sentence are requirement keys
  * (backlog.md item 46).
+ *
+ * <p>⛔ **This said "keys the server sends, in display order", and it is not that — measured
+ * 2026-10-09.** `OnboardingProgressDTO` carries **eight** requirements and this array holds seven:
+ * `photo` is missing, while all four catalogues already carry
+ * `…requirements.photo`. The server names it in two sentences a client reads —
+ * `requireCompleteProfile`'s `Activation requires a complete profile; still missing: …` and the
+ * submission gate's `…still missing: …`, which can also name **`authority`**, a key that is not a
+ * progress-meter requirement and has no label at all.
+ *
+ * <p>⚠ **Nothing renders a raw key as a result**, which is why it has gone unnoticed:
+ * `ReviewDetailPageComponent.missingRequirements` intersects the sentence with this array precisely
+ * so an unknown token degrades to the generic headline and the quoted detail. What is lost is the
+ * labelled chip — a reviewer told "still missing" without being told the passport photo is the thing
+ * missing. **Left as it is here deliberately**: adding a member changes what the review page renders
+ * and `authority` would need a label in four catalogues, which is not a comment fix.
  */
 export const ONBOARDING_REQUIREMENT_KEYS = ['consent', 'profile', 'address', 'nextOfKin', 'certificate', 'license', 'identity'] as const;
 
@@ -129,11 +177,25 @@ export interface OnboardingProfileDto {
   middleNames?: string | null;
   lastName?: string | null;
   birthDate?: string | null;
-  sex?: string | null;
+  /**
+   * One of `Sex`'s two members, typed since F9.
+   *
+   * <p>`profile.md`'s Profile model types this field `enum` and names the file it specifies for it,
+   * `app/entities/profile/sex.enum.ts`. It was `string | null`, so `{"sex":"banana"}` type-checked
+   * here and stored on the server.
+   */
+  sex?: Sex | null;
   mobilePhone?: string | null;
   email?: string | null;
   title?: string | null;
-  cardType?: string | null;
+  /**
+   * Which identity document `cardNumber` is the number of — typed since F9.
+   *
+   * <p>`profile.md` names the vocabulary explicitly: *"PersonalDocumentType: `types.enum.ts`"*. That
+   * is the same nine members a `PersonalDocument.type` carries, which is the point — a card type and
+   * a document type are one vocabulary and were two, one of them free text.
+   */
+  cardType?: PersonalDocumentType | null;
   cardNumber?: string | null;
   address?: OnboardingAddressDto | null;
   emergencyContact?: OnboardingEmergencyContactDto | null;
@@ -174,6 +236,64 @@ export class OnboardingApiService {
   private readonly applicationConfigService = inject(ApplicationConfigService);
   private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/onboarding', 'professionalservice');
 
+  /**
+   * The applicant's own documents, which are no longer under `api/onboarding` (profile.md step 3, T2).
+   *
+   * <p>A second base rather than a second service, deliberately: splitting this file is T6's work and
+   * it carries seven exports besides the service, so doing it here would widen a task that only has
+   * to move three calls. ⚠ What must NOT happen is these calls staying on `api/onboarding/documents`
+   * — the server mappings are gone, so that would be a consumer reading where nobody writes, which is
+   * silence that looks like health.
+   *
+   * <p>⭐ **`verifyDocument` and `rejectDocument` use this base too since T3.** They are the
+   * reviewer's half and stayed on `/api/onboarding/documents/{id}/...` through T2; they are now
+   * `PersonalDocumentReviewResource`'s on `/api/personal-document/{id}/...`, which is the base
+   * `profile.md` § Other Elements names for the whole collection.
+   */
+  private readonly documentUrl = this.applicationConfigService.getEndpointFor('api/personal-document', 'professionalservice');
+
+  /**
+   * The professional application, which is no longer under `api/onboarding` (profile.md step 4, T3).
+   *
+   * <p>`profile.md` § Other Elements: *"`api/onboarding/applications` should migrate to
+   * `api/professional-application`"*. All fifteen server mappings moved, so leaving **any** call
+   * below that names an application on the old base would be a consumer reading where nobody writes —
+   * silence that looks like health on the three shipped admin pages, and a dead Submit button for
+   * every applicant.
+   *
+   * <p>⚠ **This said "these eleven calls" and there are sixteen.** Eleven is the reviewer's half, the
+   * figure `onboarding-api.service.spec.ts` uses correctly for its spot-check; T3 re-pointed fifteen
+   * and added `saveConsent` as the sixteenth in the same commit. A hand-maintained tally that nothing
+   * fails when it drifts is not worth keeping, so there is no number here now — count the uses of this
+   * constant if you need one.
+   *
+   * <p>The sub-paths are unchanged under the new base — `/me`, `/me/submit`, `/{id}/decide` — so
+   * this is one URL swap and not eleven decisions.
+   *
+   * <p>A fourth base rather than a fourth service, for the reason `documentUrl` above gives:
+   * splitting this file is T6's work and it carries seven exports besides the service.
+   */
+  private readonly applicationUrl = this.applicationConfigService.getEndpointFor('api/professional-application', 'professionalservice');
+
+  /**
+   * The clinician's own profile, which is no longer under `api/onboarding` (profile.md step 2, F8).
+   *
+   * <p>`profile.md` § Other Elements: *"`api/onboarding/profile` should migrate to `api/profile`"*.
+   * The server mappings are **gone**, so leaving these two calls on the old base would be a consumer
+   * reading and writing where nobody serves — silence that looks like health, which on the write half
+   * means a pane answering 404 where it used to answer 200.
+   *
+   * <p>⚠ **The semantics changed with the path and that is the point of the migration.**
+   * `PUT /api/onboarding/profile` was a thirteen-field whole-document replace with no null guards;
+   * `PUT /api/profile` applies only the fields the body names. {@link ClinicalProfileComponent} still
+   * spreads `{...this.loaded, …}` and no longer has to — see the note there — but a pane that posts a
+   * subset is now safe, which it was not.
+   *
+   * <p>A third base rather than a third service, for the reason `documentUrl` above gives: splitting
+   * this file is T6's work and it carries seven exports besides the service.
+   */
+  private readonly profileUrl = this.applicationConfigService.getEndpointFor('api/profile', 'professionalservice');
+
   acknowledgementStatus(): Observable<{ acknowledged: boolean }> {
     return this.http.get<{ acknowledged: boolean }>(`${this.resourceUrl}/acknowledgement`);
   }
@@ -184,31 +304,31 @@ export class OnboardingApiService {
 
   listApplications(status?: OnboardingStatus): Observable<OnboardingApplicationDto[]> {
     const params = status ? { params: { status } } : {};
-    return this.http.get<OnboardingApplicationDto[]>(`${this.resourceUrl}/applications`, params);
+    return this.http.get<OnboardingApplicationDto[]>(`${this.applicationUrl}`, params);
   }
 
   getApplication(id: string): Observable<OnboardingApplicationDto> {
-    return this.http.get<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}`);
+    return this.http.get<OnboardingApplicationDto>(`${this.applicationUrl}/${encodeURIComponent(id)}`);
   }
 
   applicationDocuments(id: string): Observable<OnboardingDocumentDto[]> {
-    return this.http.get<OnboardingDocumentDto[]>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/documents`);
+    return this.http.get<OnboardingDocumentDto[]>(`${this.applicationUrl}/${encodeURIComponent(id)}/documents`);
   }
 
   verifyDocument(id: string): Observable<OnboardingDocumentDto> {
-    return this.http.put<OnboardingDocumentDto>(`${this.resourceUrl}/documents/${encodeURIComponent(id)}/verify`, null);
+    return this.http.put<OnboardingDocumentDto>(`${this.documentUrl}/${encodeURIComponent(id)}/verify`, null);
   }
 
   rejectDocument(id: string, reason: string): Observable<OnboardingDocumentDto> {
-    return this.http.put<OnboardingDocumentDto>(`${this.resourceUrl}/documents/${encodeURIComponent(id)}/reject`, { reason });
+    return this.http.put<OnboardingDocumentDto>(`${this.documentUrl}/${encodeURIComponent(id)}/reject`, { reason });
   }
 
   documentContent(id: string): Observable<Blob> {
-    return this.http.get(`${this.resourceUrl}/documents/${encodeURIComponent(id)}/content`, { responseType: 'blob' });
+    return this.http.get(`${this.documentUrl}/${encodeURIComponent(id)}/content`, { responseType: 'blob' });
   }
 
   decide(id: string, decision: OnboardingStatus, reason?: string, correctionNotes?: string): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/decide`, {
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/${encodeURIComponent(id)}/decide`, {
       decision,
       reason: reason ?? null,
       correctionNotes: correctionNotes ?? null,
@@ -219,35 +339,90 @@ export class OnboardingApiService {
     id: string,
     payload: { specialtyCategoryId?: string | null; teamIds?: string[]; supervisorProfileId?: string | null },
   ): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/organization`, payload);
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/${encodeURIComponent(id)}/organization`, payload);
   }
 
   markAuthorityAssigned(id: string): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/authority-assigned`, null);
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/${encodeURIComponent(id)}/authority-assigned`, null);
   }
 
   markRosterConfigured(id: string): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/roster-configured`, null);
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/${encodeURIComponent(id)}/roster-configured`, null);
   }
 
   activate(id: string): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/activate`, null);
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/${encodeURIComponent(id)}/activate`, null);
   }
 
   suspend(id: string, reason: string): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/suspend`, { reason });
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/${encodeURIComponent(id)}/suspend`, { reason });
   }
 
   deactivate(id: string, reason: string): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/deactivate`, { reason });
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/${encodeURIComponent(id)}/deactivate`, { reason });
   }
 
-  startApplication(requestedRole: string, source?: string | null): Observable<OnboardingApplicationDto> {
-    return this.http.post<OnboardingApplicationDto>(`${this.resourceUrl}/applications`, {
-      requestedRole,
-      consentAccepted: true,
+  /**
+   * Starts the caller's application, recording step 4's consent and requested authority.
+   *
+   * <p>⚠ **The body is `profile.md` step 4's and was `{ requestedRole, consentAccepted }` until
+   * T3.** `agreed` and `authority` are the field names the specification gives, and the server's
+   * record binds exactly those three components — a stale name is simply not heard, so a renamed
+   * field left behind here would have stored `authority: null` and answered 201 doing it.
+   *
+   * <p>`agreed: true` is hard-coded because the caller only reaches this method from a ticked
+   * consent box; the server refuses `false` with a 400 either way, which is the half that matters.
+   *
+   * <p>⚠ **`authority` is validated server-side against the eight professional disciplines**, so a
+   * value outside them is a 400 with no application created. `ROLE_ADMIN` and `ROLE_USER` are among
+   * the refusals — the same two `careers-handoff.service.ts` leaves out of `KNOWN_TRACKS`. The
+   * careers handoff is unaffected and must stay so: it **drops** an unknown `?track=` rather than
+   * raising, so this is the backstop for a body that names one, not a second gate on the inbound
+   * parameters.
+   */
+  startApplication(authority: string, source?: string | null): Observable<OnboardingApplicationDto> {
+    return this.http.post<OnboardingApplicationDto>(`${this.applicationUrl}`, {
+      agreed: true,
+      authority,
       source: source ?? null,
     });
+  }
+
+  /**
+   * Step 4's **Save** — `PUT /me`: stores the consent and the requested authority, and advances to
+   * `CREDENTIAL_REVIEW` **only when every requirement is satisfied**.
+   *
+   * <p>⛔ **This comment made two claims that the owner's Save/Submit decision (2026-10-09) made
+   * false, and both are corrected here against the server.** It said Save and Submit *"call one
+   * service method — the difference between the two buttons is the wizard's (T8), not the server's"*,
+   * and that *"a second call answers 409"*.
+   *
+   * <p>**Read from `ProfessionalApplicationResource` and `OnboardingService`:** the resource has two
+   * handlers over **two** service methods — `saveConsent` and `submitForReview` — so the difference
+   * *is* the server's. They share one body, `storeThenAdvanceWhenComplete`, and differ in exactly one
+   * argument, `refuseWhenIncomplete`, so the storing and the completeness evaluation cannot drift
+   * apart:
+   *
+   * | | incomplete | complete |
+   * |---|---|---|
+   * | **Save** (`PUT /me`) | stores, **200**, no transition, no event | stores, advances to `CREDENTIAL_REVIEW`, publishes |
+   * | **{@link submit}** (`/me/submit`) | stores nothing, **400** naming the missing keys | stores, advances, publishes |
+   *
+   * <p>⚠ **A second Save answers 200.** It is repeatable by design — the service checks
+   * `LEGAL_TRANSITIONS` *before* transitioning rather than letting the state machine refuse, so a
+   * Save on an application already in `CREDENTIAL_REVIEW` stores the answers and returns it
+   * unadvanced. The 409 is {@link submit}'s: saying "I am finished" twice is a conflict in a way that
+   * saving twice is not.
+   *
+   * <p>⚠ Both paths refuse `agreed: false` with a 400, and both refuse an `authority` outside the
+   * eight professional disciplines with a 400 that stores nothing. Naming **no** authority is not an
+   * error here — Save stores and stays put, and only {@link submit} refuses it, among the requirement
+   * keys.
+   *
+   * <p>**No caller yet**, and that is expected: the step-4 pane is T8's.
+   */
+  saveConsent(authority: string): Observable<OnboardingApplicationDto> {
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/me`, { agreed: true, authority });
   }
 
   /**
@@ -258,21 +433,43 @@ export class OnboardingApiService {
    * untreated version put a red "Not found" over every page in the portal.
    */
   getOwnApplication(): Observable<OnboardingApplicationDto> {
-    return this.http.get<OnboardingApplicationDto>(`${this.resourceUrl}/applications/me`, {
+    return this.http.get<OnboardingApplicationDto>(`${this.applicationUrl}/me`, {
       context: new HttpContext().set(SKIP_ERROR_ALERT, true),
     });
   }
 
   completeProfile(): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/me/complete-profile`, null);
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/me/complete-profile`, null);
   }
 
-  submit(): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/me/submit`, null);
+  /**
+   * Step 4's **Submit** — `PUT /me/submit`, the path the old `/applications/me/submit` mapping
+   * migrated to. **Not the same server operation as {@link saveConsent}**: see the table there.
+   *
+   * <p>⛔ **It said "the same server operation as `saveConsent`", and that stopped being true with
+   * the owner's Save/Submit decision (2026-10-09).** `OnboardingService.submitForReview` is a second
+   * method, and what it adds is the refusal: § Gap Update's *"when all requirements are satisfied"*.
+   * An incomplete application gets **400** naming the unsatisfied requirement keys — step 2's by
+   * `ProfileCompleteness`, step 3's four documents, step 4's authority — and **nothing is stored**,
+   * so the refusal is the whole answer. A complete one does exactly what Save does.
+   *
+   * <p>⚠ **Step 1's four account fields are not gated**: `firstName`, `lastName`, `langKey` and
+   * `imageUrl` are the gateway's `User`, which this service cannot see, so keeping step 1 ahead of
+   * step 2 is the client's job.
+   *
+   * <p>⚠ **A second Submit is a 409** from the state machine — `CREDENTIAL_REVIEW` is not a legal
+   * move out of itself, and the client does not get to decide transition legality.
+   *
+   * <p>⚠ **It carries a body since T3 and sent `null` before.** Step 4 has Submit store the consent
+   * and the requested authority as well as advancing the status, so the authority is a parameter
+   * rather than something the server reads off the row it already has.
+   */
+  submit(authority: string): Observable<OnboardingApplicationDto> {
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/me/submit`, { agreed: true, authority });
   }
 
   events(applicationId: string): Observable<OnboardingEventDto[]> {
-    return this.http.get<OnboardingEventDto[]>(`${this.resourceUrl}/applications/${encodeURIComponent(applicationId)}/events`);
+    return this.http.get<OnboardingEventDto[]>(`${this.applicationUrl}/${encodeURIComponent(applicationId)}/events`);
   }
 
   /**
@@ -289,17 +486,17 @@ export class OnboardingApiService {
    * ordinary outcome stops rendering as "Not found" over a page that is working.
    */
   getOwnProfile(): Observable<OnboardingProfileDto> {
-    return this.http.get<OnboardingProfileDto>(`${this.resourceUrl}/profile`, {
+    return this.http.get<OnboardingProfileDto>(this.profileUrl, {
       context: new HttpContext().set(SKIP_ERROR_ALERT, true),
     });
   }
 
   upsertProfile(profile: OnboardingProfileDto): Observable<OnboardingProfileDto> {
-    return this.http.put<OnboardingProfileDto>(`${this.resourceUrl}/profile`, profile);
+    return this.http.put<OnboardingProfileDto>(this.profileUrl, profile);
   }
 
   listDocuments(): Observable<OnboardingDocumentDto[]> {
-    return this.http.get<OnboardingDocumentDto[]>(`${this.resourceUrl}/documents`);
+    return this.http.get<OnboardingDocumentDto[]>(this.documentUrl);
   }
 
   /**
@@ -309,24 +506,60 @@ export class OnboardingApiService {
    * and it is the only thing that archives a row (backlog.md item 20). The server does not infer the
    * replacement, because it cannot: a renewed certificate and a second, different certificate are the
    * same request. Sending nothing simply adds a document.
+   *
+   * <p>⚠ **A JSON body with `data` base64-encoded, which is `profile.md`'s specified
+   * `PersonalDocument` shape** (step 3, T2). This sent `multipart/form-data` until then. Two things
+   * follow and neither is cosmetic. The file has to be read in the browser before the request can be
+   * built, so this returns a promise-backed observable rather than firing immediately — a 5 MB scan
+   * takes a moment to read and the caller must not treat "the observable exists" as "the upload
+   * started". And base64 is 4/3 of the file, so a 5 MB document — the server's own ceiling — becomes
+   * roughly 6.7 MB of request, against nginx's 8 MB cap: the headroom is real but much smaller than
+   * it was, and anything past ~6 MB of document is refused by nginx with a bare 413 rather than by
+   * the service with a message.
    */
   uploadDocument(
     file: File,
     type: OnboardingDocumentType,
     options: { otherLabel?: string; expiryDate?: string; supersedesDocumentId?: string } = {},
   ): Observable<OnboardingDocumentDto> {
-    const form = new FormData();
-    form.append('file', file);
-    form.append('type', type);
-    if (options.otherLabel) {
-      form.append('otherLabel', options.otherLabel);
-    }
-    if (options.expiryDate) {
-      form.append('expiryDate', options.expiryDate);
-    }
-    if (options.supersedesDocumentId) {
-      form.append('supersedesDocumentId', options.supersedesDocumentId);
-    }
-    return this.http.post<OnboardingDocumentDto>(`${this.resourceUrl}/documents`, form);
+    return from(base64Of(file)).pipe(
+      switchMap(data =>
+        this.http.post<OnboardingDocumentDto>(this.documentUrl, {
+          name: file.name,
+          type,
+          data,
+          dataContentType: file.type,
+          otherLabel: options.otherLabel ?? null,
+          expiryDate: options.expiryDate ?? null,
+          supersedesDocumentId: options.supersedesDocumentId ?? null,
+        }),
+      ),
+    );
   }
+}
+
+/**
+ * The file's bytes as base64, without the `data:` prefix a data URL carries.
+ *
+ * <p>`FileReader.readAsDataURL` rather than `file.arrayBuffer()` plus `btoa`: the latter needs a
+ * binary string built one character at a time, which blows the call stack on a multi-megabyte file
+ * when written the obvious way (`String.fromCharCode(...bytes)`). The reader does the encoding
+ * natively and in one pass.
+ */
+function base64Of(file: File): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    // `reader.error` is a DOMException and is what a caller wants; the fallback is only for the
+    // case the File API allows but does not describe, and it is deliberately NOT a sentence — this
+    // never reaches a screen, and `untranslated-literals.spec.ts` rightly cannot tell a thrown
+    // message from a caption. `NotReadableError` is the File API's own name for this failure.
+    reader.onerror = () => reject(reader.error ?? new DOMException('', 'NotReadableError'));
+    reader.onload = () => {
+      const result = reader.result as string;
+      // `data:<mime>;base64,<payload>` — everything after the comma is the payload, and the comma
+      // cannot appear in base64 itself.
+      resolve(result.slice(result.indexOf(',') + 1));
+    };
+    reader.readAsDataURL(file);
+  });
 }

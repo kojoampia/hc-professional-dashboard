@@ -29,3 +29,37 @@ export enum Authority {
   ADMIN = 'ROLE_ADMIN',
   USER = 'ROLE_USER',
 }
+
+/**
+ * The eight career authorities: every member of {@link Authority} a professional can *apply to be*.
+ *
+ * <p>`ROLE_ADMIN` is a back-office grant and `ROLE_USER` is the base role every account already
+ * holds, so neither is a career anybody requests — which makes "the eight" a subtraction of exactly
+ * those two from the enum, and never a list.
+ *
+ * <p><b>Why this lives here and not beside the screen that needs it.</b> Two places in this app need
+ * the same eight: `core/careers/careers-handoff.service.ts`, which validates an inbound
+ * `?track=<AuthorityRole>` from `web.abofonsa.com/careers`, and `account/user/authority.enum.ts`,
+ * which is step 1's role dropdown. Those are the *first* two — the eight are a documented cross-repo
+ * invariant with copies in `gateway/security/AuthoritiesConstants`,
+ * `api/security/AuthoritiesConstants`, `health-connect/authority-role.ts` and `mobile/`'s
+ * `core/auth/clinical-permissions.ts` — and **two sources for one list is how `ROLE_ANGEL` took four
+ * repositories and five files to remove** (`../../../docs/backlog.md` item 44). One derivation, two
+ * importers.
+ *
+ * <p><b>A subtraction here and an explicit list in `health-connect/authority-role.ts`, deliberately,
+ * and the difference is not inconsistency.</b> `CLINICAL_ROLES` there is written out because item 149
+ * showed a subtraction answering the wrong number: that list feeds a *count the sign-in page
+ * advertises*, so being silently wrong is the whole failure mode, and an explicit list can only be
+ * incomplete rather than wrong. This list feeds a *validator and a dropdown*, where the failure mode
+ * inverts — a discipline added to `Authority` and forgotten here is a role nobody can apply for, with
+ * nothing to notice it. A subtraction absorbs the ninth discipline automatically, which is the
+ * behaviour wanted on this side.
+ *
+ * @see ../account/user/authority.enum.spec.ts, which holds this to the enum
+ */
+export type CareerAuthority = Exclude<Authority, Authority.ADMIN | Authority.USER>;
+
+export const CAREER_AUTHORITIES: readonly CareerAuthority[] = Object.values(Authority).filter(
+  (authority): authority is CareerAuthority => authority !== Authority.ADMIN && authority !== Authority.USER,
+);

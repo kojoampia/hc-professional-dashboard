@@ -3,7 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 
 import SharedModule from 'app/shared/shared.module';
 import { AlertService } from 'app/core/util/alert.service';
-import { OnboardingProgressService } from 'app/core/onboarding/onboarding-progress.service';
+import { OnboardingProgressService } from 'app/onboarding/onboarding-progress.service';
 import FileUploadTriggerComponent from 'app/shared/health-connect/form-controls/file-upload-trigger.component';
 import {
   OnboardingApiService,

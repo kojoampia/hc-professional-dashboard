@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ParamMap } from '@angular/router';
 
-import { Authority } from 'app/config/authority.constants';
+import { CAREER_AUTHORITIES } from 'app/config/authority.constants';
 import { LANGUAGES } from 'app/config/language.constants';
 
 export interface CareersHandoff {
@@ -13,8 +13,14 @@ export interface CareersHandoff {
 
 const STORAGE_KEY = 'hpd-careers-handoff';
 
-/** Roles the wizard may pre-select from an inbound track parameter. */
-const KNOWN_TRACKS = new Set<string>(Object.values(Authority).filter(a => a !== Authority.ADMIN && a !== Authority.USER));
+/**
+ * Roles the wizard may pre-select from an inbound track parameter.
+ *
+ * <p>The filter that used to be written out here now lives once, as `CAREER_AUTHORITIES` in
+ * `app/config/authority.constants.ts`, because step 1's role dropdown needs the same eight — see that
+ * constant's own comment for why the shared derivation beats a second correct copy.
+ */
+const KNOWN_TRACKS = new Set<string>(CAREER_AUTHORITIES);
 
 /**
  * Careers → portal handoff (docs/careers-handoff-contract.md).

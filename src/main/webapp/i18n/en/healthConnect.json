@@ -549,7 +549,7 @@
         "identity": "Identity",
         "address": "Address",
         "emergencyContact": "Emergency contact",
-        "titlePlaceholder": "Dr / RN / EMT",
+        "titlePlaceholder": "Dr / RN / EMT / NP / PA / LPN / CNA / CP / HCP / HT / Other",
         "loading": "Loading your profile…",
         "loadError": "Unable to load this information.",
         "save": "Save profile",

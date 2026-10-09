@@ -32,8 +32,8 @@
           <div>
             <dt class="hpd-label" jhiTranslate="healthConnect.onboarding.requestedRole">Requested clinical role</dt>
             <dd class="text-sm font-semibold text-hpd-primary-dark">
-              @if (app.requestedRole) {
-                <span [jhiTranslate]="'healthConnect.roles.' + app.requestedRole.replace('ROLE_', '').toLowerCase()"></span>
+              @if (app.authority) {
+                <span [jhiTranslate]="'healthConnect.roles.' + app.authority.replace('ROLE_', '').toLowerCase()"></span>
               }
             </dd>
           </div>

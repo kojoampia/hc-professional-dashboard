@@ -4,6 +4,8 @@ import { last, of, throwError } from 'rxjs';
 
 import { AlertService } from 'app/core/util/alert.service';
 import { OnboardingApiService, OnboardingProfileDto } from 'app/health-connect/api/onboarding-api.service';
+import { PersonalDocumentType } from 'app/entities/personal-document/types.enum';
+import { Sex } from 'app/entities/profile/sex.enum';
 
 import ClinicalProfileComponent from './clinical-profile.component';
 import { AccountService } from '../../core/auth/account.service';
@@ -26,9 +28,14 @@ describe('Clinical Profile Component', () => {
     email: 'doctor@localhost',
     title: 'Dr',
     birthDate: '1985-04-02',
-    sex: 'female',
+    // ⚠ This fixture read `sex: 'female'` and `cardType: 'GHANACARD'` as bare strings until F9 typed
+    // both fields, and the lower-case one is the shape the quality database actually held — one row,
+    // normalised by `ProfileEnumValueMigration`. `'female'` is now a compile error, which is the
+    // whole point of the enums: the field was free text on both sides and `{"sex":"banana"}` stored
+    // and answered 200.
+    sex: Sex.FEMALE,
     mobilePhone: '+233200000000',
-    cardType: 'GHANACARD',
+    cardType: PersonalDocumentType.GHANACARD,
     cardNumber: 'GHA-123',
     address: { streetAddress: '1 Old Road', city: 'Accra', region: 'Greater Accra', country: 'Ghana' },
     emergencyContact: { name: 'Ama', relationship: 'Sister', phone: '+233200000001' },
@@ -69,7 +76,7 @@ describe('Clinical Profile Component', () => {
       expect.objectContaining({
         title: 'Dr',
         birthDate: '1985-04-02',
-        sex: 'female',
+        sex: Sex.FEMALE,
         cardNumber: 'GHA-123',
         streetAddress: '1 Old Road',
         city: 'Accra',
