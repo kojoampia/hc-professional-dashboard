@@ -89,9 +89,14 @@ describe('OnboardingApiService', () => {
   });
 
   /**
-   * ⭐ Step 4's **Save**, which is the same server operation as Submit under a second path — see
-   * `OnboardingService.submitForReview` for why a Kafka-less Save variant was refused. The two
-   * bodies are identical and that is the point: the difference between the buttons is the wizard's.
+   * ⭐ Step 4's **Save**, on `PUT /me`.
+   *
+   * <p>⛔ This said Save *"is the same server operation as Submit under a second path"* and that
+   * *"the difference between the buttons is the wizard's"*. The owner's Save/Submit decision
+   * (2026-10-09) made both false: `OnboardingService.saveConsent` and `submitForReview` are two
+   * methods, and Save is the one that stores without refusing an incomplete application. The two
+   * **bodies** are still identical, which is all this case asserts — it is a URL-and-payload check,
+   * and the behavioural difference is the server's to prove.
    */
   it('saves the consent and authority through the step 4 write', () => {
     service.saveConsent('ROLE_PARAMEDIC').subscribe();

@@ -142,14 +142,29 @@ export interface OnboardingProgressDto {
 }
 
 /**
- * Keys the server sends, in display order; each maps to a translated label in all four catalogues
- * under `healthConnect.profile.completion.requirements.*`.
+ * Requirement keys this build has a label for; each maps to a translated label in all four
+ * catalogues under `healthConnect.profile.completion.requirements.*`.
  *
  * <p>A runtime array with the union derived from it, rather than a bare union, for the reason
  * `DUTY_ROSTER_SHIFTS` is one: a union cannot be enumerated at run time, so it cannot be matched
  * against anything. The review page needs exactly that — it reads the requirement names out of the
  * service's completeness refusal and has to know which tokens in that sentence are requirement keys
  * (backlog.md item 46).
+ *
+ * <p>⛔ **This said "keys the server sends, in display order", and it is not that — measured
+ * 2026-10-09.** `OnboardingProgressDTO` carries **eight** requirements and this array holds seven:
+ * `photo` is missing, while all four catalogues already carry
+ * `…requirements.photo`. The server names it in two sentences a client reads —
+ * `requireCompleteProfile`'s `Activation requires a complete profile; still missing: …` and the
+ * submission gate's `…still missing: …`, which can also name **`authority`**, a key that is not a
+ * progress-meter requirement and has no label at all.
+ *
+ * <p>⚠ **Nothing renders a raw key as a result**, which is why it has gone unnoticed:
+ * `ReviewDetailPageComponent.missingRequirements` intersects the sentence with this array precisely
+ * so an unknown token degrades to the generic headline and the quoted detail. What is lost is the
+ * labelled chip — a reviewer told "still missing" without being told the passport photo is the thing
+ * missing. **Left as it is here deliberately**: adding a member changes what the review page renders
+ * and `authority` would need a label in four catalogues, which is not a comment fix.
  */
 export const ONBOARDING_REQUIREMENT_KEYS = ['consent', 'profile', 'address', 'nextOfKin', 'certificate', 'license', 'identity'] as const;
 
@@ -241,9 +256,16 @@ export class OnboardingApiService {
    * The professional application, which is no longer under `api/onboarding` (profile.md step 4, T3).
    *
    * <p>`profile.md` § Other Elements: *"`api/onboarding/applications` should migrate to
-   * `api/professional-application`"*. All fifteen server mappings moved, so leaving these eleven
-   * calls on the old base would be a consumer reading where nobody writes — silence that looks like
-   * health on the three shipped admin pages, and a dead Submit button for every applicant.
+   * `api/professional-application`"*. All fifteen server mappings moved, so leaving **any** call
+   * below that names an application on the old base would be a consumer reading where nobody writes —
+   * silence that looks like health on the three shipped admin pages, and a dead Submit button for
+   * every applicant.
+   *
+   * <p>⚠ **This said "these eleven calls" and there are sixteen.** Eleven is the reviewer's half, the
+   * figure `onboarding-api.service.spec.ts` uses correctly for its spot-check; T3 re-pointed fifteen
+   * and added `saveConsent` as the sixteenth in the same commit. A hand-maintained tally that nothing
+   * fails when it drifts is not worth keeping, so there is no number here now — count the uses of this
+   * constant if you need one.
    *
    * <p>The sub-paths are unchanged under the new base — `/me`, `/me/submit`, `/{id}/decide` — so
    * this is one URL swap and not eleven decisions.
@@ -350,6 +372,13 @@ export class OnboardingApiService {
    *
    * <p>`agreed: true` is hard-coded because the caller only reaches this method from a ticked
    * consent box; the server refuses `false` with a 400 either way, which is the half that matters.
+   *
+   * <p>⚠ **`authority` is validated server-side against the eight professional disciplines**, so a
+   * value outside them is a 400 with no application created. `ROLE_ADMIN` and `ROLE_USER` are among
+   * the refusals — the same two `careers-handoff.service.ts` leaves out of `KNOWN_TRACKS`. The
+   * careers handoff is unaffected and must stay so: it **drops** an unknown `?track=` rather than
+   * raising, so this is the backstop for a body that names one, not a second gate on the inbound
+   * parameters.
    */
   startApplication(authority: string, source?: string | null): Observable<OnboardingApplicationDto> {
     return this.http.post<OnboardingApplicationDto>(`${this.applicationUrl}`, {
@@ -360,14 +389,37 @@ export class OnboardingApiService {
   }
 
   /**
-   * Step 4's **Save**: stores the consent and the requested authority and moves the application to
-   * `CREDENTIAL_REVIEW`.
+   * Step 4's **Save** — `PUT /me`: stores the consent and the requested authority, and advances to
+   * `CREDENTIAL_REVIEW` **only when every requirement is satisfied**.
    *
-   * <p>`profile.md` step 4 gives Save and Submit identical server effects, so this and
-   * {@link submit} call one service method — the difference between the two buttons is the wizard's
-   * (T8), not the server's. ⚠ **A second call answers 409** from the onboarding state machine:
-   * `PROFILE_COMPLETED → CREDENTIAL_REVIEW` is the only legal move out, and the client does not get
-   * to decide transition legality.
+   * <p>⛔ **This comment made two claims that the owner's Save/Submit decision (2026-10-09) made
+   * false, and both are corrected here against the server.** It said Save and Submit *"call one
+   * service method — the difference between the two buttons is the wizard's (T8), not the server's"*,
+   * and that *"a second call answers 409"*.
+   *
+   * <p>**Read from `ProfessionalApplicationResource` and `OnboardingService`:** the resource has two
+   * handlers over **two** service methods — `saveConsent` and `submitForReview` — so the difference
+   * *is* the server's. They share one body, `storeThenAdvanceWhenComplete`, and differ in exactly one
+   * argument, `refuseWhenIncomplete`, so the storing and the completeness evaluation cannot drift
+   * apart:
+   *
+   * | | incomplete | complete |
+   * |---|---|---|
+   * | **Save** (`PUT /me`) | stores, **200**, no transition, no event | stores, advances to `CREDENTIAL_REVIEW`, publishes |
+   * | **{@link submit}** (`/me/submit`) | stores nothing, **400** naming the missing keys | stores, advances, publishes |
+   *
+   * <p>⚠ **A second Save answers 200.** It is repeatable by design — the service checks
+   * `LEGAL_TRANSITIONS` *before* transitioning rather than letting the state machine refuse, so a
+   * Save on an application already in `CREDENTIAL_REVIEW` stores the answers and returns it
+   * unadvanced. The 409 is {@link submit}'s: saying "I am finished" twice is a conflict in a way that
+   * saving twice is not.
+   *
+   * <p>⚠ Both paths refuse `agreed: false` with a 400, and both refuse an `authority` outside the
+   * eight professional disciplines with a 400 that stores nothing. Naming **no** authority is not an
+   * error here — Save stores and stays put, and only {@link submit} refuses it, among the requirement
+   * keys.
+   *
+   * <p>**No caller yet**, and that is expected: the step-4 pane is T8's.
    */
   saveConsent(authority: string): Observable<OnboardingApplicationDto> {
     return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/me`, { agreed: true, authority });
@@ -391,8 +443,22 @@ export class OnboardingApiService {
   }
 
   /**
-   * Step 4's **Submit** — the same server operation as {@link saveConsent}, under the path the old
-   * `/applications/me/submit` mapping migrated to.
+   * Step 4's **Submit** — `PUT /me/submit`, the path the old `/applications/me/submit` mapping
+   * migrated to. **Not the same server operation as {@link saveConsent}**: see the table there.
+   *
+   * <p>⛔ **It said "the same server operation as `saveConsent`", and that stopped being true with
+   * the owner's Save/Submit decision (2026-10-09).** `OnboardingService.submitForReview` is a second
+   * method, and what it adds is the refusal: § Gap Update's *"when all requirements are satisfied"*.
+   * An incomplete application gets **400** naming the unsatisfied requirement keys — step 2's by
+   * `ProfileCompleteness`, step 3's four documents, step 4's authority — and **nothing is stored**,
+   * so the refusal is the whole answer. A complete one does exactly what Save does.
+   *
+   * <p>⚠ **Step 1's four account fields are not gated**: `firstName`, `lastName`, `langKey` and
+   * `imageUrl` are the gateway's `User`, which this service cannot see, so keeping step 1 ahead of
+   * step 2 is the client's job.
+   *
+   * <p>⚠ **A second Submit is a 409** from the state machine — `CREDENTIAL_REVIEW` is not a legal
+   * move out of itself, and the client does not get to decide transition legality.
    *
    * <p>⚠ **It carries a body since T3 and sent `null` before.** Step 4 has Submit store the consent
    * and the requested authority as well as advancing the status, so the authority is a parameter
