@@ -26,7 +26,7 @@ describe('Review pages (WP5 gate)', () => {
     id: 'app-1',
     accountId: 'candidate',
     login: 'candidate',
-    requestedRole: 'ROLE_NURSE',
+    authority: 'ROLE_NURSE',
     status,
     source: 'web-careers',
     submittedAt: '2026-07-29T08:00:00Z',
@@ -229,7 +229,7 @@ describe('Review pages (WP5 gate)', () => {
       const refusal = (status: number, detail: string): HttpErrorResponse =>
         new HttpErrorResponse({
           status,
-          url: '/services/professionalservice/api/onboarding/applications/app-1/activate',
+          url: '/services/professionalservice/api/professional-application/app-1/activate',
           error: {
             detail,
             status,

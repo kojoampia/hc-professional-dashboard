@@ -227,12 +227,12 @@ export default class ReviewDetailPageComponent implements OnInit {
   /** Gateway grants the authority (it owns users); the api records the state. */
   assignAuthority(): void {
     const application = this.application();
-    if (!application?.login || !application.requestedRole) {
+    if (!application?.login || !application.authority) {
       return;
     }
     this.busy.set(true);
     this.actionError.set(null);
-    this.gatewayAdmin.grantAuthority(application.login, application.requestedRole).subscribe({
+    this.gatewayAdmin.grantAuthority(application.login, application.authority).subscribe({
       next: () => {
         this.api.markAuthorityAssigned(this.applicationId).subscribe({
           next: updated => {
@@ -283,7 +283,7 @@ export default class ReviewDetailPageComponent implements OnInit {
   }
 
   roleLabelKey(): string | null {
-    const role = this.application()?.requestedRole;
+    const role = this.application()?.authority;
     return role ? 'healthConnect.roles.' + role.replace('ROLE_', '').toLowerCase() : null;
   }
 

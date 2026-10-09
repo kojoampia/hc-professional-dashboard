@@ -116,8 +116,18 @@ export default class ApplicationTabComponent implements OnInit {
     });
   }
 
+  /**
+   * Submit carries step 4's consent and authority since T3 — `PUT
+   * /api/professional-application/me/submit` stores both as well as advancing the status.
+   *
+   * <p>The authority comes from the stored application rather than from the form: by the time this
+   * runs the application exists, and {@link start} is what the form's value was for. Falling back to
+   * the form covers the state where a clinician edits the role before submitting, which the wizard
+   * (T8) will make the normal path.
+   */
   private reallySubmit(): void {
-    this.api.submit().subscribe({
+    const authority = this.application()?.authority ?? this.consentForm.getRawValue().requestedRole;
+    this.api.submit(authority).subscribe({
       next: application => {
         this.application.set(application);
         this.busy.set(false);

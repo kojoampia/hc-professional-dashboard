@@ -9,8 +9,12 @@ import { Sex } from 'app/entities/profile/sex.enum';
 import { SKIP_ERROR_ALERT } from 'app/core/interceptor/error-handler.interceptor';
 
 /**
- * Applicant-facing onboarding API (professional-onboarding-workflow.md WP4)
- * against the professionalService `/api/onboarding` surface built in WP3.
+ * Applicant-facing onboarding API (professional-onboarding-workflow.md WP4).
+ *
+ * <p>⚠ **It is no longer one surface.** The `/api/onboarding` base it was built against in WP3 now
+ * carries only `/progress` and `/acknowledgement`; the profile moved to `api/profile` (F8),
+ * documents to `api/personal-document` (T2) and the application to `api/professional-application`
+ * (T3), each a base of its own below. Splitting this file follows in T6.
  */
 
 export type OnboardingStatus =
@@ -45,9 +49,23 @@ export interface OnboardingApplicationDto {
   id: string;
   accountId: string;
   login?: string | null;
+  /** Set to `Profile.id` by the server; never sent by a client. */
   profileId?: string | null;
-  requestedRole?: string | null;
+  /**
+   * The clinical role being applied for — `requestedRole` until T3.
+   *
+   * <p>`profile.md` § Gap Update: *"Refactor the `String requestedRole` to `authority`"*, and
+   * *"`Authority` is a class defined in the gateway. The `api` service holds only the role
+   * string."* — so this is a `string` and not `UserAuthority`, deliberately, even though its values
+   * are that enum's members. The `Authority` enum shape in `web` exists only to simplify the view
+   * model.
+   */
+  authority?: string | null;
   status: OnboardingStatus;
+  /** Whether consent was ticked (`profile.md` step 4). Rendered by the consent statement. */
+  agreed?: boolean | null;
+  /** When consent was given — a **server stamp**; `profile.md` renders it beside the statement. */
+  agreedDate?: string | null;
   submittedAt?: string | null;
   decisionReason?: string | null;
   correctionNotes?: string | null;
@@ -212,11 +230,28 @@ export class OnboardingApiService {
    * — the server mappings are gone, so that would be a consumer reading where nobody writes, which is
    * silence that looks like health.
    *
-   * <p>⛔ `verifyDocument` and `rejectDocument` below deliberately stay on `resourceUrl`. They are the
-   * reviewer's half, they are still served from `/api/onboarding/documents/{id}/...`, and they migrate
-   * with the rest of the admin surface in T3.
+   * <p>⭐ **`verifyDocument` and `rejectDocument` use this base too since T3.** They are the
+   * reviewer's half and stayed on `/api/onboarding/documents/{id}/...` through T2; they are now
+   * `PersonalDocumentReviewResource`'s on `/api/personal-document/{id}/...`, which is the base
+   * `profile.md` § Other Elements names for the whole collection.
    */
   private readonly documentUrl = this.applicationConfigService.getEndpointFor('api/personal-document', 'professionalservice');
+
+  /**
+   * The professional application, which is no longer under `api/onboarding` (profile.md step 4, T3).
+   *
+   * <p>`profile.md` § Other Elements: *"`api/onboarding/applications` should migrate to
+   * `api/professional-application`"*. All fifteen server mappings moved, so leaving these eleven
+   * calls on the old base would be a consumer reading where nobody writes — silence that looks like
+   * health on the three shipped admin pages, and a dead Submit button for every applicant.
+   *
+   * <p>The sub-paths are unchanged under the new base — `/me`, `/me/submit`, `/{id}/decide` — so
+   * this is one URL swap and not eleven decisions.
+   *
+   * <p>A fourth base rather than a fourth service, for the reason `documentUrl` above gives:
+   * splitting this file is T6's work and it carries seven exports besides the service.
+   */
+  private readonly applicationUrl = this.applicationConfigService.getEndpointFor('api/professional-application', 'professionalservice');
 
   /**
    * The clinician's own profile, which is no longer under `api/onboarding` (profile.md step 2, F8).
@@ -247,23 +282,23 @@ export class OnboardingApiService {
 
   listApplications(status?: OnboardingStatus): Observable<OnboardingApplicationDto[]> {
     const params = status ? { params: { status } } : {};
-    return this.http.get<OnboardingApplicationDto[]>(`${this.resourceUrl}/applications`, params);
+    return this.http.get<OnboardingApplicationDto[]>(`${this.applicationUrl}`, params);
   }
 
   getApplication(id: string): Observable<OnboardingApplicationDto> {
-    return this.http.get<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}`);
+    return this.http.get<OnboardingApplicationDto>(`${this.applicationUrl}/${encodeURIComponent(id)}`);
   }
 
   applicationDocuments(id: string): Observable<OnboardingDocumentDto[]> {
-    return this.http.get<OnboardingDocumentDto[]>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/documents`);
+    return this.http.get<OnboardingDocumentDto[]>(`${this.applicationUrl}/${encodeURIComponent(id)}/documents`);
   }
 
   verifyDocument(id: string): Observable<OnboardingDocumentDto> {
-    return this.http.put<OnboardingDocumentDto>(`${this.resourceUrl}/documents/${encodeURIComponent(id)}/verify`, null);
+    return this.http.put<OnboardingDocumentDto>(`${this.documentUrl}/${encodeURIComponent(id)}/verify`, null);
   }
 
   rejectDocument(id: string, reason: string): Observable<OnboardingDocumentDto> {
-    return this.http.put<OnboardingDocumentDto>(`${this.resourceUrl}/documents/${encodeURIComponent(id)}/reject`, { reason });
+    return this.http.put<OnboardingDocumentDto>(`${this.documentUrl}/${encodeURIComponent(id)}/reject`, { reason });
   }
 
   documentContent(id: string): Observable<Blob> {
@@ -271,7 +306,7 @@ export class OnboardingApiService {
   }
 
   decide(id: string, decision: OnboardingStatus, reason?: string, correctionNotes?: string): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/decide`, {
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/${encodeURIComponent(id)}/decide`, {
       decision,
       reason: reason ?? null,
       correctionNotes: correctionNotes ?? null,
@@ -282,35 +317,60 @@ export class OnboardingApiService {
     id: string,
     payload: { specialtyCategoryId?: string | null; teamIds?: string[]; supervisorProfileId?: string | null },
   ): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/organization`, payload);
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/${encodeURIComponent(id)}/organization`, payload);
   }
 
   markAuthorityAssigned(id: string): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/authority-assigned`, null);
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/${encodeURIComponent(id)}/authority-assigned`, null);
   }
 
   markRosterConfigured(id: string): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/roster-configured`, null);
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/${encodeURIComponent(id)}/roster-configured`, null);
   }
 
   activate(id: string): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/activate`, null);
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/${encodeURIComponent(id)}/activate`, null);
   }
 
   suspend(id: string, reason: string): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/suspend`, { reason });
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/${encodeURIComponent(id)}/suspend`, { reason });
   }
 
   deactivate(id: string, reason: string): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/${encodeURIComponent(id)}/deactivate`, { reason });
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/${encodeURIComponent(id)}/deactivate`, { reason });
   }
 
-  startApplication(requestedRole: string, source?: string | null): Observable<OnboardingApplicationDto> {
-    return this.http.post<OnboardingApplicationDto>(`${this.resourceUrl}/applications`, {
-      requestedRole,
-      consentAccepted: true,
+  /**
+   * Starts the caller's application, recording step 4's consent and requested authority.
+   *
+   * <p>⚠ **The body is `profile.md` step 4's and was `{ requestedRole, consentAccepted }` until
+   * T3.** `agreed` and `authority` are the field names the specification gives, and the server's
+   * record binds exactly those three components — a stale name is simply not heard, so a renamed
+   * field left behind here would have stored `authority: null` and answered 201 doing it.
+   *
+   * <p>`agreed: true` is hard-coded because the caller only reaches this method from a ticked
+   * consent box; the server refuses `false` with a 400 either way, which is the half that matters.
+   */
+  startApplication(authority: string, source?: string | null): Observable<OnboardingApplicationDto> {
+    return this.http.post<OnboardingApplicationDto>(`${this.applicationUrl}`, {
+      agreed: true,
+      authority,
       source: source ?? null,
     });
+  }
+
+  /**
+   * Step 4's **Save**: stores the consent and the requested authority and moves the application to
+   * `CREDENTIAL_REVIEW`.
+   *
+   * <p>`profile.md` step 4 gives Save and Submit identical server effects, so this and
+   * {@link submit} call one service method — the difference between the two buttons is the wizard's
+   * (T8), not the server's. ⚠ **A second call answers 409** from the onboarding state machine:
+   * `PROFILE_COMPLETED → CREDENTIAL_REVIEW` is the only legal move out, and the client does not get
+   * to decide transition legality.
+   */
+  saveConsent(authority: string): Observable<OnboardingApplicationDto> {
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/me`, { agreed: true, authority });
   }
 
   /**
@@ -321,21 +381,29 @@ export class OnboardingApiService {
    * untreated version put a red "Not found" over every page in the portal.
    */
   getOwnApplication(): Observable<OnboardingApplicationDto> {
-    return this.http.get<OnboardingApplicationDto>(`${this.resourceUrl}/applications/me`, {
+    return this.http.get<OnboardingApplicationDto>(`${this.applicationUrl}/me`, {
       context: new HttpContext().set(SKIP_ERROR_ALERT, true),
     });
   }
 
   completeProfile(): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/me/complete-profile`, null);
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/me/complete-profile`, null);
   }
 
-  submit(): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.resourceUrl}/applications/me/submit`, null);
+  /**
+   * Step 4's **Submit** — the same server operation as {@link saveConsent}, under the path the old
+   * `/applications/me/submit` mapping migrated to.
+   *
+   * <p>⚠ **It carries a body since T3 and sent `null` before.** Step 4 has Submit store the consent
+   * and the requested authority as well as advancing the status, so the authority is a parameter
+   * rather than something the server reads off the row it already has.
+   */
+  submit(authority: string): Observable<OnboardingApplicationDto> {
+    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/me/submit`, { agreed: true, authority });
   }
 
   events(applicationId: string): Observable<OnboardingEventDto[]> {
-    return this.http.get<OnboardingEventDto[]>(`${this.resourceUrl}/applications/${encodeURIComponent(applicationId)}/events`);
+    return this.http.get<OnboardingEventDto[]>(`${this.applicationUrl}/${encodeURIComponent(applicationId)}/events`);
   }
 
   /**

@@ -12,6 +12,7 @@ describe('OnboardingApiService', () => {
   let base: string;
   let documentBase: string;
   let profileBase: string;
+  let applicationBase: string;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -22,6 +23,7 @@ describe('OnboardingApiService', () => {
     base = TestBed.inject(ApplicationConfigService).getEndpointFor('api/onboarding', 'professionalservice');
     documentBase = TestBed.inject(ApplicationConfigService).getEndpointFor('api/personal-document', 'professionalservice');
     profileBase = TestBed.inject(ApplicationConfigService).getEndpointFor('api/profile', 'professionalservice');
+    applicationBase = TestBed.inject(ApplicationConfigService).getEndpointFor('api/professional-application', 'professionalservice');
   });
 
   afterEach(() => httpMock.verify());
@@ -44,37 +46,79 @@ describe('OnboardingApiService', () => {
     throw new Error(`no request to ${url}`);
   };
 
-  it('starts an application with consent against the WP3 endpoint', () => {
+  /**
+   * ⚠ **On `api/professional-application`, not under `api/onboarding` (profile.md step 4, T3).**
+   * The body is step 4's model — `agreed` and `authority` — and it was
+   * `{ requestedRole, consentAccepted }`. Both halves are asserted here because the server binds an
+   * allow-list record: a stale field name is not refused, it is simply not heard, so a rename left
+   * behind would have stored `authority: null` and answered 201 doing it.
+   */
+  it('starts an application with consent against the step 4 endpoint', () => {
     service.startApplication('ROLE_NURSE').subscribe();
-    const req = httpMock.expectOne(`${base}/applications`);
+    const req = httpMock.expectOne(applicationBase);
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ requestedRole: 'ROLE_NURSE', consentAccepted: true, source: null });
+    expect(req.request.body).toEqual({ agreed: true, authority: 'ROLE_NURSE', source: null });
+    httpMock.expectNone(`${base}/applications`);
     req.flush({ id: 'app-1', accountId: 'me', status: 'APPLICATION_STARTED' });
   });
 
   it('carries the careers attribution source when present', () => {
     service.startApplication('ROLE_DOCTOR', 'web-careers').subscribe();
-    const req = httpMock.expectOne(`${base}/applications`);
-    expect(req.request.body).toEqual({ requestedRole: 'ROLE_DOCTOR', consentAccepted: true, source: 'web-careers' });
+    const req = httpMock.expectOne(applicationBase);
+    expect(req.request.body).toEqual({ agreed: true, authority: 'ROLE_DOCTOR', source: 'web-careers' });
     req.flush({ id: 'app-1', accountId: 'me', status: 'APPLICATION_STARTED' });
   });
 
   it('drives the lifecycle endpoints', () => {
     service.getOwnApplication().subscribe();
-    httpMock.expectOne(`${base}/applications/me`).flush({ id: 'app-1', accountId: 'me', status: 'APPLICATION_STARTED' });
+    httpMock.expectOne(`${applicationBase}/me`).flush({ id: 'app-1', accountId: 'me', status: 'APPLICATION_STARTED' });
 
     service.completeProfile().subscribe();
-    const complete = httpMock.expectOne(`${base}/applications/me/complete-profile`);
+    const complete = httpMock.expectOne(`${applicationBase}/me/complete-profile`);
     expect(complete.request.method).toBe('PUT');
     complete.flush({ id: 'app-1', accountId: 'me', status: 'PROFILE_COMPLETED' });
 
-    service.submit().subscribe();
-    const submit = httpMock.expectOne(`${base}/applications/me/submit`);
+    service.submit('ROLE_NURSE').subscribe();
+    const submit = httpMock.expectOne(`${applicationBase}/me/submit`);
     expect(submit.request.method).toBe('PUT');
+    expect(submit.request.body).toEqual({ agreed: true, authority: 'ROLE_NURSE' });
     submit.flush({ id: 'app-1', accountId: 'me', status: 'CREDENTIAL_REVIEW' });
 
     service.events('app-1').subscribe();
-    httpMock.expectOne(`${base}/applications/app-1/events`).flush([]);
+    httpMock.expectOne(`${applicationBase}/app-1/events`).flush([]);
+  });
+
+  /**
+   * ⭐ Step 4's **Save**, which is the same server operation as Submit under a second path — see
+   * `OnboardingService.submitForReview` for why a Kafka-less Save variant was refused. The two
+   * bodies are identical and that is the point: the difference between the buttons is the wizard's.
+   */
+  it('saves the consent and authority through the step 4 write', () => {
+    service.saveConsent('ROLE_PARAMEDIC').subscribe();
+    const req = httpMock.expectOne(`${applicationBase}/me`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual({ agreed: true, authority: 'ROLE_PARAMEDIC' });
+    req.flush({ id: 'app-1', accountId: 'me', status: 'CREDENTIAL_REVIEW' });
+  });
+
+  /**
+   * The reviewer's reads and transitions moved with the rest of the surface. Spot-checked across
+   * the three shapes — the queue, an `/{id}` read and an `/{id}` transition — rather than all
+   * eleven, because they share one base constant and the risk is that constant, not each template.
+   */
+  it('drives the reviewer surface on the new base', () => {
+    service.listApplications('CREDENTIAL_REVIEW').subscribe();
+    const queue = httpMock.expectOne(r => r.url === applicationBase);
+    expect(queue.request.params.get('status')).toBe('CREDENTIAL_REVIEW');
+    queue.flush([]);
+
+    service.applicationDocuments('app-1').subscribe();
+    httpMock.expectOne(`${applicationBase}/app-1/documents`).flush([]);
+
+    service.activate('app-1').subscribe();
+    const activate = httpMock.expectOne(`${applicationBase}/app-1/activate`);
+    expect(activate.request.method).toBe('PUT');
+    activate.flush({ id: 'app-1', accountId: 'me', status: 'ACTIVE' });
   });
 
   /**
@@ -143,19 +187,23 @@ describe('OnboardingApiService', () => {
   });
 
   /**
-   * ⛔ The reviewer's two verbs stay where they are — they are `ROLE_ADMIN`, they are still served
-   * from `/api/onboarding/documents/{id}/...`, and they migrate with the rest of the admin surface in
-   * T3. This case is what fails if somebody "finishes the rename".
+   * ⭐ **The reviewer's two verdicts are on `api/personal-document` since T3.**
+   *
+   * <p>This case asserted the opposite until then — that they were *still* on
+   * `/api/onboarding/documents/{id}/...` — and said in as many words that it was what fails if
+   * somebody "finishes the rename". T3 is the task that finishes it, and
+   * `PersonalDocumentReviewResource` is where they are served from, so the `expectNone` has been
+   * turned round: the old path is now the one nothing may call.
    */
-  it('leaves the reviewer verdicts on the onboarding surface until T3', () => {
+  it('puts the reviewer verdicts on the personal-document base', () => {
     service.verifyDocument('doc-1').subscribe();
-    const verify = httpMock.expectOne(`${base}/documents/doc-1/verify`);
+    const verify = httpMock.expectOne(`${documentBase}/doc-1/verify`);
     expect(verify.request.method).toBe('PUT');
-    httpMock.expectNone(`${documentBase}/doc-1/verify`);
+    httpMock.expectNone(`${base}/documents/doc-1/verify`);
     verify.flush({ id: 'doc-1', type: 'LICENSE', verificationStatus: 'VERIFIED' });
 
     service.rejectDocument('doc-1', 'Blurry scan').subscribe();
-    const reject = httpMock.expectOne(`${base}/documents/doc-1/reject`);
+    const reject = httpMock.expectOne(`${documentBase}/doc-1/reject`);
     expect(reject.request.method).toBe('PUT');
     reject.flush({ id: 'doc-1', type: 'LICENSE', verificationStatus: 'REJECTED' });
   });
@@ -164,11 +212,11 @@ describe('OnboardingApiService', () => {
    * Both of these 404 as a matter of course — a clinician seeded or invited rather than hired
    * through the careers page has neither an application nor, at first, a profile. Their callers
    * treat that as an ordinary outcome, so the requests opt out of the interceptor's error banner.
-   * Untreated, `applications/me` is polled from the shell on every navigation and put a red
+   * Untreated, `professional-application/me` is polled from the shell on every navigation and put a red
    * "Not found" over every page in the portal.
    */
   it.each([
-    ['getOwnApplication', () => `${base}/applications/me`],
+    ['getOwnApplication', () => `${applicationBase}/me`],
     // Its own base since F8 — see the round-trip case above.
     ['getOwnProfile', () => profileBase],
   ])('should keep %s out of the global error banner', (method, url) => {
