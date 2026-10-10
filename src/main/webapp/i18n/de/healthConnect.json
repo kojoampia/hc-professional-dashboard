@@ -558,8 +558,18 @@
       "tabs": "Profilbereiche",
       "completion": {
         "title": "Profil vollständig",
+        "steps": {
+          "account": "Kontodaten",
+          "profile": "Persönliche Angaben",
+          "documents": "Nachweisdokumente",
+          "consent": "Rolle und Einwilligung"
+        },
+        "gaps": {
+          "title": "Für ein vollständiges Profil fehlt noch"
+        },
         "complete": "Alles vorhanden. Als Nächstes prüft eine Administratorin oder ein Administrator Ihre Nachweise.",
         "incomplete": "Ihr Profil wird aktiv, sobald dies vollständig ist und von der Administration geprüft wurde.",
+        "liveReconnecting": "Live-Aktualisierung unterbrochen — Verbindung wird wiederhergestellt.",
         "requirements": {
           "consent": "Einwilligung",
           "profile": "Persönliche Angaben",

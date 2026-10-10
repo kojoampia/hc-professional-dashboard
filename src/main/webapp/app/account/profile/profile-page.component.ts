@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -60,12 +60,15 @@ const TABS: { id: ProfileTab; labelKey: string }[] = [
   templateUrl: './profile-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class ProfilePageComponent implements OnInit {
+export default class ProfilePageComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   readonly progressService = inject(OnboardingProgressService);
 
   readonly tabs = TABS;
+
+  /** Teardown for the live progress stream, held so {@link ngOnDestroy} can close it. */
+  private stopWatching?: () => void;
 
   private readonly queryTab = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
   private readonly fallback = signal<ProfileTab>('account');
@@ -77,6 +80,21 @@ export default class ProfilePageComponent implements OnInit {
 
   ngOnInit(): void {
     this.progressService.load();
+    // The live push, for as long as this page is open (backlog.md row 230, unit B). The load above
+    // stays the authoritative read — SSE delivers changes after connecting, so an initial value is
+    // needed regardless, and a broker outage costs the refresh rather than the meter.
+    this.stopWatching = this.progressService.watch();
+  }
+
+  /**
+   * Closes the stream when the page is left.
+   *
+   * <p>⚠ Not optional housekeeping: the subscription holds an open `fetch` reader, so a navigation
+   * without this leaks one socket and one reconnect loop per visit, and the server would keep an
+   * emitter per leak to heartbeat at.
+   */
+  ngOnDestroy(): void {
+    this.stopWatching?.();
   }
 
   select(tab: ProfileTab): void {

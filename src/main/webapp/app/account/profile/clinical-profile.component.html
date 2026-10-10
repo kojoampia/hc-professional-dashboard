@@ -110,6 +110,9 @@
               formControlName="digitalAddress"
               data-cy="clinicalDigitalAddress"
             />
+            @if (form.get('digitalAddress')!.invalid && form.get('digitalAddress')!.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
           </div>
 
           <div>
@@ -129,6 +132,9 @@
           <div>
             <label class="hpd-label" for="cp-town" jhiTranslate="healthConnect.onboarding.fields.town">Town</label>
             <input class="hpd-focusable hpd-input" type="text" id="cp-town" formControlName="town" data-cy="clinicalTown" />
+            @if (form.get('town')!.invalid && form.get('town')!.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
           </div>
 
           <div>
@@ -142,6 +148,9 @@
           <div>
             <label class="hpd-label" for="cp-district" jhiTranslate="healthConnect.onboarding.fields.district">District</label>
             <input class="hpd-focusable hpd-input" type="text" id="cp-district" formControlName="district" data-cy="clinicalDistrict" />
+            @if (form.get('district')!.invalid && form.get('district')!.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
           </div>
 
           <div>
@@ -168,14 +177,8 @@
 
           <div>
             <label class="hpd-label" for="cp-contactName" jhiTranslate="healthConnect.onboarding.fields.contactName">Name</label>
-            <input
-              class="hpd-focusable hpd-input"
-              type="text"
-              id="cp-contactName"
-              formControlName="contactName"
-              data-cy="clinicalContactName"
-            />
-            @if (form.get('contactName')!.invalid && form.get('contactName')!.touched) {
+            <input class="hpd-focusable hpd-input" type="text" id="cp-contactName" formControlName="name" data-cy="clinicalContactName" />
+            @if (form.get('name')!.invalid && form.get('name')!.touched) {
               <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
             }
           </div>
@@ -188,28 +191,44 @@
               class="hpd-focusable hpd-input"
               type="text"
               id="cp-contactRelationship"
-              formControlName="contactRelationship"
+              formControlName="relationship"
               data-cy="clinicalContactRelationship"
             />
-            @if (form.get('contactRelationship')!.invalid && form.get('contactRelationship')!.touched) {
+            @if (form.get('relationship')!.invalid && form.get('relationship')!.touched) {
               <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
             }
           </div>
 
           <div>
             <label class="hpd-label" for="cp-contactPhone" jhiTranslate="healthConnect.onboarding.fields.contactPhone">Phone</label>
-            <input
-              class="hpd-focusable hpd-input"
-              type="tel"
-              id="cp-contactPhone"
-              formControlName="contactPhone"
-              data-cy="clinicalContactPhone"
-            />
-            @if (form.get('contactPhone')!.invalid && form.get('contactPhone')!.touched) {
+            <input class="hpd-focusable hpd-input" type="tel" id="cp-contactPhone" formControlName="phone" data-cy="clinicalContactPhone" />
+            @if (form.get('phone')!.invalid && form.get('phone')!.touched) {
               <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
             }
           </div>
         </fieldset>
+
+        <!--
+          row 230 unit B: which requirements this form's own inputs still leave outstanding, live, so
+          the applicant learns it before pressing Save rather than from a refusal afterwards. The
+          server's meter above stays authoritative for what IS saved; this says what would be refused.
+        -->
+        @if (showGaps()) {
+          <div class="rounded-hpd-sm border border-hpd-gold-bright/40 bg-hpd-gold-bright/10 px-4 py-3" role="status" data-cy="clinicalGaps">
+            <p class="text-sm font-bold text-hpd-primary-dark" jhiTranslate="healthConnect.profile.completion.gaps.title">
+              Still needed before this profile is complete
+            </p>
+            <ul class="mt-2 flex flex-wrap gap-2">
+              @for (requirement of outstandingRequirements(); track requirement) {
+                <li
+                  class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-hpd-primary-dark shadow-hpd-sm"
+                  [attr.data-cy]="'gap-' + requirement"
+                  [jhiTranslate]="'healthConnect.profile.completion.requirements.' + requirement"
+                ></li>
+              }
+            </ul>
+          </div>
+        }
 
         <button
           class="hpd-focusable hpd-btn hpd-btn-primary justify-self-start"
