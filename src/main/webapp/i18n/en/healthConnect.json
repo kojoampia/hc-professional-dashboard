@@ -561,14 +561,15 @@
         "complete": "Everything is in. An administrator reviews your credentials next.",
         "incomplete": "Your profile becomes active once these are complete and an administrator has vetted them.",
         "requirements": {
-          "consent": "Consent and requested role",
+          "consent": "Consent",
           "profile": "Personal details",
           "address": "Address",
           "nextOfKin": "Emergency contact",
           "certificate": "Qualification certificate",
           "license": "Practising licence",
           "identity": "Government identity card",
-          "photo": "Passport photo"
+          "photo": "Passport photo",
+          "authority": "Requested clinical role"
         }
       },
       "documents": {

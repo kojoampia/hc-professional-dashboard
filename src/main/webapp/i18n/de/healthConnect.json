@@ -561,14 +561,15 @@
         "complete": "Alles vorhanden. Als Nächstes prüft eine Administratorin oder ein Administrator Ihre Nachweise.",
         "incomplete": "Ihr Profil wird aktiv, sobald dies vollständig ist und von der Administration geprüft wurde.",
         "requirements": {
-          "consent": "Einwilligung und gewünschte Rolle",
+          "consent": "Einwilligung",
           "profile": "Persönliche Angaben",
           "address": "Adresse",
           "nextOfKin": "Notfallkontakt",
           "certificate": "Qualifikationsnachweis",
           "license": "Berufszulassung",
           "identity": "Amtlicher Ausweis",
-          "photo": "Passfoto"
+          "photo": "Passfoto",
+          "authority": "Beantragte klinische Rolle"
         }
       },
       "documents": {

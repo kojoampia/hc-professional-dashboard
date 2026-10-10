@@ -561,14 +561,15 @@
         "complete": "Está todo. A continuación, un administrador revisará tus credenciales.",
         "incomplete": "Tu perfil se activará cuando esto esté completo y un administrador lo haya verificado.",
         "requirements": {
-          "consent": "Consentimiento y rol solicitado",
+          "consent": "Consentimiento",
           "profile": "Datos personales",
           "address": "Dirección",
           "nextOfKin": "Contacto de emergencia",
           "certificate": "Certificado de titulación",
           "license": "Licencia de ejercicio",
           "identity": "Documento de identidad",
-          "photo": "Foto tipo pasaporte"
+          "photo": "Foto tipo pasaporte",
+          "authority": "Rol clínico solicitado"
         }
       },
       "documents": {
