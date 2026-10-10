@@ -561,14 +561,15 @@
         "complete": "Tout y est. Un administrateur va maintenant vérifier vos justificatifs.",
         "incomplete": "Votre profil sera activé une fois ces éléments complétés et vérifiés par un administrateur.",
         "requirements": {
-          "consent": "Consentement et rôle demandé",
+          "consent": "Consentement",
           "profile": "Informations personnelles",
           "address": "Adresse",
           "nextOfKin": "Contact d'urgence",
           "certificate": "Diplôme",
           "license": "Autorisation d'exercice",
           "identity": "Pièce d'identité",
-          "photo": "Photo d'identité"
+          "photo": "Photo d'identité",
+          "authority": "Rôle clinique demandé"
         }
       },
       "documents": {
