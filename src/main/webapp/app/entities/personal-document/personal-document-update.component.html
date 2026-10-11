@@ -1,0 +1,192 @@
+<div class="mx-auto max-w-4xl">
+  <h2 class="text-lg font-extrabold tracking-tight text-hpd-primary-dark" jhiTranslate="healthConnect.onboarding.wizard.documents.title">
+    Your documents
+  </h2>
+  <p class="mb-6 mt-1 text-sm text-hpd-muted" jhiTranslate="healthConnect.onboarding.wizard.documents.subtitle">
+    Four documents are required before your application can be submitted.
+  </p>
+
+  <!--
+    THE FOUR MANDATORY DOCUMENTS, rendered from the server's own requirement answers rather than
+    counted here. requireMandatoryDocuments runs at SUBMIT, not per upload, so a client-side tally
+    would read complete behind a Submit that 400s — which is exactly the failure backlog.md row 230
+    exists to remove. profile.md never states this set; profile-addendum.md § 3 T2 does.
+  -->
+  @if (mandatory().length) {
+    <ul class="mb-6 grid gap-2 sm:grid-cols-2 xl:grid-cols-4" data-cy="documentStepMandatory">
+      @for (requirement of mandatory(); track requirement.key) {
+        <li class="flex items-center gap-2 text-sm" [attr.data-cy]="'documentStepMandatory-' + requirement.key">
+          <span
+            class="grid h-5 w-5 flex-none place-items-center rounded-full text-[11px] font-extrabold"
+            [class]="requirement.done ? 'bg-hpd-success-tint text-hpd-success' : 'bg-hpd-danger-tint text-hpd-danger'"
+            aria-hidden="true"
+            >{{ requirement.done ? '✓' : '!' }}</span
+          >
+          <span [jhiTranslate]="'healthConnect.onboarding.mandatory.' + requirement.key"></span>
+          <!--
+            The state in words beside the glyph, because the glyph is aria-hidden and the colour is
+            not readable by a screen reader — backlog.md row 235, filed against both clients for
+            exactly this shape. A new surface should not ship the defect the old ones are fixing.
+          -->
+          <span
+            class="sr-only"
+            [jhiTranslate]="
+              requirement.done
+                ? 'healthConnect.onboarding.wizard.documents.satisfied'
+                : 'healthConnect.onboarding.wizard.documents.notSatisfied'
+            "
+          ></span>
+        </li>
+      }
+    </ul>
+  }
+
+  @if (mandatoryOutstanding() > 0) {
+    <p class="mb-6 text-sm text-hpd-muted" role="status" aria-live="polite" data-cy="documentStepOutstanding">
+      {{ 'healthConnect.onboarding.wizard.documents.outstanding' | translate: { count: mandatoryOutstanding() } }}
+    </p>
+  }
+
+  <form
+    class="mb-6 grid gap-4 rounded-hpd-sm border border-hpd-border bg-hpd-surface p-4 sm:grid-cols-2 xl:grid-cols-3"
+    [formGroup]="uploadForm"
+  >
+    <div>
+      <label class="hpd-label" for="pd-type" jhiTranslate="healthConnect.onboarding.fields.documentType">Document type</label>
+      <select class="hpd-focusable hpd-input" id="pd-type" formControlName="type" data-cy="documentStepType">
+        @for (type of uploadableTypes; track type) {
+          <option [value]="type">{{ 'healthConnect.onboarding.documentTypes.' + type | translate }}</option>
+        }
+      </select>
+    </div>
+
+    @if (expiryRequired) {
+      <div>
+        <label class="hpd-label" for="pd-expiry" jhiTranslate="healthConnect.onboarding.fields.expiryDate">Expiry date</label>
+        <!--
+          Bounded at today: a licence that expired before now is never a renewal, and the server
+          refuses to retire a current one with it. The picker is the cheapest place to catch 2026 for
+          2036 in a bare date field.
+        -->
+        <input
+          class="hpd-focusable hpd-input"
+          type="date"
+          id="pd-expiry"
+          [min]="today"
+          formControlName="expiryDate"
+          data-cy="documentStepExpiry"
+        />
+        @if (!uploadForm.controls.expiryDate.value && uploadForm.controls.expiryDate.touched) {
+          <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+        }
+      </div>
+    }
+
+    @if (otherLabelRequired) {
+      <div>
+        <label class="hpd-label" for="pd-label" jhiTranslate="healthConnect.onboarding.fields.otherLabel">Label</label>
+        <input class="hpd-focusable hpd-input" type="text" id="pd-label" formControlName="otherLabel" data-cy="documentStepLabel" />
+        @if (!uploadForm.controls.otherLabel.value && uploadForm.controls.otherLabel.touched) {
+          <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+        }
+      </div>
+    }
+
+    @if (replaceable().length) {
+      <div>
+        <label class="hpd-label" for="pd-supersedes" jhiTranslate="healthConnect.onboarding.fields.replaces">
+          Replaces an existing document
+        </label>
+        <select class="hpd-focusable hpd-input" id="pd-supersedes" formControlName="supersedesDocumentId" data-cy="documentStepReplaces">
+          <option value="">{{ 'healthConnect.onboarding.replacesNothing' | translate }}</option>
+          @for (candidate of replaceable(); track candidate.id) {
+            <option [value]="candidate.id">
+              {{ 'healthConnect.onboarding.documentTypes.' + candidate.type | translate
+              }}{{ candidate.otherLabel ? ' · ' + candidate.otherLabel : '' }}{{ candidate.expiryDate ? ' · ' + candidate.expiryDate : '' }}
+            </option>
+          }
+        </select>
+      </div>
+    }
+
+    <div class="sm:col-span-2 xl:col-span-3">
+      <hpd-file-upload-trigger
+        labelKey="healthConnect.profile.documents.choose"
+        [acceptedTypes]="acceptedTypes"
+        [maximumBytes]="maximumBytes"
+        [disabled]="uploading()"
+        (filesSelected)="upload($event)"
+        (invalidFiles)="rejectedUpload()"
+      />
+      <p class="mt-2 text-xs text-hpd-muted" jhiTranslate="healthConnect.profile.documents.accepted">PDF, PNG or JPEG, up to 5 MB.</p>
+    </div>
+  </form>
+
+  @switch (loadState()) {
+    @case ('loading') {
+      <p class="text-sm text-hpd-muted" jhiTranslate="healthConnect.profile.documents.loading">Loading your documents…</p>
+    }
+    @case ('error') {
+      <div class="rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger" role="alert">
+        <span jhiTranslate="healthConnect.profile.documents.loadError">Unable to load your documents.</span>
+        <button class="hpd-focusable ml-2 font-bold underline" type="button" (click)="load()" jhiTranslate="healthConnect.actions.retry">
+          Retry
+        </button>
+      </div>
+    }
+    @case ('ready') {
+      @if (documents().length === 0) {
+        <p class="text-sm text-hpd-muted" jhiTranslate="healthConnect.profile.documents.empty">You have not uploaded anything yet.</p>
+      } @else {
+        <ul class="grid gap-2" data-cy="documentStepList">
+          @for (document of documents(); track document.id) {
+            <li
+              class="flex flex-wrap items-center justify-between gap-2 rounded-hpd-sm border border-hpd-border px-4 py-3"
+              [class.opacity-60]="archived(document)"
+            >
+              <span class="text-sm font-semibold text-hpd-primary-dark">
+                <span [jhiTranslate]="'healthConnect.onboarding.documentTypes.' + document.type"></span>
+                @if (document.otherLabel) {
+                  <span class="font-normal text-hpd-muted"> · {{ document.otherLabel }}</span>
+                }
+              </span>
+              <span class="flex items-center gap-3 text-xs">
+                @if (document.expiryDate) {
+                  <span class="text-hpd-muted">{{ document.expiryDate }}</span>
+                }
+                @if (archived(document)) {
+                  <span
+                    class="rounded-full bg-hpd-border/50 px-2.5 py-1 font-bold text-hpd-muted"
+                    jhiTranslate="healthConnect.onboarding.superseded"
+                    data-cy="documentStepSuperseded"
+                  ></span>
+                }
+                <span
+                  class="rounded-full px-2.5 py-1 font-bold"
+                  [class]="
+                    document.verificationStatus === 'VERIFIED'
+                      ? 'bg-hpd-success-tint text-hpd-success'
+                      : document.verificationStatus === 'REJECTED'
+                        ? 'bg-hpd-danger-tint text-hpd-danger'
+                        : 'bg-hpd-border/50 text-hpd-muted'
+                  "
+                  [jhiTranslate]="'healthConnect.onboarding.verification.' + document.verificationStatus"
+                ></span>
+              </span>
+            </li>
+          }
+        </ul>
+      }
+    }
+  }
+
+  <!--
+    OUTSIDE the @switch, unlike the other three panes' footers, and that is deliberate rather than an
+    asymmetry left behind: the Back and Next buttons are how a reader leaves this pane, and the list
+    read above can be in `loading` or `error` while the sequence itself is perfectly answerable. A
+    footer inside the switch would strand someone on a failed document read with no way forward or
+    back but the overlay's close button. Save is the one button the state affects, and it re-reads the
+    list, which is exactly what a reader wants after a failure.
+  -->
+  <hpd-wizard-footer pane="documents" [saving]="uploading()" (save)="save()" />
+</div>

@@ -157,15 +157,22 @@
         data-cy="accountMenu"
         (click)="requestClose()"
       >
-        @if (!account.imageUrl) {
-          <span
-            class="grid h-[34px] w-[34px] flex-none place-items-center rounded-full bg-hpd-gold-bright text-xs font-extrabold text-hpd-primary-deep"
-            aria-hidden="true"
-            >{{ userInitials }}</span
-          >
-        } @else {
-          <img [src]="account.imageUrl" class="profile-image h-[34px] w-[34px] flex-none rounded-full object-cover" alt="" />
-        }
+        <!--
+          THE AVATAR, through hpd-account-avatar since T8 and NOT a bare img src.
+
+          It was `<img [src]="account.imageUrl">` with an initials fallback, and that was correct for
+          as long as imageUrl was written by nothing anywhere in the estate — backlog.md row 232
+          measured exactly that: read in these two places, written nowhere. Row 232 then built the
+          avatar upload, and imageUrl now holds the path to
+          GET /api/personal-document/{id}/content, which is behind assertOwnerOrReviewer and needs
+          the Bearer header. A plain src gets a 401, so the first clinician to upload a photograph
+          would have seen a broken image on every page of the portal.
+
+          The component fetches it as an authenticated blob, revokes the object URL, and falls back
+          to these same initials on any failure — which is also the honest rendering of the window
+          between the avatar upload and the PUT /api/account that records its path.
+        -->
+        <hpd-account-avatar [imageUrl]="account.imageUrl" [initials]="userInitials" />
         <span class="min-w-0" [ngClass]="labelClass">
           <span class="block truncate text-[13.5px] font-bold text-white">{{ userDisplayName }}</span>
           <span class="block truncate text-[11px] text-hpd-on-navy-soft">

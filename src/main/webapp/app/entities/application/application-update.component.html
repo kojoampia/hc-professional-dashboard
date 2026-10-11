@@ -1,0 +1,112 @@
+<div class="mx-auto max-w-3xl">
+  <h2 class="text-lg font-extrabold tracking-tight text-hpd-primary-dark" jhiTranslate="healthConnect.onboarding.wizard.application.title">
+    Your application
+  </h2>
+  <p class="mb-6 mt-1 text-sm text-hpd-muted" jhiTranslate="healthConnect.onboarding.consentIntro">
+    Apply for verified professional access.
+  </p>
+
+  @switch (loadState()) {
+    @case ('loading') {
+      <p class="text-sm text-hpd-muted" jhiTranslate="healthConnect.profile.application.loading">Loading your application…</p>
+    }
+    @case ('error') {
+      <div class="rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger" role="alert">
+        <span jhiTranslate="healthConnect.profile.application.loadError">Unable to load your application.</span>
+        <button class="hpd-focusable ml-2 font-bold underline" type="button" (click)="load()" jhiTranslate="healthConnect.actions.retry">
+          Retry
+        </button>
+      </div>
+    }
+    @default {
+      @if (correctionNotes(); as notes) {
+        <!--
+          The one lifecycle message this pane must carry: a reviewer sent the application back and
+          said why. role="alert" and not "status" — unlike the gap lists elsewhere in the wizard,
+          this IS a refusal of something the applicant did, and it is the only thing on screen that
+          tells them what to change.
+        -->
+        <div
+          class="mb-6 rounded-hpd-sm border border-hpd-gold/35 bg-hpd-cream px-4 py-3 text-sm"
+          role="alert"
+          data-cy="applicationStepCorrection"
+        >
+          <p class="m-0 font-bold text-hpd-primary-dark" jhiTranslate="healthConnect.onboarding.correctionRequired">
+            Your application was returned for correction
+          </p>
+          <p class="m-0 mt-1 text-hpd-primary-dark">{{ notes }}</p>
+        </div>
+      }
+
+      @if (application(); as current) {
+        <p class="mb-6 text-sm" data-cy="applicationStepStatus">
+          <span class="text-hpd-muted" jhiTranslate="healthConnect.profile.application.status">Status</span>
+          <span class="ml-2 font-bold text-hpd-primary-dark" [jhiTranslate]="'healthConnect.onboarding.statuses.' + current.status"></span>
+        </p>
+      }
+
+      <form class="grid gap-6" name="applicationUpdateForm" role="form" (ngSubmit)="save()" [formGroup]="form" novalidate>
+        <div>
+          <label class="hpd-label" for="au-authority" jhiTranslate="healthConnect.onboarding.requestedRole">Requested clinical role</label>
+          <!--
+            The eight disciplines, derived from Authority through CAREER_AUTHORITIES — never
+            ROLE_ADMIN, never ROLE_USER, which are the two the server refuses with a 400. No silent
+            default: the careers contract's own reason is that a visiting physician who does not
+            notice a pre-selected "nurse" is filed as one.
+          -->
+          <select class="hpd-focusable hpd-input" id="au-authority" formControlName="authority" data-cy="applicationStepAuthority">
+            <option value="">{{ 'healthConnect.onboarding.chooseRole' | translate }}</option>
+            @for (role of roles; track role) {
+              <option [value]="role">{{ 'healthConnect.roles.' + role.replace('ROLE_', '').toLowerCase() | translate }}</option>
+            }
+          </select>
+          @if (form.controls.authority.invalid && form.controls.authority.touched) {
+            <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+          }
+          @if (prefilledFromCareers()) {
+            <small class="mt-1 block text-xs text-hpd-muted" data-cy="applicationStepFromCareers">
+              <span jhiTranslate="healthConnect.onboarding.wizard.application.fromCareers">
+                Pre-selected from the role you applied for. Change it if it is wrong.
+              </span>
+            </small>
+          }
+        </div>
+
+        <div class="rounded-hpd-sm border border-hpd-border bg-hpd-surface p-4">
+          <label class="flex items-start gap-3 text-sm">
+            <input class="hpd-focusable mt-0.5" type="checkbox" formControlName="agreed" data-cy="applicationStepConsent" />
+            <span jhiTranslate="healthConnect.onboarding.consentText">
+              I consent to the processing of my identity, qualification, and registration information for credentialing.
+            </span>
+          </label>
+          @if (form.controls.agreed.invalid && form.controls.agreed.touched) {
+            <small class="mt-2 block text-xs text-hpd-danger">
+              <span jhiTranslate="healthConnect.onboarding.wizard.application.consentRequired">
+                Consent is required before an application can be made.
+              </span>
+            </small>
+          }
+          @if (application()?.agreedDate; as agreedDate) {
+            <p class="m-0 mt-2 text-xs text-hpd-muted" data-cy="applicationStepAgreedDate">
+              {{ 'healthConnect.onboarding.wizard.application.agreedOn' | translate: { date: agreedDate } }}
+            </p>
+          }
+        </div>
+
+        @if (submitBlockedReason(); as reason) {
+          <!--
+            Why Submit is not available, in words. role="status": an unfinished application is the
+            ordinary state of this pane, not a refusal. Without this the applicant reads a greyed
+            button and no reason, which is the shape that reads as a broken page rather than as
+            "you have not finished".
+          -->
+          <p class="m-0 text-sm text-hpd-muted" role="status" aria-live="polite" data-cy="applicationStepSubmitBlocked">
+            <span [jhiTranslate]="'healthConnect.onboarding.wizard.application.blocked.' + reason"></span>
+          </p>
+        }
+
+        <hpd-wizard-footer pane="application" [saving]="saving()" [submitDisabled]="!canSubmit()" (save)="save()" (submitted)="submit()" />
+      </form>
+    }
+  }
+</div>

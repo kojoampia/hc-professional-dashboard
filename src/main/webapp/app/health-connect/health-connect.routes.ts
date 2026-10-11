@@ -3,6 +3,8 @@ import { Routes } from '@angular/router';
 import { Authority } from 'app/config/authority.constants';
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 
+import { WIZARD_PANES, wizardPaneRoute } from 'app/onboarding/wizard.service';
+
 import { healthConnectRoleGuard } from './authority-role.guard';
 
 const protectedFeatureRoute = {
@@ -40,12 +42,80 @@ const reviewDetailPage = (): Promise<typeof import('./pages/review-detail-page.c
 const compliancePage = (): Promise<typeof import('./pages/compliance-page.component')> => import('./pages/compliance-page.component');
 const messagesPage = (): Promise<typeof import('./pages/messages-page.component')> => import('./pages/messages-page.component');
 
+/** T8's four onboarding panes, each its own routed overlay over the dashboard. */
+const userUpdate = (): Promise<typeof import('app/account/user/user-update.component')> => import('app/account/user/user-update.component');
+const profileUpdate = (): Promise<typeof import('app/entities/profile/profile-update.component')> =>
+  import('app/entities/profile/profile-update.component');
+const personalDocumentUpdate = (): Promise<typeof import('app/entities/personal-document/personal-document-update.component')> =>
+  import('app/entities/personal-document/personal-document-update.component');
+const applicationUpdate = (): Promise<typeof import('app/entities/application/application-update.component')> =>
+  import('app/entities/application/application-update.component');
+
+const wizardPane = {
+  account: userUpdate,
+  profile: profileUpdate,
+  documents: personalDocumentUpdate,
+  application: applicationUpdate,
+};
+
+/**
+ * The onboarding wizard's four panes — `profile.md` § "Onboarding Wizard", T8.
+ *
+ * <p>**Children of `dashboard`, because `profile.md:171-173` opens step 1's dialog "over the
+ * dashboard"** and because the overlay idiom below makes the overlay a child of the page it overlays:
+ * the page stays mounted and renders underneath, which is what a modal is supposed to mean. The four
+ * are **siblings**, each with its own overlay host, so each carries its own title and each is a URL
+ * the browser's back button steps between — which is `profile.md:166`'s *"it should be possible to
+ * navigate back to a previous step and make changes"*, answered by the router rather than by state.
+ *
+ * <p>⚠ **Built from {@link WIZARD_PANES} rather than written out four times**, so the sequence has
+ * one declaration: the service's order, the footer's step counter, the sidebar's destination and
+ * these routes all read it. A fifth pane is one entry in that array plus a component.
+ *
+ * <p>⛔ **Gated as `protectedFeatureRoute`, which admits `Authority.USER`** — and that is the whole
+ * reason onboarding can live inside the portal. An applicant holds `ROLE_USER` and nothing else until
+ * an administrator assigns a discipline. These four must not be narrowed to clinical roles, or the
+ * people the wizard exists for are the only ones who cannot reach it.
+ *
+ * <p>⛔ **This said "every other clinical surface refuses them", and AT THE ROUTE LAYER THAT IS
+ * FALSE** — measured in review: a `ROLE_USER`-only account resolves `/dashboard`, `/patients`,
+ * `/cases` and `/duty-roster` too, because `protectedFeatureRoute` lists `Authority.USER` for all of
+ * them. What actually refuses an applicant is **elsewhere**: `api/`'s chain answers **403** on the
+ * reads those pages make, and the sidebar's `clinicalOnly` hides the group so they are not offered.
+ * ⚠ The sentence is corrected rather than deleted because the conclusion it was supporting still
+ * holds — these panes need `USER` — but **nobody may delete a server-side check or the sidebar's
+ * hiding on the strength of a route table**. Route authorities here decide what *renders*, not what
+ * is *permitted*.
+ *
+ * <p>⚠ **Not the top-level `/onboarding`.** That path has no component, redirects to
+ * `/account/profile?tab=application`, is the activation email's landing spot and is **T6's to
+ * re-point**. Nothing here collides with it.
+ */
+const wizardRoutes: Routes = WIZARD_PANES.map(pane => ({
+  path: wizardPaneRoute(pane),
+  loadComponent: overlayHost,
+  data: {
+    titleKey: `healthConnect.onboarding.wizard.${pane}.title`,
+    // Closing a pane returns to the dashboard it overlays rather than to the previous pane: the
+    // close button means "I am done here", and Back is what means "the previous step".
+    closeUrl: '/dashboard',
+  },
+  children: [
+    {
+      path: '',
+      loadComponent: wizardPane[pane],
+      data: { titleKey: `healthConnect.onboarding.wizard.${pane}.title` },
+    },
+  ],
+}));
+
 const routes: Routes = [
   {
     path: 'dashboard',
     ...protectedFeatureRoute,
     loadComponent: dashboardPage,
     data: { ...protectedFeatureRoute.data, titleKey: 'healthConnect.navigation.dashboard' },
+    children: wizardRoutes,
   },
   /**
    * The two list surfaces and their record overlays.

@@ -6,6 +6,8 @@
  * see professional-web.md (this nav model is the single source of truth for the shell).
  */
 
+import { wizardPanePath } from 'app/onboarding/wizard.service';
+
 export interface ShellNavItem {
   /** Absolute router path. */
   path: string;
@@ -129,9 +131,31 @@ export const SHELL_NAV_GROUPS: ShellNavGroup[] = [
     requiresAuth: true,
     items: [
       {
-        // Was "Onboarding" pointing at the standalone wizard. The wizard's steps are tabs on the
-        // profile page now, so one destination covers both what onboarding asked for and what a
-        // clinician edits afterwards.
+        // ONBOARDING, and it is back. profile.md:275-277: "Onboarding is displayed in a single
+        // dialog wizard pane, not in tabs." This item was removed when the wizard's steps became
+        // tabs on the profile page, and the comment on the item below recorded that one destination
+        // therefore covered both. The specification reverses that, so there are two destinations
+        // again — see sidebar.component.spec.ts, whose assertion was flipped in the same change.
+        //
+        // The pane is a routed overlay over the dashboard (T8), so this is a real URL rather than a
+        // modal trigger: deep-linkable, and the browser's back button steps between panes. Read from
+        // wizardPanePath so the address has one spelling here, in the route table and in the spec.
+        //
+        // Offered to every authenticated account rather than to applicants only, because the panes
+        // are the editing forms as well as the sequence: back-navigation stays possible after
+        // submission (WizardService's post-submit rule), so an approved clinician who moved house
+        // comes here too.
+        path: wizardPanePath('account'),
+        labelKey: 'healthConnect.navigation.onboarding',
+        icon: 'assignment_ind',
+        crumbKey: 'global.menu.account.main',
+        requiresAuth: true,
+        dataCy: 'onboardingMenu',
+      },
+      {
+        // The profile page: what a clinician edits today, and from T9 the My Profile read view. It
+        // carries the wizard's steps as tabs until T6 retires it; the item above is the destination
+        // onboarding itself now has.
         path: '/account/profile',
         labelKey: 'healthConnect.navigation.profile',
         icon: 'badge',

@@ -13,7 +13,8 @@
       "earnings": "Vergütung",
       "collapseSidebar": "Menü einklappen",
       "expandSidebar": "Menü ausklappen",
-      "profile": "Profil"
+      "profile": "Profil",
+      "onboarding": "Aufnahme"
     },
     "roles": {
       "admin": "Administrator",
@@ -434,6 +435,80 @@
         "started": "Antrag gestartet",
         "documentUploaded": "Dokument hochgeladen",
         "submitted": "Zur Prüfung eingereicht"
+      },
+      "wizard": {
+        "stepCounter": "Schritt {{step}} von {{total}}",
+        "nextLocked": "Schließen Sie diesen Schritt ab, bevor Sie zum nächsten weitergehen.",
+        "loading": "Wird geladen…",
+        "avatarUnreadable": "Ihr Browser konnte dieses Bild nicht lesen. Versuchen Sie eine andere Datei.",
+        "avatarRejected": "Wählen Sie ein JPEG- oder PNG-Bild mit höchstens 10 MB.",
+        "toast": {
+          "accountSaved": "Ihre Kontodaten wurden gespeichert",
+          "avatarSaved": "Ihr Lichtbild wurde gespeichert",
+          "profileSaved": "Ihr Profil wurde gespeichert"
+        },
+        "account": {
+          "title": "Vervollständigen Sie Ihr Konto",
+          "subtitle": "Ihr Name, die Sprache, in der dieses Portal mit Ihnen spricht, und ein Lichtbild von Ihnen.",
+          "identity": "Ihr Name",
+          "photo": "Profilbild",
+          "choosePhoto": "Lichtbild auswählen",
+          "photoHint": "Ein Porträt als JPEG oder PNG. Es wird in Ihrem Browser verkleinert, bevor es gesendet wird.",
+          "photoUploading": "Ihr Lichtbild wird gesendet…",
+          "photoRequired": "Ein Lichtbild ist erforderlich, bevor Sie weitergehen können.",
+          "complete": "Dieser Schritt ist abgeschlossen.",
+          "loadError": "Ihr Konto konnte nicht geladen werden. Laden Sie die Seite neu, um es erneut zu versuchen."
+        },
+        "profile": {
+          "title": "Ihr Akkreditierungsprofil",
+          "subtitle": "Alle Felder sind erforderlich. Füllen Sie einen Abschnitt nach dem anderen aus; das Formular wird gemeinsam gespeichert.",
+          "loadError": "Ihr Profil konnte nicht geladen werden.",
+          "gapsHeadline": "Es fehlen noch {{count}} Angaben, damit dieser Schritt gespeichert werden kann.",
+          "gapsInSection": "({{count}} fehlen)",
+          "sections": {
+            "identity": "Aus Ihrem Konto",
+            "personal": "Persönliche Angaben",
+            "address": "Adresse",
+            "contacts": "Angehörige"
+          },
+          "identityHint": "Diese Angaben stammen aus Ihrem Konto und werden im ersten Schritt bearbeitet.",
+          "accountId": "Kontoreferenz",
+          "optional": "Optional",
+          "middleNames": "Weitere Vornamen",
+          "phoneNumber": "Weiteres Telefon",
+          "sexes": {
+            "FEMALE": "Weiblich",
+            "MALE": "Männlich"
+          },
+          "contactsHint": "Mindestens {{count}} Notfallkontakte sind erforderlich, jeweils mit vollständiger Adresse.",
+          "contactNumber": "Kontakt {{number}}",
+          "contactAddress": "Dessen Adresse",
+          "addContact": "Weiteren Kontakt hinzufügen",
+          "removeContact": "Entfernen",
+          "contactFields": {
+            "name": "Name des Kontakts",
+            "relationship": "Verhältnis",
+            "email": "E-Mail des Kontakts",
+            "phone": "Telefon des Kontakts"
+          }
+        },
+        "documents": {
+          "title": "Ihre Dokumente",
+          "subtitle": "Vier Dokumente sind erforderlich, bevor Ihre Bewerbung zur Prüfung eingereicht werden kann.",
+          "outstanding": "Es fehlen noch {{count}} der erforderlichen Dokumente.",
+          "satisfied": "Eingereicht",
+          "notSatisfied": "Noch offen"
+        },
+        "application": {
+          "title": "Ihre Bewerbung",
+          "fromCareers": "Vorausgewählt nach der Stelle, auf die Sie sich beworben haben. Ändern Sie sie, wenn sie falsch ist.",
+          "consentRequired": "Ihre Zustimmung ist erforderlich, bevor eine Bewerbung gestellt werden kann.",
+          "agreedOn": "Sie haben am {{date}} zugestimmt.",
+          "blocked": {
+            "incomplete": "Das Einreichen wird möglich, sobald alle oben genannten Anforderungen erfüllt sind.",
+            "alreadySubmitted": "Ihre Bewerbung wurde eingereicht. Sie können Ihre Angaben hier weiterhin korrigieren."
+          }
+        }
       }
     },
     "review": {
@@ -599,6 +674,9 @@
         "loadError": "Ihr Antrag kann nicht geladen werden.",
         "status": "Status",
         "finishFirst": "Erfüllen Sie alle oben genannten Anforderungen, bevor Sie absenden."
+      },
+      "avatar": {
+        "alt": "Profilbild"
       }
     },
     "caseQueue": {

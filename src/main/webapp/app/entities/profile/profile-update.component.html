@@ -1,0 +1,393 @@
+<div class="mx-auto max-w-4xl">
+  <h2 class="text-lg font-extrabold tracking-tight text-hpd-primary-dark" jhiTranslate="healthConnect.onboarding.wizard.profile.title">
+    Your credentialing profile
+  </h2>
+  <p class="mb-6 mt-1 text-sm text-hpd-muted" jhiTranslate="healthConnect.onboarding.wizard.profile.subtitle">
+    Every field here is required. Fill in one section at a time — your progress is saved together.
+  </p>
+
+  @switch (loadState()) {
+    @case ('loading') {
+      <p class="text-sm text-hpd-muted" jhiTranslate="healthConnect.onboarding.wizard.loading">Loading…</p>
+    }
+    @case ('error') {
+      <div class="rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger" role="alert">
+        <span jhiTranslate="healthConnect.onboarding.wizard.profile.loadError">Your profile could not be loaded.</span>
+        <button class="hpd-focusable ml-2 font-bold underline" type="button" (click)="load()" jhiTranslate="healthConnect.actions.retry">
+          Retry
+        </button>
+      </div>
+    }
+    @default {
+      <!--
+        THE NAVIGABLE GAP SUMMARY, and it is the answer to the 36-input pane rather than decoration.
+        One row per section with a count and an anchor, so "nine things missing" reads as "three in
+        your address, six across your next of kin" with somewhere to click. A flat list of 36 field
+        names was the alternative and is the wall profile-addendum.md § 3 T8 warns about.
+
+        role="status", not "alert": an unfinished form is the ordinary state of this pane, not a
+        refusal of something the reader attempted. Same distinction backlog.md rows 204-208 settled.
+      -->
+      @if (showGaps()) {
+        <nav
+          class="mb-6 rounded-hpd-sm border border-hpd-gold/35 bg-hpd-cream px-4 py-3"
+          role="status"
+          aria-live="polite"
+          data-cy="profileStepGaps"
+        >
+          <p class="m-0 text-sm font-bold text-hpd-primary-dark">
+            {{ 'healthConnect.onboarding.wizard.profile.gapsHeadline' | translate: { count: outstandingTotal() } }}
+          </p>
+          <ul class="m-0 mt-2 flex flex-wrap gap-x-4 gap-y-1 p-0">
+            @for (row of outstandingSummary(); track row.section) {
+              <li class="list-none text-sm">
+                <a class="hpd-focusable font-semibold underline" [href]="'#profile-section-' + row.section">
+                  {{ 'healthConnect.onboarding.wizard.profile.sections.' + row.section | translate }}
+                </a>
+                <span class="text-hpd-muted">
+                  {{ 'healthConnect.onboarding.wizard.profile.gapsInSection' | translate: { count: row.count } }}
+                </span>
+              </li>
+            }
+          </ul>
+        </nav>
+      }
+
+      <form class="grid gap-8" name="profileUpdateForm" role="form" (ngSubmit)="save()" [formGroup]="form" novalidate>
+        <!-- SECTION 1 — prefilled from the account and read-only (profile.md:187-194). -->
+        <fieldset id="profile-section-identity" class="m-0 grid min-w-0 gap-4 border-0 p-0 sm:grid-cols-2">
+          <legend class="hpd-label mb-2 sm:col-span-2" jhiTranslate="healthConnect.onboarding.wizard.profile.sections.identity">
+            From your account
+          </legend>
+          <!--
+            readonly, and deliberately NOT disabled. A disabled input is removed from the tab order
+            and from the accessibility tree, so these four — which profile.md:187-194 says to SHOW —
+            would have been unreachable by keyboard and unreadable by a screen reader: a sighted
+            reader could see whose profile this is and a blind one could not. readonly keeps them
+            focusable and announced while still refusing an edit, and the server refuses accountId by
+            name regardless (@JsonProperty READ_ONLY, forced from the token).
+          -->
+          <p class="m-0 text-xs text-hpd-muted sm:col-span-2" jhiTranslate="healthConnect.onboarding.wizard.profile.identityHint">
+            These come from your account and are edited in step one.
+          </p>
+
+          <div>
+            <label class="hpd-label" for="pu-firstName" jhiTranslate="settings.form.firstname">First name</label>
+            <input
+              class="hpd-focusable hpd-input"
+              type="text"
+              id="pu-firstName"
+              [value]="account()?.firstName ?? ''"
+              readonly
+              data-cy="profileStepFirstName"
+            />
+          </div>
+
+          <div>
+            <label class="hpd-label" for="pu-lastName" jhiTranslate="settings.form.lastname">Last name</label>
+            <input
+              class="hpd-focusable hpd-input"
+              type="text"
+              id="pu-lastName"
+              [value]="account()?.lastName ?? ''"
+              readonly
+              data-cy="profileStepLastName"
+            />
+          </div>
+
+          <div>
+            <label class="hpd-label" for="pu-email" jhiTranslate="global.form.email.label">Email</label>
+            <input
+              class="hpd-focusable hpd-input"
+              type="email"
+              id="pu-email"
+              [value]="account()?.email ?? ''"
+              readonly
+              data-cy="profileStepEmail"
+            />
+          </div>
+
+          <div>
+            <label class="hpd-label" for="pu-accountId" jhiTranslate="healthConnect.onboarding.wizard.profile.accountId">Account</label>
+            <!--
+              Shown because profile.md:191 lists it among the prefilled fields, and NEVER sent: it is
+              @JsonProperty(READ_ONLY) on the server and forced from the token, so no body reaches
+              another account's row. buildPayload clears it explicitly rather than letting the spread
+              of the loaded profile carry it back.
+            -->
+            <input
+              class="hpd-focusable hpd-input"
+              type="text"
+              id="pu-accountId"
+              [value]="accountId()"
+              readonly
+              data-cy="profileStepAccountId"
+            />
+          </div>
+        </fieldset>
+
+        <!-- SECTION 2 — the seven typed Profile scalars, plus the optional title. -->
+        <fieldset id="profile-section-personal" class="m-0 grid min-w-0 gap-4 border-0 p-0 sm:grid-cols-2 xl:grid-cols-3">
+          <legend
+            class="hpd-label mb-2 sm:col-span-2 xl:col-span-3"
+            jhiTranslate="healthConnect.onboarding.wizard.profile.sections.personal"
+          >
+            Personal details
+          </legend>
+
+          <div>
+            <label class="hpd-label" for="pu-title" jhiTranslate="healthConnect.onboarding.fields.title">Title</label>
+            <input class="hpd-focusable hpd-input" type="text" id="pu-title" formControlName="title" data-cy="profileStepTitle" />
+            <small class="mt-1 block text-xs text-hpd-muted" jhiTranslate="healthConnect.onboarding.wizard.profile.optional"
+              >Optional</small
+            >
+          </div>
+
+          <div>
+            <label class="hpd-label" for="pu-middleNames" jhiTranslate="healthConnect.onboarding.wizard.profile.middleNames">
+              Middle names
+            </label>
+            <!--
+              THE FIRST INPUT THIS FIELD HAS EVER HAD in the estate. profile-requirements.ts records
+              it as a standing defect — required by ProfileCompleteness, typed nowhere, so it "can
+              only ever be non-empty for a profile written by something other than this screen". This
+              is that screen.
+            -->
+            <input
+              class="hpd-focusable hpd-input"
+              type="text"
+              id="pu-middleNames"
+              formControlName="middleNames"
+              data-cy="profileStepMiddleNames"
+            />
+            @if (form.controls.middleNames.invalid && form.controls.middleNames.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+
+          <div>
+            <label class="hpd-label" for="pu-birthDate" jhiTranslate="healthConnect.onboarding.fields.birthDate">Date of birth</label>
+            <input
+              class="hpd-focusable hpd-input"
+              type="date"
+              id="pu-birthDate"
+              formControlName="birthDate"
+              data-cy="profileStepBirthDate"
+            />
+            @if (form.controls.birthDate.invalid && form.controls.birthDate.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+
+          <div>
+            <label class="hpd-label" for="pu-sex" jhiTranslate="healthConnect.onboarding.fields.sex">Sex</label>
+            <select class="hpd-focusable hpd-input" id="pu-sex" formControlName="sex" data-cy="profileStepSex">
+              <option value=""></option>
+              @for (sex of sexes; track sex) {
+                <option [value]="sex" [jhiTranslate]="'healthConnect.onboarding.wizard.profile.sexes.' + sex"></option>
+              }
+            </select>
+            @if (form.controls.sex.invalid && form.controls.sex.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+
+          <div>
+            <label class="hpd-label" for="pu-mobilePhone" jhiTranslate="healthConnect.onboarding.fields.mobilePhone">Mobile phone</label>
+            <input
+              class="hpd-focusable hpd-input"
+              type="tel"
+              id="pu-mobilePhone"
+              formControlName="mobilePhone"
+              data-cy="profileStepMobilePhone"
+            />
+            @if (form.controls.mobilePhone.invalid && form.controls.mobilePhone.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+
+          <div>
+            <label class="hpd-label" for="pu-phoneNumber" jhiTranslate="healthConnect.onboarding.wizard.profile.phoneNumber">
+              Other phone
+            </label>
+            <input
+              class="hpd-focusable hpd-input"
+              type="tel"
+              id="pu-phoneNumber"
+              formControlName="phoneNumber"
+              data-cy="profileStepPhoneNumber"
+            />
+            @if (form.controls.phoneNumber.invalid && form.controls.phoneNumber.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+
+          <div>
+            <label class="hpd-label" for="pu-cardType" jhiTranslate="healthConnect.onboarding.fields.cardType">Identity document</label>
+            <!--
+              IDENTITY_TYPES is the four government cards, not the ten-member enum: an avatar and a
+              certificate are not identity documents. The labels are the shared
+              healthConnect.onboarding.documentTypes.* block, which the documents pane uses too.
+            -->
+            <select class="hpd-focusable hpd-input" id="pu-cardType" formControlName="cardType" data-cy="profileStepCardType">
+              <option value=""></option>
+              @for (type of identityTypes; track type) {
+                <option [value]="type" [jhiTranslate]="'healthConnect.onboarding.documentTypes.' + type"></option>
+              }
+            </select>
+            @if (form.controls.cardType.invalid && form.controls.cardType.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+
+          <div>
+            <label class="hpd-label" for="pu-cardNumber" jhiTranslate="healthConnect.onboarding.fields.cardNumber">Identity number</label>
+            <input
+              class="hpd-focusable hpd-input"
+              type="text"
+              id="pu-cardNumber"
+              formControlName="cardNumber"
+              data-cy="profileStepCardNumber"
+            />
+            @if (form.controls.cardNumber.invalid && form.controls.cardNumber.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+        </fieldset>
+
+        <!-- SECTION 3 — the seven address inputs, iterated from ADDRESS_INPUT_FIELDS. -->
+        <fieldset
+          id="profile-section-address"
+          class="m-0 grid min-w-0 gap-4 border-0 p-0 sm:grid-cols-2 xl:grid-cols-3"
+          formGroupName="address"
+        >
+          <legend
+            class="hpd-label mb-2 sm:col-span-2 xl:col-span-3"
+            jhiTranslate="healthConnect.onboarding.wizard.profile.sections.address"
+          >
+            Address
+          </legend>
+
+          @for (field of addressFields; track field) {
+            <div>
+              <label class="hpd-label" [for]="'pu-address-' + field" [jhiTranslate]="'healthConnect.onboarding.fields.' + field"></label>
+              <input
+                class="hpd-focusable hpd-input"
+                type="text"
+                [id]="'pu-address-' + field"
+                [formControlName]="field"
+                [attr.data-cy]="'profileStepAddress-' + field"
+              />
+              @if (form.controls.address.get(field)?.invalid && form.controls.address.get(field)?.touched) {
+                <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </fieldset>
+
+        <!-- SECTION 4 — at least two next of kin, each with four scalars and a nested address. -->
+        <fieldset id="profile-section-contacts" class="m-0 grid min-w-0 gap-6 border-0 p-0">
+          <legend class="hpd-label mb-2" jhiTranslate="healthConnect.onboarding.wizard.profile.sections.contacts">Next of kin</legend>
+          <p class="m-0 text-xs text-hpd-muted">
+            {{ 'healthConnect.onboarding.wizard.profile.contactsHint' | translate: { count: requiredContacts } }}
+          </p>
+
+          <div class="grid gap-6" formArrayName="contacts">
+            @for (contact of contacts(); track $index) {
+              <div
+                class="rounded-hpd-sm border border-hpd-border p-4"
+                [formGroupName]="$index"
+                [attr.data-cy]="'profileStepContact-' + $index"
+              >
+                <div class="mb-3 flex items-center justify-between gap-2">
+                  <p class="m-0 text-sm font-bold text-hpd-primary-dark">
+                    {{ 'healthConnect.onboarding.wizard.profile.contactNumber' | translate: { number: $index + 1 } }}
+                  </p>
+                  @if (removable()) {
+                    <button
+                      class="hpd-focusable text-xs font-bold text-hpd-danger underline"
+                      type="button"
+                      [attr.data-cy]="'profileStepRemoveContact-' + $index"
+                      (click)="removeContact($index)"
+                      jhiTranslate="healthConnect.onboarding.wizard.profile.removeContact"
+                    >
+                      Remove
+                    </button>
+                  }
+                </div>
+
+                <div class="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                  @for (field of contactFields; track field) {
+                    <div>
+                      <label
+                        class="hpd-label"
+                        [for]="'pu-contact-' + $index + '-' + field"
+                        [jhiTranslate]="'healthConnect.onboarding.wizard.profile.contactFields.' + field"
+                      ></label>
+                      <input
+                        class="hpd-focusable hpd-input"
+                        [type]="field === 'email' ? 'email' : 'text'"
+                        [id]="'pu-contact-' + $index + '-' + field"
+                        [formControlName]="field"
+                        [attr.data-cy]="'profileStepContactField-' + field"
+                      />
+                      @if (contact.get(field)?.invalid && contact.get(field)?.touched) {
+                        <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">
+                          This field is required.
+                        </small>
+                      }
+                    </div>
+                  }
+                </div>
+
+                <div class="mt-4 grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-4" formGroupName="address">
+                  <p
+                    class="hpd-label m-0 sm:col-span-2 xl:col-span-4"
+                    jhiTranslate="healthConnect.onboarding.wizard.profile.contactAddress"
+                  >
+                    Their address
+                  </p>
+                  @for (field of addressFields; track field) {
+                    <div>
+                      <label
+                        class="hpd-label"
+                        [for]="'pu-contact-' + $index + '-address-' + field"
+                        [jhiTranslate]="'healthConnect.onboarding.fields.' + field"
+                      ></label>
+                      <input
+                        class="hpd-focusable hpd-input"
+                        type="text"
+                        [id]="'pu-contact-' + $index + '-address-' + field"
+                        [formControlName]="field"
+                        [attr.data-cy]="'profileStepContactAddress-' + field"
+                      />
+                      @if (contact.get(['address', field])?.invalid && contact.get(['address', field])?.touched) {
+                        <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">
+                          This field is required.
+                        </small>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <div>
+            <button
+              class="hpd-btn hpd-btn-ghost hpd-focusable"
+              type="button"
+              data-cy="profileStepAddContact"
+              (click)="addContact()"
+              jhiTranslate="healthConnect.onboarding.wizard.profile.addContact"
+            >
+              Add another contact
+            </button>
+          </div>
+        </fieldset>
+
+        <hpd-wizard-footer pane="profile" [saving]="saving()" (save)="save()" />
+      </form>
+    }
+  }
+</div>

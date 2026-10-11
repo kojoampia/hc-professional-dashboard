@@ -7,6 +7,7 @@ import { throwError } from 'rxjs';
 
 import { AuthServerProvider } from 'app/core/auth/auth-jwt.service';
 import { OnboardingProgressService } from 'app/onboarding/onboarding-progress.service';
+import { WIZARD_PROFILE_STORAGE_KEY, readWizardProfileId, storeWizardProfileId } from 'app/onboarding/wizard.service';
 
 import { LoginService } from './login.service';
 
@@ -25,7 +26,10 @@ describe('LoginService', () => {
     httpMock = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => httpMock.verify());
+  afterEach(() => {
+    sessionStorage.clear();
+    httpMock.verify();
+  });
 
   /**
    * `OnboardingProgressService.clear()` had no caller at all, so signing out and in as a second
@@ -60,5 +64,32 @@ describe('LoginService', () => {
     service.logout();
 
     expect(progress.progress()).toBeNull();
+  });
+
+  /**
+   * ⛔ **The wizard's step cursor, beside the meter — a sharper version of the same argument.**
+   * `sessionStorage` survives a sign-out, so the key step 2 writes outlived the session that wrote
+   * it, and the next account in that tab would have had step 3 adopt the previous clinician's
+   * profile id. The two cases above are about a completion *percentage*; this is a stored
+   * identifier, so the argument is strictly stronger.
+   */
+  it('should drop the wizard step cursor on sign-out', () => {
+    storeWizardProfileId('p-1');
+    expect(readWizardProfileId()).toBe('p-1');
+
+    service.logout();
+
+    expect(readWizardProfileId()).toBeNull();
+    expect(sessionStorage.getItem(WIZARD_PROFILE_STORAGE_KEY)).toBeNull();
+  });
+
+  /** And before the request, for the reason the meter's own pair of cases establishes. */
+  it('should drop the step cursor even when the sign-out call itself fails', () => {
+    storeWizardProfileId('p-1');
+    jest.spyOn(TestBed.inject(AuthServerProvider), 'logout').mockReturnValue(throwError(() => new Error('offline')));
+
+    service.logout();
+
+    expect(readWizardProfileId()).toBeNull();
   });
 });

@@ -13,7 +13,8 @@
       "earnings": "Ingresos",
       "collapseSidebar": "Contraer el menú",
       "expandSidebar": "Expandir el menú",
-      "profile": "Perfil"
+      "profile": "Perfil",
+      "onboarding": "Incorporación"
     },
     "roles": {
       "admin": "Administrador",
@@ -434,6 +435,80 @@
         "started": "Solicitud iniciada",
         "documentUploaded": "Documento subido",
         "submitted": "Enviada a revisión"
+      },
+      "wizard": {
+        "stepCounter": "Paso {{step}} de {{total}}",
+        "nextLocked": "Complete este paso antes de continuar con el siguiente.",
+        "loading": "Cargando…",
+        "avatarUnreadable": "Su navegador no pudo leer esa imagen. Pruebe con otro archivo.",
+        "avatarRejected": "Elija una imagen JPEG o PNG que no supere los 10 MB.",
+        "toast": {
+          "accountSaved": "Se han guardado los datos de su cuenta",
+          "avatarSaved": "Se ha guardado su fotografía",
+          "profileSaved": "Se ha guardado su perfil"
+        },
+        "account": {
+          "title": "Complete su cuenta",
+          "subtitle": "Su nombre, el idioma en que este portal se dirige a usted y una fotografía suya.",
+          "identity": "Su nombre",
+          "photo": "Fotografía de perfil",
+          "choosePhoto": "Elegir una fotografía",
+          "photoHint": "Un retrato en JPEG o PNG. Se redimensiona en su navegador antes de enviarse.",
+          "photoUploading": "Enviando su fotografía…",
+          "photoRequired": "Se necesita una fotografía para poder continuar.",
+          "complete": "Este paso está completo.",
+          "loadError": "No se pudo cargar su cuenta. Vuelva a cargar la página para intentarlo de nuevo."
+        },
+        "profile": {
+          "title": "Su perfil de acreditación",
+          "subtitle": "Todos los campos son obligatorios. Complete una sección a la vez; el formulario se guarda en conjunto.",
+          "loadError": "No se pudo cargar su perfil.",
+          "gapsHeadline": "Faltan {{count}} datos para poder guardar este paso.",
+          "gapsInSection": "({{count}} sin completar)",
+          "sections": {
+            "identity": "De su cuenta",
+            "personal": "Datos personales",
+            "address": "Dirección",
+            "contacts": "Contactos de emergencia"
+          },
+          "identityHint": "Estos datos provienen de su cuenta y se editan en el primer paso.",
+          "accountId": "Referencia de la cuenta",
+          "optional": "Opcional",
+          "middleNames": "Segundo nombre",
+          "phoneNumber": "Otro teléfono",
+          "sexes": {
+            "FEMALE": "Mujer",
+            "MALE": "Hombre"
+          },
+          "contactsHint": "Se requieren al menos {{count}} contactos de emergencia, cada uno con su dirección completa.",
+          "contactNumber": "Contacto {{number}}",
+          "contactAddress": "Su dirección",
+          "addContact": "Añadir otro contacto",
+          "removeContact": "Quitar",
+          "contactFields": {
+            "name": "Nombre del contacto",
+            "relationship": "Parentesco",
+            "email": "Correo del contacto",
+            "phone": "Teléfono del contacto"
+          }
+        },
+        "documents": {
+          "title": "Sus documentos",
+          "subtitle": "Se requieren cuatro documentos antes de poder enviar su solicitud a revisión.",
+          "outstanding": "Todavía faltan {{count}} de los documentos obligatorios.",
+          "satisfied": "Aportado",
+          "notSatisfied": "Pendiente"
+        },
+        "application": {
+          "title": "Su solicitud",
+          "fromCareers": "Preseleccionado según el puesto al que se presentó. Cámbielo si no es correcto.",
+          "consentRequired": "Es necesario su consentimiento para poder presentar una solicitud.",
+          "agreedOn": "Usted dio su consentimiento el {{date}}.",
+          "blocked": {
+            "incomplete": "El envío estará disponible cuando se cumplan todos los requisitos anteriores.",
+            "alreadySubmitted": "Su solicitud ya se ha enviado. Aún puede corregir sus respuestas aquí."
+          }
+        }
       }
     },
     "review": {
@@ -599,6 +674,9 @@
         "loadError": "No se puede cargar tu solicitud.",
         "status": "Estado",
         "finishFirst": "Completa todos los requisitos anteriores antes de enviar."
+      },
+      "avatar": {
+        "alt": "Fotografía de perfil"
       }
     },
     "caseQueue": {

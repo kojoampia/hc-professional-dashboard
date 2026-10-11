@@ -23,11 +23,19 @@ describe('Profile Page', () => {
   });
 
   /**
-   * The wizard is gone, but the path outlives it: it was the sidebar item, the applicant's
-   * bookmark, and where the activation email lands. A function rather than a string because
-   * `redirectTo` treats a string as a path, so the query parameter would be matched literally.
+   * ⛔ **"The wizard is gone" is no longer true** — `profile.md:275-277` reverses that decision and
+   * T8 rebuilds it as four routed overlays over the dashboard (`wizardPanePath`). What this case
+   * asserts is unaffected and stays green, so only the reasoning is corrected: the top-level
+   * `/onboarding` path is still a redirect with no component behind it, still the activation email's
+   * landing spot, and still **T6's to re-point** — the wizard's panes live under `dashboard/` and
+   * collide with nothing here. A function rather than a string because `redirectTo` treats a string
+   * as a path, so the query parameter would be matched literally.
+   *
+   * <p>⚠ Until T6 re-points it, the activation email lands on this tab page rather than on pane 1.
+   * That is a sequencing consequence of T6 being scheduled last, not an oversight: the wizard is
+   * reachable from the sidebar's own Onboarding item in the meantime.
    */
-  it('should redirect the retired /onboarding path to the application tab', () => {
+  it('should redirect the /onboarding path to the application tab until T6 re-points it', () => {
     const onboarding = appRoutes.find((route: Route) => route.path === 'onboarding');
 
     expect(onboarding).toBeDefined();

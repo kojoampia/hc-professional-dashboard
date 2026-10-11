@@ -10,6 +10,7 @@ import { Authority } from 'app/config/authority.constants';
 import { AccountService } from 'app/core/auth/account.service';
 import { StateStorageService } from 'app/core/auth/state-storage.service';
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
+import { WIZARD_PANES, wizardPanePath, wizardPaneRoute } from 'app/onboarding/wizard.service';
 
 import { healthConnectRoleGuard } from './authority-role.guard';
 import routes from './health-connect.routes';
@@ -86,6 +87,71 @@ describe('HealthConnect feature routes', () => {
 
     expect(caseDetail.path).toBe(':caseId');
     expect(caseDetail.data?.['closeUrl']).toBe('/cases');
+  });
+
+  /**
+   * ⭐ **The onboarding wizard's four panes** — `profile.md` § "Onboarding Wizard", T8.
+   *
+   * <p>Children of `dashboard`, because `profile.md:171-173` opens step 1's dialog *over the
+   * dashboard* and the overlay idiom above makes an overlay a child of the page it overlays. Siblings
+   * of each other, so each carries its own title and each is a URL the browser's back button steps
+   * between — which is how `profile.md:166`'s *"it should be possible to navigate back to a previous
+   * step"* is answered by the router rather than by state.
+   *
+   * <p>Derived from `WIZARD_PANES` rather than listed, so the sequence has one declaration.
+   */
+  it('mounts the four wizard panes as overlays under the dashboard', () => {
+    const panes = find('dashboard').children as Routes;
+
+    expect(panes.map(pane => pane.path)).toEqual(WIZARD_PANES.map(pane => wizardPaneRoute(pane)));
+    for (const [index, pane] of panes.entries()) {
+      expect(pane.loadComponent).toBeDefined();
+      // The overlay host, with the pane component as its only child — the shape the record overlays
+      // above use. A pane mounted directly would render inline on the dashboard, not as a dialog.
+      expect(pane.data?.['closeUrl']).toBe('/dashboard');
+      expect(pane.data?.['titleKey']).toBe(`healthConnect.onboarding.wizard.${WIZARD_PANES[index]}.title`);
+      expect(pane.children).toHaveLength(1);
+      expect((pane.children as Routes)[0].path).toBe('');
+      expect((pane.children as Routes)[0].loadComponent).toBeDefined();
+    }
+  });
+
+  /**
+   * ⛔ **The panes must stay reachable by `ROLE_USER` and nothing else**, which is the whole reason
+   * onboarding can live inside the portal: an applicant holds that authority alone until an
+   * administrator assigns a discipline. Narrowing these to clinical roles would lock the wizard away
+   * from the only people it exists for. The gate is the dashboard's, which they inherit.
+   *
+   * <p>⚠ **What this does NOT say, because a route table cannot say it.** `protectedFeatureRoute`
+   * lists `Authority.USER` on `/patients`, `/cases` and `/duty-roster` as well, so a
+   * `ROLE_USER`-only account **resolves those routes too** — measured in review, and the reason the
+   * sentence this docblock used to carry about "every other clinical surface" is corrected in
+   * `health-connect.routes.ts`. An applicant is refused by `api/`'s chain answering **403** on the
+   * reads those pages make, and is not *offered* them because the sidebar's `clinicalOnly` hides the
+   * group. ⛔ Route authorities decide what renders, not what is permitted: nobody may drop a
+   * server-side check or the sidebar's hiding on the strength of a case in this file.
+   */
+  it('reaches the wizard panes through the dashboard gate, which admits ROLE_USER', () => {
+    const dashboard = find('dashboard');
+
+    expect(dashboard.data?.['authorities']).toContain(Authority.USER);
+    // Not re-gated per pane: a second, narrower rule here is how one of the four would drift.
+    for (const pane of dashboard.children as Routes) {
+      expect(pane.canActivate).toBeUndefined();
+      expect(pane.data?.['authorities']).toBeUndefined();
+    }
+  });
+
+  /**
+   * ⚠ The panes live under `dashboard/`, so they cannot collide with the top-level `/onboarding`
+   * redirect — which has no component, is the activation email's landing spot, and is **T6's to
+   * re-point**, not T8's.
+   */
+  it('does not claim the top-level onboarding path', () => {
+    expect(routes.find(route => route.path === 'onboarding')).toBeUndefined();
+    for (const pane of WIZARD_PANES) {
+      expect(wizardPanePath(pane).startsWith('/dashboard/')).toBe(true);
+    }
   });
 
   it('resolves every protected entry URL for an authorized JHipster user', async () => {

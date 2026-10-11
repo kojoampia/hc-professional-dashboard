@@ -15,6 +15,8 @@ import { ShiftLabel } from 'app/health-connect/health-connect.models';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { wizardPanePath } from 'app/onboarding/wizard.service';
+
 import SidebarComponent from './sidebar.component';
 import { SHELL_NAV_GROUPS } from './shell-navigation';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -232,11 +234,30 @@ describe('Sidebar Component', () => {
     expect(comp.groupVisible(groupByLabel('healthConnect.navigation.care'))).toBe(true);
   });
 
-  it('should point the account group at the profile page rather than the retired wizard', () => {
+  /**
+   * ⛔ **This case asserted the opposite until T8, and it was green.** It read *"should point the
+   * account group at the profile page rather than the retired wizard"* and required `/onboarding` to
+   * be absent from the nav — a committed record of the decision to fold the wizard's steps into tabs.
+   *
+   * <p>**`profile.md:275-277` reverses that decision:** *"Onboarding is displayed in a single dialog
+   * wizard pane, not in tabs."* The wizard is not retired; it is the specified surface, built as four
+   * routed overlays (`profile-addendum.md` § 3 T8). A repository holding a green test that asserts
+   * the opposite of the specification is the worst available outcome, because the next reader
+   * believes the test — so this is flipped in the same change that builds the panes.
+   *
+   * <p>⚠ **Both destinations, not one.** `/account/profile` stays: it is the clinician's editing
+   * surface until T6 retires it and T9 re-points it at the My Profile read view, and it is where the
+   * top-level `/onboarding` redirect still lands. What the account group regains is the wizard
+   * beside it.
+   *
+   * <p>The path is read from {@link wizardPanePath} rather than typed, so the destination has one
+   * spelling across this test, the nav item and the route table.
+   */
+  it('should point the account group at the onboarding wizard as well as the profile page', () => {
     const paths = SHELL_NAV_GROUPS.flatMap(group => group.items).map(item => item.path);
 
     expect(paths).toContain('/account/profile');
-    expect(paths).not.toContain('/onboarding');
+    expect(paths).toContain(wizardPanePath('account'));
   });
 
   it('should not offer the removed about, settings and password destinations', () => {
