@@ -414,7 +414,8 @@
         "VOTERCARD": "Wählerausweis",
         "PASSPHOTO": "Passfoto",
         "NHIS": "NHIS-Karte",
-        "OTHER": "Sonstiges"
+        "OTHER": "Sonstiges",
+        "AVATAR": "Profilfoto"
       },
       "mandatory": {
         "certificate": "Berufszertifikat hochgeladen",

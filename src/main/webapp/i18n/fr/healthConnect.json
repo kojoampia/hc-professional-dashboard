@@ -414,7 +414,8 @@
         "VOTERCARD": "Carte d'électeur",
         "PASSPHOTO": "Photo d'identité",
         "NHIS": "Carte NHIS",
-        "OTHER": "Autre"
+        "OTHER": "Autre",
+        "AVATAR": "Photo de profil"
       },
       "mandatory": {
         "certificate": "Certificat professionnel téléversé",
