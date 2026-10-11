@@ -558,8 +558,18 @@
       "tabs": "Sections du profil",
       "completion": {
         "title": "Profil complété",
+        "steps": {
+          "account": "Informations du compte",
+          "profile": "Informations personnelles",
+          "documents": "Pièces justificatives",
+          "consent": "Rôle et consentement"
+        },
+        "gaps": {
+          "title": "Éléments encore nécessaires pour compléter ce profil"
+        },
         "complete": "Tout y est. Un administrateur va maintenant vérifier vos justificatifs.",
         "incomplete": "Votre profil sera activé une fois ces éléments complétés et vérifiés par un administrateur.",
+        "liveReconnecting": "Mises à jour en direct interrompues — reconnexion.",
         "requirements": {
           "consent": "Consentement",
           "profile": "Informations personnelles",

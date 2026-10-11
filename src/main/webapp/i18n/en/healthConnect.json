@@ -558,8 +558,18 @@
       "tabs": "Profile sections",
       "completion": {
         "title": "Profile completion",
+        "steps": {
+          "account": "Account details",
+          "profile": "Personal details",
+          "documents": "Credential documents",
+          "consent": "Role and consent"
+        },
+        "gaps": {
+          "title": "Still needed before this profile is complete"
+        },
         "complete": "Everything is in. An administrator reviews your credentials next.",
         "incomplete": "Your profile becomes active once these are complete and an administrator has vetted them.",
+        "liveReconnecting": "Live updates interrupted — reconnecting.",
         "requirements": {
           "consent": "Consent",
           "profile": "Personal details",

@@ -139,6 +139,42 @@ export interface OnboardingProgressDto {
    */
   status: OnboardingStatus | null;
   requirements: { key: OnboardingRequirementKey; done: boolean }[];
+  /**
+   * `profile.md`'s four onboarding steps, one boolean each — the coarse wire `backlog.md` row 230
+   * decided on, added to this contract by unit A and consumed here by unit B.
+   *
+   * <p>Two readings of one state, and both ship: {@link requirements} is the fine-grained list,
+   * `steps` is the coarse one the page's four tabs render against. The server derives three of the
+   * four from the requirement answers rather than evaluating the predicates twice
+   * (`OnboardingService.stepsFrom`), so the two cannot disagree about a predicate.
+   *
+   * <p>⚠ **`account` reads `false` for every seeded clinician and that is correct, not a bug.** It is
+   * the one step this service cannot compute — its four fields (`firstName`, `lastName`, `langKey`,
+   * `imageUrl`) live on `User` in the gateway — so it comes from a stored projection fed by Kafka
+   * frames, and `false` also means "no frame has arrived yet". Three independent reasons make it
+   * `false` today: no backfill for accounts not written since unit A shipped (row 233),
+   * `InitialSetupMigration` bypassing the publish funnel and never setting `imageUrl` (row 233), and
+   * `imageUrl` being writable by no surface in the estate until row 232 builds the avatar upload.
+   * ⛔ **Do not build anything here that tries to "fix" it** — nothing gates on it, and the failure
+   * direction is the safe one: it can read `false` when complete, never `true` when not.
+   */
+  steps: OnboardingSteps;
+}
+
+/**
+ * `profile.md`'s four steps, which are also four of this page's five tabs — `application` is step 4,
+ * `clinical` is step 2, `documents` is step 3 and `account` is step 1.
+ *
+ * <p>⚠ **The names are the server's, and the tab ids are not the same words**: step 4 is called
+ * `consent` on the wire and `application` in the UI. The constant `STEPS` in
+ * `completion-meter.component.ts` is the one place that mapping is written down — this comment cited
+ * `STEP_TABS`, which exists nowhere, and it was the only pointer to that mapping.
+ */
+export interface OnboardingSteps {
+  account: boolean;
+  profile: boolean;
+  documents: boolean;
+  consent: boolean;
 }
 
 /**
@@ -151,22 +187,43 @@ export interface OnboardingProgressDto {
  * service's completeness refusal and has to know which tokens in that sentence are requirement keys
  * (backlog.md item 46).
  *
- * <p>⛔ **This said "keys the server sends, in display order", and it is not that — measured
- * 2026-10-09.** `OnboardingProgressDTO` carries **eight** requirements and this array holds seven:
- * `photo` is missing, while all four catalogues already carry
- * `…requirements.photo`. The server names it in two sentences a client reads —
- * `requireCompleteProfile`'s `Activation requires a complete profile; still missing: …` and the
- * submission gate's `…still missing: …`, which can also name **`authority`**, a key that is not a
- * progress-meter requirement and has no label at all.
+ * <p>✅ **It is now the nine keys the server sends, in display order — widened by `backlog.md` row
+ * 230 unit B, 2026-10-10.** It held **seven** for as long as it existed, against a server that sent
+ * eight and could name a ninth in a refusal:
  *
- * <p>⚠ **Nothing renders a raw key as a result**, which is why it has gone unnoticed:
- * `ReviewDetailPageComponent.missingRequirements` intersects the sentence with this array precisely
- * so an unknown token degrades to the generic headline and the quoted detail. What is lost is the
- * labelled chip — a reviewer told "still missing" without being told the passport photo is the thing
- * missing. **Left as it is here deliberately**: adding a member changes what the review page renders
- * and `authority` would need a label in four catalogues, which is not a comment fix.
+ * | | keys | state |
+ * | --- | --- | --- |
+ * | `OnboardingService.REQUIREMENT_KEYS` | **9** | the server's single vocabulary since unit A |
+ * | this array, before unit B | 7 | no `photo`, no `authority` |
+ * | all four i18n catalogues | **9** | `photo` has had a label throughout; unit A added `authority` |
+ *
+ * <p>⚠ **The comment here used to argue against widening it**, on the grounds that `authority` had no
+ * label in four catalogues. That was true when it was written and stopped being true in unit A, which
+ * added `…requirements.authority` to all four — so the stated blocker was already gone. Widening now
+ * costs **no new translation**: `catalogues.spec.ts` and `translated-values.spec.ts` both pass
+ * unchanged, which is the measurement rather than the inference.
+ *
+ * <p>⚠ **This array is INTERSECTED, not rendered, at its other caller** — read
+ * `ReviewDetailPageComponent.missingRequirements` before touching it. It filters the keys named in a
+ * refusal sentence against this list precisely so a token this build has no label for degrades to the
+ * generic headline instead of rendering a raw translation key at an operator. So a *missing* member is
+ * a silently absent chip, which is what the two were: a reviewer told "still missing" and not told
+ * that the passport photo is the thing missing. Both now render.
+ *
+ * <p>A runtime array with the union derived from it, rather than a bare union, for the reason
+ * `DUTY_ROSTER_SHIFTS` is one — see above.
  */
-export const ONBOARDING_REQUIREMENT_KEYS = ['consent', 'profile', 'address', 'nextOfKin', 'certificate', 'license', 'identity'] as const;
+export const ONBOARDING_REQUIREMENT_KEYS = [
+  'consent',
+  'profile',
+  'address',
+  'nextOfKin',
+  'certificate',
+  'license',
+  'identity',
+  'photo',
+  'authority',
+] as const;
 
 export type OnboardingRequirementKey = (typeof ONBOARDING_REQUIREMENT_KEYS)[number];
 

@@ -558,8 +558,18 @@
       "tabs": "Secciones del perfil",
       "completion": {
         "title": "Perfil completado",
+        "steps": {
+          "account": "Datos de la cuenta",
+          "profile": "Datos personales",
+          "documents": "Documentos acreditativos",
+          "consent": "Rol y consentimiento"
+        },
+        "gaps": {
+          "title": "Falta esto para completar el perfil"
+        },
         "complete": "Está todo. A continuación, un administrador revisará tus credenciales.",
         "incomplete": "Tu perfil se activará cuando esto esté completo y un administrador lo haya verificado.",
+        "liveReconnecting": "Actualizaciones en directo interrumpidas: reconectando.",
         "requirements": {
           "consent": "Consentimiento",
           "profile": "Datos personales",
