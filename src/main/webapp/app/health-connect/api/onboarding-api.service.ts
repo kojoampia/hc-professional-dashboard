@@ -89,12 +89,25 @@ export interface OnboardingEventDto {
  * card and the profile page edits it afterwards, and a list that disagreed between the two would
  * let a clinician pick a type the wizard would not have accepted.
  *
- * <p>⚠ **Typed `PersonalDocumentType[]` rather than `OnboardingDocumentType[]` since F9.** The two
- * hold the same nine names, but `profile.md` types `Profile.cardType` by `types.enum.ts` and a TS
- * string enum is **nominal** — a bare `'GHANACARD'` literal is not assignable to it — so this list,
- * which is what the card dropdown iterates, has to be members rather than literals or the dropdown
- * cannot produce a value the wire type accepts. `OnboardingDocumentType` stays as it is for
- * `PersonalDocument.type`, which is T2's and T3's.
+ * <p>⚠ **Typed `PersonalDocumentType[]` rather than `OnboardingDocumentType[]` since F9.** Both
+ * mirror `api/`'s `DocumentType`, but `profile.md` types `Profile.cardType` by `types.enum.ts` and
+ * a TS string enum is **nominal** — a bare `'GHANACARD'` literal is not assignable to it — so this
+ * list, which is what the card dropdown iterates, has to be members rather than literals or the
+ * dropdown cannot produce a value the wire type accepts. `OnboardingDocumentType` stays as it is
+ * for `PersonalDocument.type`, which is T2's and T3's.
+ *
+ * <p>⚠ **The two no longer hold the same names, and that is deliberate (backlog row 232).**
+ * `types.enum.ts` carries ten since `AVATAR` was added; this union keeps the nine credentials.
+ * `OnboardingDocumentType` is also the parameter of `uploadDocument`, which posts to the
+ * credential endpoint — an avatar has its own upload surface and T8 owns the input, so this union
+ * is what refuses it at compile time.
+ *
+ * <p>⚠ **It is also the type of `OnboardingDocumentDto.type`, and that half is NOT settled.** Row
+ * 232 explicitly leaves *"whether the avatar appears in the own-document list"* to the `api/`
+ * package. If it does appear, an `AVATAR` arrives in this DTO as a value the union says is
+ * impossible — so check what `api/` shipped rather than this comment, and if it is returned, widen
+ * the union here while keeping `UPLOADABLE_TYPES` as it is. Splitting the read vocabulary from the
+ * write one is the alternative, and is the cleaner answer if both are ever needed at once.
  */
 export const IDENTITY_TYPES: PersonalDocumentType[] = [
   PersonalDocumentType.PASSPORT,
@@ -249,8 +262,10 @@ export interface OnboardingProfileDto {
    * Which identity document `cardNumber` is the number of — typed since F9.
    *
    * <p>`profile.md` names the vocabulary explicitly: *"PersonalDocumentType: `types.enum.ts`"*. That
-   * is the same nine members a `PersonalDocument.type` carries, which is the point — a card type and
-   * a document type are one vocabulary and were two, one of them free text.
+   * is the same vocabulary a `PersonalDocument.type` carries, which is the point — a card type and
+   * a document type are one vocabulary and were two, one of them free text. (The enum has ten
+   * members since row 232 added `AVATAR`, which is not an identity document and is not offered:
+   * `IDENTITY_TYPES` is what the dropdown iterates, and it is the four cards.)
    */
   cardType?: PersonalDocumentType | null;
   cardNumber?: string | null;
