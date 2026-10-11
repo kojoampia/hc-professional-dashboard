@@ -32,10 +32,24 @@ const TABS: { id: ProfileTab; labelKey: string }[] = [
  * Everything about you, in one place: application, credentialing profile, documents, account,
  * password — with the server's completion figure above them all.
  *
- * <p>This replaces the separate {@code /onboarding} wizard. The wizard's steps were a sequence you
- * walked once and could never revisit, which is why a clinician who changed address had nowhere to
- * go; as tabs they are all reachable, in any order, before and after approval. The requirements are
- * unchanged — the server still decides what complete means.
+ * <p>⛔ <b>This said it "replaces the separate {@code /onboarding} wizard", and that decision is
+ * REVERSED</b> — {@code profile.md:275-277}: <i>"Onboarding is displayed in a single dialog wizard
+ * pane, not in tabs."</i> The wizard is rebuilt in T8 as four routed overlays over the dashboard
+ * ({@code wizardPanePath} in {@code app/onboarding/wizard.service.ts}), and this page's own fate is
+ * T6's: it is retired, with T9's My Profile read view taking {@code /account/profile}. <b>Both
+ * surfaces exist in parallel until then</b>, which is deliberate — add before removing.
+ *
+ * <p>⭐ <b>The objection this paragraph raised is answered rather than overruled, and that is the
+ * half worth keeping.</b> It read: <i>"the wizard's steps were a sequence you walked once and could
+ * never revisit, which is why a clinician who changed address had nowhere to go; as tabs they are all
+ * reachable, in any order, before and after approval."</i> True of the retired wizard, and not true
+ * of the rebuilt one: {@code WizardService}'s rule is that <b>every pane reopens once the application
+ * has been submitted</b>, measured against {@code api/OnboardingService:506-512}, where saving an
+ * application already in {@code CREDENTIAL_REVIEW} stores the answers with no re-transition and no
+ * second event. So the panes are reachable in any order after approval too — the property the tabs
+ * were chosen for — without the wizard ever attempting the backward status write that would 409.
+ *
+ * <p>The requirements are unchanged either way: the server still decides what complete means.
  *
  * <p>The active tab lives in the query string rather than in component state so that the meter's
  * "licence still needed" and a deep link from elsewhere can both land on the right tab, and so the

@@ -302,6 +302,35 @@ export function isLiveDocument(document: OnboardingDocumentDto): boolean {
   return !document.supersededAt;
 }
 
+/**
+ * The avatar row `POST /api/personal-document/avatar` answers with — `backlog.md` row 232.
+ *
+ * <p>⛔ **`type` is `PersonalDocumentType`, the ten-value enum, and NOT `OnboardingDocumentType`.**
+ * That is the one place the split between the two matters on a response: the nine-value union exists
+ * so the credential upload cannot be handed an avatar at compile time, so it cannot describe the
+ * avatar's own answer. Narrowed to the single member the handler can return, because this path stores
+ * `AVATAR` and nothing else — a wider type here would invite a caller to branch on a value that
+ * cannot arrive.
+ *
+ * <p>⚠ **`data` is absent, and that is the contract rather than an omission.** `api/` nulls the bytes
+ * out of the create response — *"never echo the bytes back"* — so the only thing a client gets is the
+ * id, which is what it needs: the path to the content endpoint is built from it.
+ *
+ * <p>⚠ **It does not appear in `GET /api/personal-document`.** The avatar is filtered out of the
+ * own-document list and out of the reviewer's, and `allLiveDocumentsVerified` excludes the type
+ * outright — without which a `PENDING` avatar would block approval for ever, since nothing in the
+ * estate can verify one. So `OnboardingDocumentDto.type`'s nine-value union stays correct on the read
+ * path, and the question its comment leaves open ("if it does appear, widen the union") is answered:
+ * it does not.
+ */
+export interface AvatarDocumentDto {
+  id: string;
+  name?: string | null;
+  type: PersonalDocumentType.AVATAR;
+  sizeBytes?: number | null;
+  verificationStatus?: DocumentVerificationStatus | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class OnboardingApiService {
   private readonly http = inject(HttpClient);
@@ -589,6 +618,63 @@ export class OnboardingApiService {
    * it was, and anything past ~6 MB of document is refused by nginx with a bare 413 rather than by
    * the service with a message.
    */
+  /**
+   * Replaces the caller's profile photograph — `POST /api/personal-document/avatar` (`backlog.md`
+   * row 232), step 1's fourth field.
+   *
+   * <h2>Two components on the wire, and `type` is not one of them</h2>
+   *
+   * <p>The handler stores {@link PersonalDocumentType.AVATAR} and nothing else, so a `type` on the
+   * wire would be a field the server must ignore — the deny-list shape `api/`'s own
+   * `AvatarUpload` javadoc argues against. `name` is likewise absent and derived from the content
+   * type. The generic {@link uploadDocument} **refuses** `AVATAR` and names this path, which is why
+   * the two are separate methods rather than one with a conditional.
+   *
+   * <p>⚠ **The data is already processed when it arrives here.** `prepareAvatar` in
+   * `app/account/user/avatar-image.ts` downscales, bakes the EXIF orientation and re-encodes before
+   * this is called — so this method takes base64 and a content type rather than a `File`, unlike
+   * {@link uploadDocument}, which reads the file itself. A credential scan must reach the server
+   * byte-for-byte; an avatar must not.
+   *
+   * <h2>⛔ Typed `PersonalDocumentType`, never `OnboardingDocumentType`</h2>
+   *
+   * <p>The split between those two unions is deliberate and this is the one response that needs the
+   * wider one: `OnboardingDocumentType` keeps the **nine credentials** precisely so the credential
+   * upload cannot be handed an avatar at compile time, and `types.enum.ts` carries **ten**. So the
+   * avatar's own response cannot be typed by the credential union — see the comment at
+   * {@link IDENTITY_TYPES} for the full split.
+   *
+   * <p>⚠ **The caller must write `imageUrl` next**, and immediately: this returns a document id, and
+   * `User.imageUrl` on the gateway is where the path to it lives. The gateway never calls this
+   * service — it stores a 256-character string — so the two writes are the whole of the cross-service
+   * story, and a failure between them leaves `imageUrl` naming a document that no longer exists.
+   * {@link avatarContentPath} builds the value; render it defensively.
+   */
+  uploadAvatar(data: string, dataContentType: string): Observable<AvatarDocumentDto> {
+    return this.http.post<AvatarDocumentDto>(`${this.documentUrl}/avatar`, { data, dataContentType });
+  }
+
+  /**
+   * The value to write to `User.imageUrl` for an avatar document id.
+   *
+   * <p>⛔ **The path, not the id, and `api/` is explicit about which:** *"the client builds
+   * `<base>/api/personal-document/{id}/content` itself and writes it to `User.imageUrl` … No URL
+   * field is invented here; a second spelling of a path the client already has to know is a second
+   * thing to keep in step."* Built from the same {@link documentUrl} every other call on this base
+   * uses, so there is one spelling.
+   *
+   * <p>⚠ **It is not usable as a bare `<img src>`.** `GET …/{id}/content` is behind
+   * `assertOwnerOrReviewer` and needs the `Authorization` header, so a plain `src` gets a 401 and a
+   * broken image. `AccountAvatarComponent` fetches it as an authenticated blob; that is the only
+   * correct renderer in this repository.
+   *
+   * <p>⚠ `@Size(max = 256)` on the gateway field. This value is around 75 characters with the
+   * microservice prefix, so there is room — but a longer endpoint prefix would eat it.
+   */
+  avatarContentPath(documentId: string): string {
+    return `${this.documentUrl}/${encodeURIComponent(documentId)}/content`;
+  }
+
   uploadDocument(
     file: File,
     type: OnboardingDocumentType,

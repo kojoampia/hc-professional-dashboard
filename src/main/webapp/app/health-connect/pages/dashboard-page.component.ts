@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { MatIconModule } from '@angular/material/icon';
@@ -14,6 +14,7 @@ import { AsyncViewState, CaseStatus } from '../health-connect.models';
 import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
 import { OnboardingProgressService } from 'app/onboarding/onboarding-progress.service';
+import { WizardService, wizardPanePath } from 'app/onboarding/wizard.service';
 import { hasClinicalAuthority } from '../authority-role';
 import { EarningsApiService } from '../api/earnings-api.service';
 import { ProfessionalEarningsDto } from '../api/earnings-api.model';
@@ -53,6 +54,7 @@ const countable = (state: AsyncViewState): boolean => state.status === 'ready';
     MatIconModule,
     PieChartComponent,
     RouterLink,
+    RouterOutlet,
     StatCardRowComponent,
     TranslateModule,
   ],
@@ -218,6 +220,15 @@ const countable = (state: AsyncViewState): boolean => state.status === 'ready';
           />
         </section>
       </hpd-async-state>
+
+      <!--
+        THE ONBOARDING WIZARD'S OUTLET (T8). profile.md:171-173 opens step 1's dialog "over the
+        dashboard", and the house routed-overlay idiom makes an overlay a CHILD of the page it
+        overlays so the page stays mounted underneath — see the patients tree in
+        health-connect.routes.ts for the argument. Empty on every ordinary visit: nothing renders
+        here until the URL names a pane.
+      -->
+      <router-outlet />
     </main>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -228,6 +239,7 @@ export default class DashboardPageComponent implements OnInit {
   private readonly earningsApi = inject(EarningsApiService);
   private readonly translate = inject(TranslateService);
   private readonly progressService = inject(OnboardingProgressService);
+  private readonly wizard = inject(WizardService);
   private readonly accountService = inject(AccountService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -241,7 +253,12 @@ export default class DashboardPageComponent implements OnInit {
     this.accountService
       .getAuthenticationState()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(account => (this.account = account));
+      .subscribe(account => {
+        this.account = account;
+        // Step 1's trigger rides this subscription rather than fetching the account again — see the
+        // method, which explains both why it is here and why it is immediate.
+        this.openAccountStepWhenIncomplete(account);
+      });
 
     // Failure is swallowed on purpose. This is one card on a dashboard whose other panels come
     // from a different stack entirely; a 404 (no professional record yet) or an adminservice
@@ -253,6 +270,45 @@ export default class DashboardPageComponent implements OnInit {
 
     this.progressService.load();
     this.scheduleIncompleteProfileRedirect();
+  }
+
+  /**
+   * Step 1's trigger — `profile.md:171-173`, T8.
+   *
+   * <p><i>"After registration and activation the professional can log in to the dashboard, which
+   * loads the account. If any of the account's `firstName`, `lastName`, `langKey` or `imageUrl` is
+   * empty, open the User update dialog over the dashboard."</i> The dialog is a routed overlay that
+   * is a child of this page, so "open it" is a navigation and the dashboard stays rendered
+   * underneath.
+   *
+   * <p>⚠ <b>Immediately, not after a beat</b>, unlike {@link scheduleIncompleteProfileRedirect}
+   * below. That one moves a clinician to a different page and is deliberately delayed so the move
+   * reads as deliberate; this one opens a dialog over the page they are already on, and a dialog that
+   * appears two seconds after arrival reads as something having gone wrong.
+   *
+   * <p>⛔ <b>All four fields, `imageUrl` among them.</b> Four in the trigger over a form of three was
+   * a dialog that reopened for ever (`profile-addendum.md` § 5 Q12); `backlog.md` row 232 settled it
+   * by building the avatar upload, so step 1 has an input for every field it tests.
+   * {@code WizardService.accountStepComplete} is the one place that test is written, and it answers
+   * <b>null</b> until the account has arrived — which is why this runs inside the account
+   * subscription and not beside it. Opening a dialog on an unknown account opens it over everybody.
+   *
+   * <p>⚠ <b>Only when the reader is still on the bare dashboard.</b> Someone who has already opened a
+   * pane, or clicked through, has chosen where to be — and re-navigating to pane 1 from inside pane 3
+   * would be the wizard yanking them backwards.
+   *
+   * <p>⛔ <b>Driven by the account subscription this page already had, not by a second
+   * {@code identity()} call.</b> That service caches one account for the whole application and
+   * {@code getAuthenticationState()} replays it, so a second fetch here would be a second answer to
+   * "who is signed in" — the duplication {@code WizardService} exists to remove. It is also what kept
+   * this page's own spec honest: a second read put an unflushed {@code GET api/account} in front of
+   * thirty-seven existing cases.
+   */
+  private openAccountStepWhenIncomplete(account: Account | null): void {
+    this.wizard.setAccount(account);
+    if (this.wizard.accountStepComplete() === false && this.router.url.split('?')[0] === '/dashboard') {
+      void this.router.navigateByUrl(wizardPanePath('account'));
+    }
   }
 
   /**
@@ -285,11 +341,23 @@ export default class DashboardPageComponent implements OnInit {
    *
    * <p>The route admits {@link Authority#USER}, so the nudge still has its intended target: an
    * applicant who lands here holds nothing but {@code ROLE_USER}.
+   *
+   * <p>⚠ <b>A fifth condition since T8: not while a wizard pane is open.</b> The panes are children
+   * of this route, so {@code router.url.startsWith('/dashboard')} is <em>true</em> inside them and
+   * this timer would fire two seconds after step 1's dialog opened, pulling the applicant out of the
+   * wizard and onto the tab page it replaces. That is the same failure the "only if still on the
+   * dashboard" condition above exists to prevent, one level down — someone inside a pane has been
+   * taken somewhere, and yanking them away again is worse than not nudging at all.
+   *
+   * <p>⛔ The <b>destination</b> is still the tab page, and that is <b>T6's to re-point</b> along
+   * with the {@code /onboarding} redirect and the other callers. T8 only stops this competing with
+   * the wizard; it does not choose where the nudge leads.
    */
   private scheduleIncompleteProfileRedirect(): void {
     const timer = setTimeout(() => {
       const clinician = hasClinicalAuthority(this.account?.authorities);
-      if (this.progressService.complete() === false && !clinician && this.router.url.startsWith('/dashboard')) {
+      const onBareDashboard = this.router.url.split('?')[0] === '/dashboard';
+      if (this.progressService.complete() === false && !clinician && onBareDashboard) {
         void this.router.navigate(['/account/profile'], { queryParams: { tab: 'application' } });
       }
     }, INCOMPLETE_PROFILE_REDIRECT_MS);

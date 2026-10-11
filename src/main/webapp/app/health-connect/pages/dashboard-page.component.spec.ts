@@ -6,6 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
+import { wizardPanePath } from 'app/onboarding/wizard.service';
 import { FakeHealthConnectRepository } from '../testing/fake-health-connect.repository';
 import { HEALTH_CONNECT_REPOSITORY } from '../health-connect.repository';
 import { RestrictedPart } from '../api/restricted-parts';
@@ -18,7 +19,14 @@ describe('DashboardPageComponent', () => {
   let component: DashboardPageComponent;
   let fixture: ComponentFixture<DashboardPageComponent>;
   let httpMock: HttpTestingController;
-  const router = { navigate: jest.fn(() => Promise.resolve(true)), url: '/dashboard' };
+  // navigateByUrl as well as navigate since T8: the step-1 trigger opens the wizard's first pane by
+  // URL, and a stub missing the method turns a behavioural question into a TypeError in five
+  // unrelated cases.
+  const router = {
+    navigate: jest.fn(() => Promise.resolve(true)),
+    navigateByUrl: jest.fn(() => Promise.resolve(true)),
+    url: '/dashboard',
+  };
 
   // ONE SPELLING OF THE FAKE, FOR THE WHOLE FILE (backlog items 172 and 200). This file carried TWO
   // byte-identical copies of this arrow, one in each of the last two `describe`s, plus two inline
@@ -89,6 +97,7 @@ describe('DashboardPageComponent', () => {
     repository().reset();
     fixture.detectChanges();
     router.navigate.mockClear();
+    router.navigateByUrl.mockClear();
   };
 
   beforeEach(() => setUp());
@@ -260,6 +269,78 @@ describe('DashboardPageComponent', () => {
       jest.advanceTimersByTime(2000);
 
       expect(router.navigate).not.toHaveBeenCalled();
+    });
+
+    /**
+     * ⚠ **A fifth condition since T8.** The wizard's panes are children of this route, so
+     * `router.url.startsWith('/dashboard')` is *true* inside them — which was the old test — and
+     * this timer would have pulled an applicant out of step 1's dialog two seconds after it opened,
+     * onto the tab page the wizard replaces. Same failure as "already navigated away", one level
+     * down.
+     */
+    it('does not yank someone out of an open wizard pane', () => {
+      TestBed.inject(AccountService).authenticate(new Account(true, ['ROLE_USER'], '', null, 'en', null, 'applicant', null));
+      flushProgress(false);
+      router.url = wizardPanePath('account');
+
+      settle();
+
+      expect(router.navigate).not.toHaveBeenCalled();
+      router.url = '/dashboard';
+    });
+  });
+
+  /**
+   * ⭐ **Step 1's trigger** — `profile.md:171-173`: *"if any of the account's `firstName`,
+   * `lastName`, `langKey` or `imageUrl` is empty, open the User update dialog over the dashboard."*
+   */
+  describe('the step-1 dialog trigger', () => {
+    const signIn = (account: Account): void => {
+      TestBed.inject(AccountService).authenticate(account);
+      flushProgress(true);
+      earningsRequest().flush({});
+    };
+
+    /** Immediately, not after a beat: a dialog that appears two seconds in reads as a fault. */
+    it('opens the account pane at once when a field is missing', () => {
+      signIn(new Account(true, ['ROLE_USER'], 'a@b.c', null, 'en', 'Mensah', 'applicant', 'content/path'));
+
+      expect(router.navigateByUrl).toHaveBeenCalledWith(wizardPanePath('account'));
+    });
+
+    /**
+     * ⛔ **`imageUrl` is one of the four**, which is what made the dialog reopen for ever before
+     * `backlog.md` row 232 built the avatar upload. It is in the trigger because the form can now
+     * satisfy it.
+     */
+    it('opens the account pane when only the avatar is missing', () => {
+      signIn(new Account(true, ['ROLE_USER'], 'a@b.c', 'Ama', 'en', 'Mensah', 'applicant', null));
+
+      expect(router.navigateByUrl).toHaveBeenCalledWith(wizardPanePath('account'));
+    });
+
+    it('leaves a complete account alone', () => {
+      signIn(new Account(true, ['ROLE_DOCTOR'], 'a@b.c', 'Ama', 'en', 'Mensah', 'doctor', 'content/path'));
+
+      expect(router.navigateByUrl).not.toHaveBeenCalled();
+    });
+
+    /** Unknown is not incomplete — opening a dialog on an unknown account opens it over everybody. */
+    it('opens nothing while no account has arrived', () => {
+      flushProgress(true);
+      earningsRequest().flush({});
+
+      expect(router.navigateByUrl).not.toHaveBeenCalled();
+    });
+
+    /** Someone already inside a pane has been taken somewhere; re-navigating is yanking them back. */
+    it('does not reopen pane 1 over a pane the reader has already moved to', () => {
+      router.url = wizardPanePath('documents');
+
+      signIn(new Account(true, ['ROLE_USER'], 'a@b.c', null, 'en', null, 'applicant', null));
+
+      expect(router.navigateByUrl).not.toHaveBeenCalled();
+      router.url = '/dashboard';
     });
   });
 

@@ -13,7 +13,8 @@
       "earnings": "Earnings",
       "collapseSidebar": "Collapse the menu",
       "expandSidebar": "Expand the menu",
-      "profile": "Profile"
+      "profile": "Profile",
+      "onboarding": "Onboarding"
     },
     "roles": {
       "admin": "Admin",
@@ -434,6 +435,80 @@
         "started": "Application started",
         "documentUploaded": "Document uploaded",
         "submitted": "Submitted for review"
+      },
+      "wizard": {
+        "stepCounter": "Step {{step}} of {{total}}",
+        "nextLocked": "Finish this step before you can move on to the next one.",
+        "loading": "Loading…",
+        "avatarUnreadable": "That image could not be read in your browser. Please try another file.",
+        "avatarRejected": "Choose a JPEG or PNG image no larger than 10 MB.",
+        "toast": {
+          "accountSaved": "Your account details have been saved",
+          "avatarSaved": "Your photograph has been saved",
+          "profileSaved": "Your profile has been saved"
+        },
+        "account": {
+          "title": "Complete your account",
+          "subtitle": "Your name, the language this portal speaks to you in, and a photograph of you.",
+          "identity": "Your name",
+          "photo": "Profile photograph",
+          "choosePhoto": "Choose a photograph",
+          "photoHint": "A JPEG or PNG portrait. It is resized in your browser before it is sent.",
+          "photoUploading": "Sending your photograph…",
+          "photoRequired": "A photograph is required before you can move on.",
+          "complete": "This step is complete.",
+          "loadError": "Your account could not be loaded. Reload the page to try again."
+        },
+        "profile": {
+          "title": "Your credentialing profile",
+          "subtitle": "Every field here is required. Work through one section at a time; the whole form is saved together.",
+          "loadError": "Your profile could not be loaded.",
+          "gapsHeadline": "{{count}} values are still needed before this step can be saved.",
+          "gapsInSection": "({{count}} missing)",
+          "sections": {
+            "identity": "From your account",
+            "personal": "Personal details",
+            "address": "Address",
+            "contacts": "Next of kin"
+          },
+          "identityHint": "These come from your account and are edited in the first step.",
+          "accountId": "Account reference",
+          "optional": "Optional",
+          "middleNames": "Middle names",
+          "phoneNumber": "Other phone",
+          "sexes": {
+            "FEMALE": "Female",
+            "MALE": "Male"
+          },
+          "contactsHint": "At least {{count}} emergency contacts are required, each with a full address.",
+          "contactNumber": "Contact {{number}}",
+          "contactAddress": "Their address",
+          "addContact": "Add another contact",
+          "removeContact": "Remove",
+          "contactFields": {
+            "name": "Contact name",
+            "relationship": "Relationship",
+            "email": "Contact email",
+            "phone": "Contact phone"
+          }
+        },
+        "documents": {
+          "title": "Your documents",
+          "subtitle": "Four documents are required before your application can be submitted for review.",
+          "outstanding": "{{count}} of the required documents are still missing.",
+          "satisfied": "Provided",
+          "notSatisfied": "Still needed"
+        },
+        "application": {
+          "title": "Your application",
+          "fromCareers": "Pre-selected from the role you applied for. Change it if it is wrong.",
+          "consentRequired": "Consent is required before an application can be made.",
+          "agreedOn": "You gave your consent on {{date}}.",
+          "blocked": {
+            "incomplete": "Submit becomes available once every requirement above is satisfied.",
+            "alreadySubmitted": "Your application has been submitted. You can still correct your answers here."
+          }
+        }
       }
     },
     "review": {
@@ -599,6 +674,9 @@
         "loadError": "Unable to load your application.",
         "status": "Status",
         "finishFirst": "Finish every requirement above before submitting."
+      },
+      "avatar": {
+        "alt": "Profile photograph"
       }
     },
     "caseQueue": {

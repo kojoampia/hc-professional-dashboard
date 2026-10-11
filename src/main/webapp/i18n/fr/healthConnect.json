@@ -13,7 +13,8 @@
       "earnings": "Revenus",
       "collapseSidebar": "Réduire le menu",
       "expandSidebar": "Développer le menu",
-      "profile": "Profil"
+      "profile": "Profil",
+      "onboarding": "Intégration"
     },
     "roles": {
       "admin": "Administrateur",
@@ -434,6 +435,80 @@
         "started": "Demande commencée",
         "documentUploaded": "Document téléversé",
         "submitted": "Soumise pour examen"
+      },
+      "wizard": {
+        "stepCounter": "Étape {{step}} sur {{total}}",
+        "nextLocked": "Terminez cette étape avant de passer à la suivante.",
+        "loading": "Chargement…",
+        "avatarUnreadable": "Votre navigateur n’a pas pu lire cette image. Essayez un autre fichier.",
+        "avatarRejected": "Choisissez une image JPEG ou PNG ne dépassant pas 10 Mo.",
+        "toast": {
+          "accountSaved": "Les informations de votre compte ont été enregistrées",
+          "avatarSaved": "Votre photographie a été enregistrée",
+          "profileSaved": "Votre profil a été enregistré"
+        },
+        "account": {
+          "title": "Complétez votre compte",
+          "subtitle": "Votre nom, la langue dans laquelle ce portail s’adresse à vous, et une photographie de vous.",
+          "identity": "Votre nom",
+          "photo": "Photographie de profil",
+          "choosePhoto": "Choisir une photographie",
+          "photoHint": "Un portrait en JPEG ou PNG. Il est redimensionné dans votre navigateur avant l’envoi.",
+          "photoUploading": "Envoi de votre photographie…",
+          "photoRequired": "Une photographie est nécessaire pour pouvoir continuer.",
+          "complete": "Cette étape est terminée.",
+          "loadError": "Votre compte n’a pas pu être chargé. Rechargez la page pour réessayer."
+        },
+        "profile": {
+          "title": "Votre profil d’accréditation",
+          "subtitle": "Tous les champs sont obligatoires. Remplissez une section à la fois ; le formulaire est enregistré en entier.",
+          "loadError": "Votre profil n’a pas pu être chargé.",
+          "gapsHeadline": "Il manque encore {{count}} informations pour enregistrer cette étape.",
+          "gapsInSection": "({{count}} à compléter)",
+          "sections": {
+            "identity": "Depuis votre compte",
+            "personal": "Informations personnelles",
+            "address": "Adresse",
+            "contacts": "Personnes à prévenir"
+          },
+          "identityHint": "Ces informations proviennent de votre compte et se modifient à la première étape.",
+          "accountId": "Référence du compte",
+          "optional": "Facultatif",
+          "middleNames": "Deuxième prénom",
+          "phoneNumber": "Autre téléphone",
+          "sexes": {
+            "FEMALE": "Femme",
+            "MALE": "Homme"
+          },
+          "contactsHint": "Au moins {{count}} personnes à prévenir sont requises, chacune avec une adresse complète.",
+          "contactNumber": "Contact {{number}}",
+          "contactAddress": "Son adresse",
+          "addContact": "Ajouter un autre contact",
+          "removeContact": "Retirer",
+          "contactFields": {
+            "name": "Nom du contact",
+            "relationship": "Lien de parenté",
+            "email": "Adresse e-mail du contact",
+            "phone": "Téléphone du contact"
+          }
+        },
+        "documents": {
+          "title": "Vos documents",
+          "subtitle": "Quatre documents sont requis avant que votre candidature puisse être soumise à examen.",
+          "outstanding": "Il manque encore {{count}} des documents obligatoires.",
+          "satisfied": "Fourni",
+          "notSatisfied": "À fournir"
+        },
+        "application": {
+          "title": "Votre candidature",
+          "fromCareers": "Présélectionné d’après le poste auquel vous avez répondu. Modifiez-le si nécessaire.",
+          "consentRequired": "Votre consentement est nécessaire pour déposer une candidature.",
+          "agreedOn": "Vous avez donné votre consentement le {{date}}.",
+          "blocked": {
+            "incomplete": "L’envoi sera possible lorsque toutes les conditions ci-dessus seront remplies.",
+            "alreadySubmitted": "Votre candidature a été envoyée. Vous pouvez encore corriger vos réponses ici."
+          }
+        }
       }
     },
     "review": {
@@ -599,6 +674,9 @@
         "loadError": "Impossible de charger votre candidature.",
         "status": "Statut",
         "finishFirst": "Complétez toutes les exigences ci-dessus avant de soumettre."
+      },
+      "avatar": {
+        "alt": "Photographie de profil"
       }
     },
     "caseQueue": {

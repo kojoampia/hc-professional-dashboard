@@ -1,0 +1,117 @@
+<div class="mx-auto max-w-3xl">
+  <h2 class="text-lg font-extrabold tracking-tight text-hpd-primary-dark" jhiTranslate="healthConnect.onboarding.wizard.account.title">
+    Complete your account
+  </h2>
+  <p class="mb-6 mt-1 text-sm text-hpd-muted" jhiTranslate="healthConnect.onboarding.wizard.account.subtitle">
+    Your name, the language the portal speaks to you in, and a photograph.
+  </p>
+
+  @switch (loadState()) {
+    @case ('loading') {
+      <p class="text-sm text-hpd-muted" jhiTranslate="healthConnect.onboarding.wizard.loading">Loading…</p>
+    }
+    @case ('error') {
+      <div class="rounded-hpd-sm border border-hpd-danger/25 bg-hpd-danger-tint px-4 py-3 text-sm text-hpd-danger" role="alert">
+        <span jhiTranslate="healthConnect.onboarding.wizard.account.loadError">Your account could not be loaded.</span>
+      </div>
+    }
+    @default {
+      <form class="grid gap-6" name="userUpdateForm" role="form" (ngSubmit)="save()" [formGroup]="form" novalidate>
+        <!--
+          THE AVATAR, and it is outside the form group on purpose: it is not a typed value. Choosing a
+          photograph uploads it and records its path on the account in two requests of its own, so
+          there is nothing here for Save to send — see the component note on why that ordering is the
+          whole of this field.
+        -->
+        <fieldset class="m-0 flex flex-wrap items-center gap-4 border-0 p-0">
+          <legend class="hpd-label mb-2 basis-full" jhiTranslate="healthConnect.onboarding.wizard.account.photo">Profile photograph</legend>
+
+          <hpd-account-avatar
+            [imageUrl]="avatarUrl()"
+            [initials]="initials()"
+            imageClass="h-20 w-20 flex-none rounded-full object-cover"
+            initialsClass="grid h-20 w-20 flex-none place-items-center rounded-full bg-hpd-gold-bright text-xl font-extrabold text-hpd-primary-deep"
+            data-cy="accountStepAvatar"
+          />
+
+          <div class="min-w-0">
+            <hpd-file-upload-trigger
+              labelKey="healthConnect.onboarding.wizard.account.choosePhoto"
+              [acceptedTypes]="avatarAcceptedTypes"
+              [maximumBytes]="maxSourceBytes"
+              [disabled]="uploading() || saving()"
+              (filesSelected)="chooseAvatar($event)"
+              (invalidFiles)="rejectedAvatar()"
+            />
+            <p class="m-0 text-xs text-hpd-muted" jhiTranslate="healthConnect.onboarding.wizard.account.photoHint">
+              A JPEG or PNG portrait. It is resized in your browser before it is sent.
+            </p>
+            @if (uploading()) {
+              <p class="m-0 mt-1 text-xs text-hpd-muted" role="status" aria-live="polite" data-cy="accountStepAvatarBusy">
+                <span jhiTranslate="healthConnect.onboarding.wizard.account.photoUploading">Sending your photograph…</span>
+              </p>
+            }
+            @if (!avatarUrl() && !uploading()) {
+              <p class="m-0 mt-1 text-xs text-hpd-danger" data-cy="accountStepAvatarMissing">
+                <span jhiTranslate="healthConnect.onboarding.wizard.account.photoRequired">A photograph is required.</span>
+              </p>
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class="m-0 grid min-w-0 gap-4 border-0 p-0 sm:grid-cols-2">
+          <legend class="hpd-label mb-2 sm:col-span-2" jhiTranslate="healthConnect.onboarding.wizard.account.identity">Your name</legend>
+
+          <div>
+            <label class="hpd-label" for="uu-firstName" jhiTranslate="settings.form.firstname">First name</label>
+            <input
+              class="hpd-focusable hpd-input"
+              type="text"
+              id="uu-firstName"
+              formControlName="firstName"
+              data-cy="accountStepFirstName"
+            />
+            @if (form.controls.firstName.invalid && form.controls.firstName.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+
+          <div>
+            <label class="hpd-label" for="uu-lastName" jhiTranslate="settings.form.lastname">Last name</label>
+            <input class="hpd-focusable hpd-input" type="text" id="uu-lastName" formControlName="lastName" data-cy="accountStepLastName" />
+            @if (form.controls.lastName.invalid && form.controls.lastName.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+
+          <div>
+            <label class="hpd-label" for="uu-langKey" jhiTranslate="settings.form.language">Language</label>
+            <!--
+              The options are ENDONYMS from findLanguageFromKey — English, Español, Français, Deutsch
+              — not catalogue entries. A language's name is rendered in its own language and never
+              translated per locale, so there is nothing for four catalogues to hold here. See the
+              component note; profile-addendum.md § 2 corrects the opposite claim.
+            -->
+            <select class="hpd-focusable hpd-input" id="uu-langKey" formControlName="langKey" data-cy="accountStepLangKey">
+              <option value=""></option>
+              @for (language of languages; track language) {
+                <option [value]="language">{{ language | findLanguageFromKey }}</option>
+              }
+            </select>
+            @if (form.controls.langKey.invalid && form.controls.langKey.touched) {
+              <small class="mt-1 block text-xs text-hpd-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+        </fieldset>
+
+        @if (accountComplete()) {
+          <p class="m-0 text-xs font-semibold text-hpd-success" role="status" aria-live="polite" data-cy="accountStepComplete">
+            <span jhiTranslate="healthConnect.onboarding.wizard.account.complete">This step is complete.</span>
+          </p>
+        }
+
+        <hpd-wizard-footer pane="account" [saving]="saving() || uploading()" (save)="save()" />
+      </form>
+    }
+  }
+</div>

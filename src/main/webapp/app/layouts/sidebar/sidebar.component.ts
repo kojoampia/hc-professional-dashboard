@@ -9,6 +9,7 @@ import { LANGUAGES } from 'app/config/language.constants';
 import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
 import { LoginService } from 'app/login/login.service';
+import AccountAvatarComponent from 'app/account/user/account-avatar.component';
 import ActiveMenuDirective from './active-menu.directive';
 import { hasClinicalAuthority, resolveAuthorityRole } from 'app/health-connect/authority-role';
 import { DutyRosterAssignmentsService } from 'app/health-connect/api/duty-roster-assignments.service';
@@ -20,7 +21,7 @@ import { SHELL_NAV_GROUPS, ShellNavGroup, ShellNavItem } from './shell-navigatio
   selector: 'hpd-sidebar',
   templateUrl: './sidebar.component.html',
   host: { class: 'contents' },
-  imports: [RouterModule, SharedModule, ActiveMenuDirective, MatIconModule],
+  imports: [RouterModule, SharedModule, ActiveMenuDirective, MatIconModule, AccountAvatarComponent],
 })
 export default class SidebarComponent implements OnInit {
   /** Mobile off-canvas state; ignored on lg+ where the sidebar is always visible. */
