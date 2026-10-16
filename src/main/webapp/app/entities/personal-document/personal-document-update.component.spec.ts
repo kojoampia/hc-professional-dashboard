@@ -9,7 +9,8 @@ import { of, throwError } from 'rxjs';
 
 import { LANGUAGES } from 'app/config/language.constants';
 import { AlertService } from 'app/core/util/alert.service';
-import { OnboardingApiService, OnboardingProgressDto } from 'app/health-connect/api/onboarding-api.service';
+import { OnboardingProgressDto } from 'app/health-connect/api/onboarding-api.service';
+import { PersonalDocumentService } from './service';
 import { OnboardingProgressService } from 'app/onboarding/onboarding-progress.service';
 import { ProfileService } from 'app/entities/profile/service';
 import { WIZARD_PROFILE_STORAGE_KEY } from 'app/onboarding/wizard.service';
@@ -34,7 +35,7 @@ const progress = (done: string[] = []): OnboardingProgressDto => ({
 describe('Personal Document Update Component — step 3', () => {
   let comp: PersonalDocumentUpdateComponent;
   let fixture: ComponentFixture<PersonalDocumentUpdateComponent>;
-  let api: { listDocuments: jest.Mock; uploadDocument: jest.Mock };
+  let api: { query: jest.Mock; create: jest.Mock };
   let profileService: { find: jest.Mock };
   let progressService: { load: jest.Mock; refresh: jest.Mock; progress: jest.Mock };
   let alertService: { showToast: jest.Mock };
@@ -43,7 +44,7 @@ describe('Personal Document Update Component — step 3', () => {
     await TestBed.configureTestingModule({
       imports: [PersonalDocumentUpdateComponent, TranslateModule.forRoot()],
       providers: [
-        { provide: OnboardingApiService, useValue: api },
+        { provide: PersonalDocumentService, useValue: api },
         { provide: ProfileService, useValue: profileService },
         { provide: OnboardingProgressService, useValue: progressService },
         { provide: AlertService, useValue: alertService },
@@ -62,8 +63,8 @@ describe('Personal Document Update Component — step 3', () => {
   beforeEach(async () => {
     sessionStorage.clear();
     api = {
-      listDocuments: jest.fn().mockReturnValue(of([])),
-      uploadDocument: jest.fn().mockReturnValue(of({ id: 'd-1', type: 'CERTIFICATE' })),
+      query: jest.fn().mockReturnValue(of([])),
+      create: jest.fn().mockReturnValue(of({ id: 'd-1', type: 'CERTIFICATE' })),
     };
     profileService = { find: jest.fn().mockReturnValue(of({ id: 'p-1' })) };
     progressService = { load: jest.fn(), refresh: jest.fn(), progress: jest.fn().mockReturnValue(progress()) };
@@ -142,9 +143,9 @@ describe('Personal Document Update Component — step 3', () => {
 
     comp.upload([new File([''], 'me.jpg', { type: 'image/jpeg' })]);
 
-    expect(api.uploadDocument).toHaveBeenCalledWith(expect.any(File), 'PASSPHOTO', expect.any(Object));
+    expect(api.create).toHaveBeenCalledWith(expect.any(File), 'PASSPHOTO', expect.any(Object));
     expect(alertService.showToast).toHaveBeenCalledWith('healthConnect.onboarding.toast.documentUploaded');
-    expect(api.listDocuments).toHaveBeenCalledTimes(2);
+    expect(api.query).toHaveBeenCalledTimes(2);
   });
 
   /** Two of the server's seven 400s, caught before a request rather than after one. */
@@ -154,7 +155,7 @@ describe('Personal Document Update Component — step 3', () => {
 
     comp.upload([new File([''], 'licence.pdf', { type: 'application/pdf' })]);
 
-    expect(api.uploadDocument).not.toHaveBeenCalled();
+    expect(api.create).not.toHaveBeenCalled();
     expect(comp.expiryRequired).toBe(true);
   });
 
@@ -164,7 +165,7 @@ describe('Personal Document Update Component — step 3', () => {
 
     comp.upload([new File([''], 'thing.pdf', { type: 'application/pdf' })]);
 
-    expect(api.uploadDocument).not.toHaveBeenCalled();
+    expect(api.create).not.toHaveBeenCalled();
     expect(comp.otherLabelRequired).toBe(true);
   });
 
@@ -184,7 +185,7 @@ describe('Personal Document Update Component — step 3', () => {
 
   /** Naming a row is the only thing that archives it, and only a live row of the same type qualifies. */
   it('should offer only live documents of the selected type as a replacement', () => {
-    api.listDocuments.mockReturnValue(
+    api.query.mockReturnValue(
       of([
         { id: 'd-1', type: 'CERTIFICATE' },
         { id: 'd-2', type: 'CERTIFICATE', supersededAt: '2026-01-01T00:00:00Z' },
@@ -207,7 +208,7 @@ describe('Personal Document Update Component — step 3', () => {
   });
 
   it('should treat a 404 document list as empty rather than as a failure', () => {
-    api.listDocuments.mockReturnValue(throwError(() => ({ status: 404 })));
+    api.query.mockReturnValue(throwError(() => ({ status: 404 })));
 
     comp.ngOnInit();
 
@@ -215,7 +216,7 @@ describe('Personal Document Update Component — step 3', () => {
   });
 
   it('should report a genuine read failure', () => {
-    api.listDocuments.mockReturnValue(throwError(() => ({ status: 500 })));
+    api.query.mockReturnValue(throwError(() => ({ status: 500 })));
 
     comp.ngOnInit();
 
@@ -233,7 +234,7 @@ describe('Personal Document Update Component — rendered in four languages', ()
     await TestBed.configureTestingModule({
       imports: [PersonalDocumentUpdateComponent, TranslateModule.forRoot()],
       providers: [
-        { provide: OnboardingApiService, useValue: { listDocuments: () => of([]), uploadDocument: jest.fn() } },
+        { provide: PersonalDocumentService, useValue: { query: () => of([]), create: jest.fn() } },
         { provide: ProfileService, useValue: { find: () => of({ id: 'p-1' }) } },
         {
           provide: OnboardingProgressService,

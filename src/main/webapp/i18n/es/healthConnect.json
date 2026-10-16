@@ -360,7 +360,6 @@
       "consentText": "Doy mi consentimiento para el tratamiento de mi información de identidad, cualificación y registro con fines de acreditación, y confirmo que la información que proporciono es exacta.",
       "requestedRole": "Rol clínico solicitado",
       "correctionRequired": "Su solicitud fue devuelta para corrección",
-      "reviewIntro": "Compruebe sus datos y envíe su solicitud para la revisión de credenciales.",
       "steps": {
         "documents": "Documentos",
         "status": "Estado"
@@ -379,16 +378,12 @@
         "district": "Distrito",
         "region": "Región",
         "country": "País",
-        "contactName": "Nombre del contacto",
-        "contactRelationship": "Parentesco",
-        "contactPhone": "Teléfono del contacto",
         "documentType": "Tipo de documento",
         "otherLabel": "Etiqueta",
         "expiryDate": "Fecha de caducidad",
         "replaces": "Sustituye a un documento existente"
       },
       "actions": {
-        "start": "Iniciar solicitud",
         "submit": "Enviar a revisión"
       },
       "statuses": {
@@ -609,43 +604,11 @@
       "noRecord": "Todavía no tienes un registro profesional, así que no hay turnos ni ingresos que mostrar. Aparecerán cuando se apruebe tu incorporación."
     },
     "profile": {
-      "title": "Perfil",
-      "subtitle": "Tu cuenta, tus datos de acreditación y tu contraseña.",
-      "account": {
-        "title": "Cuenta",
-        "subtitle": "Cómo inicias sesión y cómo se dirige a ti el portal."
-      },
       "password": {
         "title": "Contraseña",
         "subtitle": "Cambia la contraseña con la que inicias sesión."
       },
-      "clinical": {
-        "title": "Perfil clínico",
-        "subtitle": "Los datos con los que consta tu expediente de acreditación.",
-        "identity": "Identidad",
-        "address": "Dirección",
-        "emergencyContact": "Contacto de emergencia",
-        "titlePlaceholder": "Dr / DUE / Téc. emerg.",
-        "loading": "Cargando tu perfil…",
-        "loadError": "No se puede cargar esta información.",
-        "save": "Guardar perfil",
-        "saved": "Perfil guardado"
-      },
-      "tabs": "Secciones del perfil",
       "completion": {
-        "title": "Perfil completado",
-        "steps": {
-          "account": "Datos de la cuenta",
-          "profile": "Datos personales",
-          "documents": "Documentos acreditativos",
-          "consent": "Rol y consentimiento"
-        },
-        "gaps": {
-          "title": "Falta esto para completar el perfil"
-        },
-        "complete": "Está todo. A continuación, un administrador revisará tus credenciales.",
-        "incomplete": "Tu perfil se activará cuando esto esté completo y un administrador lo haya verificado.",
-        "liveReconnecting": "Actualizaciones en directo interrumpidas: reconectando.",
         "requirements": {
           "consent": "Consentimiento",
           "profile": "Datos personales",
@@ -659,8 +622,6 @@
         }
       },
       "documents": {
-        "title": "Documentos",
-        "subtitle": "Tus credenciales, verificadas por el equipo de acreditación.",
         "choose": "Elegir un archivo",
         "accepted": "PDF, PNG o JPEG, hasta 5 MB.",
         "loading": "Cargando tus documentos…",
@@ -669,11 +630,9 @@
         "rejected": "No se aceptó ese archivo: usa un PDF, PNG o JPEG de menos de 5 MB."
       },
       "application": {
-        "title": "Solicitud",
         "loading": "Cargando tu solicitud…",
         "loadError": "No se puede cargar tu solicitud.",
-        "status": "Estado",
-        "finishFirst": "Completa todos los requisitos anteriores antes de enviar."
+        "status": "Estado"
       },
       "avatar": {
         "alt": "Fotografía de perfil"

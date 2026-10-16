@@ -3,17 +3,13 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 
 import SharedModule from 'app/shared/shared.module';
 import { AlertService } from 'app/core/util/alert.service';
-import {
-  OnboardingApiService,
-  OnboardingDocumentDto,
-  OnboardingDocumentType,
-  isLiveDocument,
-} from 'app/health-connect/api/onboarding-api.service';
+import { OnboardingDocumentDto, OnboardingDocumentType, isLiveDocument } from 'app/health-connect/api/onboarding-api.service';
 import { OnboardingProgressService } from 'app/onboarding/onboarding-progress.service';
 import { readWizardProfileId } from 'app/onboarding/wizard.service';
 import FileUploadTriggerComponent from 'app/shared/health-connect/form-controls/file-upload-trigger.component';
 import WizardFooterComponent from 'app/shared/health-connect/wizard/wizard-footer.component';
 import { ProfileService } from 'app/entities/profile/service';
+import { PersonalDocumentService } from './service';
 
 /**
  * The nine credentials an applicant may upload.
@@ -24,8 +20,9 @@ import { ProfileService } from 'app/entities/profile/service';
  * stored as a credential would also let a selfie satisfy `REQ_PHOTO` and carry an application to
  * `CREDENTIAL_REVIEW` (`backlog.md` row 232).
  *
- * <p>Deliberately the same nine, in the same order, as `documents-tab.component.ts`'s
- * `UPLOADABLE_TYPES` — one vocabulary rendered by two surfaces until T6 retires the tab.
+ * <p>It was deliberately the same nine, in the same order, as `documents-tab.component.ts`'s
+ * `UPLOADABLE_TYPES` — one vocabulary rendered by two surfaces until T6 retired the tab, leaving
+ * this the only copy.
  */
 const UPLOADABLE_TYPES: OnboardingDocumentType[] = [
   'CERTIFICATE',
@@ -85,7 +82,7 @@ const MANDATORY_REQUIREMENT_KEYS: readonly string[] = ['certificate', 'license',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class PersonalDocumentUpdateComponent implements OnInit {
-  private readonly api = inject(OnboardingApiService);
+  private readonly api = inject(PersonalDocumentService);
   private readonly profileService = inject(ProfileService);
   private readonly alertService = inject(AlertService);
   private readonly progressService = inject(OnboardingProgressService);
@@ -170,7 +167,7 @@ export default class PersonalDocumentUpdateComponent implements OnInit {
 
   load(): void {
     this.loadState.set('loading');
-    this.api.listDocuments().subscribe({
+    this.api.query().subscribe({
       next: documents => {
         this.documents.set(documents);
         this.loadState.set('ready');
@@ -208,7 +205,7 @@ export default class PersonalDocumentUpdateComponent implements OnInit {
 
     this.uploading.set(true);
     this.api
-      .uploadDocument(file, type, {
+      .create(file, type, {
         otherLabel: otherLabel || undefined,
         expiryDate: expiryDate || undefined,
         supersedesDocumentId: supersedesDocumentId || undefined,

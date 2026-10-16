@@ -7,7 +7,7 @@ import { AlertService } from 'app/core/util/alert.service';
 import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
 import { LANGUAGES } from 'app/config/language.constants';
-import { OnboardingApiService } from 'app/health-connect/api/onboarding-api.service';
+import { PersonalDocumentService } from 'app/entities/personal-document/service';
 import { OnboardingProgressService } from 'app/onboarding/onboarding-progress.service';
 import { WizardService } from 'app/onboarding/wizard.service';
 import FileUploadTriggerComponent from 'app/shared/health-connect/form-controls/file-upload-trigger.component';
@@ -86,7 +86,7 @@ const MAX_SOURCE_BYTES = 10_000_000;
 export default class UserUpdateComponent implements OnInit {
   private readonly accountService = inject(AccountService);
   private readonly userAccountService = inject(UserAccountService);
-  private readonly onboardingApi = inject(OnboardingApiService);
+  private readonly personalDocumentService = inject(PersonalDocumentService);
   private readonly alertService = inject(AlertService);
   private readonly translateService = inject(TranslateService);
   private readonly progressService = inject(OnboardingProgressService);
@@ -186,12 +186,12 @@ export default class UserUpdateComponent implements OnInit {
     this.uploading.set(true);
     prepareAvatar(file).then(
       prepared =>
-        this.onboardingApi.uploadAvatar(prepared.data, prepared.dataContentType).subscribe({
+        this.personalDocumentService.createAvatar(prepared.data, prepared.dataContentType).subscribe({
           next: document => {
             // Straight on to the account write — see the class note on why this does not wait for
             // Save. `uploading` stays true across both so the picker cannot fire twice.
             this.write(
-              { ...account, imageUrl: this.onboardingApi.avatarContentPath(document.id) },
+              { ...account, imageUrl: this.personalDocumentService.avatarContentPath(document.id) },
               'healthConnect.onboarding.wizard.toast.avatarSaved',
               () => this.uploading.set(false),
             );
@@ -219,7 +219,7 @@ export default class UserUpdateComponent implements OnInit {
    * one account for the whole application and `authenticate()` is what pushes it to every subscriber
    * — the sidebar card among them, which is how a new avatar appears there without a reload. A forced
    * `identity(true)` would also work and would additionally run `navigateToStoredUrl()`, which can
-   * move the reader; `SettingsComponent.save()` sets the precedent for the local update.
+   * move the reader; the retired `SettingsComponent.save()` set the precedent for the local update.
    */
   private write(account: Account, toastKey: string, done?: () => void): void {
     this.saving.set(true);

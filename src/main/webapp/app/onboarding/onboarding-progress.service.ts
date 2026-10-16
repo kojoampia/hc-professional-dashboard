@@ -6,10 +6,12 @@ import { OnboardingProgressStreamService } from './onboarding-progress-stream.se
 /**
  * One copy of "how far has this clinician got", shared by everything that asks.
  *
- * <p>Three surfaces read it — the meter at the top of {@code /account/profile}, the post-sign-in
- * redirect on the dashboard, and the profile tabs' per-requirement ticks — and they must agree.
- * Holding it here rather than fetching per component also means the dashboard's redirect check and
- * the profile page's meter cost one request between them, not two.
+ * <p>Its readers since T6 retired the tab page: the dashboard's incomplete-profile redirect, the
+ * four wizard panes' per-requirement ticks and footer gating (through {@code WizardService}, which
+ * derives pane sequencing from {@code progress().steps}), and {@code LoginService}, which clears it
+ * on sign-out — and they must agree. Holding it here rather than fetching per component also means
+ * the dashboard's redirect check and the pane an applicant is then sent into cost one request
+ * between them, not two.
  *
  * <p>The figure itself comes from {@code api/} and is never recomputed here. See
  * {@code professional-onboarding-workflow.md} § "Onboarding state events and the completion
@@ -32,8 +34,8 @@ export class OnboardingProgressService {
   /**
    * Fetches unless a request is already in flight.
    *
-   * <p>Guarded because the dashboard and the profile page both ask on init, and a clinician landing
-   * on the dashboard and being redirected to the profile would otherwise issue two.
+   * <p>Guarded because the dashboard and each wizard pane ask on init, and an applicant landing on
+   * the dashboard and being sent into a pane would otherwise issue two.
    */
   load(): void {
     if (this.loading()) {

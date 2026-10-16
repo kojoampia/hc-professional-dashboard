@@ -40,10 +40,11 @@ describe('Review pages (WP5 gate)', () => {
       expect(review.data?.['authorities']).toEqual([Authority.ADMIN]);
       expect(reviewDetail.data?.['authorities']).toEqual([Authority.ADMIN]);
 
-      // Onboarding is no longer a screen: its steps are tabs on /account/profile, and this path
-      // survives only as a redirect for the bookmarks and emails that still point at it. What has
-      // to stay true is that reaching it requires no clinical role — an applicant holds only
-      // ROLE_USER, and the profile page they land on is guarded by authentication alone.
+      // Onboarding is no longer a screen of its own: its steps are the wizard's routed-overlay
+      // panes under /dashboard/onboarding (T8, re-pointed by T6), and this path survives only as a
+      // redirect for the bookmarks and emails that still point at it. What has to stay true is that
+      // reaching it requires no clinical role — an applicant holds only ROLE_USER, and the panes it
+      // redirects into are gated by an authorities list that admits Authority.USER.
       const onboarding = appRoutes.find(r => r.path === 'onboarding')!;
       expect(onboarding.redirectTo).toBeDefined();
       expect(onboarding.data?.['authorities']).toBeUndefined();

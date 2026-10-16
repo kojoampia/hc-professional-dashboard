@@ -1,20 +1,23 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, from } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { PersonalDocumentType } from 'app/entities/personal-document/types.enum';
-import { Sex } from 'app/entities/profile/sex.enum';
 import { SKIP_ERROR_ALERT } from 'app/core/interceptor/error-handler.interceptor';
 
 /**
- * Applicant-facing onboarding API (professional-onboarding-workflow.md WP4).
+ * The reviewer's onboarding API, plus the two surfaces still genuinely under `/api/onboarding` —
+ * the acknowledgement and the progress meter (professional-onboarding-workflow.md WP4).
  *
- * <p>⚠ **It is no longer one surface.** The `/api/onboarding` base it was built against in WP3 now
- * carries only `/progress` and `/acknowledgement`; the profile moved to `api/profile` (F8),
- * documents to `api/personal-document` (T2) and the application to `api/professional-application`
- * (T3), each a base of its own below. Splitting this file follows in T6.
+ * <p>⚠ **It is no longer one surface, and since T6 it is no longer one client.** The `/api/onboarding`
+ * base it was built against in WP3 now carries only `/progress` and `/acknowledgement`; the profile
+ * moved to `api/profile` (F8), documents to `api/personal-document` (T2) and the application to
+ * `api/professional-application` (T3). T6 split the **applicant's** reads and writes onto the thin
+ * entities services `profile.md` names — `entities/profile/service.ts`,
+ * `entities/personal-document/service.ts`, `entities/application/service.ts` — so what remains here
+ * is the admin review surface (the queue, the decisions, the document verdicts), which stays on one
+ * client deliberately, and the shared wire types both halves speak.
  */
 
 export type OnboardingStatus =
@@ -83,56 +86,6 @@ export interface OnboardingEventDto {
 }
 
 /**
- * The document types that count as proof of identity, as opposed to a credential.
- *
- * <p>Lives here rather than beside either screen that uses it: the onboarding wizard collects the
- * card and the profile page edits it afterwards, and a list that disagreed between the two would
- * let a clinician pick a type the wizard would not have accepted.
- *
- * <p>⚠ **Typed `PersonalDocumentType[]` rather than `OnboardingDocumentType[]` since F9.** Both
- * mirror `api/`'s `DocumentType`, but `profile.md` types `Profile.cardType` by `types.enum.ts` and
- * a TS string enum is **nominal** — a bare `'GHANACARD'` literal is not assignable to it — so this
- * list, which is what the card dropdown iterates, has to be members rather than literals or the
- * dropdown cannot produce a value the wire type accepts. `OnboardingDocumentType` stays as it is
- * for `PersonalDocument.type`, which is T2's and T3's.
- *
- * <p>⚠ **The two no longer hold the same names, and that is deliberate (backlog row 232).**
- * `types.enum.ts` carries ten since `AVATAR` was added; this union keeps the nine credentials.
- * `OnboardingDocumentType` is also the parameter of `uploadDocument`, which posts to the
- * credential endpoint — an avatar has its own upload surface and T8 owns the input, so this union
- * is what refuses it at compile time.
- *
- * <p>⚠ **It is also the type of `OnboardingDocumentDto.type`, and that half is NOT settled.** Row
- * 232 explicitly leaves *"whether the avatar appears in the own-document list"* to the `api/`
- * package. If it does appear, an `AVATAR` arrives in this DTO as a value the union says is
- * impossible — so check what `api/` shipped rather than this comment, and if it is returned, widen
- * the union here while keeping `UPLOADABLE_TYPES` as it is. Splitting the read vocabulary from the
- * write one is the alternative, and is the cleaner answer if both are ever needed at once.
- */
-export const IDENTITY_TYPES: PersonalDocumentType[] = [
-  PersonalDocumentType.PASSPORT,
-  PersonalDocumentType.GHANACARD,
-  PersonalDocumentType.DRIVERLICENSE,
-  PersonalDocumentType.VOTERCARD,
-];
-
-export interface OnboardingAddressDto {
-  digitalAddress?: string | null;
-  streetAddress?: string | null;
-  town?: string | null;
-  city?: string | null;
-  district?: string | null;
-  region?: string | null;
-  country?: string | null;
-}
-
-export interface OnboardingEmergencyContactDto {
-  name?: string | null;
-  relationship?: string | null;
-  phone?: string | null;
-}
-
-/**
  * Server-computed onboarding completion (professional-onboarding-workflow.md § "Onboarding state
  * events and the completion contract").
  *
@@ -157,7 +110,7 @@ export interface OnboardingProgressDto {
    * decided on, added to this contract by unit A and consumed here by unit B.
    *
    * <p>Two readings of one state, and both ship: {@link requirements} is the fine-grained list,
-   * `steps` is the coarse one the page's four tabs render against. The server derives three of the
+   * `steps` is the coarse one the wizard's pane sequencing reads. The server derives three of the
    * four from the requirement answers rather than evaluating the predicates twice
    * (`OnboardingService.stepsFrom`), so the two cannot disagree about a predicate.
    *
@@ -175,13 +128,12 @@ export interface OnboardingProgressDto {
 }
 
 /**
- * `profile.md`'s four steps, which are also four of this page's five tabs — `application` is step 4,
- * `clinical` is step 2, `documents` is step 3 and `account` is step 1.
+ * `profile.md`'s four steps, which are also the wizard's four panes — `application` is step 4,
+ * `profile` is step 2, `documents` is step 3 and `account` is step 1.
  *
- * <p>⚠ **The names are the server's, and the tab ids are not the same words**: step 4 is called
- * `consent` on the wire and `application` in the UI. The constant `STEPS` in
- * `completion-meter.component.ts` is the one place that mapping is written down — this comment cited
- * `STEP_TABS`, which exists nowhere, and it was the only pointer to that mapping.
+ * <p>⚠ **The names are the server's, and the pane names are not the same words**: step 4 is called
+ * `consent` on the wire and `application` in the UI. `WIRE_STEP_FOR_PANE` in
+ * `app/onboarding/wizard.service.ts` is the one place that mapping is written down.
  */
 export interface OnboardingSteps {
   account: boolean;
@@ -239,39 +191,6 @@ export const ONBOARDING_REQUIREMENT_KEYS = [
 ] as const;
 
 export type OnboardingRequirementKey = (typeof ONBOARDING_REQUIREMENT_KEYS)[number];
-
-export interface OnboardingProfileDto {
-  id?: string | null;
-  accountId?: string | null;
-  firstName?: string | null;
-  middleNames?: string | null;
-  lastName?: string | null;
-  birthDate?: string | null;
-  /**
-   * One of `Sex`'s two members, typed since F9.
-   *
-   * <p>`profile.md`'s Profile model types this field `enum` and names the file it specifies for it,
-   * `app/entities/profile/sex.enum.ts`. It was `string | null`, so `{"sex":"banana"}` type-checked
-   * here and stored on the server.
-   */
-  sex?: Sex | null;
-  mobilePhone?: string | null;
-  email?: string | null;
-  title?: string | null;
-  /**
-   * Which identity document `cardNumber` is the number of — typed since F9.
-   *
-   * <p>`profile.md` names the vocabulary explicitly: *"PersonalDocumentType: `types.enum.ts`"*. That
-   * is the same vocabulary a `PersonalDocument.type` carries, which is the point — a card type and
-   * a document type are one vocabulary and were two, one of them free text. (The enum has ten
-   * members since row 232 added `AVATAR`, which is not an identity document and is not offered:
-   * `IDENTITY_TYPES` is what the dropdown iterates, and it is the four cards.)
-   */
-  cardType?: PersonalDocumentType | null;
-  cardNumber?: string | null;
-  address?: OnboardingAddressDto | null;
-  emergencyContact?: OnboardingEmergencyContactDto | null;
-}
 
 export interface OnboardingDocumentDto {
   id: string;
@@ -338,62 +257,30 @@ export class OnboardingApiService {
   private readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/onboarding', 'professionalservice');
 
   /**
-   * The applicant's own documents, which are no longer under `api/onboarding` (profile.md step 3, T2).
+   * The reviewer's half of `api/personal-document` (profile.md step 3, T2/T3): the verdicts and the
+   * loud content read. The applicant's half — the list, the uploads, the avatar — is
+   * `entities/personal-document/service.ts`'s since T6.
    *
-   * <p>A second base rather than a second service, deliberately: splitting this file is T6's work and
-   * it carries seven exports besides the service, so doing it here would widen a task that only has
-   * to move three calls. ⚠ What must NOT happen is these calls staying on `api/onboarding/documents`
-   * — the server mappings are gone, so that would be a consumer reading where nobody writes, which is
-   * silence that looks like health.
-   *
-   * <p>⭐ **`verifyDocument` and `rejectDocument` use this base too since T3.** They are the
-   * reviewer's half and stayed on `/api/onboarding/documents/{id}/...` through T2; they are now
-   * `PersonalDocumentReviewResource`'s on `/api/personal-document/{id}/...`, which is the base
-   * `profile.md` § Other Elements names for the whole collection.
+   * <p>⭐ **`verifyDocument` and `rejectDocument` use this base too since T3.** They stayed on
+   * `/api/onboarding/documents/{id}/...` through T2; they are now `PersonalDocumentReviewResource`'s
+   * on `/api/personal-document/{id}/...`, which is the base `profile.md` § Other Elements names for
+   * the whole collection.
    */
   private readonly documentUrl = this.applicationConfigService.getEndpointFor('api/personal-document', 'professionalservice');
 
   /**
-   * The professional application, which is no longer under `api/onboarding` (profile.md step 4, T3).
+   * The reviewer's half of the professional application, which is no longer under `api/onboarding`
+   * (profile.md step 4, T3): the queue, the `/{id}` reads and the lifecycle transitions. The
+   * applicant's verbs — `start`, `saveConsent`, `completeProfile`, `submit`, the own-application
+   * read — are `entities/application/service.ts`'s since T6.
    *
    * <p>`profile.md` § Other Elements: *"`api/onboarding/applications` should migrate to
-   * `api/professional-application`"*. All fifteen server mappings moved, so leaving **any** call
-   * below that names an application on the old base would be a consumer reading where nobody writes —
-   * silence that looks like health on the three shipped admin pages, and a dead Submit button for
-   * every applicant.
-   *
-   * <p>⚠ **This said "these eleven calls" and there are sixteen.** Eleven is the reviewer's half, the
-   * figure `onboarding-api.service.spec.ts` uses correctly for its spot-check; T3 re-pointed fifteen
-   * and added `saveConsent` as the sixteenth in the same commit. A hand-maintained tally that nothing
-   * fails when it drifts is not worth keeping, so there is no number here now — count the uses of this
-   * constant if you need one.
-   *
-   * <p>The sub-paths are unchanged under the new base — `/me`, `/me/submit`, `/{id}/decide` — so
-   * this is one URL swap and not eleven decisions.
-   *
-   * <p>A fourth base rather than a fourth service, for the reason `documentUrl` above gives:
-   * splitting this file is T6's work and it carries seven exports besides the service.
+   * `api/professional-application`"*. Leaving **any** call below on the old base would be a consumer
+   * reading where nobody writes — silence that looks like health on the three shipped admin pages.
+   * The sub-paths are unchanged under the new base, so that was one URL swap and not eleven
+   * decisions.
    */
   private readonly applicationUrl = this.applicationConfigService.getEndpointFor('api/professional-application', 'professionalservice');
-
-  /**
-   * The clinician's own profile, which is no longer under `api/onboarding` (profile.md step 2, F8).
-   *
-   * <p>`profile.md` § Other Elements: *"`api/onboarding/profile` should migrate to `api/profile`"*.
-   * The server mappings are **gone**, so leaving these two calls on the old base would be a consumer
-   * reading and writing where nobody serves — silence that looks like health, which on the write half
-   * means a pane answering 404 where it used to answer 200.
-   *
-   * <p>⚠ **The semantics changed with the path and that is the point of the migration.**
-   * `PUT /api/onboarding/profile` was a thirteen-field whole-document replace with no null guards;
-   * `PUT /api/profile` applies only the fields the body names. {@link ClinicalProfileComponent} still
-   * spreads `{...this.loaded, …}` and no longer has to — see the note there — but a pane that posts a
-   * subset is now safe, which it was not.
-   *
-   * <p>A third base rather than a third service, for the reason `documentUrl` above gives: splitting
-   * this file is T6's work and it carries seven exports besides the service.
-   */
-  private readonly profileUrl = this.applicationConfigService.getEndpointFor('api/profile', 'professionalservice');
 
   acknowledgementStatus(): Observable<{ acknowledged: boolean }> {
     return this.http.get<{ acknowledged: boolean }>(`${this.resourceUrl}/acknowledgement`);
@@ -428,10 +315,10 @@ export class OnboardingApiService {
    * The document's bytes, as a blob a caller turns into an object URL — never a bare `<img src>`,
    * because this path is behind `assertOwnerOrReviewer` and needs the `Authorization` header.
    *
-   * <p>`silent` opts the request out of the global error banner, for a caller that has a visible
-   * fallback of its own: T9's preview column renders its placeholder on a failed read, and a page
-   * fetching one blob per document row would otherwise stack one banner per failure. The reviewer's
-   * detail page stays loud — there the bytes are the task, not a decoration.
+   * <p>The reviewer's read, and loud on purpose — there the bytes are the task, not a decoration.
+   * The applicant's silent per-row preview read is `PersonalDocumentService.content`'s since T6; the
+   * two call one endpoint deliberately, the same split `ProfileService` records for `api/profile`.
+   * `silent` is kept for a reviewer surface that ever grows a placeholder of its own.
    */
   documentContent(id: string, options: { silent?: boolean } = {}): Observable<Blob> {
     return this.http.get(`${this.documentUrl}/${encodeURIComponent(id)}/content`, {
@@ -475,261 +362,16 @@ export class OnboardingApiService {
     return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/${encodeURIComponent(id)}/deactivate`, { reason });
   }
 
-  /**
-   * Starts the caller's application, recording step 4's consent and requested authority.
-   *
-   * <p>⚠ **The body is `profile.md` step 4's and was `{ requestedRole, consentAccepted }` until
-   * T3.** `agreed` and `authority` are the field names the specification gives, and the server's
-   * record binds exactly those three components — a stale name is simply not heard, so a renamed
-   * field left behind here would have stored `authority: null` and answered 201 doing it.
-   *
-   * <p>`agreed: true` is hard-coded because the caller only reaches this method from a ticked
-   * consent box; the server refuses `false` with a 400 either way, which is the half that matters.
-   *
-   * <p>⚠ **`authority` is validated server-side against the eight professional disciplines**, so a
-   * value outside them is a 400 with no application created. `ROLE_ADMIN` and `ROLE_USER` are among
-   * the refusals — the same two `careers-handoff.service.ts` leaves out of `KNOWN_TRACKS`. The
-   * careers handoff is unaffected and must stay so: it **drops** an unknown `?track=` rather than
-   * raising, so this is the backstop for a body that names one, not a second gate on the inbound
-   * parameters.
-   */
-  startApplication(authority: string, source?: string | null): Observable<OnboardingApplicationDto> {
-    return this.http.post<OnboardingApplicationDto>(`${this.applicationUrl}`, {
-      agreed: true,
-      authority,
-      source: source ?? null,
-    });
-  }
-
-  /**
-   * Step 4's **Save** — `PUT /me`: stores the consent and the requested authority, and advances to
-   * `CREDENTIAL_REVIEW` **only when every requirement is satisfied**.
-   *
-   * <p>⛔ **This comment made two claims that the owner's Save/Submit decision (2026-10-09) made
-   * false, and both are corrected here against the server.** It said Save and Submit *"call one
-   * service method — the difference between the two buttons is the wizard's (T8), not the server's"*,
-   * and that *"a second call answers 409"*.
-   *
-   * <p>**Read from `ProfessionalApplicationResource` and `OnboardingService`:** the resource has two
-   * handlers over **two** service methods — `saveConsent` and `submitForReview` — so the difference
-   * *is* the server's. They share one body, `storeThenAdvanceWhenComplete`, and differ in exactly one
-   * argument, `refuseWhenIncomplete`, so the storing and the completeness evaluation cannot drift
-   * apart:
-   *
-   * | | incomplete | complete |
-   * |---|---|---|
-   * | **Save** (`PUT /me`) | stores, **200**, no transition, no event | stores, advances to `CREDENTIAL_REVIEW`, publishes |
-   * | **{@link submit}** (`/me/submit`) | stores nothing, **400** naming the missing keys | stores, advances, publishes |
-   *
-   * <p>⚠ **A second Save answers 200.** It is repeatable by design — the service checks
-   * `LEGAL_TRANSITIONS` *before* transitioning rather than letting the state machine refuse, so a
-   * Save on an application already in `CREDENTIAL_REVIEW` stores the answers and returns it
-   * unadvanced. The 409 is {@link submit}'s: saying "I am finished" twice is a conflict in a way that
-   * saving twice is not.
-   *
-   * <p>⚠ Both paths refuse `agreed: false` with a 400, and both refuse an `authority` outside the
-   * eight professional disciplines with a 400 that stores nothing. Naming **no** authority is not an
-   * error here — Save stores and stays put, and only {@link submit} refuses it, among the requirement
-   * keys.
-   *
-   * <p>**No caller yet**, and that is expected: the step-4 pane is T8's.
-   */
-  saveConsent(authority: string): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/me`, { agreed: true, authority });
-  }
-
-  /**
-   * 404 means "no application", which is the normal state for every clinician seeded or invited
-   * rather than hired through the careers page — both callers already handle it, the wizard by
-   * opening at the consent step and the first-login interstitial by a `catchError`. Opted out of
-   * the global error banner because it is polled from the shell on every navigation, so the
-   * untreated version put a red "Not found" over every page in the portal.
-   */
-  getOwnApplication(): Observable<OnboardingApplicationDto> {
-    return this.http.get<OnboardingApplicationDto>(`${this.applicationUrl}/me`, {
-      context: new HttpContext().set(SKIP_ERROR_ALERT, true),
-    });
-  }
-
-  completeProfile(): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/me/complete-profile`, null);
-  }
-
-  /**
-   * Step 4's **Submit** — `PUT /me/submit`, the path the old `/applications/me/submit` mapping
-   * migrated to. **Not the same server operation as {@link saveConsent}**: see the table there.
-   *
-   * <p>⛔ **It said "the same server operation as `saveConsent`", and that stopped being true with
-   * the owner's Save/Submit decision (2026-10-09).** `OnboardingService.submitForReview` is a second
-   * method, and what it adds is the refusal: § Gap Update's *"when all requirements are satisfied"*.
-   * An incomplete application gets **400** naming the unsatisfied requirement keys — step 2's by
-   * `ProfileCompleteness`, step 3's four documents, step 4's authority — and **nothing is stored**,
-   * so the refusal is the whole answer. A complete one does exactly what Save does.
-   *
-   * <p>⚠ **Step 1's four account fields are not gated**: `firstName`, `lastName`, `langKey` and
-   * `imageUrl` are the gateway's `User`, which this service cannot see, so keeping step 1 ahead of
-   * step 2 is the client's job.
-   *
-   * <p>⚠ **A second Submit is a 409** from the state machine — `CREDENTIAL_REVIEW` is not a legal
-   * move out of itself, and the client does not get to decide transition legality.
-   *
-   * <p>⚠ **It carries a body since T3 and sent `null` before.** Step 4 has Submit store the consent
-   * and the requested authority as well as advancing the status, so the authority is a parameter
-   * rather than something the server reads off the row it already has.
-   */
-  submit(authority: string): Observable<OnboardingApplicationDto> {
-    return this.http.put<OnboardingApplicationDto>(`${this.applicationUrl}/me/submit`, { agreed: true, authority });
-  }
-
   events(applicationId: string): Observable<OnboardingEventDto[]> {
     return this.http.get<OnboardingEventDto[]>(`${this.applicationUrl}/${encodeURIComponent(applicationId)}/events`);
   }
 
   /**
    * Always answers, including for an account that has no application yet, so it needs no opt-out
-   * from the error banner the way the 404-prone lookups below do.
+   * from the error banner the way the 404-prone own-application and own-profile reads on the
+   * entities services do.
    */
   progress(): Observable<OnboardingProgressDto> {
     return this.http.get<OnboardingProgressDto>(`${this.resourceUrl}/progress`);
   }
-
-  /**
-   * A 404 here means "no profile yet", which both callers handle — the wizard leaves its form
-   * blank and the profile page shows an empty one. Opted out of the global error banner so that
-   * ordinary outcome stops rendering as "Not found" over a page that is working.
-   */
-  getOwnProfile(): Observable<OnboardingProfileDto> {
-    return this.http.get<OnboardingProfileDto>(this.profileUrl, {
-      context: new HttpContext().set(SKIP_ERROR_ALERT, true),
-    });
-  }
-
-  upsertProfile(profile: OnboardingProfileDto): Observable<OnboardingProfileDto> {
-    return this.http.put<OnboardingProfileDto>(this.profileUrl, profile);
-  }
-
-  listDocuments(): Observable<OnboardingDocumentDto[]> {
-    return this.http.get<OnboardingDocumentDto[]>(this.documentUrl);
-  }
-
-  /**
-   * Uploads a credential.
-   *
-   * <p>`supersedesDocumentId` names one of the caller's own live documents that this one replaces,
-   * and it is the only thing that archives a row (backlog.md item 20). The server does not infer the
-   * replacement, because it cannot: a renewed certificate and a second, different certificate are the
-   * same request. Sending nothing simply adds a document.
-   *
-   * <p>⚠ **A JSON body with `data` base64-encoded, which is `profile.md`'s specified
-   * `PersonalDocument` shape** (step 3, T2). This sent `multipart/form-data` until then. Two things
-   * follow and neither is cosmetic. The file has to be read in the browser before the request can be
-   * built, so this returns a promise-backed observable rather than firing immediately — a 5 MB scan
-   * takes a moment to read and the caller must not treat "the observable exists" as "the upload
-   * started". And base64 is 4/3 of the file, so a 5 MB document — the server's own ceiling — becomes
-   * roughly 6.7 MB of request, against nginx's 8 MB cap: the headroom is real but much smaller than
-   * it was, and anything past ~6 MB of document is refused by nginx with a bare 413 rather than by
-   * the service with a message.
-   */
-  /**
-   * Replaces the caller's profile photograph — `POST /api/personal-document/avatar` (`backlog.md`
-   * row 232), step 1's fourth field.
-   *
-   * <h2>Two components on the wire, and `type` is not one of them</h2>
-   *
-   * <p>The handler stores {@link PersonalDocumentType.AVATAR} and nothing else, so a `type` on the
-   * wire would be a field the server must ignore — the deny-list shape `api/`'s own
-   * `AvatarUpload` javadoc argues against. `name` is likewise absent and derived from the content
-   * type. The generic {@link uploadDocument} **refuses** `AVATAR` and names this path, which is why
-   * the two are separate methods rather than one with a conditional.
-   *
-   * <p>⚠ **The data is already processed when it arrives here.** `prepareAvatar` in
-   * `app/account/user/avatar-image.ts` downscales, bakes the EXIF orientation and re-encodes before
-   * this is called — so this method takes base64 and a content type rather than a `File`, unlike
-   * {@link uploadDocument}, which reads the file itself. A credential scan must reach the server
-   * byte-for-byte; an avatar must not.
-   *
-   * <h2>⛔ Typed `PersonalDocumentType`, never `OnboardingDocumentType`</h2>
-   *
-   * <p>The split between those two unions is deliberate and this is the one response that needs the
-   * wider one: `OnboardingDocumentType` keeps the **nine credentials** precisely so the credential
-   * upload cannot be handed an avatar at compile time, and `types.enum.ts` carries **ten**. So the
-   * avatar's own response cannot be typed by the credential union — see the comment at
-   * {@link IDENTITY_TYPES} for the full split.
-   *
-   * <p>⚠ **The caller must write `imageUrl` next**, and immediately: this returns a document id, and
-   * `User.imageUrl` on the gateway is where the path to it lives. The gateway never calls this
-   * service — it stores a 256-character string — so the two writes are the whole of the cross-service
-   * story, and a failure between them leaves `imageUrl` naming a document that no longer exists.
-   * {@link avatarContentPath} builds the value; render it defensively.
-   */
-  uploadAvatar(data: string, dataContentType: string): Observable<AvatarDocumentDto> {
-    return this.http.post<AvatarDocumentDto>(`${this.documentUrl}/avatar`, { data, dataContentType });
-  }
-
-  /**
-   * The value to write to `User.imageUrl` for an avatar document id.
-   *
-   * <p>⛔ **The path, not the id, and `api/` is explicit about which:** *"the client builds
-   * `<base>/api/personal-document/{id}/content` itself and writes it to `User.imageUrl` … No URL
-   * field is invented here; a second spelling of a path the client already has to know is a second
-   * thing to keep in step."* Built from the same {@link documentUrl} every other call on this base
-   * uses, so there is one spelling.
-   *
-   * <p>⚠ **It is not usable as a bare `<img src>`.** `GET …/{id}/content` is behind
-   * `assertOwnerOrReviewer` and needs the `Authorization` header, so a plain `src` gets a 401 and a
-   * broken image. `AccountAvatarComponent` fetches it as an authenticated blob; that is the only
-   * correct renderer in this repository.
-   *
-   * <p>⚠ `@Size(max = 256)` on the gateway field. This value is around 75 characters with the
-   * microservice prefix, so there is room — but a longer endpoint prefix would eat it.
-   */
-  avatarContentPath(documentId: string): string {
-    return `${this.documentUrl}/${encodeURIComponent(documentId)}/content`;
-  }
-
-  uploadDocument(
-    file: File,
-    type: OnboardingDocumentType,
-    options: { otherLabel?: string; expiryDate?: string; supersedesDocumentId?: string } = {},
-  ): Observable<OnboardingDocumentDto> {
-    return from(base64Of(file)).pipe(
-      switchMap(data =>
-        this.http.post<OnboardingDocumentDto>(this.documentUrl, {
-          name: file.name,
-          type,
-          data,
-          dataContentType: file.type,
-          otherLabel: options.otherLabel ?? null,
-          expiryDate: options.expiryDate ?? null,
-          supersedesDocumentId: options.supersedesDocumentId ?? null,
-        }),
-      ),
-    );
-  }
-}
-
-/**
- * The file's bytes as base64, without the `data:` prefix a data URL carries.
- *
- * <p>`FileReader.readAsDataURL` rather than `file.arrayBuffer()` plus `btoa`: the latter needs a
- * binary string built one character at a time, which blows the call stack on a multi-megabyte file
- * when written the obvious way (`String.fromCharCode(...bytes)`). The reader does the encoding
- * natively and in one pass.
- */
-function base64Of(file: File): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    // `reader.error` is a DOMException and is what a caller wants; the fallback is only for the
-    // case the File API allows but does not describe, and it is deliberately NOT a sentence — this
-    // never reaches a screen, and `untranslated-literals.spec.ts` rightly cannot tell a thrown
-    // message from a caption. `NotReadableError` is the File API's own name for this failure.
-    reader.onerror = () => reject(reader.error ?? new DOMException('', 'NotReadableError'));
-    reader.onload = () => {
-      const result = reader.result as string;
-      // `data:<mime>;base64,<payload>` — everything after the comma is the payload, and the comma
-      // cannot appear in base64 itself.
-      resolve(result.slice(result.indexOf(',') + 1));
-    };
-    reader.readAsDataURL(file);
-  });
 }

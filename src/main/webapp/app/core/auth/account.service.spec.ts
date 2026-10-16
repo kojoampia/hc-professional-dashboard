@@ -57,21 +57,6 @@ describe('Account Service', () => {
     httpMock.verify();
   });
 
-  describe('save', () => {
-    it('should call account saving endpoint with correct values', () => {
-      // GIVEN
-      const account = accountWithAuthorities([]);
-
-      // WHEN
-      service.save(account).subscribe();
-      const testRequest = httpMock.expectOne({ method: 'POST', url: applicationConfigService.getEndpointFor('api/account') });
-      testRequest.flush({});
-
-      // THEN
-      expect(testRequest.request.body).toEqual(account);
-    });
-  });
-
   describe('authenticate', () => {
     it('authenticationState should emit null if input is null', () => {
       // GIVEN

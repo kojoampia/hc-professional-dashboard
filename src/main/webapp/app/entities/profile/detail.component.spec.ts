@@ -8,7 +8,9 @@ import { of, throwError } from 'rxjs';
 import 'app/config/dayjs';
 import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
-import { OnboardingApiService, OnboardingApplicationDto, OnboardingDocumentDto } from 'app/health-connect/api/onboarding-api.service';
+import { OnboardingApplicationDto, OnboardingDocumentDto } from 'app/health-connect/api/onboarding-api.service';
+import { ApplicationService } from 'app/entities/application/service';
+import { PersonalDocumentService } from 'app/entities/personal-document/service';
 import { PersonalDocumentType } from 'app/entities/personal-document/types.enum';
 import { Sex } from 'app/entities/profile/sex.enum';
 
@@ -83,7 +85,8 @@ describe('Profile Detail Component', () => {
   let comp: ProfileDetailComponent;
   let accountService: { identity: jest.Mock };
   let profileService: { find: jest.Mock };
-  let api: { getOwnApplication: jest.Mock; listDocuments: jest.Mock; documentContent: jest.Mock };
+  let applicationService: { find: jest.Mock };
+  let personalDocumentService: { query: jest.Mock; content: jest.Mock };
   let createObjectURL: jest.Mock;
   let revokeObjectURL: jest.Mock;
 
@@ -93,7 +96,8 @@ describe('Profile Detail Component', () => {
       providers: [
         { provide: AccountService, useValue: accountService },
         { provide: ProfileService, useValue: profileService },
-        { provide: OnboardingApiService, useValue: api },
+        { provide: ApplicationService, useValue: applicationService },
+        { provide: PersonalDocumentService, useValue: personalDocumentService },
         // For the hpd-account-avatar child, which fetches its photograph itself.
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -119,10 +123,10 @@ describe('Profile Detail Component', () => {
 
     accountService = { identity: jest.fn().mockReturnValue(of(account(['ROLE_NURSE']))) };
     profileService = { find: jest.fn().mockReturnValue(of({ ...storedProfile })) };
-    api = {
-      getOwnApplication: jest.fn().mockReturnValue(of({ ...storedApplication })),
-      listDocuments: jest.fn().mockReturnValue(of([...storedDocuments])),
-      documentContent: jest.fn().mockReturnValue(of(new Blob(['x'], { type: 'image/png' }))),
+    applicationService = { find: jest.fn().mockReturnValue(of({ ...storedApplication })) };
+    personalDocumentService = {
+      query: jest.fn().mockReturnValue(of([...storedDocuments])),
+      content: jest.fn().mockReturnValue(of(new Blob(['x'], { type: 'image/png' }))),
     };
     await build();
   });
@@ -228,7 +232,7 @@ describe('Profile Detail Component', () => {
 
   it('should render no authority at all for an applicant with no application', () => {
     accountService.identity.mockReturnValue(of(account(['ROLE_USER'])));
-    api.getOwnApplication.mockReturnValue(throwError(() => ({ status: 404 })));
+    applicationService.find.mockReturnValue(throwError(() => ({ status: 404 })));
     fixture.detectChanges();
 
     expect(comp.authorityBadge()).toBeNull();
@@ -267,7 +271,7 @@ describe('Profile Detail Component', () => {
   });
 
   it('should render the not-consented sentence when there is no application, which truthfully means no consent', () => {
-    api.getOwnApplication.mockReturnValue(throwError(() => ({ status: 404 })));
+    applicationService.find.mockReturnValue(throwError(() => ({ status: 404 })));
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('[data-cy="consentNotAgreed"]')).not.toBeNull();
@@ -275,7 +279,7 @@ describe('Profile Detail Component', () => {
   });
 
   it('should render the not-consented sentence when the application exists but consent was not given', () => {
-    api.getOwnApplication.mockReturnValue(of({ ...storedApplication, agreed: false, agreedDate: null }));
+    applicationService.find.mockReturnValue(of({ ...storedApplication, agreed: false, agreedDate: null }));
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('[data-cy="consentNotAgreed"]')).not.toBeNull();
@@ -283,7 +287,7 @@ describe('Profile Detail Component', () => {
   });
 
   it('should render the error state — not "not consented" — when the application read fails', () => {
-    api.getOwnApplication.mockReturnValue(throwError(() => ({ status: 500 })));
+    applicationService.find.mockReturnValue(throwError(() => ({ status: 500 })));
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('[data-cy="consentLoadError"]')).not.toBeNull();
@@ -294,9 +298,9 @@ describe('Profile Detail Component', () => {
   it('should fetch each document’s bytes silently and render an object URL per image row', () => {
     fixture.detectChanges();
 
-    expect(api.documentContent).toHaveBeenCalledTimes(2);
-    expect(api.documentContent).toHaveBeenCalledWith('doc-1', { silent: true });
-    expect(api.documentContent).toHaveBeenCalledWith('doc-2', { silent: true });
+    expect(personalDocumentService.content).toHaveBeenCalledTimes(2);
+    expect(personalDocumentService.content).toHaveBeenCalledWith('doc-1', { silent: true });
+    expect(personalDocumentService.content).toHaveBeenCalledWith('doc-2', { silent: true });
     expect(createObjectURL).toHaveBeenCalledTimes(2);
 
     const previews = fixture.nativeElement.querySelectorAll('[data-cy="documentPreview"]') as NodeListOf<HTMLImageElement>;
@@ -305,7 +309,7 @@ describe('Profile Detail Component', () => {
   });
 
   it('should render the placeholder — and create no object URL — for a document that is not an image', () => {
-    api.documentContent.mockImplementation((id: string) =>
+    personalDocumentService.content.mockImplementation((id: string) =>
       of(id === 'doc-1' ? new Blob(['x'], { type: 'image/png' }) : new Blob(['x'], { type: 'application/pdf' })),
     );
     fixture.detectChanges();
@@ -316,7 +320,7 @@ describe('Profile Detail Component', () => {
   });
 
   it('should render the placeholder rather than an error when a preview read fails', () => {
-    api.documentContent.mockImplementation((id: string) =>
+    personalDocumentService.content.mockImplementation((id: string) =>
       id === 'doc-1' ? throwError(() => ({ status: 500 })) : of(new Blob(['x'], { type: 'image/png' })),
     );
     fixture.detectChanges();

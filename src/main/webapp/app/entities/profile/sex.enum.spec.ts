@@ -1,4 +1,4 @@
-import { OnboardingProfileDto } from 'app/health-connect/api/onboarding-api.service';
+import { Profile } from './model';
 
 import { SEXES, Sex } from './sex.enum';
 
@@ -58,12 +58,12 @@ describe('Sex', () => {
    * `npx ng build` is what actually enforces it — `tsc` alone does not type-check a file no route
    * reaches, which is exactly how an unrouted `entities/` tree hides errors.
    */
-  it('types OnboardingProfileDto.sex', () => {
-    const profile: OnboardingProfileDto = { sex: Sex.FEMALE };
+  it('types Profile.sex', () => {
+    const profile: Profile = { sex: Sex.FEMALE };
     expect(profile.sex).toBe('FEMALE');
 
     // @ts-expect-error a value outside the enumeration is no longer assignable — this was `string`.
-    const invalid: OnboardingProfileDto = { sex: 'banana' };
+    const invalid: Profile = { sex: 'banana' };
     expect(invalid.sex).toBe('banana');
   });
 });

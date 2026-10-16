@@ -8,10 +8,10 @@ import ProfileDetailComponent from 'app/entities/profile/detail.component';
  *
  * <p>Q2 (`../docs/profile-addendum.md` § 5): the route the retired tab page held, **re-pointed**
  * rather than a new path — it is the sidebar user card's destination and whatever clinicians have
- * bookmarked. The tab page it replaced (`app/account/profile/profile-page.component.ts`) is now unrouted and
- * retires with T6, which also owns re-pointing the `/onboarding` redirect; until then a `?tab=…`
- * query parameter arriving here (the old deep links) is simply ignored — the read view has no tabs,
- * and the wizard's panes live under `/dashboard` since T8.
+ * bookmarked. T6 deleted the tab page (`app/account/profile/`) and re-pointed the `/onboarding`
+ * redirect at the wizard; a stray `?tab=…` query parameter arriving here (the old deep links) is
+ * simply ignored — the read view has no tabs, and the wizard's panes live under `/dashboard` since
+ * T8.
  *
  * <p>Authenticated but **no clinical role required**: an applicant holding only `ROLE_USER` is
  * exactly who spends the most time looking at their own profile.

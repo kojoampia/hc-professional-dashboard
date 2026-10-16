@@ -7,37 +7,18 @@ import { Sex } from './sex.enum';
  * The professional's credentialing profile as `GET`/`PUT /api/profile` carries it — `profile.md`
  * § Profile.
  *
- * <h2>⛔ Why this is a SECOND wire type beside `OnboardingProfileDto`, and not a widening of it</h2>
+ * <h2>The one wire type for this endpoint, since T6</h2>
  *
- * <p>`health-connect/api/onboarding-api.service.ts` already has a profile type on this endpoint, and
- * a second one is exactly the "two correct-for-now copies" this estate keeps paying for. It is
- * nonetheless the right shape here, and the reason is forced rather than chosen:
- *
- * <ul>
- *   <li><b>That type speaks the DEPRECATED wire alias.</b> It carries singular
- *       `emergencyContact: {name, relationship, phone}` — `Profile.getEmergencyContact()`, a
- *       `@Transient` projection of `contacts[0]` kept *"on the wire only so the clients that have not
- *       migrated yet keep working"*, `@Deprecated(since = "profile.md T1")`, retiring with its last
- *       caller in **T6**. A pane written against it could express **one** contact where
- *       `profile.md:196` requires **two**, and the specified `EmergencyContact.email` and
- *       `EmergencyContact.address` are not on it at all.</li>
- *   <li><b>Widening it would break row 230's gate, in the direction that gate exists to refuse.</b>
- *       `onboarding/profile-requirements.ts` partitions `keyof OnboardingProfileDto` and proves the
- *       partition exhaustive at compile time, so adding `phoneNumber` and `contacts` there fails the
- *       build until both are classified — and classifying `phoneNumber` as a field of that form would
- *       give `ClinicalProfileComponent` a `Validators.required` control with **no input**, which that
- *       file forbids in as many words: *"a required control would leave the form permanently invalid
- *       with a disabled Save button and nothing on screen to click"*. T8 must not reach into row
- *       230's internals to build its own pane.</li>
- * </ul>
- *
- * <p>⭐ **So the two types are not a fork; they are the two sides of a migration already scheduled.**
- * This one speaks `contacts` and is the surviving shape. `OnboardingProfileDto` retires with
- * `ClinicalProfileComponent` and `mobile/`'s Me tab in T6, which is the row that drops the alias from
- * the server too. ⚠ Until then **both write the same document**, which is safe because
- * `PUT /api/profile` is a partial update — a pane that names `contacts` and a tab that names
- * `emergencyContact` each touch only what they send, and `contacts` wins if a body carries both
- * (`Profile.setEmergencyContact`).
+ * <p>It was a second type beside `OnboardingProfileDto` from T8 until T6, and the split was forced
+ * rather than chosen: that type spoke the **deprecated singular `emergencyContact` wire alias** —
+ * `Profile.getEmergencyContact()`, a `@Transient` projection of `contacts[0]` kept *"on the wire only
+ * so the clients that have not migrated yet keep working"* — and a pane written against it could
+ * express **one** contact where `profile.md:196` requires **two**, with the specified
+ * `EmergencyContact.email` and `EmergencyContact.address` not on it at all. T6 retired the alias's
+ * last `web/` caller (`ClinicalProfileComponent`, with the whole of `app/account/profile/`) and the
+ * DTO with it, so this is the surviving shape and the only one. ⛔ **Do not reintroduce the alias
+ * field here** — `web/` carrying no `emergencyContact` binder is what lets `api/` drop the alias
+ * once `mobile/`'s Me tab (the other consumer, re-pointed on its own branch) stops speaking it.
  *
  * <h2>Every field is required, and that is a client-side rule</h2>
  *
@@ -70,7 +51,7 @@ export interface Profile {
   /**
    * ⚠ **`middleNames`, plural — the field `api/` has.** `profile.md` wrote `middleName`; the owner
    * aligned the specification to the code (`profile-addendum.md` § 6a, F6). It had an input nowhere in
-   * the estate until this pane, which is why `profile-requirements.ts` lists it as a standing defect:
+   * the estate until this pane — row 230's `profile-requirements.ts` (retired with the old form in T6) listed it as a standing defect:
    * *"it can only ever be non-empty for a profile written by something other than this screen."* This
    * is that screen.
    */
@@ -79,7 +60,7 @@ export interface Profile {
   birthDate?: string | null;
   sex?: Sex | null;
   mobilePhone?: string | null;
-  /** ⚠ Required by `ProfileCompleteness` and absent from `OnboardingProfileDto` — see the class note. */
+  /** ⚠ Required by `ProfileCompleteness`, and absent from the retired alias-speaking DTO — see the class note. */
   phoneNumber?: string | null;
   email?: string | null;
   address?: Address | null;
@@ -97,6 +78,31 @@ export interface Profile {
   /** The server's completeness stamp. Refused if a body names it. See the class note. */
   status?: ProfileStatus | null;
 }
+
+/**
+ * The document types that count as proof of identity, as opposed to a credential — what the
+ * `cardType` picker iterates.
+ *
+ * <p>Here beside the field it types rather than beside either screen that renders it: the wizard's
+ * profile pane collects the card and the read view shows it afterwards, and a list that disagreed
+ * between the two would let a clinician pick a type the other would not have accepted. (It lived in
+ * `onboarding-api.service.ts` until T6 split that file; this is the surviving copy, moved rather
+ * than duplicated.)
+ *
+ * <p>⚠ **Typed `PersonalDocumentType[]` rather than `OnboardingDocumentType[]` since F9.** Both
+ * mirror `api/`'s `DocumentType`, but `profile.md` types `Profile.cardType` by `types.enum.ts` and
+ * a TS string enum is **nominal** — a bare `'GHANACARD'` literal is not assignable to it — so this
+ * list, which is what the card dropdown iterates, has to be members rather than literals or the
+ * dropdown cannot produce a value the wire type accepts. (The enum has ten members since row 232
+ * added `AVATAR`, which is not an identity document and is not offered: this list is the four
+ * cards.)
+ */
+export const IDENTITY_TYPES: PersonalDocumentType[] = [
+  PersonalDocumentType.PASSPORT,
+  PersonalDocumentType.GHANACARD,
+  PersonalDocumentType.DRIVERLICENSE,
+  PersonalDocumentType.VOTERCARD,
+];
 
 /**
  * `api/domain/enumeration/ProfileStatus` — **deliberately `string` and not a mirror of its members.**
@@ -182,7 +188,7 @@ type Exhaustive<T extends true> = T;
 /**
  * ⭐ That the three declared groups together account for **every** field of {@link Profile}.
  *
- * <p>The same compile-time partition `onboarding/profile-requirements.ts` uses, and for the same
+ * <p>The same compile-time partition row 230's `profile-requirements.ts` used (retired in T6), for the same
  * reason: a list of fields can agree with a model today and quietly stop. The groups are the seven
  * inputs, the four prefills, and the four this pane neither types nor prefills — `id` and `status`
  * (the server's), `title` (optional), `address` and `contacts` (their own field lists). A field added

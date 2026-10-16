@@ -23,9 +23,10 @@ export class AccountService {
     private applicationConfigService: ApplicationConfigService,
   ) {}
 
-  save(account: Account): Observable<{}> {
-    return this.http.post(this.applicationConfigService.getEndpointFor('api/account'), account);
-  }
+  // `save()` — `POST /api/account` — lived here until T6. The verb is deprecated on the gateway and
+  // its only caller in the estate was the retired `SettingsComponent`; step 1's pane writes through
+  // `UserAccountService.updateUserAccount` (`PUT`), the operation `profile.md` names. The gateway can
+  // drop the POST once nothing else in the estate speaks it.
 
   authenticate(identity: Account | null): void {
     this.userIdentity = identity;

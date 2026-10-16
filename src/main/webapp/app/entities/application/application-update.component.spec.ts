@@ -11,7 +11,8 @@ import { CAREER_AUTHORITIES } from 'app/config/authority.constants';
 import { LANGUAGES } from 'app/config/language.constants';
 import { CareersHandoffService } from 'app/core/careers/careers-handoff.service';
 import { AlertService } from 'app/core/util/alert.service';
-import { OnboardingApiService, OnboardingApplicationDto, OnboardingStatus } from 'app/health-connect/api/onboarding-api.service';
+import { OnboardingApplicationDto, OnboardingStatus } from 'app/health-connect/api/onboarding-api.service';
+import { ApplicationService } from './service';
 import { OnboardingProgressService } from 'app/onboarding/onboarding-progress.service';
 
 import ApplicationUpdateComponent from './application-update.component';
@@ -30,8 +31,8 @@ describe('Application Update Component — step 4', () => {
   let comp: ApplicationUpdateComponent;
   let fixture: ComponentFixture<ApplicationUpdateComponent>;
   let api: {
-    getOwnApplication: jest.Mock;
-    startApplication: jest.Mock;
+    find: jest.Mock;
+    start: jest.Mock;
     saveConsent: jest.Mock;
     submit: jest.Mock;
     completeProfile: jest.Mock;
@@ -44,7 +45,7 @@ describe('Application Update Component — step 4', () => {
     await TestBed.configureTestingModule({
       imports: [ApplicationUpdateComponent, TranslateModule.forRoot()],
       providers: [
-        { provide: OnboardingApiService, useValue: api },
+        { provide: ApplicationService, useValue: api },
         { provide: CareersHandoffService, useValue: careers },
         { provide: OnboardingProgressService, useValue: progressService },
         { provide: AlertService, useValue: alertService },
@@ -62,8 +63,8 @@ describe('Application Update Component — step 4', () => {
 
   beforeEach(async () => {
     api = {
-      getOwnApplication: jest.fn().mockReturnValue(of(application())),
-      startApplication: jest.fn().mockImplementation(authority => of(application({ authority }))),
+      find: jest.fn().mockReturnValue(of(application())),
+      start: jest.fn().mockImplementation(authority => of(application({ authority }))),
       saveConsent: jest.fn().mockImplementation(authority => of(application({ authority }))),
       submit: jest.fn().mockImplementation(authority => of(application({ authority, status: 'CREDENTIAL_REVIEW' }))),
       completeProfile: jest.fn().mockReturnValue(of(application())),
@@ -88,7 +89,7 @@ describe('Application Update Component — step 4', () => {
 
   /** 404 is "not applied yet" — the normal state for every clinician an administrator invited. */
   it('should show an empty consent form when there is no application yet', () => {
-    api.getOwnApplication.mockReturnValue(throwError(() => ({ status: 404 })));
+    api.find.mockReturnValue(throwError(() => ({ status: 404 })));
 
     comp.ngOnInit();
 
@@ -98,7 +99,7 @@ describe('Application Update Component — step 4', () => {
   });
 
   it('should report a genuine read failure', () => {
-    api.getOwnApplication.mockReturnValue(throwError(() => ({ status: 500 })));
+    api.find.mockReturnValue(throwError(() => ({ status: 500 })));
 
     comp.ngOnInit();
 
@@ -109,7 +110,7 @@ describe('Application Update Component — step 4', () => {
     /** `careers-handoff-contract.md`: `/register?track=<AuthorityRole>` pre-selects the role. */
     it('should pre-select the role from the careers track when there is no application yet', () => {
       careers.peek.mockReturnValue({ track: 'ROLE_PARAMEDIC', locale: 'en', src: 'web-careers', at: '' });
-      api.getOwnApplication.mockReturnValue(throwError(() => ({ status: 404 })));
+      api.find.mockReturnValue(throwError(() => ({ status: 404 })));
 
       comp.ngOnInit();
 
@@ -125,7 +126,7 @@ describe('Application Update Component — step 4', () => {
      */
     it('should work with no careers parameters at all, choosing nothing', () => {
       careers.peek.mockReturnValue(null);
-      api.getOwnApplication.mockReturnValue(throwError(() => ({ status: 404 })));
+      api.find.mockReturnValue(throwError(() => ({ status: 404 })));
 
       comp.ngOnInit();
 
@@ -149,13 +150,13 @@ describe('Application Update Component — step 4', () => {
     /** `src` is the attribution the review queue reads and the WP7 funnel counts — creation only. */
     it('should send the careers src when it creates the application', () => {
       careers.peek.mockReturnValue({ track: 'ROLE_CARER', locale: null, src: 'web-careers', at: '' });
-      api.getOwnApplication.mockReturnValue(throwError(() => ({ status: 404 })));
+      api.find.mockReturnValue(throwError(() => ({ status: 404 })));
       comp.ngOnInit();
       comp.form.patchValue({ agreed: true });
 
       comp.save();
 
-      expect(api.startApplication).toHaveBeenCalledWith('ROLE_CARER', 'web-careers');
+      expect(api.start).toHaveBeenCalledWith('ROLE_CARER', 'web-careers');
       expect(careers.clear).toHaveBeenCalled();
     });
   });
@@ -174,13 +175,13 @@ describe('Application Update Component — step 4', () => {
 
   describe('Save', () => {
     it('should start the application with a POST when there is none', () => {
-      api.getOwnApplication.mockReturnValue(throwError(() => ({ status: 404 })));
+      api.find.mockReturnValue(throwError(() => ({ status: 404 })));
       comp.ngOnInit();
       comp.form.patchValue({ authority: 'ROLE_NURSE', agreed: true });
 
       comp.save();
 
-      expect(api.startApplication).toHaveBeenCalled();
+      expect(api.start).toHaveBeenCalled();
       expect(api.saveConsent).not.toHaveBeenCalled();
     });
 
@@ -191,28 +192,28 @@ describe('Application Update Component — step 4', () => {
       comp.save();
 
       expect(api.saveConsent).toHaveBeenCalledWith('ROLE_NURSE');
-      expect(api.startApplication).not.toHaveBeenCalled();
+      expect(api.start).not.toHaveBeenCalled();
     });
 
     it('should refuse to save without consent, and send nothing', () => {
-      api.getOwnApplication.mockReturnValue(throwError(() => ({ status: 404 })));
+      api.find.mockReturnValue(throwError(() => ({ status: 404 })));
       comp.ngOnInit();
       comp.form.patchValue({ authority: 'ROLE_NURSE', agreed: false });
 
       comp.save();
 
-      expect(api.startApplication).not.toHaveBeenCalled();
+      expect(api.start).not.toHaveBeenCalled();
       expect(comp.form.controls.agreed.touched).toBe(true);
     });
 
     it('should refuse to save without a role, and send nothing', () => {
-      api.getOwnApplication.mockReturnValue(throwError(() => ({ status: 404 })));
+      api.find.mockReturnValue(throwError(() => ({ status: 404 })));
       comp.ngOnInit();
       comp.form.patchValue({ authority: '', agreed: true });
 
       comp.save();
 
-      expect(api.startApplication).not.toHaveBeenCalled();
+      expect(api.start).not.toHaveBeenCalled();
     });
   });
 
@@ -280,7 +281,7 @@ describe('Application Update Component — step 4', () => {
      * different question.
      */
     it('should withdraw Submit once the application has been submitted, and say why', () => {
-      api.getOwnApplication.mockReturnValue(of(application({ status: 'CREDENTIAL_REVIEW' })));
+      api.find.mockReturnValue(of(application({ status: 'CREDENTIAL_REVIEW' })));
       comp.ngOnInit();
 
       expect(comp.canSubmit()).toBe(false);
@@ -299,7 +300,7 @@ describe('Application Update Component — step 4', () => {
 
     /** A returned application is the applicant's again, and `correctionNotes` is what they must read. */
     it('should offer Submit again on a returned application, and show the reviewer note', () => {
-      api.getOwnApplication.mockReturnValue(of(application({ status: 'RETURNED_FOR_CORRECTION', correctionNotes: 'Licence expired' })));
+      api.find.mockReturnValue(of(application({ status: 'RETURNED_FOR_CORRECTION', correctionNotes: 'Licence expired' })));
       comp.ngOnInit();
 
       expect(comp.canSubmit()).toBe(true);
@@ -307,7 +308,7 @@ describe('Application Update Component — step 4', () => {
     });
 
     it('should show no correction note on an application that was not returned', () => {
-      api.getOwnApplication.mockReturnValue(of(application({ correctionNotes: 'stale note' })));
+      api.find.mockReturnValue(of(application({ correctionNotes: 'stale note' })));
       comp.ngOnInit();
 
       expect(comp.correctionNotes()).toBeNull();
@@ -348,10 +349,10 @@ describe('Application Update Component — rendered in four languages', () => {
       imports: [ApplicationUpdateComponent, TranslateModule.forRoot()],
       providers: [
         {
-          provide: OnboardingApiService,
+          provide: ApplicationService,
           useValue: {
-            getOwnApplication: () => of(dto),
-            startApplication: jest.fn(),
+            find: () => of(dto),
+            start: jest.fn(),
             saveConsent: jest.fn(),
             submit: jest.fn(),
             completeProfile: jest.fn(),

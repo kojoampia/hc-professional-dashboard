@@ -159,10 +159,11 @@ describe('Profile Update Component — step 2', () => {
   });
 
   /**
-   * ⛔ **THE payload case.** This pane writes the real `contacts` list, not the deprecated singular
-   * `emergencyContact` alias that `ClinicalProfileComponent` writes and T6 drops — the alias can
-   * express one contact where the specification requires two, and carries neither an email nor an
-   * address.
+   * ⛔ **THE payload case.** This pane writes the real `contacts` list, never the deprecated singular
+   * `emergencyContact` alias the retired `ClinicalProfileComponent` wrote (dropped by T6) — the alias
+   * could express one contact where the specification requires two, and carried neither an email nor
+   * an address. What is asserted here is the MODEL handed to `ProfileService`; the service's own spec
+   * holds the wire translation (`phone` ⟶ `phoneNumber`, `mobilePhone` ⟶ `mobileNumber`).
    */
   it('should send contacts as a list, with phoneNumber and middleNames, and never the deprecated alias', () => {
     comp.ngOnInit();

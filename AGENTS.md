@@ -40,7 +40,7 @@ Two commands earlier versions of this file recommended **do not work**, verified
 ## Architecture facts that matter
 
 - Source root is `src/main/webapp/app` (`core/`, `shared/`, `health-connect/` (clinician + onboarding feature pages, charts, API adapters), `layouts/`, `admin/`, `account/`, `home/`, `login/`, `config/`).
-- **The whole UI is hand-built under `health-connect/`. There is no generated entity layer.** `app/entities/`, the two JDL files, `scripts/regenerate-entities.sh` and its three repair passes were removed on 2026-08-20 — 425 files and their ~100 specs. Nothing regenerates from JDL any more, so there is no generator step to run and no needle to preserve in `app.routes.ts`.
+- **The whole UI is hand-built under `health-connect/`. There is no generated entity layer.** The generated `app/entities/`, the two JDL files, `scripts/regenerate-entities.sh` and its three repair passes were removed on 2026-08-20 — 425 files and their ~100 specs. Nothing regenerates from JDL any more, so there is no generator step to run and no needle to preserve in `app.routes.ts`. (The `app/entities/` that exists today is **hand-built** — the onboarding wizard's panes, models and thin services, from the `profile.md` work — not a return of the generated layer.)
 
   Why it went: the layer was 20 entities of CRUD scaffolding that no user journey reached, it duplicated contracts the hand-built `health-connect/api/` adapters already owned, and its route registration actively broke the app — `entity.routes.ts` declared `path: 'duty-roster'` and was loaded first, so `/duty-roster` served the generated list (which calls an admin-only endpoint and told every clinician they were not authorised) while the real page sat unreachable.
 

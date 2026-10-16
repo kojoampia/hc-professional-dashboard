@@ -15,10 +15,10 @@ import { Account } from 'app/core/auth/account.model';
  * answer to "who is signed in". So this service is the write half alone, and the read stays where
  * every surface already reads it.
  *
- * <p>⛔ **`AccountService.save()` is NOT this.** That is `POST /api/account`, deprecated on the
- * gateway since T4 and retiring in T6 with `SettingsComponent`, its only caller in the estate. Both
- * verbs reach one private write on the server, so they cannot drift while both exist — but the
- * deprecated one is not the verb `profile.md` names, and a new pane must not acquire a dying caller.
+ * <p>⛔ **The retired `AccountService.save()` was NOT this.** That was `POST /api/account`,
+ * deprecated on the gateway since T4 and removed by T6 with `SettingsComponent`, its only caller in
+ * the estate. The deprecated verb is not the one `profile.md` names, and no new caller may
+ * reintroduce it — the gateway retires the POST once no client speaks it.
  *
  * <h2>⚠ The body is the whole account document, and the endpoint reads five fields of it</h2>
  *

@@ -87,9 +87,9 @@ const wizardPane = {
  * hiding on the strength of a route table**. Route authorities here decide what *renders*, not what
  * is *permitted*.
  *
- * <p>⚠ **Not the top-level `/onboarding`.** That path has no component, redirects to
- * `/account/profile?tab=application`, is the activation email's landing spot and is **T6's to
- * re-point**. Nothing here collides with it.
+ * <p>⚠ **Not the top-level `/onboarding`.** That path has no component and redirects to pane 1
+ * through `wizardPanePath` (T6, re-pointed off the retired tab page); it is the activation email's
+ * landing spot. Nothing here collides with it.
  */
 const wizardRoutes: Routes = WIZARD_PANES.map(pane => ({
   path: wizardPaneRoute(pane),

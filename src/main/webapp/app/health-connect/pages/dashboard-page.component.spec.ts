@@ -184,12 +184,14 @@ describe('DashboardPageComponent', () => {
       jest.advanceTimersByTime(2000);
     };
 
-    it('moves an unfinished profile to the application tab after two seconds', () => {
+    it('moves an unfinished profile into the wizard after two seconds', () => {
       flushProgress(false);
 
       settle();
 
-      expect(router.navigate).toHaveBeenCalledWith(['/account/profile'], { queryParams: { tab: 'application' } });
+      // The first outstanding pane — pane 1 here, since no account has arrived to say otherwise
+      // (T6, re-pointed from the retired tab page's `?tab=` deep link).
+      expect(router.navigateByUrl).toHaveBeenCalledWith(wizardPanePath('account'));
     });
 
     it('does not move before the two seconds are up', () => {
@@ -198,7 +200,7 @@ describe('DashboardPageComponent', () => {
 
       jest.advanceTimersByTime(1500);
 
-      expect(router.navigate).not.toHaveBeenCalled();
+      expect(router.navigateByUrl).not.toHaveBeenCalled();
     });
 
     it('leaves a finished profile alone', () => {
@@ -206,7 +208,7 @@ describe('DashboardPageComponent', () => {
 
       settle();
 
-      expect(router.navigate).not.toHaveBeenCalled();
+      expect(router.navigateByUrl).not.toHaveBeenCalled();
     });
 
     /** Unknown is not incomplete — bouncing someone whose profile is finished is the worse error. */
@@ -215,7 +217,7 @@ describe('DashboardPageComponent', () => {
 
       settle();
 
-      expect(router.navigate).not.toHaveBeenCalled();
+      expect(router.navigateByUrl).not.toHaveBeenCalled();
     });
 
     /**
@@ -233,22 +235,27 @@ describe('DashboardPageComponent', () => {
       'leaves a clinician holding %s alone, however incomplete their application',
       authority => {
         TestBed.inject(AccountService).authenticate(new Account(true, [authority, 'ROLE_USER'], '', null, 'en', null, 'someone', null));
+        // The step-1 trigger navigates immediately on the incomplete account — that is its own
+        // describe's subject below. Cleared so this assertion is about the nudge alone.
+        router.navigateByUrl.mockClear();
         flushProgress(false);
 
         settle();
 
-        expect(router.navigate).not.toHaveBeenCalled();
+        expect(router.navigateByUrl).not.toHaveBeenCalled();
       },
     );
 
     /** And the applicant it is actually for — ROLE_USER and nothing else — still moves. */
     it('still moves an applicant holding only ROLE_USER', () => {
       TestBed.inject(AccountService).authenticate(new Account(true, ['ROLE_USER'], '', null, 'en', null, 'applicant', null));
+      // Drop the step-1 trigger's own immediate navigation; the two-second nudge is the subject.
+      router.navigateByUrl.mockClear();
       flushProgress(false);
 
       settle();
 
-      expect(router.navigate).toHaveBeenCalledWith(['/account/profile'], { queryParams: { tab: 'application' } });
+      expect(router.navigateByUrl).toHaveBeenCalledWith(wizardPanePath('account'));
     });
 
     it('does not yank someone who has already navigated away', () => {
@@ -257,7 +264,7 @@ describe('DashboardPageComponent', () => {
 
       settle();
 
-      expect(router.navigate).not.toHaveBeenCalled();
+      expect(router.navigateByUrl).not.toHaveBeenCalled();
       router.url = '/dashboard';
     });
 
@@ -268,24 +275,26 @@ describe('DashboardPageComponent', () => {
       fixture.destroy();
       jest.advanceTimersByTime(2000);
 
-      expect(router.navigate).not.toHaveBeenCalled();
+      expect(router.navigateByUrl).not.toHaveBeenCalled();
     });
 
     /**
      * ⚠ **A fifth condition since T8.** The wizard's panes are children of this route, so
      * `router.url.startsWith('/dashboard')` is *true* inside them — which was the old test — and
-     * this timer would have pulled an applicant out of step 1's dialog two seconds after it opened,
-     * onto the tab page the wizard replaces. Same failure as "already navigated away", one level
-     * down.
+     * this timer would have pulled an applicant out of the pane they are in, two seconds after it
+     * opened. Same failure as "already navigated away", one level down.
      */
     it('does not yank someone out of an open wizard pane', () => {
       TestBed.inject(AccountService).authenticate(new Account(true, ['ROLE_USER'], '', null, 'en', null, 'applicant', null));
       flushProgress(false);
       router.url = wizardPanePath('account');
+      // Drop the step-1 trigger's own immediate navigation (it fired while still on /dashboard);
+      // the two-second nudge is the subject.
+      router.navigateByUrl.mockClear();
 
       settle();
 
-      expect(router.navigate).not.toHaveBeenCalled();
+      expect(router.navigateByUrl).not.toHaveBeenCalled();
       router.url = '/dashboard';
     });
   });
