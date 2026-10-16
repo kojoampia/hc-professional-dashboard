@@ -117,6 +117,58 @@ describe('WizardService', () => {
     expect(service.canOpen('profile')).toBe(true);
   });
 
+  /**
+   * ⭐ **The stored milestone wins over the four-field inference** — `backlog.md` row 249: the gate
+   * keys off a durable status rather than client state. The gateway writes `COMPLETED` when all four
+   * are saved and never withdraws it, so an account carrying it is complete even with a field since
+   * emptied — which is exactly the case the gateway's own `applyStepOneStatus` refuses to regress.
+   */
+  it('should accept the gateway stored COMPLETED over its own reading of the four fields', () => {
+    const account = completeAccount();
+    account.imageUrl = null;
+    account.accountStatus = 'COMPLETED';
+    service.setAccount(account);
+
+    expect(service.accountStepComplete()).toBe(true);
+  });
+
+  /**
+   * ⛔ **Only in the affirmative, and this is the case that pins it.** Every account that completed
+   * step 1 before the gateway began stamping the field reads `null` here, and an older gateway
+   * serves no such key at all — so reading "not COMPLETED" as "incomplete" would reopen step 1's
+   * dialog over everyone who finished onboarding last month. The four fields answer it instead.
+   */
+  it('should fall back to the four fields when the gateway has stamped no status', () => {
+    const notStamped = completeAccount();
+    notStamped.accountStatus = null;
+    service.setAccount(notStamped);
+    expect(service.accountStepComplete()).toBe(true);
+
+    const short = completeAccount();
+    short.accountStatus = null;
+    short.imageUrl = null;
+    service.setAccount(short);
+    expect(service.accountStepComplete()).toBe(false);
+  });
+
+  /**
+   * ⚠ An administrative status is not an onboarding answer. A SUSPENDED account whose four fields
+   * are filled has completed step 1; one short of a field has not. Neither reading comes from the
+   * status, which is why both assertions are here rather than one.
+   */
+  it('should not read an administrative status as an answer about step 1', () => {
+    const suspended = completeAccount();
+    suspended.accountStatus = 'SUSPENDED';
+    service.setAccount(suspended);
+    expect(service.accountStepComplete()).toBe(true);
+
+    const suspendedAndShort = completeAccount();
+    suspendedAndShort.accountStatus = 'SUSPENDED';
+    suspendedAndShort.langKey = '';
+    service.setAccount(suspendedAndShort);
+    expect(service.accountStepComplete()).toBe(false);
+  });
+
   it('should treat a blank string as unfilled, the way the server reads "provided"', () => {
     const account = completeAccount();
     account.firstName = '   ';

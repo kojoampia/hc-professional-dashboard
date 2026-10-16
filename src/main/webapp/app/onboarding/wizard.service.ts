@@ -1,6 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 
 import { Account } from 'app/core/auth/account.model';
+import { ACCOUNT_STEP_COMPLETE } from 'app/account/user/account-status.enum';
 import { OnboardingStatus } from 'app/health-connect/api/onboarding-api.service';
 import { OnboardingProgressService } from './onboarding-progress.service';
 
@@ -185,6 +186,19 @@ export class WizardService {
     const account = this.account();
     if (!account) {
       return null;
+    }
+    // ⭐ The server's stored milestone wins when it is there — backlog.md row 249: "the stored
+    // statuses give the gate something durable to read". The gateway writes COMPLETED when the four
+    // fields are saved and never withdraws it, so this is the authoritative answer rather than a
+    // cached one.
+    //
+    // ⚠ Only in the affirmative. A status that is anything else is NOT read as "step 1 outstanding":
+    // the field is absent on every account that completed step 1 before the gateway began stamping
+    // it, and absent entirely from an older gateway's response, so treating "not COMPLETED" as
+    // "incomplete" would reopen the dialog over everyone who finished onboarding last month. The
+    // four fields are what answers that case, and they are the same four the server computes from.
+    if (account.accountStatus === ACCOUNT_STEP_COMPLETE) {
+      return true;
     }
     return ACCOUNT_STEP_FIELDS.every(field => filled(account[field]));
   });
