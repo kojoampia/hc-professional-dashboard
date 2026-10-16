@@ -360,7 +360,6 @@
       "consentText": "I consent to the processing of my identity, qualification, and registration information for credentialing, and confirm the information I provide is accurate.",
       "requestedRole": "Requested clinical role",
       "correctionRequired": "Your application was returned for correction",
-      "reviewIntro": "Check your details, then submit your application for credential review.",
       "steps": {
         "documents": "Documents",
         "status": "Status"
@@ -379,16 +378,12 @@
         "district": "District",
         "region": "Region",
         "country": "Country",
-        "contactName": "Contact name",
-        "contactRelationship": "Relationship",
-        "contactPhone": "Contact phone",
         "documentType": "Document type",
         "otherLabel": "Label",
         "expiryDate": "Expiry date",
         "replaces": "Replaces an existing document"
       },
       "actions": {
-        "start": "Start application",
         "submit": "Submit for review"
       },
       "statuses": {
@@ -609,43 +604,11 @@
       "noRecord": "You do not have a professional record yet, so there are no shifts or earnings to show. This appears once your onboarding is approved."
     },
     "profile": {
-      "title": "Profile",
-      "subtitle": "Your account, your credentialing details, and your password.",
-      "account": {
-        "title": "Account",
-        "subtitle": "How you sign in and how the portal addresses you."
-      },
       "password": {
         "title": "Password",
         "subtitle": "Change the password you sign in with."
       },
-      "clinical": {
-        "title": "Clinical profile",
-        "subtitle": "The details your credentialing record is filed under.",
-        "identity": "Identity",
-        "address": "Address",
-        "emergencyContact": "Emergency contact",
-        "titlePlaceholder": "Dr / RN / EMT / NP / PA / LPN / CNA / CP / HCP / HT / Other",
-        "loading": "Loading your profile…",
-        "loadError": "Unable to load this information.",
-        "save": "Save profile",
-        "saved": "Profile saved"
-      },
-      "tabs": "Profile sections",
       "completion": {
-        "title": "Profile completion",
-        "steps": {
-          "account": "Account details",
-          "profile": "Personal details",
-          "documents": "Credential documents",
-          "consent": "Role and consent"
-        },
-        "gaps": {
-          "title": "Still needed before this profile is complete"
-        },
-        "complete": "Everything is in. An administrator reviews your credentials next.",
-        "incomplete": "Your profile becomes active once these are complete and an administrator has vetted them.",
-        "liveReconnecting": "Live updates interrupted — reconnecting.",
         "requirements": {
           "consent": "Consent",
           "profile": "Personal details",
@@ -659,8 +622,6 @@
         }
       },
       "documents": {
-        "title": "Documents",
-        "subtitle": "Your credentials, checked by the credentialing team.",
         "choose": "Choose a file",
         "accepted": "PDF, PNG or JPEG, up to 5 MB.",
         "loading": "Loading your documents…",
@@ -669,11 +630,9 @@
         "rejected": "That file was not accepted — use a PDF, PNG or JPEG under 5 MB."
       },
       "application": {
-        "title": "Application",
         "loading": "Loading your application…",
         "loadError": "Unable to load your application.",
-        "status": "Status",
-        "finishFirst": "Finish every requirement above before submitting."
+        "status": "Status"
       },
       "avatar": {
         "alt": "Profile photograph"

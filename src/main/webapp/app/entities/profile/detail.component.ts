@@ -7,9 +7,11 @@ import AccountAvatarComponent from 'app/account/user/account-avatar.component';
 import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
 import { Address } from 'app/entities/address/model';
-import { OnboardingApiService, OnboardingApplicationDto, OnboardingDocumentDto } from 'app/health-connect/api/onboarding-api.service';
+import { OnboardingApplicationDto, OnboardingDocumentDto } from 'app/health-connect/api/onboarding-api.service';
 import { AuthorityRole } from 'app/health-connect/health-connect.models';
 import { resolveAuthorityRole } from 'app/health-connect/authority-role';
+import { ApplicationService } from 'app/entities/application/service';
+import { PersonalDocumentService } from 'app/entities/personal-document/service';
 
 import { PROFILE_STATUS_VALUES, Profile } from './model';
 import { ProfileService } from './service';
@@ -36,9 +38,8 @@ export interface AuthorityBadge {
  *
  * <p>Five sections over three sources (`profile-addendum.md` § 3 T9): the **account** (gateway —
  * `langKey`, `imageUrl`, `login`, `authorities`), the **profile** (`GET /api/profile` through
- * {@link ProfileService}, the client that speaks `contacts` rather than the deprecated singular
- * alias), and the **application** (`GET /api/professional-application/me` through
- * {@link OnboardingApiService}) for section 5's consent statement. Each source loads and fails
+ * {@link ProfileService}), and the **application** (`GET /api/professional-application/me` through
+ * {@link ApplicationService}) for section 5's consent statement. Each source loads and fails
  * independently, so a dead application read costs the consent sentence and not the page.
  *
  * <h2>Q31 — whose authority does the header show? (owner, 2026-10-16)</h2>
@@ -78,7 +79,8 @@ export interface AuthorityBadge {
 export default class ProfileDetailComponent implements OnInit, OnDestroy {
   private readonly accountService = inject(AccountService);
   private readonly profileService = inject(ProfileService);
-  private readonly onboardingApi = inject(OnboardingApiService);
+  private readonly applicationService = inject(ApplicationService);
+  private readonly personalDocumentService = inject(PersonalDocumentService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly account = signal<Account | null>(null);
@@ -164,8 +166,8 @@ export default class ProfileDetailComponent implements OnInit, OnDestroy {
         error: (error: { status?: number }) => this.profileState.set(error.status === 404 ? 'empty' : 'error'),
       });
 
-    this.onboardingApi
-      .getOwnApplication()
+    this.applicationService
+      .find()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: application => {
@@ -177,8 +179,8 @@ export default class ProfileDetailComponent implements OnInit, OnDestroy {
         error: (error: { status?: number }) => this.applicationState.set(error.status === 404 ? 'empty' : 'error'),
       });
 
-    this.onboardingApi
-      .listDocuments()
+    this.personalDocumentService
+      .query()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: documents => {
@@ -231,16 +233,16 @@ export default class ProfileDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * One `GET …/{id}/content` per row. Through `documentContent` so the auth interceptor attaches the
-   * token; silenced because a preview that cannot paint falls back to its placeholder rather than
-   * putting a banner over a page that is otherwise working — one banner per failing row would be
-   * five. `takeUntilDestroyed` also aborts in-flight reads on destroy, so no blob can arrive with
-   * nobody left to revoke its URL.
+   * One `GET …/{id}/content` per row. Through `PersonalDocumentService.content` so the auth
+   * interceptor attaches the token; silenced because a preview that cannot paint falls back to its
+   * placeholder rather than putting a banner over a page that is otherwise working — one banner per
+   * failing row would be five. `takeUntilDestroyed` also aborts in-flight reads on destroy, so no
+   * blob can arrive with nobody left to revoke its URL.
    */
   private loadPreviews(documents: OnboardingDocumentDto[]): void {
     for (const document of documents) {
-      this.onboardingApi
-        .documentContent(document.id, { silent: true })
+      this.personalDocumentService
+        .content(document.id, { silent: true })
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: blob => this.adoptPreview(document.id, blob),

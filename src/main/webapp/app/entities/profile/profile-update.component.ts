@@ -6,14 +6,13 @@ import SharedModule from 'app/shared/shared.module';
 import { AlertService } from 'app/core/util/alert.service';
 import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
-import { IDENTITY_TYPES } from 'app/health-connect/api/onboarding-api.service';
 import { OnboardingProgressService } from 'app/onboarding/onboarding-progress.service';
 import { WizardService, storeWizardProfileId } from 'app/onboarding/wizard.service';
 import { ADDRESS_INPUT_FIELDS, Address, AddressInputField } from 'app/entities/address/model';
 import { CONTACT_INPUT_FIELDS, ContactInputField, REQUIRED_CONTACTS } from 'app/entities/emergency-contact/model';
 import { PersonalDocumentType } from 'app/entities/personal-document/types.enum';
 import WizardFooterComponent from 'app/shared/health-connect/wizard/wizard-footer.component';
-import { PROFILE_INPUT_FIELDS, Profile, ProfileInputField } from './model';
+import { IDENTITY_TYPES, PROFILE_INPUT_FIELDS, Profile, ProfileInputField } from './model';
 import { ProfileService } from './service';
 import { SEXES, Sex } from './sex.enum';
 
@@ -66,14 +65,12 @@ const OPTIONAL_PROFILE_FIELDS: readonly string[] = ['title'];
  * profile and will not remove below two — ⚠ removal is offered only above the minimum, because a
  * remove button that refuses is worse than one that is absent.
  *
- * <h2>⛔ Why this writes `contacts` and `ClinicalProfileComponent` writes `emergencyContact`</h2>
+ * <h2>⛔ This writes `contacts`, and it is the only profile writer in `web/` since T6</h2>
  *
- * <p>Both call `PUT /api/profile` and the two bodies are different shapes of the same document: this
- * one names the real `contacts` list, the tab names the deprecated singular alias projecting
- * `contacts[0]` that retires in T6. The full argument — including why widening the tab's DTO instead
- * would break `backlog.md` row 230's compile-time gate — is on {@link Profile}. The write is a
- * **partial update**, so the two cannot blank each other's fields, and `contacts` wins if a body
- * carries both.
+ * <p>Until T6 the retired `ClinicalProfileComponent` wrote the same document through the deprecated
+ * singular `emergencyContact` alias projecting `contacts[0]`; the history, and why the alias could
+ * not express step 2, is on {@link Profile}. The write is a **partial update**, so a pane naming only
+ * some fields cannot blank the others, and on the server `contacts` wins if a body carries both.
  *
  * <h2>The four prefilled fields are read-only and `accountId` is not even sent</h2>
  *
@@ -417,10 +414,10 @@ function incompleteCount(group: AbstractControl): number {
  * `ProfileCompleteness.hasText`.
  *
  * <p>A blank or whitespace-only string is what an untouched input posts, so counting it would make
- * the pane satisfiable by saving an empty form. Deliberately the **same** predicate
- * `onboarding/profile-requirements.ts` exports, restated rather than imported: that file is
- * `backlog.md` row 230's and partitions a *different* wire model, and importing one function from it
- * would couple this pane to a gate it must not reach into.
+ * the pane satisfiable by saving an empty form. It was deliberately the **same** predicate row 230's
+ * `profile-requirements.ts` exported, restated rather than imported so this pane was not coupled to a
+ * gate partitioning a different wire model; T6 retired that file with the form it validated, so this
+ * is the surviving spelling.
  */
 function provided(value: unknown): boolean {
   return typeof value === 'string' ? value.trim().length > 0 : value !== null && value !== undefined;

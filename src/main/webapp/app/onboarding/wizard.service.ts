@@ -29,10 +29,9 @@ export type WizardPane = (typeof WIZARD_PANES)[number];
  * at the patients tree). The four panes are siblings there, each its own overlay host, so each
  * carries its own title and each is a URL the browser's back button steps between.
  *
- * <p>⛔ **It is not the top-level `/onboarding`.** That path exists, has no component behind it, and
- * redirects to `/account/profile?tab=application`; it is the activation email's landing spot and
- * **T6's to re-point**, not T8's. Nothing here touches it, so until T6 the email lands on the tab
- * page and the wizard is reached from the sidebar or directly.
+ * <p>⚠ **It is not the top-level `/onboarding`.** That path has no component behind it and redirects
+ * here — to pane 1, through {@link wizardPanePath} — since T6 re-pointed it off the retired tab page.
+ * It is the activation email's landing spot and the applicant's bookmark.
  */
 const WIZARD_BASE_PATH = 'dashboard/onboarding';
 
@@ -146,7 +145,7 @@ const WIRE_STEP_FOR_PANE = {
  * is what the browser already has.
  *
  * <p>⚠ **Nothing is re-derived beyond what is already provided.** Which *values* step 2 still needs is
- * `profile-requirements.ts`'s (row 230 unit B); which *requirement* is outstanding is the server's;
+ * the profile pane's own required controls (row 230 unit B); which *requirement* is outstanding is the server's;
  * this file only asks whether a step is done. Three layers, no duplication.
  */
 @Injectable({ providedIn: 'root' })
@@ -174,7 +173,7 @@ export class WizardService {
    * the affirmative.
    *
    * <p>Blank-is-empty rather than merely null, the same reading `provided()` takes in
-   * `profile-requirements.ts` and `ProfileCompleteness.hasText` takes server-side: a whitespace-only
+   * `profile-update.component.ts`'s `provided()` and `ProfileCompleteness.hasText` takes server-side: a whitespace-only
    * first name is what an untouched input posts, and counting it would make the step satisfiable by
    * saving an empty form.
    *

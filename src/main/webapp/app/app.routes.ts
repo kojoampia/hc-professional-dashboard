@@ -1,8 +1,8 @@
-import { inject } from '@angular/core';
-import { Router, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 
 import { Authority } from 'app/config/authority.constants';
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
+import { wizardPanePath } from 'app/onboarding/wizard.service';
 import { errorRoute } from './layouts/error/error.route';
 
 import AuthShellComponent from './layouts/auth-shell/auth-shell.component';
@@ -62,18 +62,20 @@ const routes: Routes = [
     ],
   },
   {
-    // The wizard's steps are tabs on the profile page now, so this redirects rather than 404s: it
-    // was the applicant's bookmark, the destination of the old sidebar item, and where the
-    // activation email's "continue your application" lands.
+    // The wizard's first pane (T6, re-pointed from the retired tab page): this redirects rather
+    // than 404s because it is the applicant's bookmark and where the activation email's "continue
+    // your application" lands. The old target carried `?tab=…`; the panes are routes of their own,
+    // so the tab shim died with the tabs rather than being translated — a bookmark landing on the
+    // first pane is correct, and the panes themselves step forward from there.
     //
     // It used to render on the signed-out shell so an applicant holding only ROLE_USER never saw a
     // sidebar of destinations that all refuse them. That concern did not go away — it moved into
     // the sidebar itself, which now hides the clinical group from accounts with no clinical role
     // (see shell-navigation.ts and sidebar.component.ts).
     path: 'onboarding',
-    // A function, not a string: `redirectTo` treats a string as a path, so 'account/profile?tab=…'
-    // would be matched literally as a segment rather than carrying the query parameter.
-    redirectTo: () => inject(Router).createUrlTree(['/account/profile'], { queryParams: { tab: 'application' } }),
+    // Read from wizardPanePath so the pane's address keeps its one spelling (route table, sidebar,
+    // panes, and this redirect all read it).
+    redirectTo: wizardPanePath('account'),
     pathMatch: 'full',
   },
   {
@@ -99,6 +101,8 @@ const routes: Routes = [
         // Angular matches the first route that fits, and so /duty-roster served the generated list
         // — which calls an admin-only endpoint and told every clinician they were not authorised —
         // while the hand-built duty-roster page sat unreachable. The whole layer is gone now.
+        // (app/entities/ today is HAND-BUILT — the wizard panes and their models, routed through
+        // health-connect.routes like everything else; the generated layer stays gone.)
         path: '',
         loadChildren: () => import('./health-connect/health-connect.routes'),
       },

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { SKIP_ERROR_ALERT } from 'app/core/interceptor/error-handler.interceptor';
+import { EmergencyContact } from 'app/entities/emergency-contact/model';
 import { Profile } from './model';
 
 /**
@@ -17,18 +18,13 @@ import { Profile } from './model';
  * omits it on purpose (`backlog.md` item 56): a bare `deleteById` orphaned six collections and a
  * deletion is the one change `ProfileStatus` cannot announce.
  *
- * <h2>⛔ Why a second client for an endpoint `OnboardingApiService` already calls</h2>
+ * <h2>The only client for this endpoint, since T6</h2>
  *
- * <p>The wire shapes differ and only one of them can express step 2. `OnboardingApiService`'s pair
- * speaks the deprecated singular `emergencyContact` alias — three fields, one contact — and
- * `profile.md:196` requires **two** contacts each with an email and a nested address. The full
- * argument, including why widening the other type would break `backlog.md` row 230's compile-time
- * gate, is on {@link Profile} itself. **This is the surviving client**; the other two methods retire
- * with `ClinicalProfileComponent` in T6.
- *
- * <p>⚠ **Both write the same document and that is safe**, because `PUT /api/profile` is a partial
- * update: each caller touches only the fields it names, and `contacts` wins over the alias if a body
- * carries both.
+ * <p>Until T6 `OnboardingApiService` carried a second pair on the same endpoint, speaking the
+ * deprecated singular `emergencyContact` alias — three fields, one contact, where `profile.md:196`
+ * requires **two** contacts each with an email and a nested address. T6 retired that pair with
+ * `ClinicalProfileComponent`; the history is on {@link Profile} itself, with the ⛔ against
+ * reintroducing the alias.
  *
  * <h2>The `PUT` is a partial update, and the pane depends on it</h2>
  *
@@ -37,6 +33,21 @@ import { Profile } from './model';
  * answer 200 doing it. `ProfileResource.updateOwnProfile` therefore applies only the fields the body
  * names, and **creates the row on first write**, which is what makes step 2 *"create the profile"*
  * rather than a `PUT` that 404s for every applicant.
+ *
+ * <h2>⛔ The read wire and the write wire are two vocabularies, and {@link update} translates</h2>
+ *
+ * <p>`GET /api/profile` answers the **entity** — `mobilePhone`, contacts carrying `phone` — which is
+ * what {@link Profile} declares. `PUT /api/profile` binds the **frozen `ProfileDTO`** (the write
+ * path the owner froze on 2026-10-14), whose wire is `mobileNumber` and contacts carrying
+ * `phoneNumber`: `ProfileMapper.toEntity` reads `setMobilePhone(dto.getMobileNumber())`, and
+ * `EmergencyContactDTO` has no `phone` field. Unknown keys are **silently dropped** on bind, so a
+ * body sent in read vocabulary answers 200 while losing the mobile phone and every contact's phone —
+ * found while T6 split this surface, previously live on the wizard's step-2 save.
+ *
+ * <p>The translation lives here, at the service boundary, so the panes and the read view go on
+ * speaking one model and no caller can reach the endpoint in the wrong vocabulary. It renames only;
+ * it never **adds** a key the caller did not provide, because on a partial write an invented key is
+ * a write the caller never asked for.
  */
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
@@ -61,11 +72,55 @@ export class ProfileService {
   /**
    * Writes the fields `profile` names onto the caller's own row, creating it if there is none.
    *
+   * <p>The body goes out in the **write vocabulary** — see the class note; the response comes back
+   * as the entity, which is {@link Profile}.
+   *
    * <p>`accountId` is never read from the body — `@JsonProperty(access = READ_ONLY)` drops it and the
    * service forces it from the token — so there is no body a caller could send that reaches somebody
    * else's profile. `status` is refused by name if a body carries it.
    */
   update(profile: Profile): Observable<Profile> {
-    return this.http.put<Profile>(this.resourceUrl, profile);
+    return this.http.put<Profile>(this.resourceUrl, toWriteBody(profile));
   }
+}
+
+/**
+ * `api/`'s frozen `ProfileDTO`, as far as its vocabulary differs from the entity's: `mobileNumber`
+ * where the entity says `mobilePhone`, and contacts carrying `phoneNumber` where the entity says
+ * `phone`. Everything else is name-identical and passes through.
+ */
+type ProfileWriteBody = Omit<Profile, 'mobilePhone' | 'contacts'> & {
+  mobileNumber?: string | null;
+  contacts?: ContactWriteBody[] | null;
+};
+
+type ContactWriteBody = Omit<EmergencyContact, 'phone'> & { phoneNumber?: string | null };
+
+/**
+ * The read model, renamed into the write wire. Keys the caller did not provide stay absent —
+ * `undefined` is dropped by JSON serialization, which is what a partial write requires — and
+ * `contacts` is deliberately never defaulted to `[]`: an always-present empty list is the mistake
+ * {@link Profile}'s own field note names, the one that would empty a clinician's next of kin on any
+ * partial write.
+ */
+function toWriteBody(profile: Profile): ProfileWriteBody {
+  const { mobilePhone, contacts, ...rest } = profile;
+  const body: ProfileWriteBody = { ...rest };
+  if ('mobilePhone' in profile) {
+    body.mobileNumber = mobilePhone;
+  }
+  if ('contacts' in profile) {
+    body.contacts = contacts == null ? contacts : contacts.map(toContactWriteBody);
+  }
+  return body;
+}
+
+/** One contact, `phone` ⟶ `phoneNumber`; the other five fields pass through by name. */
+function toContactWriteBody(contact: EmergencyContact): ContactWriteBody {
+  const { phone, ...rest } = contact;
+  const body: ContactWriteBody = { ...rest };
+  if ('phone' in contact) {
+    body.phoneNumber = phone;
+  }
+  return body;
 }

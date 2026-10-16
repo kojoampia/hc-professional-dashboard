@@ -41,7 +41,7 @@ export type AddressInputField = (typeof ADDRESS_INPUT_FIELDS)[number];
 /**
  * ⭐ That {@link ADDRESS_INPUT_FIELDS} is exactly `Address` less the fields that are not inputs.
  *
- * <p>Same mechanism as `onboarding/profile-requirements.ts`: `Equals` is mutual assignability, which
+ * <p>Same mechanism as `entities/profile/model.ts`'s partition: `Equals` is mutual assignability, which
  * for string-literal unions is set equality, and `Exhaustive<T extends true>` fails **to compile**
  * when it is not. So a field added to `Address` stops this file compiling until somebody says whether
  * the wizard collects it. ⚠ The diagnostic names the *line*, not the field — `TS2344: Type 'false'

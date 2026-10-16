@@ -360,7 +360,6 @@
       "consentText": "Ich willige in die Verarbeitung meiner Identitäts-, Qualifikations- und Registrierungsdaten zur Akkreditierung ein und bestätige die Richtigkeit meiner Angaben.",
       "requestedRole": "Beantragte klinische Rolle",
       "correctionRequired": "Ihr Antrag wurde zur Korrektur zurückgegeben",
-      "reviewIntro": "Prüfen Sie Ihre Angaben und reichen Sie den Antrag zur Prüfung ein.",
       "steps": {
         "documents": "Dokumente",
         "status": "Status"
@@ -379,16 +378,12 @@
         "district": "Bezirk",
         "region": "Region",
         "country": "Land",
-        "contactName": "Kontaktname",
-        "contactRelationship": "Beziehung",
-        "contactPhone": "Kontakttelefon",
         "documentType": "Dokumenttyp",
         "otherLabel": "Bezeichnung",
         "expiryDate": "Ablaufdatum",
         "replaces": "Ersetzt ein vorhandenes Dokument"
       },
       "actions": {
-        "start": "Antrag starten",
         "submit": "Zur Prüfung einreichen"
       },
       "statuses": {
@@ -609,43 +604,11 @@
       "noRecord": "Sie haben noch keinen Berufsdatensatz, daher gibt es keine Dienste oder Vergütung anzuzeigen. Beides erscheint, sobald Ihr Onboarding freigegeben ist."
     },
     "profile": {
-      "title": "Profil",
-      "subtitle": "Ihr Konto, Ihre Zulassungsdaten und Ihr Passwort.",
-      "account": {
-        "title": "Konto",
-        "subtitle": "Wie Sie sich anmelden und wie das Portal Sie anspricht."
-      },
       "password": {
         "title": "Passwort",
         "subtitle": "Ändern Sie das Passwort, mit dem Sie sich anmelden."
       },
-      "clinical": {
-        "title": "Klinisches Profil",
-        "subtitle": "Die Angaben, unter denen Ihre Zulassungsakte geführt wird.",
-        "identity": "Identität",
-        "address": "Adresse",
-        "emergencyContact": "Notfallkontakt",
-        "titlePlaceholder": "Dr / Pflegefachkraft / Rettungssanitäter",
-        "loading": "Ihr Profil wird geladen…",
-        "loadError": "Diese Informationen können nicht geladen werden.",
-        "save": "Profil speichern",
-        "saved": "Profil gespeichert"
-      },
-      "tabs": "Profilbereiche",
       "completion": {
-        "title": "Profil vollständig",
-        "steps": {
-          "account": "Kontodaten",
-          "profile": "Persönliche Angaben",
-          "documents": "Nachweisdokumente",
-          "consent": "Rolle und Einwilligung"
-        },
-        "gaps": {
-          "title": "Für ein vollständiges Profil fehlt noch"
-        },
-        "complete": "Alles vorhanden. Als Nächstes prüft eine Administratorin oder ein Administrator Ihre Nachweise.",
-        "incomplete": "Ihr Profil wird aktiv, sobald dies vollständig ist und von der Administration geprüft wurde.",
-        "liveReconnecting": "Live-Aktualisierung unterbrochen — Verbindung wird wiederhergestellt.",
         "requirements": {
           "consent": "Einwilligung",
           "profile": "Persönliche Angaben",
@@ -659,8 +622,6 @@
         }
       },
       "documents": {
-        "title": "Dokumente",
-        "subtitle": "Ihre Nachweise, geprüft vom Zulassungsteam.",
         "choose": "Datei auswählen",
         "accepted": "PDF, PNG oder JPEG, bis 5 MB.",
         "loading": "Ihre Dokumente werden geladen…",
@@ -669,11 +630,9 @@
         "rejected": "Diese Datei wurde nicht akzeptiert — verwenden Sie PDF, PNG oder JPEG unter 5 MB."
       },
       "application": {
-        "title": "Antrag",
         "loading": "Ihr Antrag wird geladen…",
         "loadError": "Ihr Antrag kann nicht geladen werden.",
-        "status": "Status",
-        "finishFirst": "Erfüllen Sie alle oben genannten Anforderungen, bevor Sie absenden."
+        "status": "Status"
       },
       "avatar": {
         "alt": "Profilbild"

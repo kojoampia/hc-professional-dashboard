@@ -45,12 +45,85 @@ describe('ProfileService', () => {
     request.flush('none', { status: 404, statusText: 'Not Found' });
   });
 
-  it('should write with PUT, on the same singular path', () => {
+  /**
+   * ⛔ **The write goes out in the WRITE vocabulary, which is not the read's** (T6). `GET
+   * /api/profile` answers the entity — `mobilePhone`, contacts with `phone` — but `PUT /api/profile`
+   * binds the frozen `ProfileDTO`, whose wire is `mobileNumber` and contacts with `phoneNumber`
+   * (`ProfileMapper.toEntity`: `setMobilePhone(dto.getMobileNumber())`). Unknown keys are silently
+   * dropped on the server, so a body in read vocabulary answers 200 **and loses those fields** —
+   * which is exactly what the pane's save did until this translation existed. The read-vocabulary
+   * keys must be absent, not merely duplicated: they are the proof the translation ran.
+   */
+  it('should write with PUT in the frozen ProfileDTO vocabulary, on the same singular path', () => {
     service.update({ id: 'p-1', mobilePhone: '+233200000000' }).subscribe();
 
     const request = httpMock.expectOne(req => req.method === 'PUT');
     expect(request.request.url).toBe(URL);
-    expect(request.request.body).toEqual({ id: 'p-1', mobilePhone: '+233200000000' });
+    expect(request.request.body).toEqual({ id: 'p-1', mobileNumber: '+233200000000' });
+    request.flush({ id: 'p-1', mobilePhone: '+233200000000' });
+  });
+
+  /**
+   * Every contact is translated — `phone` ⟶ `phoneNumber` — and everything else on it survives.
+   * "Other contacts survive a save" is the half that matters: the contacts list is a replace when
+   * named, so a translation that touched only the first contact would store the second one
+   * phone-less and answer 200 doing it.
+   */
+  it('should translate every contact phone and carry the rest of each contact untouched', () => {
+    service
+      .update({
+        id: 'p-1',
+        birthDate: '1990-01-31',
+        contacts: [
+          { id: 'c-1', name: 'Ama', relationship: 'Sister', email: 'ama@example.test', phone: '+233200000001', address: { town: 'Aburi' } },
+          {
+            id: 'c-2',
+            name: 'Kofi',
+            relationship: 'Brother',
+            email: 'kofi@example.test',
+            phone: '+233200000002',
+            address: { town: 'Tema' },
+          },
+        ],
+      })
+      .subscribe();
+
+    const request = httpMock.expectOne(req => req.method === 'PUT');
+    expect(request.request.body).toEqual({
+      id: 'p-1',
+      birthDate: '1990-01-31',
+      contacts: [
+        {
+          id: 'c-1',
+          name: 'Ama',
+          relationship: 'Sister',
+          email: 'ama@example.test',
+          phoneNumber: '+233200000001',
+          address: { town: 'Aburi' },
+        },
+        {
+          id: 'c-2',
+          name: 'Kofi',
+          relationship: 'Brother',
+          email: 'kofi@example.test',
+          phoneNumber: '+233200000002',
+          address: { town: 'Tema' },
+        },
+      ],
+    });
+    request.flush({ id: 'p-1' });
+  });
+
+  /**
+   * `PUT /api/profile` is a partial write — an absent field is left as stored — so the translation
+   * must not invent keys the caller did not name: a `mobileNumber` or `contacts` key manufactured
+   * out of nothing would be a write the pane never asked for.
+   */
+  it('should not add write-vocabulary keys the caller did not name', () => {
+    service.update({ id: 'p-1', cardNumber: 'GHA-123' }).subscribe();
+
+    const request = httpMock.expectOne(req => req.method === 'PUT');
+    expect(request.request.body).toEqual({ id: 'p-1', cardNumber: 'GHA-123' });
     request.flush({ id: 'p-1' });
   });
 

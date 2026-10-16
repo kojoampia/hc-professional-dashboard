@@ -11,7 +11,8 @@ import { LANGUAGES } from 'app/config/language.constants';
 import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
 import { AlertService } from 'app/core/util/alert.service';
-import { AvatarDocumentDto, OnboardingApiService } from 'app/health-connect/api/onboarding-api.service';
+import { AvatarDocumentDto } from 'app/health-connect/api/onboarding-api.service';
+import { PersonalDocumentService } from 'app/entities/personal-document/service';
 import { OnboardingProgressService } from 'app/onboarding/onboarding-progress.service';
 import { PersonalDocumentType } from 'app/entities/personal-document/types.enum';
 
@@ -31,7 +32,7 @@ describe('User Update Component — step 1', () => {
   let fixture: ComponentFixture<UserUpdateComponent>;
   let accountService: { identity: jest.Mock; authenticate: jest.Mock };
   let userAccountService: { updateUserAccount: jest.Mock };
-  let onboardingApi: { uploadAvatar: jest.Mock; avatarContentPath: jest.Mock };
+  let personalDocumentService: { createAvatar: jest.Mock; avatarContentPath: jest.Mock };
   let alertService: { showToast: jest.Mock };
   // `progress` is on the stub because WizardService — reached through the footer — reads it. A
   // narrower stub passed the signal-level suite and failed the rendered one, which is the whole
@@ -44,7 +45,7 @@ describe('User Update Component — step 1', () => {
       providers: [
         { provide: AccountService, useValue: accountService },
         { provide: UserAccountService, useValue: userAccountService },
-        { provide: OnboardingApiService, useValue: onboardingApi },
+        { provide: PersonalDocumentService, useValue: personalDocumentService },
         { provide: AlertService, useValue: alertService },
         { provide: OnboardingProgressService, useValue: progressService },
         provideRouter([]),
@@ -61,8 +62,8 @@ describe('User Update Component — step 1', () => {
   beforeEach(async () => {
     accountService = { identity: jest.fn().mockReturnValue(of(complete())), authenticate: jest.fn() };
     userAccountService = { updateUserAccount: jest.fn().mockReturnValue(of(undefined)) };
-    onboardingApi = {
-      uploadAvatar: jest.fn().mockReturnValue(of(avatarRow())),
+    personalDocumentService = {
+      createAvatar: jest.fn().mockReturnValue(of(avatarRow())),
       avatarContentPath: jest.fn().mockReturnValue(CONTENT_PATH),
     };
     alertService = { showToast: jest.fn() };
@@ -154,10 +155,10 @@ describe('User Update Component — step 1', () => {
       await Promise.resolve();
       await Promise.resolve();
 
-      expect(onboardingApi.uploadAvatar).toHaveBeenCalledWith('QUJD', 'image/jpeg');
-      expect(onboardingApi.avatarContentPath).toHaveBeenCalledWith('doc-1');
+      expect(personalDocumentService.createAvatar).toHaveBeenCalledWith('QUJD', 'image/jpeg');
+      expect(personalDocumentService.avatarContentPath).toHaveBeenCalledWith('doc-1');
       expect(userAccountService.updateUserAccount).toHaveBeenCalledWith(expect.objectContaining({ imageUrl: CONTENT_PATH }));
-      expect(onboardingApi.uploadAvatar.mock.invocationCallOrder[0]).toBeLessThan(
+      expect(personalDocumentService.createAvatar.mock.invocationCallOrder[0]).toBeLessThan(
         userAccountService.updateUserAccount.mock.invocationCallOrder[0],
       );
       expect(alertService.showToast).toHaveBeenCalledWith('healthConnect.onboarding.wizard.toast.avatarSaved');
@@ -199,13 +200,13 @@ describe('User Update Component — step 1', () => {
       await Promise.resolve();
       await Promise.resolve();
 
-      expect(onboardingApi.uploadAvatar).not.toHaveBeenCalled();
+      expect(personalDocumentService.createAvatar).not.toHaveBeenCalled();
       expect(alertService.showToast).toHaveBeenCalledWith('healthConnect.onboarding.wizard.avatarUnreadable');
       expect(comp.uploading()).toBe(false);
     });
 
     it('should leave the upload idle again when the server refuses it', async () => {
-      onboardingApi.uploadAvatar.mockReturnValue(throwError(() => ({ status: 400 })));
+      personalDocumentService.createAvatar.mockReturnValue(throwError(() => ({ status: 400 })));
       comp.ngOnInit();
 
       comp.chooseAvatar([new File([''], 'me.jpg', { type: 'image/jpeg' })]);
@@ -254,7 +255,7 @@ describe('User Update Component — rendered in four languages', () => {
       providers: [
         { provide: AccountService, useValue: { identity: () => of(complete()), authenticate: jest.fn() } },
         { provide: UserAccountService, useValue: { updateUserAccount: () => of(undefined) } },
-        { provide: OnboardingApiService, useValue: { uploadAvatar: jest.fn(), avatarContentPath: jest.fn() } },
+        { provide: PersonalDocumentService, useValue: { createAvatar: jest.fn(), avatarContentPath: jest.fn() } },
         { provide: AlertService, useValue: { showToast: jest.fn() } },
         { provide: OnboardingProgressService, useValue: { load: jest.fn(), refresh: jest.fn(), progress: () => null } },
         provideRouter([]),

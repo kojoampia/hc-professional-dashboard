@@ -4,11 +4,11 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import SharedModule from 'app/shared/shared.module';
 import { AlertService } from 'app/core/util/alert.service';
 import { CareersHandoffService } from 'app/core/careers/careers-handoff.service';
-import { OnboardingApiService } from 'app/health-connect/api/onboarding-api.service';
 import { OnboardingProgressService } from 'app/onboarding/onboarding-progress.service';
 import { USER_AUTHORITIES } from 'app/account/user/authority.enum';
 import WizardFooterComponent from 'app/shared/health-connect/wizard/wizard-footer.component';
 import { ProfessionalApplication, applicantHolds } from './model';
+import { ApplicationService } from './service';
 
 /**
  * **Step 4 — application role and consent** (`profile.md:236-263`), the wizard's last pane.
@@ -36,7 +36,7 @@ import { ProfessionalApplication, applicantHolds } from './model';
  *
  * <h2>The first call is `POST`, and after that it is `PUT`</h2>
  *
- * <p>An account with no application gets a 404 from `getOwnApplication` — the normal state for
+ * <p>An account with no application gets a 404 from `ApplicationService.find` — the normal state for
  * everyone except a careers hire — so Save on a 404 **starts** the application
  * (`POST /api/professional-application`) and Save thereafter updates it. A second `POST` is a 409
  * *"An application already exists for this account"*, which is why the branch is on what was loaded
@@ -59,9 +59,9 @@ import { ProfessionalApplication, applicantHolds } from './model';
  * <p>⭐ **The role list is derived, not written out.** `USER_AUTHORITIES` is `CAREER_AUTHORITIES`
  * is a filter of `Authority` — the eight disciplines, never `ROLE_ADMIN`, never `ROLE_USER`, which
  * are the two the server refuses with a 400 and the same two the careers service leaves out of
- * `KNOWN_TRACKS`. ⛔ `ApplicationTabComponent` has a hand-written `REQUESTABLE_ROLES` beside it; that
- * was the seventh copy of a documented cross-repo invariant and it retires with the tab in T6. A new
- * surface must not make an eighth.
+ * `KNOWN_TRACKS`. ⛔ `ApplicationTabComponent` had a hand-written `REQUESTABLE_ROLES` beside it; that
+ * was the seventh copy of a documented cross-repo invariant and T6 retired it with the tab. A new
+ * surface must not make another.
  */
 @Component({
   standalone: true,
@@ -71,7 +71,7 @@ import { ProfessionalApplication, applicantHolds } from './model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ApplicationUpdateComponent implements OnInit {
-  private readonly api = inject(OnboardingApiService);
+  private readonly api = inject(ApplicationService);
   private readonly alertService = inject(AlertService);
   private readonly careersHandoff = inject(CareersHandoffService);
   readonly progressService = inject(OnboardingProgressService);
@@ -131,7 +131,7 @@ export default class ApplicationUpdateComponent implements OnInit {
 
   load(): void {
     this.loadState.set('loading');
-    this.api.getOwnApplication().subscribe({
+    this.api.find().subscribe({
       next: application => {
         this.application.set(application);
         // The stored answers win over the careers pre-selection: an application that exists has
@@ -170,7 +170,7 @@ export default class ApplicationUpdateComponent implements OnInit {
       ? this.api.saveConsent(authority)
       : // `src` is the careers attribution and belongs to the creation only — the review queue reads
         // it and the WP7 funnel counts it.
-        this.api.startApplication(authority, this.careersHandoff.peek()?.src ?? null);
+        this.api.start(authority, this.careersHandoff.peek()?.src ?? null);
     write.subscribe({
       next: application => {
         this.application.set(application);

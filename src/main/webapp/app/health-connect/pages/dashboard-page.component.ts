@@ -345,20 +345,22 @@ export default class DashboardPageComponent implements OnInit {
    * <p>⚠ <b>A fifth condition since T8: not while a wizard pane is open.</b> The panes are children
    * of this route, so {@code router.url.startsWith('/dashboard')} is <em>true</em> inside them and
    * this timer would fire two seconds after step 1's dialog opened, pulling the applicant out of the
-   * wizard and onto the tab page it replaces. That is the same failure the "only if still on the
-   * dashboard" condition above exists to prevent, one level down — someone inside a pane has been
-   * taken somewhere, and yanking them away again is worse than not nudging at all.
+   * pane they are in. That is the same failure the "only if still on the dashboard" condition above
+   * exists to prevent, one level down — someone inside a pane has been taken somewhere, and yanking
+   * them away again is worse than not nudging at all.
    *
-   * <p>⛔ The <b>destination</b> is still the tab page, and that is <b>T6's to re-point</b> along
-   * with the {@code /onboarding} redirect and the other callers. T8 only stops this competing with
-   * the wizard; it does not choose where the nudge leads.
+   * <p>The <b>destination</b> is the wizard's first outstanding pane (T6, re-pointed from the
+   * retired tab page). {@code WizardService.firstOutstandingPane} is built for exactly this — "what
+   * the dashboard opens on arrival" — and the fallback to pane 1 covers the moment before the meter
+   * has said which pane is outstanding; the condition on {@code complete()} has already established
+   * that one is.
    */
   private scheduleIncompleteProfileRedirect(): void {
     const timer = setTimeout(() => {
       const clinician = hasClinicalAuthority(this.account?.authorities);
       const onBareDashboard = this.router.url.split('?')[0] === '/dashboard';
       if (this.progressService.complete() === false && !clinician && onBareDashboard) {
-        void this.router.navigate(['/account/profile'], { queryParams: { tab: 'application' } });
+        void this.router.navigateByUrl(wizardPanePath(this.wizard.firstOutstandingPane() ?? 'account'));
       }
     }, INCOMPLETE_PROFILE_REDIRECT_MS);
 

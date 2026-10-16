@@ -360,7 +360,6 @@
       "consentText": "Je consens au traitement de mes informations d'identité, de qualification et d'enregistrement à des fins d'accréditation, et je confirme l'exactitude des informations fournies.",
       "requestedRole": "Rôle clinique demandé",
       "correctionRequired": "Votre demande a été renvoyée pour correction",
-      "reviewIntro": "Vérifiez vos informations, puis soumettez votre demande pour examen.",
       "steps": {
         "documents": "Documents",
         "status": "Statut"
@@ -379,16 +378,12 @@
         "district": "District",
         "region": "Région",
         "country": "Pays",
-        "contactName": "Nom du contact",
-        "contactRelationship": "Lien",
-        "contactPhone": "Téléphone du contact",
         "documentType": "Type de document",
         "otherLabel": "Libellé",
         "expiryDate": "Date d'expiration",
         "replaces": "Remplace un document existant"
       },
       "actions": {
-        "start": "Commencer la demande",
         "submit": "Soumettre pour examen"
       },
       "statuses": {
@@ -609,43 +604,11 @@
       "noRecord": "Vous n'avez pas encore de dossier professionnel : il n'y a donc ni garde ni revenu à afficher. Cela apparaîtra une fois votre intégration validée."
     },
     "profile": {
-      "title": "Profil",
-      "subtitle": "Votre compte, vos informations d'accréditation et votre mot de passe.",
-      "account": {
-        "title": "Compte",
-        "subtitle": "Comment vous vous connectez et comment le portail s'adresse à vous."
-      },
       "password": {
         "title": "Mot de passe",
         "subtitle": "Modifiez le mot de passe avec lequel vous vous connectez."
       },
-      "clinical": {
-        "title": "Profil clinique",
-        "subtitle": "Les informations sous lesquelles votre dossier d'accréditation est enregistré.",
-        "identity": "Identité",
-        "address": "Adresse",
-        "emergencyContact": "Contact d'urgence",
-        "titlePlaceholder": "Dr / IDE / Ambulancier",
-        "loading": "Chargement de votre profil…",
-        "loadError": "Impossible de charger ces informations.",
-        "save": "Enregistrer le profil",
-        "saved": "Profil enregistré"
-      },
-      "tabs": "Sections du profil",
       "completion": {
-        "title": "Profil complété",
-        "steps": {
-          "account": "Informations du compte",
-          "profile": "Informations personnelles",
-          "documents": "Pièces justificatives",
-          "consent": "Rôle et consentement"
-        },
-        "gaps": {
-          "title": "Éléments encore nécessaires pour compléter ce profil"
-        },
-        "complete": "Tout y est. Un administrateur va maintenant vérifier vos justificatifs.",
-        "incomplete": "Votre profil sera activé une fois ces éléments complétés et vérifiés par un administrateur.",
-        "liveReconnecting": "Mises à jour en direct interrompues — reconnexion.",
         "requirements": {
           "consent": "Consentement",
           "profile": "Informations personnelles",
@@ -659,8 +622,6 @@
         }
       },
       "documents": {
-        "title": "Documents",
-        "subtitle": "Vos justificatifs, vérifiés par l'équipe d'accréditation.",
         "choose": "Choisir un fichier",
         "accepted": "PDF, PNG ou JPEG, jusqu'à 5 Mo.",
         "loading": "Chargement de vos documents…",
@@ -669,11 +630,9 @@
         "rejected": "Ce fichier n'a pas été accepté — utilisez un PDF, PNG ou JPEG de moins de 5 Mo."
       },
       "application": {
-        "title": "Candidature",
         "loading": "Chargement de votre candidature…",
         "loadError": "Impossible de charger votre candidature.",
-        "status": "Statut",
-        "finishFirst": "Complétez toutes les exigences ci-dessus avant de soumettre."
+        "status": "Statut"
       },
       "avatar": {
         "alt": "Photographie de profil"

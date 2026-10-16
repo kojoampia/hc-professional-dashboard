@@ -153,9 +153,8 @@ export const SHELL_NAV_GROUPS: ShellNavGroup[] = [
         dataCy: 'onboardingMenu',
       },
       {
-        // The profile page: what a clinician edits today, and from T9 the My Profile read view. It
-        // carries the wizard's steps as tabs until T6 retires it; the item above is the destination
-        // onboarding itself now has.
+        // The profile page: the My Profile read view (T9). The tab page that carried the wizard's
+        // steps retired in T6; the item above is the destination onboarding itself has.
         path: '/account/profile',
         labelKey: 'healthConnect.navigation.profile',
         icon: 'badge',
