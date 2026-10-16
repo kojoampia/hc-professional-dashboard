@@ -99,21 +99,56 @@ describe('HealthConnect feature routes', () => {
    * step"* is answered by the router rather than by state.
    *
    * <p>Derived from `WIZARD_PANES` rather than listed, so the sequence has one declaration.
+   *
+   * <p>⛔ **This case required `closeUrl: '/dashboard'` on every pane until `backlog.md` row 247, and
+   * now requires its absence.** The panes were hosted by the same `overlayHost` as the record
+   * overlays above, and that host renders Close and Print — which `profile.md:162` forbids here:
+   * *"The dialog panel cannot be closed or printed."* With the close button gone there is nowhere
+   * for a close destination to point, so the key is not merely unused, it is unanswerable.
+   *
+   * <p>⚠ **`closeUrl` stays on the record overlays and must**, which is why the assertion above is
+   * untouched: a patient record is a thing a clinician finishes reading, and closing it carries the
+   * list's query string back. Two overlays, two different answers — this spec now states both, in
+   * adjacent cases, rather than one rule applied to both.
    */
-  it('mounts the four wizard panes as overlays under the dashboard', () => {
+  it('mounts the four wizard panes as overlays under the dashboard, with no close destination', () => {
     const panes = find('dashboard').children as Routes;
 
     expect(panes.map(pane => pane.path)).toEqual(WIZARD_PANES.map(pane => wizardPaneRoute(pane)));
     for (const [index, pane] of panes.entries()) {
       expect(pane.loadComponent).toBeDefined();
-      // The overlay host, with the pane component as its only child — the shape the record overlays
-      // above use. A pane mounted directly would render inline on the dashboard, not as a dialog.
-      expect(pane.data?.['closeUrl']).toBe('/dashboard');
+      // Row 247: no close destination, because the wizard's host renders no close control.
+      expect(pane.data?.['closeUrl']).toBeUndefined();
       expect(pane.data?.['titleKey']).toBe(`healthConnect.onboarding.wizard.${WIZARD_PANES[index]}.title`);
       expect(pane.children).toHaveLength(1);
       expect((pane.children as Routes)[0].path).toBe('');
       expect((pane.children as Routes)[0].loadComponent).toBeDefined();
     }
+  });
+
+  /**
+   * ⭐ **The panes load a different host from the record overlays, and that is row 247's whole
+   * content** — asserted here because the route table is the only place the choice is made, and a
+   * reader comparing the two trees above would otherwise see `loadComponent: toBeDefined()` on both
+   * and conclude they are the same shell.
+   *
+   * <p>⚠ **Resolved rather than compared by reference.** `loadComponent` is a lazy thunk, so two
+   * routes pointing at different modules both satisfy `toBeDefined()`; awaiting it is what makes the
+   * difference visible. The pane's host must be the onboarding one and the record's must not be.
+   */
+  it('gives the wizard panes the onboarding overlay host, not the record overlay host', async () => {
+    const pane = (find('dashboard').children as Routes)[0];
+    const patientDetail = (find('patients').children as Routes)[0];
+
+    const paneHost = await (pane.loadComponent as () => Promise<unknown>)();
+    const recordHost = await (patientDetail.loadComponent as () => Promise<unknown>)();
+
+    expect((paneHost as { name?: string }).name ?? (paneHost as { default?: { name?: string } }).default?.name).toBe(
+      'OnboardingOverlayComponent',
+    );
+    expect((recordHost as { name?: string }).name ?? (recordHost as { default?: { name?: string } }).default?.name).toBe(
+      'RouteDrivenOverlayHostComponent',
+    );
   });
 
   /**
