@@ -15,7 +15,7 @@ import { Sex } from 'app/entities/profile/sex.enum';
 import ProfileDetailComponent from './detail.component';
 import { Profile } from './model';
 import { ProfileService } from './service';
-import profileRoute from 'app/account/profile/profile.route';
+import profileRoute from 'app/entities/profile/profile.route';
 
 /**
  * Rendered against the REAL template rather than the `.overrideTemplate(Comp, '')` idiom, on

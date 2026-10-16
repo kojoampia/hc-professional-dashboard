@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-import profileRoute from './profile/profile.route';
+import profileRoute from 'app/entities/profile/profile.route';
 
 /**
  * The account screens that require an account — now one page rather than two.
