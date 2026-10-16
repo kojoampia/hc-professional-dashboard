@@ -6,8 +6,6 @@
  * see professional-web.md (this nav model is the single source of truth for the shell).
  */
 
-import { wizardPanePath } from 'app/onboarding/wizard.service';
-
 export interface ShellNavItem {
   /** Absolute router path. */
   path: string;
@@ -131,30 +129,25 @@ export const SHELL_NAV_GROUPS: ShellNavGroup[] = [
     requiresAuth: true,
     items: [
       {
-        // ONBOARDING, and it is back. profile.md:275-277: "Onboarding is displayed in a single
-        // dialog wizard pane, not in tabs." This item was removed when the wizard's steps became
-        // tabs on the profile page, and the comment on the item below recorded that one destination
-        // therefore covered both. The specification reverses that, so there are two destinations
-        // again — see sidebar.component.spec.ts, whose assertion was flipped in the same change.
+        // ⛔ THERE IS NO ONBOARDING ITEM HERE, and there was one until backlog.md row 248.
         //
-        // The pane is a routed overlay over the dashboard (T8), so this is a real URL rather than a
-        // modal trigger: deep-linkable, and the browser's back button steps between panes. Read from
-        // wizardPanePath so the address has one spelling here, in the route table and in the spec.
+        // It is not an oversight and it is not the pre-T8 state returning. Onboarding is a one-time
+        // event: an applicant is already inside the wizard, because the dashboard redirects them
+        // there while the meter says a step is outstanding, and a clinician who has finished never
+        // re-enters it. A standing nav entry advertises a room with nobody in it.
         //
-        // Offered to every authenticated account rather than to applicants only, because the panes
-        // are the editing forms as well as the sequence: back-navigation stays possible after
-        // submission (WizardService's post-submit rule), so an approved clinician who moved house
-        // comes here too.
-        path: wizardPanePath('account'),
-        labelKey: 'healthConnect.navigation.onboarding',
-        icon: 'assignment_ind',
-        crumbKey: 'global.menu.account.main',
-        requiresAuth: true,
-        dataCy: 'onboardingMenu',
-      },
-      {
+        // The item this replaces argued the opposite from a true premise — the panes are the editing
+        // forms as well as the sequence, so an approved clinician who moved house does need to reach
+        // one. That is still true, and it is what /account/profile below is for; the wizard is how
+        // the four steps are walked the first time, not where a field is edited afterwards.
+        //
+        // Reachability is untouched: the panes keep their routes, the dashboard redirect still opens
+        // them, a bookmark still resolves, and WizardService still decides which may open. What goes
+        // is the advertisement. healthConnect.navigation.onboarding is retired from all four
+        // catalogues in the same change, because an unreferenced label drifts silently.
+        //
         // The profile page: the My Profile read view (T9). The tab page that carried the wizard's
-        // steps retired in T6; the item above is the destination onboarding itself has.
+        // steps retired in T6.
         path: '/account/profile',
         labelKey: 'healthConnect.navigation.profile',
         icon: 'badge',

@@ -15,7 +15,7 @@ import { ShiftLabel } from 'app/health-connect/health-connect.models';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { wizardPanePath } from 'app/onboarding/wizard.service';
+import { WIZARD_PANES, wizardPanePath } from 'app/onboarding/wizard.service';
 
 import SidebarComponent from './sidebar.component';
 import { SHELL_NAV_GROUPS } from './shell-navigation';
@@ -235,29 +235,34 @@ describe('Sidebar Component', () => {
   });
 
   /**
-   * ⛔ **This case asserted the opposite until T8, and it was green.** It read *"should point the
-   * account group at the profile page rather than the retired wizard"* and required `/onboarding` to
-   * be absent from the nav — a committed record of the decision to fold the wizard's steps into tabs.
+   * ⛔ **This case has now asserted both answers, and the history is the point.** It required the
+   * wizard's absence before T8, required its **presence** through T8 — *"should point the account
+   * group at the onboarding wizard as well as the profile page"* — and requires its absence again
+   * from `backlog.md` row 248. Twice flipped is twice the reason to say which question it answers,
+   * because the two readings look identical and are not.
    *
-   * <p>**`profile.md:275-277` reverses that decision:** *"Onboarding is displayed in a single dialog
-   * wizard pane, not in tabs."* The wizard is not retired; it is the specified surface, built as four
-   * routed overlays (`profile-addendum.md` § 3 T8). A repository holding a green test that asserts
-   * the opposite of the specification is the worst available outcome, because the next reader
-   * believes the test — so this is flipped in the same change that builds the panes.
+   * <p>⚠ **It is a question about the NAV MODEL, never about the wizard.** `profile.md:275-277` —
+   * *"Onboarding is displayed in a single dialog wizard pane, not in tabs"* — is what T8 built and
+   * row 248 does not touch it: the four panes keep their routes, the dashboard still redirects into
+   * them while a step is outstanding, and a bookmark still resolves. What row 248 removes is the
+   * standing **advertisement** of a one-time event. The previous version of this case read the
+   * specification's sentence about the wizard's *shape* as a claim about its *discoverability*, and
+   * those are different sentences.
    *
-   * <p>⚠ **Both destinations, not one.** `/account/profile` stays: it is the clinician's editing
-   * surface until T6 retires it and T9 re-points it at the My Profile read view, and it is where the
-   * top-level `/onboarding` redirect still lands. What the account group regains is the wizard
-   * beside it.
+   * <p>⭐ **So the assertion is written against `wizardPanePath` rather than a typed string** — the
+   * same helper the route table and the dashboard redirect read. A pane address that changed would
+   * otherwise make this case pass by missing the thing it is looking for, which is the one way an
+   * absence assertion can go quietly wrong.
    *
-   * <p>The path is read from {@link wizardPanePath} rather than typed, so the destination has one
-   * spelling across this test, the nav item and the route table.
+   * <p>`/account/profile` stays and is now the account group's only clinician destination: the My
+   * Profile read view T9 built, and where an approved clinician edits what they need to.
    */
-  it('should point the account group at the onboarding wizard as well as the profile page', () => {
+  it('should not advertise the onboarding wizard in the nav, while keeping the profile page', () => {
     const paths = SHELL_NAV_GROUPS.flatMap(group => group.items).map(item => item.path);
 
     expect(paths).toContain('/account/profile');
-    expect(paths).toContain(wizardPanePath('account'));
+    expect(paths).not.toContain(wizardPanePath('account'));
+    expect(WIZARD_PANES.map(pane => wizardPanePath(pane)).some(path => paths.includes(path))).toBe(false);
   });
 
   it('should not offer the removed about, settings and password destinations', () => {

@@ -43,6 +43,8 @@ const compliancePage = (): Promise<typeof import('./pages/compliance-page.compon
 const messagesPage = (): Promise<typeof import('./pages/messages-page.component')> => import('./pages/messages-page.component');
 
 /** T8's four onboarding panes, each its own routed overlay over the dashboard. */
+const onboardingOverlayHost = (): Promise<typeof import('app/onboarding/onboarding-overlay.component')> =>
+  import('app/onboarding/onboarding-overlay.component');
 const userUpdate = (): Promise<typeof import('app/account/user/user-update.component')> => import('app/account/user/user-update.component');
 const profileUpdate = (): Promise<typeof import('app/entities/profile/profile-update.component')> =>
   import('app/entities/profile/profile-update.component');
@@ -93,12 +95,18 @@ const wizardPane = {
  */
 const wizardRoutes: Routes = WIZARD_PANES.map(pane => ({
   path: wizardPaneRoute(pane),
-  loadComponent: overlayHost,
+  // ⛔ onboardingOverlayHost, NOT the overlayHost the record and case routes below use — backlog.md
+  // row 247. That shared host renders Close and Print, which profile.md:162 forbids the wizard
+  // ("The dialog panel cannot be closed or printed"), and it reached these routes because the
+  // routed-overlay idiom was reused wholesale when T8 built the panes. The replacement keeps the
+  // dialog semantics and the focus trap and drops the two controls; see its own docblock for why it
+  // is a second component rather than a flag on the first.
+  loadComponent: onboardingOverlayHost,
   data: {
     titleKey: `healthConnect.onboarding.wizard.${pane}.title`,
-    // Closing a pane returns to the dashboard it overlays rather than to the previous pane: the
-    // close button means "I am done here", and Back is what means "the previous step".
-    closeUrl: '/dashboard',
+    // ⚠ No closeUrl, and its absence is the change rather than an omission: there is no close
+    // button left to send anywhere. The footer's Back is what moves between panes, and row 250 is
+    // what will decide when the dashboard underneath becomes reachable at all.
   },
   children: [
     {
