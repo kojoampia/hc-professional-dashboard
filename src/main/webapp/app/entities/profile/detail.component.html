@@ -1,0 +1,306 @@
+<!--
+  The My Profile read view — profile.md § Profile detail view. Five sections, separated by
+  horizontal rules, in the specification's order; every visible string is a translation key in all
+  four catalogues (the five gates under app/core/i18n/ hold that).
+-->
+<div class="grid gap-6 px-4 py-8 sm:px-6 lg:px-8" data-cy="profileDetail">
+  <header>
+    <h1 class="text-2xl font-extrabold tracking-tight text-hpd-primary-dark" jhiTranslate="healthConnect.profile.detail.title">
+      My Profile
+    </h1>
+  </header>
+
+  <div class="rounded-hpd-lg border border-hpd-border bg-white p-8 shadow-hpd-sm">
+    <!-- 1. Header — title | full name | authority & status (profile.md:119-122). -->
+    <section data-cy="profileHeaderSection">
+      <div class="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+        @if (profile()?.title) {
+          <span class="text-sm font-bold uppercase tracking-wide text-hpd-gold" data-cy="profileTitle">{{ profile()!.title }}</span>
+        }
+        <span class="text-xl font-extrabold tracking-tight text-hpd-primary-dark" data-cy="profileFullName">{{ fullName() }}</span>
+        <span class="ml-auto flex flex-wrap items-center gap-2">
+          @if (authorityBadge(); as badge) {
+            @if (badge.requested) {
+              <!--
+                Q31 (owner, 2026-10-16): a requested role renders ONLY with its explicit qualifier —
+                unqualified it would assert a capability the token does not carry. Do not "simplify"
+                this into the branch below.
+              -->
+              <span
+                class="rounded-hpd-sm bg-hpd-gold-tint px-2.5 py-1 text-xs font-bold text-hpd-warning"
+                data-cy="profileAuthorityRequested"
+                >{{ 'healthConnect.profile.detail.requestedRole' | translate: { role: (badge.labelKey | translate) } }}</span
+              >
+            } @else {
+              <span
+                class="rounded-hpd-sm bg-hpd-primary/10 px-2.5 py-1 text-xs font-bold text-hpd-primary-dark"
+                data-cy="profileAuthorityGranted"
+                [jhiTranslate]="badge.labelKey"
+              ></span>
+            }
+          }
+          @if (statusKey(); as key) {
+            <span
+              class="rounded-hpd-sm border border-hpd-border px-2.5 py-1 text-xs font-bold text-hpd-muted"
+              data-cy="profileStatus"
+              [jhiTranslate]="key"
+            ></span>
+          } @else if (profile()?.status) {
+            <!-- A value this build has no label for: the raw identifier beats a literal translation key. -->
+            <span class="rounded-hpd-sm border border-hpd-border px-2.5 py-1 text-xs font-bold text-hpd-muted" data-cy="profileStatus">{{
+              profile()!.status
+            }}</span>
+          }
+        </span>
+      </div>
+    </section>
+
+    <hr class="my-6 border-hpd-border" />
+
+    <!-- 2. Personal details — the photo spans the rows on the left, ten fields on the right. -->
+    <section data-cy="personalDetailsSection">
+      <h2
+        class="mb-4 text-lg font-extrabold tracking-tight text-hpd-primary-dark"
+        jhiTranslate="healthConnect.profile.detail.sections.personal"
+      >
+        Personal details
+      </h2>
+      @switch (profileState()) {
+        @case ('loading') {
+          <p class="text-sm text-hpd-muted" jhiTranslate="healthConnect.states.loading">Loading...</p>
+        }
+        @case ('error') {
+          <p class="text-sm text-hpd-danger" data-cy="profileLoadError" jhiTranslate="healthConnect.states.error">
+            Unable to load this information.
+          </p>
+        }
+        @case ('empty') {
+          <p class="text-sm text-hpd-muted" data-cy="noProfileYet" jhiTranslate="healthConnect.profile.detail.noProfile">
+            You have not created your professional profile yet.
+          </p>
+        }
+        @case ('ready') {
+          <div class="flex flex-col gap-8 sm:flex-row">
+            <hpd-account-avatar
+              [imageUrl]="account()?.imageUrl ?? null"
+              [initials]="initials()"
+              imageClass="h-44 w-44 flex-none rounded-hpd object-cover"
+              initialsClass="grid h-44 w-44 flex-none place-items-center rounded-hpd bg-hpd-gold-bright text-4xl font-extrabold text-hpd-primary-deep"
+            ></hpd-account-avatar>
+            <dl class="grid flex-1 content-start gap-3" data-cy="personalDetails">
+              <div class="grid gap-1 sm:grid-cols-[12rem_1fr]">
+                <dt class="hpd-label" jhiTranslate="healthConnect.profile.detail.fields.language">Language</dt>
+                <dd class="text-sm text-hpd-text-primary">
+                  <!-- Guarded: the pipe looks its key up unguarded and would throw on a missing one. -->
+                  @if (account()?.langKey; as langKey) {
+                    {{ langKey | findLanguageFromKey }}
+                  }
+                </dd>
+              </div>
+              <div class="grid gap-1 sm:grid-cols-[12rem_1fr]">
+                <dt class="hpd-label" jhiTranslate="healthConnect.onboarding.fields.birthDate">Date of birth</dt>
+                <dd class="text-sm text-hpd-text-primary">{{ formatDate(profile()?.birthDate) }}</dd>
+              </div>
+              <div class="grid gap-1 sm:grid-cols-[12rem_1fr]">
+                <dt class="hpd-label" jhiTranslate="healthConnect.onboarding.fields.sex">Sex</dt>
+                <dd class="text-sm text-hpd-text-primary">
+                  @if (profile()?.sex; as sex) {
+                    <span [jhiTranslate]="'healthConnect.onboarding.wizard.profile.sexes.' + sex"></span>
+                  }
+                </dd>
+              </div>
+              <div class="grid gap-1 sm:grid-cols-[12rem_1fr]">
+                <dt class="hpd-label" jhiTranslate="healthConnect.profile.detail.fields.login">Login</dt>
+                <dd class="text-sm text-hpd-text-primary">{{ account()?.login }}</dd>
+              </div>
+              <div class="grid gap-1 sm:grid-cols-[12rem_1fr]">
+                <dt class="hpd-label" jhiTranslate="healthConnect.onboarding.fields.mobilePhone">Mobile phone</dt>
+                <dd class="text-sm text-hpd-text-primary">{{ profile()?.mobilePhone }}</dd>
+              </div>
+              <div class="grid gap-1 sm:grid-cols-[12rem_1fr]">
+                <dt class="hpd-label" jhiTranslate="healthConnect.profile.detail.fields.phoneNumber">Phone number</dt>
+                <dd class="text-sm text-hpd-text-primary">{{ profile()?.phoneNumber }}</dd>
+              </div>
+              <div class="grid gap-1 sm:grid-cols-[12rem_1fr]">
+                <dt class="hpd-label" jhiTranslate="healthConnect.profile.detail.fields.email">Email</dt>
+                <dd class="text-sm text-hpd-text-primary">{{ profile()?.email }}</dd>
+              </div>
+              <div class="grid gap-1 sm:grid-cols-[12rem_1fr]">
+                <dt class="hpd-label" jhiTranslate="healthConnect.profile.detail.fields.address">Address</dt>
+                <dd class="text-sm text-hpd-text-primary">{{ formatAddress(profile()?.address) }}</dd>
+              </div>
+              <div class="grid gap-1 sm:grid-cols-[12rem_1fr]">
+                <dt class="hpd-label" jhiTranslate="healthConnect.onboarding.fields.cardType">Identity document type</dt>
+                <dd class="text-sm text-hpd-text-primary">
+                  @if (profile()?.cardType; as cardType) {
+                    <span [jhiTranslate]="'healthConnect.onboarding.documentTypes.' + cardType"></span>
+                  }
+                </dd>
+              </div>
+              <div class="grid gap-1 sm:grid-cols-[12rem_1fr]">
+                <dt class="hpd-label" jhiTranslate="healthConnect.onboarding.fields.cardNumber">Identity number</dt>
+                <dd class="text-sm text-hpd-text-primary">{{ profile()?.cardNumber }}</dd>
+              </div>
+            </dl>
+          </div>
+        }
+      }
+    </section>
+
+    <hr class="my-6 border-hpd-border" />
+
+    <!-- 3. Personal documents — name | type | preview, one row per document. -->
+    <section data-cy="personalDocumentsSection">
+      <h2
+        class="mb-4 text-lg font-extrabold tracking-tight text-hpd-primary-dark"
+        jhiTranslate="healthConnect.profile.detail.sections.documents"
+      >
+        Personal documents
+      </h2>
+      @switch (documentsState()) {
+        @case ('loading') {
+          <p class="text-sm text-hpd-muted" jhiTranslate="healthConnect.states.loading">Loading...</p>
+        }
+        @case ('error') {
+          <p class="text-sm text-hpd-danger" jhiTranslate="healthConnect.profile.documents.loadError">Unable to load your documents.</p>
+        }
+        @case ('ready') {
+          @if (documents().length === 0) {
+            <p class="text-sm text-hpd-muted" data-cy="noDocuments" jhiTranslate="healthConnect.profile.documents.empty">
+              You have not uploaded anything yet.
+            </p>
+          } @else {
+            <table class="w-full text-left text-sm">
+              <thead>
+                <tr class="border-b border-hpd-border">
+                  <th scope="col" class="hpd-label py-2 pr-4" jhiTranslate="healthConnect.profile.detail.documents.name">Name</th>
+                  <th scope="col" class="hpd-label py-2 pr-4" jhiTranslate="healthConnect.profile.detail.documents.type">Document type</th>
+                  <th scope="col" class="hpd-label py-2" jhiTranslate="healthConnect.profile.detail.documents.preview">Preview</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (document of documents(); track document.id) {
+                  <tr class="border-b border-hpd-border/60 align-middle" data-cy="documentRow">
+                    <td class="py-3 pr-4 font-semibold text-hpd-text-primary">
+                      {{ document.name }}
+                      @if (document.supersededAt) {
+                        <span
+                          class="ml-2 rounded-hpd-sm border border-hpd-border px-2 py-0.5 text-xs font-bold text-hpd-subtle"
+                          jhiTranslate="healthConnect.onboarding.superseded"
+                          >Replaced</span
+                        >
+                      }
+                    </td>
+                    <td class="py-3 pr-4 text-hpd-text-primary">
+                      <span [jhiTranslate]="'healthConnect.onboarding.documentTypes.' + document.type"></span>
+                    </td>
+                    <td class="py-3">
+                      @if (previews()[document.id]; as url) {
+                        <!-- An object URL from an authenticated blob — a bare src would 401. See the class note. -->
+                        <img
+                          [src]="url"
+                          class="h-16 w-16 rounded-hpd-sm border border-hpd-border object-cover"
+                          [attr.alt]="document.name ?? ''"
+                          data-cy="documentPreview"
+                        />
+                      } @else if (previews()[document.id] === undefined) {
+                        <span class="text-xs text-hpd-subtle" jhiTranslate="healthConnect.states.loading">Loading...</span>
+                      } @else {
+                        <span
+                          class="text-xs text-hpd-subtle"
+                          data-cy="documentNoPreview"
+                          jhiTranslate="healthConnect.profile.detail.documents.noPreview"
+                          >No preview</span
+                        >
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        }
+      }
+    </section>
+
+    <hr class="my-6 border-hpd-border" />
+
+    <!-- 4. Emergency contacts — name | relationship | phone | email | address. -->
+    <section data-cy="emergencyContactsSection">
+      <h2
+        class="mb-4 text-lg font-extrabold tracking-tight text-hpd-primary-dark"
+        jhiTranslate="healthConnect.profile.detail.sections.contacts"
+      >
+        Emergency contacts
+      </h2>
+      @if ((profile()?.contacts ?? []).length === 0) {
+        <p class="text-sm text-hpd-muted" data-cy="noContacts" jhiTranslate="healthConnect.profile.detail.contacts.empty">
+          No emergency contacts recorded yet.
+        </p>
+      } @else {
+        <table class="w-full text-left text-sm">
+          <thead>
+            <tr class="border-b border-hpd-border">
+              <th scope="col" class="hpd-label py-2 pr-4" jhiTranslate="healthConnect.profile.detail.contacts.name">Name</th>
+              <th scope="col" class="hpd-label py-2 pr-4" jhiTranslate="healthConnect.profile.detail.contacts.relationship">
+                Relationship
+              </th>
+              <th scope="col" class="hpd-label py-2 pr-4" jhiTranslate="healthConnect.profile.detail.contacts.phone">Phone</th>
+              <th scope="col" class="hpd-label py-2 pr-4" jhiTranslate="healthConnect.profile.detail.contacts.email">Email</th>
+              <th scope="col" class="hpd-label py-2" jhiTranslate="healthConnect.profile.detail.contacts.address">Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (contact of profile()?.contacts; track contact.id ?? $index) {
+              <tr class="border-b border-hpd-border/60" data-cy="contactRow">
+                <td class="py-3 pr-4 font-semibold text-hpd-text-primary">{{ contact.name }}</td>
+                <td class="py-3 pr-4 text-hpd-text-primary">{{ contact.relationship }}</td>
+                <td class="py-3 pr-4 text-hpd-text-primary">{{ contact.phone }}</td>
+                <td class="py-3 pr-4 text-hpd-text-primary">{{ contact.email }}</td>
+                <td class="py-3 text-hpd-text-primary">{{ formatAddress(contact.address) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </section>
+
+    <hr class="my-6 border-hpd-border" />
+
+    <!-- 5. Consent statement — Application.agreed decides which sentence; the date is the server's stamp. -->
+    <section data-cy="consentSection">
+      <h2
+        class="mb-4 text-lg font-extrabold tracking-tight text-hpd-primary-dark"
+        jhiTranslate="healthConnect.profile.detail.sections.consent"
+      >
+        Consent
+      </h2>
+      @switch (applicationState()) {
+        @case ('loading') {
+          <p class="text-sm text-hpd-muted" jhiTranslate="healthConnect.states.loading">Loading...</p>
+        }
+        @case ('error') {
+          <!-- A failed read is not "not consented" — see the class note. -->
+          <p class="text-sm text-hpd-danger" data-cy="consentLoadError" jhiTranslate="healthConnect.states.error">
+            Unable to load this information.
+          </p>
+        }
+        @default {
+          @if (application()?.agreed) {
+            <p class="text-sm text-hpd-text-primary" data-cy="consentAgreed">
+              {{ 'healthConnect.profile.detail.consent.agreed' | translate: consentParams() }}
+            </p>
+          } @else {
+            <p
+              class="text-sm text-hpd-text-primary"
+              data-cy="consentNotAgreed"
+              jhiTranslate="healthConnect.profile.detail.consent.notAgreed"
+            >
+              You have not yet consented to processing of your profile details and verification of your documents.
+            </p>
+          }
+        }
+      }
+    </section>
+  </div>
+</div>

@@ -424,8 +424,20 @@ export class OnboardingApiService {
     return this.http.put<OnboardingDocumentDto>(`${this.documentUrl}/${encodeURIComponent(id)}/reject`, { reason });
   }
 
-  documentContent(id: string): Observable<Blob> {
-    return this.http.get(`${this.documentUrl}/${encodeURIComponent(id)}/content`, { responseType: 'blob' });
+  /**
+   * The document's bytes, as a blob a caller turns into an object URL — never a bare `<img src>`,
+   * because this path is behind `assertOwnerOrReviewer` and needs the `Authorization` header.
+   *
+   * <p>`silent` opts the request out of the global error banner, for a caller that has a visible
+   * fallback of its own: T9's preview column renders its placeholder on a failed read, and a page
+   * fetching one blob per document row would otherwise stack one banner per failure. The reviewer's
+   * detail page stays loud — there the bytes are the task, not a decoration.
+   */
+  documentContent(id: string, options: { silent?: boolean } = {}): Observable<Blob> {
+    return this.http.get(`${this.documentUrl}/${encodeURIComponent(id)}/content`, {
+      responseType: 'blob',
+      context: new HttpContext().set(SKIP_ERROR_ALERT, options.silent === true),
+    });
   }
 
   decide(id: string, decision: OnboardingStatus, reason?: string, correctionNotes?: string): Observable<OnboardingApplicationDto> {
