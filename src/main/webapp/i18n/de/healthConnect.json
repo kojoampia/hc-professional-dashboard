@@ -677,6 +677,67 @@
       },
       "avatar": {
         "alt": "Profilbild"
+      },
+      "detail": {
+        "title": "Mein Profil",
+        "requestedRole": "{{ role }} (beantragt)",
+        "noProfile": "Sie haben Ihr berufliches Profil noch nicht angelegt.",
+        "sections": {
+          "personal": "Persönliche Angaben",
+          "documents": "Persönliche Dokumente",
+          "contacts": "Notfallkontakte",
+          "consent": "Einwilligung"
+        },
+        "fields": {
+          "language": "Sprache",
+          "login": "Benutzername",
+          "phoneNumber": "Telefonnummer",
+          "email": "E-Mail",
+          "address": "Adresse"
+        },
+        "documents": {
+          "name": "Name",
+          "type": "Dokumentart",
+          "preview": "Vorschau",
+          "noPreview": "Keine Vorschau"
+        },
+        "contacts": {
+          "name": "Name",
+          "relationship": "Verhältnis",
+          "phone": "Telefon",
+          "email": "E-Mail",
+          "address": "Adresse",
+          "empty": "Noch keine Notfallkontakte hinterlegt."
+        },
+        "consent": {
+          "agreed": "Sie haben der Verarbeitung Ihrer Profildaten und der Prüfung Ihrer Dokumente zugestimmt, mit Datum vom {{ date }}.",
+          "notAgreed": "Sie haben der Verarbeitung Ihrer Profildaten und der Prüfung Ihrer Dokumente noch nicht zugestimmt."
+        },
+        "profileStatus": {
+          "ACTIVE": "Aktiv",
+          "CREATED": "Angelegt",
+          "COMPLETED": "Vollständig",
+          "PENDING": "Ausstehend",
+          "REJECTED": "Abgelehnt",
+          "ARCHIVED": "Archiviert",
+          "DELETED": "Gelöscht",
+          "SUSPENDED": "Gesperrt",
+          "INACTIVE": "Inaktiv",
+          "DEACTIVATED": "Deaktiviert",
+          "REVOKED": "Widerrufen",
+          "ONBOARDING": "Im Aufnahmeprozess",
+          "ON_LEAVE": "Beurlaubt",
+          "UNDER_REVIEW": "In Überprüfung",
+          "APPROVED": "Genehmigt",
+          "APPLICATION_STARTED": "Antrag gestartet",
+          "PROFILE_COMPLETED": "Profil vollständig",
+          "CREDENTIAL_REVIEW": "In Prüfung",
+          "RETURNED_FOR_CORRECTION": "Zur Korrektur zurückgegeben",
+          "ORGANIZATION_ASSIGNED": "Organisation zugewiesen",
+          "AUTHORITY_ASSIGNED": "Berechtigung zugewiesen",
+          "ROSTER_CONFIGURED": "Dienstplan eingerichtet",
+          "EXPIRED": "Abgelaufen"
+        }
       }
     },
     "caseQueue": {

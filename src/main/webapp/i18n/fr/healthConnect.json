@@ -677,6 +677,67 @@
       },
       "avatar": {
         "alt": "Photographie de profil"
+      },
+      "detail": {
+        "title": "Mon profil",
+        "requestedRole": "{{ role }} (demandé)",
+        "noProfile": "Vous n'avez pas encore créé votre profil professionnel.",
+        "sections": {
+          "personal": "Informations personnelles",
+          "documents": "Documents personnels",
+          "contacts": "Contacts d'urgence",
+          "consent": "Consentement"
+        },
+        "fields": {
+          "language": "Langue",
+          "login": "Identifiant",
+          "phoneNumber": "Téléphone",
+          "email": "E-mail",
+          "address": "Adresse"
+        },
+        "documents": {
+          "name": "Nom",
+          "type": "Type de document",
+          "preview": "Aperçu",
+          "noPreview": "Aucun aperçu"
+        },
+        "contacts": {
+          "name": "Nom",
+          "relationship": "Lien de parenté",
+          "phone": "Téléphone",
+          "email": "E-mail",
+          "address": "Adresse",
+          "empty": "Aucun contact d'urgence enregistré pour le moment."
+        },
+        "consent": {
+          "agreed": "Vous avez consenti au traitement des informations de votre profil et à la vérification de vos documents, en date du {{ date }}.",
+          "notAgreed": "Vous n'avez pas encore consenti au traitement des informations de votre profil ni à la vérification de vos documents."
+        },
+        "profileStatus": {
+          "ACTIVE": "Actif",
+          "CREATED": "Créé",
+          "COMPLETED": "Complété",
+          "PENDING": "En attente",
+          "REJECTED": "Rejeté",
+          "ARCHIVED": "Archivé",
+          "DELETED": "Supprimé",
+          "SUSPENDED": "Suspendu",
+          "INACTIVE": "Inactif",
+          "DEACTIVATED": "Désactivé",
+          "REVOKED": "Révoqué",
+          "ONBOARDING": "Intégration en cours",
+          "ON_LEAVE": "En congé",
+          "UNDER_REVIEW": "En cours d'examen",
+          "APPROVED": "Approuvé",
+          "APPLICATION_STARTED": "Demande commencée",
+          "PROFILE_COMPLETED": "Profil complété",
+          "CREDENTIAL_REVIEW": "En cours de vérification",
+          "RETURNED_FOR_CORRECTION": "Renvoyé pour correction",
+          "ORGANIZATION_ASSIGNED": "Organisation attribuée",
+          "AUTHORITY_ASSIGNED": "Autorité attribuée",
+          "ROSTER_CONFIGURED": "Planning de garde configuré",
+          "EXPIRED": "Expiré"
+        }
       }
     },
     "caseQueue": {

@@ -113,11 +113,52 @@ export interface Profile {
  * <p>⭐ **A narrow union buys nothing here, because no T8 pane writes or renders this field.** The
  * server refuses a body that names it (`ProfileFieldOwnership`) and the wizard never displays it;
  * `PROFILE_COMPLETED` is stamped by `PUT /api/profile` itself. The field is on the model only so a
- * round trip carries it back untouched. ⚠ **T9's read view does render it** (`profile.md:118`) and
- * will need labels — four catalogues — at which point a derived vocabulary is worth building. It is
- * not worth building for a field nothing reads.
+ * round trip carries it back untouched. ⚠ **T9's read view does render it** (`profile.md:118`), so
+ * the derived vocabulary this paragraph deferred now exists — {@link PROFILE_STATUS_VALUES} below,
+ * built by T9 for exactly the reason given here. The type stays `string`: the wire can carry a value
+ * a stale build has no label for, and a union would make rendering it a compile error rather than
+ * the graceful fallback the read view has.
  */
 export type ProfileStatus = string;
+
+/**
+ * `api/domain/enumeration/ProfileStatus`'s 23 values, in declaration order — the runtime half that
+ * {@link ProfileStatus} deliberately is not.
+ *
+ * <p>A runtime array for the reason `DUTY_ROSTER_SHIFTS` is one: a bare union cannot be enumerated,
+ * so nothing could hold the four catalogues to it. `profile-status-names.spec.ts` beside this file
+ * holds `healthConnect.profile.detail.profileStatus.*` in all four locales to exactly this list, both
+ * directions — a value added here fails that spec until the catalogues carry it, and a retired value
+ * fails it until the dead label goes.
+ *
+ * <p>⚠ **The link to the Java enum is still made by hand** — `web/` cannot read `api/` — so when
+ * `ProfileStatus.java` moves, this list is the mirror to update, and the spec names it.
+ */
+export const PROFILE_STATUS_VALUES = [
+  'ACTIVE',
+  'CREATED',
+  'COMPLETED',
+  'PENDING',
+  'REJECTED',
+  'ARCHIVED',
+  'DELETED',
+  'SUSPENDED',
+  'INACTIVE',
+  'DEACTIVATED',
+  'REVOKED',
+  'ONBOARDING',
+  'ON_LEAVE',
+  'UNDER_REVIEW',
+  'APPROVED',
+  'APPLICATION_STARTED',
+  'PROFILE_COMPLETED',
+  'CREDENTIAL_REVIEW',
+  'RETURNED_FOR_CORRECTION',
+  'ORGANIZATION_ASSIGNED',
+  'AUTHORITY_ASSIGNED',
+  'ROSTER_CONFIGURED',
+  'EXPIRED',
+] as const;
 
 /**
  * The seven `Profile` scalars the pane collects, beside the nested address and contacts.

@@ -677,6 +677,67 @@
       },
       "avatar": {
         "alt": "Profile photograph"
+      },
+      "detail": {
+        "title": "My Profile",
+        "requestedRole": "{{ role }} (requested)",
+        "noProfile": "You have not created your professional profile yet.",
+        "sections": {
+          "personal": "Personal details",
+          "documents": "Personal documents",
+          "contacts": "Emergency contacts",
+          "consent": "Consent"
+        },
+        "fields": {
+          "language": "Language",
+          "login": "Login",
+          "phoneNumber": "Phone number",
+          "email": "Email",
+          "address": "Address"
+        },
+        "documents": {
+          "name": "Name",
+          "type": "Document type",
+          "preview": "Preview",
+          "noPreview": "No preview"
+        },
+        "contacts": {
+          "name": "Name",
+          "relationship": "Relationship",
+          "phone": "Phone",
+          "email": "Email",
+          "address": "Address",
+          "empty": "No emergency contacts recorded yet."
+        },
+        "consent": {
+          "agreed": "You have consented to processing of your profile details and verification of your documents, dated {{ date }}.",
+          "notAgreed": "You have not yet consented to processing of your profile details and verification of your documents."
+        },
+        "profileStatus": {
+          "ACTIVE": "Active",
+          "CREATED": "Created",
+          "COMPLETED": "Completed",
+          "PENDING": "Pending",
+          "REJECTED": "Rejected",
+          "ARCHIVED": "Archived",
+          "DELETED": "Deleted",
+          "SUSPENDED": "Suspended",
+          "INACTIVE": "Inactive",
+          "DEACTIVATED": "Deactivated",
+          "REVOKED": "Revoked",
+          "ONBOARDING": "Onboarding",
+          "ON_LEAVE": "On leave",
+          "UNDER_REVIEW": "Under review",
+          "APPROVED": "Approved",
+          "APPLICATION_STARTED": "Application started",
+          "PROFILE_COMPLETED": "Profile completed",
+          "CREDENTIAL_REVIEW": "In credential review",
+          "RETURNED_FOR_CORRECTION": "Returned for correction",
+          "ORGANIZATION_ASSIGNED": "Organization assigned",
+          "AUTHORITY_ASSIGNED": "Authority assigned",
+          "ROSTER_CONFIGURED": "Duty roster configured",
+          "EXPIRED": "Expired"
+        }
       }
     },
     "caseQueue": {
