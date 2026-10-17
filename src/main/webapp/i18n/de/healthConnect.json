@@ -580,9 +580,7 @@
       "title": "Meine Vergütung",
       "summary": "Vergütungsübersicht",
       "totalAccrued": "Aufgelaufen",
-      "accruedThisPeriod": "In diesem Zeitraum aufgelaufen",
       "shiftsCompleted": "Geleistete Dienste",
-      "shiftsCompletedCount": "{{count}} geleistete Dienste",
       "period": "Zeitraum",
       "paidThrough": "Berücksichtigt Dienste bis gestern.",
       "granularity": "Gruppieren nach",
@@ -598,7 +596,6 @@
       "roster": "Meine Dienste",
       "payable": "Gezählt",
       "notPayable": "Nicht gezählt",
-      "viewDetail": "Vergütung ansehen",
       "unpriced": "Für {{count}} Ihrer Dienste ist für die jeweilige Dienstart am geleisteten Tag kein Satz festgelegt. Sie gelten als geleistet, erhöhen den Gesamtbetrag aber nicht. Die Sätze legt Ihre Administration fest.",
       "noRecord": "Sie haben noch keinen Berufsdatensatz, daher gibt es keine Dienste oder Vergütung anzuzeigen. Beides erscheint, sobald Ihr Onboarding freigegeben ist."
     },

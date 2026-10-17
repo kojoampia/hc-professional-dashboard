@@ -371,10 +371,16 @@ describe('restricted-part notices', () => {
     });
 
     it.each(LANGUAGES)('carries no %s key for a stat row that has no refusal of its own', locale => {
-      // The mirror. The earnings card is the live case: it fails silently and renders nothing at
-      // all, by its own decision, so a sentence for it here would be shown to nobody — or would be
-      // found later and wired up, replacing a deliberate absence with a notice about a sibling
-      // stack the clinician cannot act on.
+      // The mirror: a `refused.*` sentence exists only for a stat row that can print one, and the
+      // two above are the whole of that list.
+      //
+      // ⚠ The live case cited here was the dashboard's earnings card — it failed silently and
+      // rendered nothing at all, so a sentence for it would have been shown to nobody, or found
+      // later and wired up, replacing a deliberate absence with a notice about a sibling stack the
+      // clinician cannot act on. `backlog.md` row 263 removed that card and its read outright, so
+      // the example is gone and the rule is stricter rather than weaker: the dashboard now has no
+      // third STAT-ROW read for a stray key to describe. (It still makes a third read — onboarding
+      // progress — which prints no figure and so is not a stat row this rule is about.)
       const stray = Object.keys(refusedNotices(locale)).filter(key => !REFUSED_KEYS.includes(key));
 
       expect(stray).toEqual([]);

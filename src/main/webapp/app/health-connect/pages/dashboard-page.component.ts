@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Router, RouterOutlet } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { MatIconModule } from '@angular/material/icon';
 
@@ -16,8 +16,6 @@ import { AccountService } from 'app/core/auth/account.service';
 import { OnboardingProgressService } from 'app/onboarding/onboarding-progress.service';
 import { WizardService, wizardPanePath } from 'app/onboarding/wizard.service';
 import { hasClinicalAuthority } from '../authority-role';
-import { EarningsApiService } from '../api/earnings-api.service';
-import { ProfessionalEarningsDto } from '../api/earnings-api.model';
 import StatCardRowComponent, { StatCard } from '../../shared/health-connect/stat-card/stat-card-row.component';
 import AsyncStateComponent from '../../shared/health-connect/async-state/async-state.component';
 
@@ -53,7 +51,6 @@ const countable = (state: AsyncViewState): boolean => state.status === 'ready';
     LineChartComponent,
     MatIconModule,
     PieChartComponent,
-    RouterLink,
     RouterOutlet,
     StatCardRowComponent,
     TranslateModule,
@@ -99,7 +96,7 @@ const countable = (state: AsyncViewState): boolean => state.status === 'ready';
             filtered directory, so the figure is a promise about what the click leads to as well. The
             sentence is this screen's own, not the directory banner's: there the list is short, here
             there is no figure at all. Everything else on the dashboard is untouched — the case
-            cards, the earnings card and the charts come from reads this header says nothing about.
+            cards and the charts come from a read this header says nothing about.
 
             Keeping the tiles with an em dash in place of each number was considered and dropped: it
             asserts nothing, which is right, but four dashed tiles read as a broken widget rather
@@ -142,8 +139,10 @@ const countable = (state: AsyncViewState): boolean => state.status === 'ready';
           than the tiles.
 
           TWO WRAPPERS ON ONE READ, deliberately, and the alternative was rejected on layout. Moving
-          these tiles inside the charts wrapper below would say it once, and would put the second row
-          of KPI tiles underneath the earnings card — a change to the dashboard nobody asked for. So
+          these tiles inside the charts wrapper below would say it once, and would move the second
+          row of KPI tiles down the page — a change to the dashboard nobody asked for. (It used to
+          land them underneath the earnings card; row 263 removed that card, and the layout argument
+          survives it: the tiles still belong above the charts rather than inside their wrapper.) So
           the tiles carry their own sentence, naming what is missing (refused.caseCounts), and the
           charts keep the generic one; under an outage both say the generic error, which is repeated
           but true.
@@ -159,32 +158,24 @@ const countable = (state: AsyncViewState): boolean => state.status === 'ready';
       </section>
 
       <!--
-        Absent rather than empty when there is nothing to show. An account with no professional
-        record behind it (mid-onboarding) 404s, and adminservice may simply be down — neither is
-        worth a broken tile on the dashboard, so the card renders only once there are real figures.
+        NO EARNINGS ANYWHERE ON THIS PAGE, and the absence is the specification rather than an
+        oversight (backlog row 263). dashboard-states.md, § Default View: "Do not show earnings on
+        dashboard whatsoever. Remove earnings card."
+
+        An earnings card stood here, linking to /earnings and fed by EarningsApiService.ownEarnings
+        — a cross-stack read of hc-admin, swallowing its own failures because a clinician
+        mid-onboarding has no professional record there to read. The whole of it went: the markup,
+        the ownEarnings call in ngOnInit, the signal it filled and the money() formatter it used.
+        Removing the markup alone would have left this page reading adminservice on every load for
+        a figure nothing renders — invisible on screen and visible only in a network log.
+
+        UNCONDITIONALLY, in every state. This is not row 259's welcome-page split: no status gates
+        it, so the card is gone from the dashboard an ACTIVE && ACTIVE clinician sees as well.
+
+        /earnings is untouched and remains the earnings surface — it keeps the sidebar entry
+        (dashboard-states.md § Sidebar State lists Earnings under Show), the service, the model and
+        the adminservice route. See adminservice-earnings-contract.md.
       -->
-      @if (earnings(); as summary) {
-        <section aria-labelledby="hpd-dashboard-earnings" data-cy="dashboardEarnings">
-          <h2 id="hpd-dashboard-earnings" class="sr-only">{{ 'healthConnect.earnings.title' | translate }}</h2>
-          <a
-            routerLink="/earnings"
-            class="hpd-focusable flex flex-wrap items-center justify-between gap-4 rounded-hpd border border-hpd-border bg-white p-4 no-underline shadow-hpd-sm transition-shadow duration-150"
-          >
-            <span>
-              <span class="block text-[11px] font-bold uppercase tracking-wider text-hpd-muted">
-                {{ 'healthConnect.earnings.accruedThisPeriod' | translate }}
-              </span>
-              <span class="mt-1 block text-[26px] font-extrabold leading-none tracking-tight text-hpd-primary-dark">
-                {{ money(summary.totalAccrued, summary.currency) }}
-              </span>
-            </span>
-            <span class="text-sm text-hpd-muted">
-              {{ 'healthConnect.earnings.shiftsCompletedCount' | translate: { count: summary.shiftsCompleted } }}
-            </span>
-            <span class="text-sm font-bold text-hpd-primary">{{ 'healthConnect.earnings.viewDetail' | translate }}</span>
-          </a>
-        </section>
-      }
 
       <!--
         THE CASE READ, because that is what these three charts are made of (item 146). Every one is a
@@ -236,15 +227,10 @@ const countable = (state: AsyncViewState): boolean => state.status === 'ready';
 export default class DashboardPageComponent implements OnInit {
   readonly repository = inject(HEALTH_CONNECT_REPOSITORY);
   private readonly router = inject(Router);
-  private readonly earningsApi = inject(EarningsApiService);
-  private readonly translate = inject(TranslateService);
   private readonly progressService = inject(OnboardingProgressService);
   private readonly wizard = inject(WizardService);
   private readonly accountService = inject(AccountService);
   private readonly destroyRef = inject(DestroyRef);
-
-  /** Null until adminservice answers, and left null if it cannot — see the template. */
-  readonly earnings = signal<ProfessionalEarningsDto | null>(null);
 
   /** Tracked the way the sidebar tracks it, and read only by the redirect below. */
   private account: Account | null = null;
@@ -259,14 +245,6 @@ export default class DashboardPageComponent implements OnInit {
         // method, which explains both why it is here and why it is immediate.
         this.openAccountStepWhenIncomplete(account);
       });
-
-    // Failure is swallowed on purpose. This is one card on a dashboard whose other panels come
-    // from a different stack entirely; a 404 (no professional record yet) or an adminservice
-    // outage must not surface as a dashboard-wide error.
-    this.earningsApi.ownEarnings({ granularity: 'MONTHLY' }).subscribe({
-      next: earnings => this.earnings.set(earnings),
-      error: () => this.earnings.set(null),
-    });
 
     this.progressService.load();
     this.scheduleIncompleteProfileRedirect();
@@ -365,14 +343,6 @@ export default class DashboardPageComponent implements OnInit {
     }, INCOMPLETE_PROFILE_REDIRECT_MS);
 
     this.destroyRef.onDestroy(() => clearTimeout(timer));
-  }
-
-  /** Same reasoning as the earnings page: `Intl` directly, because four locales ship. */
-  money(amount: number, currency: string | null): string {
-    const locale = this.translate.currentLang || 'en';
-    return currency
-      ? new Intl.NumberFormat(locale, { style: 'currency', currency }).format(amount)
-      : new Intl.NumberFormat(locale).format(amount);
   }
 
   /**

@@ -580,9 +580,7 @@
       "title": "Mis ingresos",
       "summary": "Resumen de ingresos",
       "totalAccrued": "Acumulado",
-      "accruedThisPeriod": "Acumulado en este periodo",
       "shiftsCompleted": "Turnos completados",
-      "shiftsCompletedCount": "{{count}} turnos completados",
       "period": "Periodo",
       "paidThrough": "Incluye los turnos hasta ayer.",
       "granularity": "Agrupar por",
@@ -598,7 +596,6 @@
       "roster": "Mis turnos",
       "payable": "Contabilizado",
       "notPayable": "No contabilizado",
-      "viewDetail": "Ver ingresos",
       "unpriced": "{{count}} de tus turnos no tienen una tarifa fijada para su tipo de turno en la fecha trabajada, por lo que cuentan como trabajados pero no suman al total. Tu administrador fija las tarifas.",
       "noRecord": "Todavía no tienes un registro profesional, así que no hay turnos ni ingresos que mostrar. Aparecerán cuando se apruebe tu incorporación."
     },

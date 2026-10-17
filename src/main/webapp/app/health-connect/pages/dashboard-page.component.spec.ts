@@ -43,9 +43,22 @@ describe('DashboardPageComponent', () => {
   // `const repository = TestBed.inject(…)` would care about placement, and this is not one.
   const repository = (): FakeHealthConnectRepository => TestBed.inject(FakeHealthConnectRepository);
 
-  /** The earnings card, against adminservice. */
-  const earningsRequest = (): ReturnType<HttpTestingController['expectOne']> =>
-    httpMock.expectOne(request => request.url.endsWith('services/adminservice/api/professionals/me/earnings'));
+  /**
+   * Every earnings request this page issued, if it issues any — and backlog row 263 is that it
+   * issues none.
+   *
+   * <p>⚠ <b>This helper used to be `earningsRequest()`, an `expectOne` that every test in the file
+   * flushed</b>, and the question it answered has been reversed rather than deleted: the card is
+   * gone from the dashboard entirely (`dashboard-states.md` § Default View — *"Do not show earnings
+   * on dashboard whatsoever"*), so the assertion is now that nothing matches. It is `match` and not
+   * `expectNone` because two tests below need to *answer* whatever a regressed component asked for,
+   * in order to prove the figures still do not reach the screen; `expectNone` cannot flush.
+   *
+   * <p>Matched on the path rather than the full adminservice URL so a request re-pointed at some
+   * other prefix is still caught. It is the read that must be gone, not one spelling of it.
+   */
+  const earningsRequests = (): ReturnType<HttpTestingController['match']> =>
+    httpMock.match(request => request.url.includes('/api/professionals/me/earnings'));
 
   /**
    * The other request this page makes on init: onboarding completion, which decides whether the
@@ -61,10 +74,14 @@ describe('DashboardPageComponent', () => {
    * Builds the component.
    *
    * <p>`renderTemplate` is off by default and that is not an oversight: most of what this page does
-   * is computed, and rendering the real markup drags in the charts, the async-state wrapper and a
-   * `routerLink` that a plain object `Router` cannot serve. The restriction block at the bottom
-   * turns it on, because *the whole of item 125 is what reaches the screen* — a suppression proved
-   * only against a signal survives someone deleting the `@if` that acts on it.
+   * is computed, and rendering the real markup drags in the charts and the async-state wrapper. The
+   * restriction block at the bottom turns it on, because *the whole of item 125 is what reaches the
+   * screen* — a suppression proved only against a signal survives someone deleting the `@if` that
+   * acts on it.
+   *
+   * <p>It used to drag in a `routerLink` as well, which a plain object `Router` cannot serve, and
+   * that is why three blocks below refused the earnings read rather than filling it. Row 263 removed
+   * the card carrying it, so the rendered template no longer links anywhere.
    */
   const setUp = async (options: { renderTemplate?: boolean } = {}): Promise<void> => {
     // Installed before the component exists: ngOnInit schedules the incomplete-profile timer, and a
@@ -109,7 +126,6 @@ describe('DashboardPageComponent', () => {
 
   it('derives demographic and case-status KPI counts from the repository signals', () => {
     flushProgress(true);
-    earningsRequest().flush({});
     expect(component.demographicCards()).toEqual([
       expect.objectContaining({ id: 'patients', count: 7 }),
       expect.objectContaining({ id: 'female', count: 3 }),
@@ -125,7 +141,6 @@ describe('DashboardPageComponent', () => {
 
   it('navigates KPI selections to their query-backed directory and case URLs', () => {
     flushProgress(true);
-    earningsRequest().flush({});
     component.navigateDemographic('female');
     component.navigateDemographic('kids');
     component.navigateCaseStatus('urgent');
@@ -135,40 +150,87 @@ describe('DashboardPageComponent', () => {
     expect(router.navigate).toHaveBeenNthCalledWith(3, ['/cases'], { queryParams: { status: 'urgent' } });
   });
 
-  it('fills the earnings card from adminservice, monthly', () => {
+  /**
+   * ⭐ <b>Backlog row 263, and the question these two cases ask is the reverse of the one this file
+   * used to ask.</b> Three tests stood here — <i>"fills the earnings card from adminservice,
+   * monthly"</i>, <i>"leaves the rest of the dashboard working when earnings fail"</i> and
+   * <i>"formats money in the current language"</i> — each asserting that the card worked. They are
+   * not deleted silently: `dashboard-states.md` § Default View now reads <i>"Do not show earnings on
+   * dashboard whatsoever. Remove earnings card."</i>, so the property to hold is that the card and
+   * its read are both gone, and the old cases asserted the opposite of the specification.
+   *
+   * <p><b>Unconditionally, in every state.</b> This is not row 259's welcome-page split — nothing
+   * here gates on a status — so the read must be absent for a working clinician as well as for an
+   * applicant.
+   *
+   * <p>⚠ <b>Which is why both cases sign a clinical account in, and the sentence above used to
+   * claim that for free.</b> It read <i>"the read must be absent for a fully active clinician too,
+   * which is exactly the account the default `setUp` builds"</i>, and `setUp` builds no account at
+   * all: the first {@code AccountService.authenticate} in this file is in the redirect block below,
+   * so these two ran with {@code account === null} — the *no account has arrived* state. Nothing was
+   * broken by it, because the component has no {@code ownEarnings} call site left in any branch and
+   * so no state can produce the read. The claim was the defect: row 259 makes this page
+   * status-gated, and a reader trusting that sentence would believe the active-clinician branch was
+   * pinned when nothing exercised it. Made true rather than softened — it costs one line each.
+   *
+   * <p><b>"Active" here is account-level and that limit is the honest part of it:</b> a clinical
+   * authority with all four step-1 fields filled, which is the most "active" this page can currently
+   * be told about. {@code Profile.status} is not a signal the dashboard reads at all yet — row 259
+   * is the work that introduces it — so no case here can assert `ACTIVE && ACTIVE`, and one claiming
+   * to would be this same defect again.
+   *
+   * <p>⛔ <b>The request, asserted on the wire, and not only the markup.</b> A template assertion
+   * alone passes against a component that still calls adminservice and merely renders nothing with
+   * the answer: a cross-stack read nobody looks at, invisible on screen and visible only in a
+   * network log. The second case proves the markup, the first proves the call — and
+   * `httpMock.verify()` in `afterEach` is a third layer, since an unflushed earnings request now
+   * fails every test in the file rather than only the two below.
+   */
+  it('makes NO earnings request at all — the dashboard no longer reads adminservice (row 263)', () => {
+    // A working clinician, not the null account `setUp` leaves behind: the state most likely to be
+    // given an earnings read back is the one with earnings to show.
+    TestBed.inject(AccountService).authenticate(
+      new Account(true, ['ROLE_DOCTOR'], 'a@b.c', 'Ama', 'en', 'Mensah', 'doctor', 'content/path'),
+    );
     flushProgress(true);
-    const req = earningsRequest();
-    expect(req.request.params.get('granularity')).toBe('MONTHLY');
-    req.flush({ totalAccrued: 1100, shiftsCompleted: 2, currency: 'GHS' });
 
-    expect(component.earnings()).toEqual(expect.objectContaining({ totalAccrued: 1100, shiftsCompleted: 2 }));
+    // The URLs rather than the `TestRequest`s, and that is not cosmetic: a failing `toEqual([])` on
+    // the objects themselves kills the jest worker with "Converting circular structure to JSON"
+    // while it serialises the diff, so the suite reports "failed to run" and names nothing. Watched
+    // happen on this very assertion before the component was changed. A string list reddens
+    // legibly and prints the request it is complaining about.
+    expect(earningsRequests().map(request => request.request.urlWithParams)).toEqual([]);
   });
 
   /**
-   * The card is one panel on a dashboard whose other panels come from a different stack. A
-   * clinician with no professional record yet (404), or an adminservice outage, must leave the rest
-   * of the dashboard intact — the card simply does not render.
+   * And nothing earnings-shaped reaches the screen even if adminservice would answer with figures.
+   *
+   * <p>The response is flushed into whatever the component asked for, rather than asserting against
+   * an unfed page: a card that renders only once its read returns is absent on an empty test for the
+   * wrong reason, and such a test stays green through the whole regression it exists to catch.
+   * `match` returns nothing once the call is gone, so the loop simply does not run.
    */
-  it.each([
-    ['no professional record', 404],
-    ['adminservice unavailable', 503],
-  ])('leaves the rest of the dashboard working when earnings fail: %s', (_label, status) => {
+  it('renders no earnings card, even when adminservice answers with figures (row 263)', async () => {
+    TestBed.resetTestingModule();
+    await setUp({ renderTemplate: true });
+    // The same working clinician as the case above, for the same reason: the card is gone from the
+    // dashboard somebody with earnings sees, not only from an applicant's.
+    TestBed.inject(AccountService).authenticate(
+      new Account(true, ['ROLE_DOCTOR'], 'a@b.c', 'Ama', 'en', 'Mensah', 'doctor', 'content/path'),
+    );
     flushProgress(true);
-    earningsRequest().flush(null, { status, statusText: 'error' });
+    for (const request of earningsRequests()) {
+      request.flush({ totalAccrued: 1100, shiftsCompleted: 2, currency: 'GHS' });
+    }
+    fixture.detectChanges();
 
-    expect(component.earnings()).toBeNull();
-    expect(component.demographicCards()).toHaveLength(4);
-    expect(component.caseCards()).toHaveLength(3);
-  });
-
-  it('formats money in the current language with the currency the rates were set in', () => {
-    flushProgress(true);
-    earningsRequest().flush({});
-
-    expect(component.money(1100, 'GHS')).toContain('1,100');
-    // No currency means nothing in the window was priced — show the bare figure rather than
-    // inventing a denomination for it.
-    expect(component.money(1100, null)).toBe('1,100');
+    expect(fixture.nativeElement.querySelector('[data-cy="dashboardEarnings"]')).toBeNull();
+    // The copy as well as the hook: a section renamed rather than removed would keep the keys.
+    expect(fixture.nativeElement.textContent).not.toContain('healthConnect.earnings.');
+    expect(fixture.nativeElement.textContent).not.toContain('1,100');
+    // The positive control for this case. The rest of the dashboard is untouched by row 263, so a
+    // page that rendered nothing at all would satisfy the three assertions above for nothing.
+    expect(fixture.nativeElement.querySelectorAll('hpd-stat-card')).toHaveLength(7);
   });
 
   /**
@@ -180,7 +242,6 @@ describe('DashboardPageComponent', () => {
    */
   describe('incomplete-profile redirect', () => {
     const settle = (): void => {
-      earningsRequest().flush({});
       jest.advanceTimersByTime(2000);
     };
 
@@ -196,7 +257,6 @@ describe('DashboardPageComponent', () => {
 
     it('does not move before the two seconds are up', () => {
       flushProgress(false);
-      earningsRequest().flush({});
 
       jest.advanceTimersByTime(1500);
 
@@ -270,7 +330,6 @@ describe('DashboardPageComponent', () => {
 
     it('cancels the timer when the dashboard is destroyed', () => {
       flushProgress(false);
-      earningsRequest().flush({});
 
       fixture.destroy();
       jest.advanceTimersByTime(2000);
@@ -307,7 +366,6 @@ describe('DashboardPageComponent', () => {
     const signIn = (account: Account): void => {
       TestBed.inject(AccountService).authenticate(account);
       flushProgress(true);
-      earningsRequest().flush({});
     };
 
     /** Immediately, not after a beat: a dialog that appears two seconds in reads as a fault. */
@@ -337,7 +395,6 @@ describe('DashboardPageComponent', () => {
     /** Unknown is not incomplete — opening a dialog on an unknown account opens it over everybody. */
     it('opens nothing while no account has arrived', () => {
       flushProgress(true);
-      earningsRequest().flush({});
 
       expect(router.navigateByUrl).not.toHaveBeenCalled();
     });
@@ -388,10 +445,6 @@ describe('DashboardPageComponent', () => {
       TestBed.resetTestingModule();
       await setUp({ renderTemplate: true });
       flushProgress(true);
-      // Refused rather than filled: the earnings card is the one part of this template carrying a
-      // `routerLink`, and a plain object `Router` cannot serve one. Its absence is the state the
-      // "leaves the rest of the dashboard alone" claim is made against, not a state being asserted.
-      earningsRequest().flush(null, { status: 503, statusText: 'unavailable' });
       fixture.detectChanges();
     });
 
@@ -442,9 +495,9 @@ describe('DashboardPageComponent', () => {
     it('suppresses the four counts and nothing else on the page', () => {
       restrict('caseAssignments');
 
-      // The case cards, the charts and the earnings card come from reads this header says nothing
-      // about. Hiding the dashboard over a refusal that cost four numbers would remove more truth
-      // than it removes falsehood.
+      // The case cards and the charts come from a read this header says nothing about. Hiding the
+      // dashboard over a refusal that cost four numbers would remove more truth than it removes
+      // falsehood. (The earnings card was a third example here until row 263 removed it.)
       expect(component.caseCards()).toEqual([
         expect.objectContaining({ id: 'urgent', count: 2 }),
         expect.objectContaining({ id: 'open', count: 2 }),
@@ -504,9 +557,6 @@ describe('DashboardPageComponent', () => {
       TestBed.resetTestingModule();
       await setUp({ renderTemplate: true });
       flushProgress(true);
-      // Refused for the reason the restriction block above refuses it: the earnings card is the one
-      // part of this template carrying a routerLink, which a plain object Router cannot serve.
-      earningsRequest().flush(null, { status: 503, statusText: 'unavailable' });
       fixture.detectChanges();
     });
 
@@ -582,9 +632,6 @@ describe('DashboardPageComponent', () => {
       TestBed.resetTestingModule();
       await setUp({ renderTemplate: true });
       flushProgress(true);
-      // Refused for the reason the two blocks above refuse it: the earnings card is the one part of
-      // this template carrying a routerLink, which a plain object Router cannot serve.
-      earningsRequest().flush(null, { status: 503, statusText: 'unavailable' });
       fixture.detectChanges();
     });
 
