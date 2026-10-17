@@ -35,8 +35,9 @@ export interface AbsenceDto {
  * every caller here is drawing a bounded grid.
  *
  * <p><b>Failure is silent and empty.</b> A calendar that cannot reach the absence endpoint still has
- * to draw the rounds — the same way the dashboard's earnings card treats an unreachable
- * `adminservice`. The cost is that an outage renders as "no absences" rather than as an error, which
+ * to draw the rounds. (The dashboard's earnings card was the sibling example cited here until
+ * `backlog.md` row 263 removed it; the trade is this read's own and never depended on it.)
+ * The cost is that an outage renders as "no absences" rather than as an error, which
  * is the right trade for a read that decorates rather than informs: a clinician who cannot see their
  * granted holiday is inconvenienced, one who cannot see their shifts cannot work.
  */

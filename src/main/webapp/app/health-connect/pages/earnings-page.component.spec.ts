@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 
+import LineChartComponent from '../charts/line-chart.component';
 import EarningsPageComponent from './earnings-page.component';
 
 describe('EarningsPageComponent', () => {
@@ -138,5 +139,49 @@ describe('EarningsPageComponent', () => {
     ]);
 
     expect(component.shifts().map(shift => shift.payable)).toEqual([true, false, false]);
+  });
+
+  /**
+   * ⭐ <b>The positive control for backlog row 263, and the only rendered case in this file.</b>
+   *
+   * <p>Row 263 removed the earnings card from the dashboard and the adminservice read behind it.
+   * Every other assertion about that change is a negative — no request, no `data-cy`, no copy — and
+   * a suite of negatives passes identically whether earnings were removed from one screen or broken
+   * everywhere. This is the case that tells those two apart: `/earnings` is the surface the
+   * specification keeps (`dashboard-states.md` § Sidebar State lists Earnings under <b>Show</b>),
+   * and it must still put real figures on a real screen.
+   *
+   * <p>Rendered for real rather than asserted against the model, unlike every case above, which all
+   * run with the template overridden to the empty string. A model-level control cannot see a
+   * template that stopped rendering — and the catalogue keys the dashboard card shared with this
+   * page are exactly what an over-eager removal would take out from under it.
+   *
+   * <p>The chart is stubbed and only the chart: `ng2-charts` asks jsdom for a 2D canvas context,
+   * gets null and dies reading `.id` off it — a limitation of the test DOM with nothing to do with
+   * this page.
+   */
+  it('STILL renders its own figures on the earnings page itself (row 263 positive control)', async () => {
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [EarningsPageComponent, TranslateModule.forRoot()],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    })
+      .overrideComponent(LineChartComponent, { set: { template: '' } })
+      .compileComponents();
+    fixture = TestBed.createComponent(EarningsPageComponent);
+    component = fixture.componentInstance;
+    httpMock = TestBed.inject(HttpTestingController);
+    fixture.detectChanges();
+
+    earningsRequest().flush(summary());
+    shiftsRequest().flush([{ date: '2026-08-15', shift: 'DAY', payable: true }]);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-cy="earningsSummary"]')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-cy="earningsTotal"]')?.textContent).toContain('1,100');
+    // The two keys this page shares with the retired dashboard card, named rather than implied:
+    // `title` is also the route's titleKey, and removing it with the card would blank this heading.
+    expect(fixture.nativeElement.textContent).toContain('healthConnect.earnings.title');
+    expect(fixture.nativeElement.textContent).toContain('healthConnect.earnings.totalAccrued');
   });
 });

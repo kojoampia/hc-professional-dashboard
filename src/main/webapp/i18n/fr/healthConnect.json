@@ -580,9 +580,7 @@
       "title": "Mes revenus",
       "summary": "Récapitulatif des revenus",
       "totalAccrued": "Cumulé",
-      "accruedThisPeriod": "Cumulé sur la période",
       "shiftsCompleted": "Gardes effectuées",
-      "shiftsCompletedCount": "{{count}} gardes effectuées",
       "period": "Période",
       "paidThrough": "Comptabilise les gardes jusqu'à hier.",
       "granularity": "Regrouper par",
@@ -598,7 +596,6 @@
       "roster": "Mes gardes",
       "payable": "Comptabilisée",
       "notPayable": "Non comptabilisée",
-      "viewDetail": "Voir les revenus",
       "unpriced": "{{count}} de vos gardes n'ont aucun tarif défini pour leur type de garde à la date travaillée : elles comptent comme travaillées mais n'ajoutent rien au total. Les tarifs sont fixés par votre administrateur.",
       "noRecord": "Vous n'avez pas encore de dossier professionnel : il n'y a donc ni garde ni revenu à afficher. Cela apparaîtra une fois votre intégration validée."
     },

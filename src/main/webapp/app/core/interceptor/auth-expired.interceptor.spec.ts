@@ -46,8 +46,12 @@ describe('Auth Expired Interceptor', () => {
   });
 
   /**
-   * The measured defect: hc-admin answers 401 for the earnings card and the clinician is returned
+   * The measured defect: hc-admin answers 401 for the earnings read and the clinician is returned
    * to /login about 2.5 seconds after signing in.
+   *
+   * <p>It was the dashboard's earnings card that made the call when this was measured, which is why
+   * it fired on every sign-in; `backlog.md` row 263 removed that card, so today the same path is
+   * reached from `/earnings`. The path and the rule are unchanged — only who asks for it.
    */
   it('should keep the session when adminservice answers 401', () => {
     requestFailingWith(401, '/services/adminservice/api/professionals/me/earnings');
